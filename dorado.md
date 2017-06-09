@@ -4,10 +4,31 @@
 1. 变量名是区分大小写的。  
 2. app-context.xml对应spring的配置文件  
 3. 如果无法新建视图文件，应该更新dorado配置规则
+4. 配置组建属性的时候，设置后最好按下回车，否则偶尔属性没有设置上。
+5. 
+>平面数据：通过键值来表达数据与数据间的关系。例如关系型数据库中的数据。每一条数据都是独立的，它们之间的关系是通过外键值指向另外一个数据的主键值。
+立体数据：通过引用来表达数据与数据间的关系。例如通过Hibernate获得的领域模型数据。如我们拿到一个部门对象，部门对象内部还包含所有的雇员对象。
+
+dorado5点dataset是平面的，dorado7的dataset是立体的
 一。安装配置  
 二。使用  
-1. 
+1. 基础知识
+    1. 关于dataset、datatype、datapath：
+    >DataType我们在立体数据模型中提到过，它的目的是为了描述数据实体的各个属性的校验规则、数据类型、显示格式等等；这样我拿到一个数据之后，就可以通过DataType知道其中是一个什么样结构的数据，其中包含哪些属性，有哪些子对象等等;
+    >使用的时候一般设置parent、matchType；
+    >dataType可以添加propertydef子组件，propertydef的name表示数据实体的属性名，label表示实体属性显示出来的名字
+
+    >DataSet，就是一堆数据的集合，有一个ID，便于其他数据感知控件与其绑定，它用来封装页面的数据
+    >使用的时候一般设置dataProvider和dataType；
+
+    2. AutoForm  
+    和datagrid一样绑定dataset之后，我点击datagrid中的行，autoform自动绑定我点击的这行，隐藏属性？  
+
 2. 调试：可以用浏览器传统的调试方法，但更推荐用dorado特有的在代码中添加debugger，相当于打了个断点，在浏览器调试的时候会自动停在这儿
+3. 基于数据模型的界面开发：
+4. EL表达式
+    1. 通过EL表达式可以获取session中对象的属性，例如${session.getAttribute('user').employeeName}即从session中的user对象中获取了中文名。
+    
 三. 问题
 1. project facets的java版本，jetty的jre版本，eclipse中compiler的java版本，项目中jar system library版本的关系？已蒙蔽
 四. 经验

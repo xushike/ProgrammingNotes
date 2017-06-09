@@ -11,5 +11,12 @@
 * [dorado](dorado.md)
 * [db](db/db.md)
     * [mysql](db/mysql.md)
+* [algorithm](algorithm/algorithm.md)
 * [android](android/android.md)
+* [windows](windows/windows.md)
+* [mac](mac/mac.md)
+* [news](news.md)
+* [markdown](markdown.md)
+* [software&tool](software&tool/software&tool.md)
+* [linux](linux/linux.md)
 
