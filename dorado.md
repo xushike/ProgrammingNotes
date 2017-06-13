@@ -13,24 +13,37 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
 一。安装配置  
 二。使用  
 1. 基础知识
+    1. dorado模型文件：  
+    
     1. 关于dataset、datatype、datapath：
     >DataType我们在立体数据模型中提到过，它的目的是为了描述数据实体的各个属性的校验规则、数据类型、显示格式等等；这样我拿到一个数据之后，就可以通过DataType知道其中是一个什么样结构的数据，其中包含哪些属性，有哪些子对象等等;
     >使用的时候一般设置parent、matchType；
-    >dataType可以添加propertydef子组件，propertydef的name表示数据实体的属性名，label表示实体属性显示出来的名字
+    >dataType可以添加propertydef子组件，DataType中propertyDef的命名一定要跟Pojo对象中保持一致，propertydef的name表示数据实体的属性名，label表示实体属性显示出来的名字。
+    >dataType里可以设置reference，用el表达式可以动态加载，提高性能
+    >dataType可以不把对应到的属性设置完，没设置的就是默认的
 
     >DataSet，就是一堆数据的集合，有一个ID，便于其他数据感知控件与其绑定，它用来封装页面的数据
-    >使用的时候一般设置dataProvider和dataType；
+    >使用的时候一般设置dataProvider、dataType、pageSize(每页显示的个数)
 
     2. AutoForm  
-    和datagrid一样绑定dataset之后，我点击datagrid中的行，autoform自动绑定我点击的这行，隐藏属性？  
+    和datagrid一样绑定dataset之后，我点击datagrid中的行，autoform自动绑定我点击的这行，隐藏属性？
+    3. updateAction  
+    基于ajax的更新，一般设置id、执行中信息、执行成功信息、dataResolver(厘米是服务定位表达式，对传递到后台的数据持久化)、快捷键。子组件updateItem设置dataSet就行了。
 
+2. 一般开发步骤：
+    用hibernate生成对应的bean，然后根据bean建立dorado模型文件，然后建立视图文件，然后在视图文件的model中建立继承自模型文件的datatype，在视图文件的view中建立dataset(dataset的datatype设置为前面的datatype)，(目前我的感觉是dataType是约束，dataSet是集合，这两者可以简化成一个吧？)然后在view中建立一些组件来引用dataSet
 2. 调试：可以用浏览器传统的调试方法，但更推荐用dorado特有的在代码中添加debugger，相当于打了个断点，在浏览器调试的时候会自动停在这儿
 3. 基于数据模型的界面开发：
-4. EL表达式
+4. EL表达式：分为普通和动态EL表达式；主要区别有亮点：后者求值更晚，后者可以多次计算
     1. 通过EL表达式可以获取session中对象的属性，例如${session.getAttribute('user').employeeName}即从session中的user对象中获取了中文名。
+    
     
 三. 问题
 1. project facets的java版本，jetty的jre版本，eclipse中compiler的java版本，项目中jar system library版本的关系？已蒙蔽
+2. datagrid的datatype是禁用了的，不能自动生成相关的dataColumn，这个教程上没有说
+3. dataType中引用前面两个全局模型文件的时候有golbal标志，我引用第三个的时候没有global标志
+4. 启动jetty的时候有个bootstrap是什么东东
+5. 维护员工和消息的关联关系?
 四. 经验
 1. 在jetty中运行项目的时候，build文件夹里的class文件有时候不自动生成，refresh项目后立刻又生成了；网上说的是选中project里的build automatically；然后我实践发现我不选中这个它才会运行的时候生成，选中了反而不生成。然后我改了jdk的版本，发现不管选不选中都不生效了，于是关闭项目重启eclipse，然后再运行才有。然后我又删了class，重启项目之后突然又不生成了。最后发现antomatically选不选中应该是没有影响(也可能跟我系统有关)，但是一定要点击project里的clean，然后重新运行就有了。
 现在我的jetty已经正常运行了，但是每次修改都哟重新启动jetty，这个时候选中project的build automatically就不用每次重启了。所以上面鼓捣了半天的内容只是因为系统不兼容或者jdk不兼容？？？

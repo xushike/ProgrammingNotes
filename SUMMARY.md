@@ -19,4 +19,6 @@
 * [markdown](markdown.md)
 * [software&tool](software&tool/software&tool.md)
 * [linux](linux/linux.md)
+* [life](life/life.md)
+* [word](word.md)
 
