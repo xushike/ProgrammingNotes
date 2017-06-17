@@ -21,4 +21,5 @@
 * [linux](linux/linux.md)
 * [life](life/life.md)
 * [word](word.md)
+* [network](network/network.md)
 
