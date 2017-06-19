@@ -23,4 +23,6 @@
 * [word](word.md)
 * [network](network/network.md)
 * [readingNotes](readingNotes/readingNotes.md)
+* [Philosophy](Philosophy/Philosophy.md)
+* [maven](maven.md)
 

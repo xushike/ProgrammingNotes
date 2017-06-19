@@ -20,3 +20,4 @@ You can turn off this feature to get a quicker startup with -A
 
 四.经验
 1. 今天在命令行里创建表，字段名和表名我都没加``，结果一直最后一行报错，然后我加上它就好了。以前好像不用加的，难道我记错了？
+2. workbench左下角显示[not connection]()，原因在于没有启动数据库服务

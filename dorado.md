@@ -9,6 +9,7 @@
 5. 
 >平面数据：通过键值来表达数据与数据间的关系。例如关系型数据库中的数据。每一条数据都是独立的，它们之间的关系是通过外键值指向另外一个数据的主键值。
 立体数据：通过引用来表达数据与数据间的关系。例如通过Hibernate获得的领域模型数据。如我们拿到一个部门对象，部门对象内部还包含所有的雇员对象。
+6. dorado7.2.3发布的时候移除了dorado-updater，推荐通过ide中的Dashboard来获取dorado的jar包更新。(目前我这个ide的版本是7.1，里面的dashboard选项不能用)
 
 dorado5点dataset是平面的，dorado7的dataset是立体的
 一。安装配置  
@@ -72,3 +73,5 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
 2. “有前后台交互功能，需要在Spring上下文中注册一个用于提供服务的bean”，我按demo的步骤在app-context.xml中配置了，结果项目根本启动不了，报的错指向配置，同时还有“Unknown ExposedService”的错，结果fhl告诉我是jdk1.8不行，要用1.7，实践后果然如此。
 3. mac上没有bdf插件，于是我把windows上的bdf插件复制过去就好了 
 4. 教程中部门分类的顶级分类的parent_id是null，然后下一级的parent_id就是上一层的id
+5. yzp写登陆界面的时候，进入页面就报错“can't not read property ‘get’ of undefined”，代码和官方demo一样但是始终会报这个错，最后知道是dorado-core包版本的问题，从7.3换成7.4就好了。
+6. 添加新的部门信息的时候报错：[Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1]()原因是：主键设置为自增长，而在我们插入记录的时候设置了ID的值
