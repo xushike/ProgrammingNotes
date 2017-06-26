@@ -49,7 +49,8 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
     >autoformElement的id似乎可以随意设置，但是name却不能乱设置，name要和dataType的属性名对应
 
 2. 一般开发步骤：
-    用hibernate生成对应的bean，然后根据bean建立dorado模型文件，然后建立视图文件，然后在视图文件的model中建立继承自模型文件的datatype，在视图文件的view中建立dataset(dataset的datatype设置为前面的datatype)，(目前我的感觉是dataType是约束，dataSet是集合，这两者可以简化成一个吧？)然后在view中建立一些组件来引用dataSet
+    1. 第一次要先马文hdf-parent，然后马文hex-install,然后配置vpn数据库之类的，然后就可以运行项目了  
+    2. 用hibernate生成对应的bean，然后根据bean建立dorado模型文件，然后建立视图文件，然后在视图文件的model中建立继承自模型文件的datatype，在视图文件的view中建立dataset(dataset的datatype设置为前面的datatype)，(目前我的感觉是dataType是约束，dataSet是集合，这两者可以简化成一个吧？)然后在view中建立一些组件来引用dataSet
 2. 调试：可以用浏览器传统的调试方法，但更推荐用dorado特有的在代码中添加debugger，相当于打了个断点，在浏览器调试的时候会自动停在这儿
 3. 基于数据模型的界面开发：
 4. EL表达式：分为普通和动态EL表达式；主要区别有亮点：后者求值更晚，后者可以多次计算

@@ -8,6 +8,7 @@
 * [gastrology](gastrology/gastrology.md)
 * [ssh&ssm](ssh/ssh.md)
     * [1.spring](ssh/spring.md)
+    * [2.hibernate](ssh/hibernate.md)
 * [dorado](dorado.md)
 * [db](db/db.md)
     * [mysql](db/mysql.md)
@@ -18,6 +19,7 @@
 * [news](news.md)
 * [markdown](markdown.md)
 * [software&tool](software&tool/software&tool.md)
+    * [eclipse](software&tool/eclipse.md)
 * [linux](linux/linux.md)
 * [life](life/life.md)
 * [word](word.md)
@@ -25,4 +27,5 @@
 * [readingNotes](readingNotes/readingNotes.md)
 * [Philosophy](Philosophy/Philosophy.md)
 * [maven](maven.md)
+* [python](python/python.md)
 
