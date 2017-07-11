@@ -12,6 +12,8 @@
 * [dorado](dorado.md)
 * [db](db/db.md)
     * [mysql](db/mysql.md)
+    * [sql](db/sql.md)
+    * [sqlDeveloper](db/sqlDeveloper.md)
 * [algorithm](algorithm/algorithm.md)
 * [android](android/android.md)
 * [windows](windows/windows.md)
@@ -21,6 +23,8 @@
 * [software&tool](software&tool/software&tool.md)
     * [eclipse](software&tool/eclipse.md)
 * [linux](linux/linux.md)
+    * [ubuntu](linux/ubuntu.md)
+    * [shell](linux/shell.md)
 * [life](life/life.md)
 * [word](word.md)
 * [network](network/network.md)
@@ -28,4 +32,5 @@
 * [Philosophy](Philosophy/Philosophy.md)
 * [maven](maven.md)
 * [python](python/python.md)
+* [softwaretest](softwaretest/README.md)
 

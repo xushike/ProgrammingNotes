@@ -15,5 +15,10 @@
 
 3. 在eclipse中我引入了dorado-hibernate的jar包，引用其中的方法没问题，但是点进去想看看方法的实现结果显示source not found，于是百度出解决方法：  
 安装jd-gui
+
 一. 安装配置
 1. mac上安装之后查看java路径：/usr/libexec/java_home，一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
+
+二. 基础
+
+三. 使用
