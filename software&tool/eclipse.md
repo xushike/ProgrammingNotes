@@ -1,6 +1,6 @@
 # eclipse
 一. 安装配置
-
+1. 配置git
 二. 基础
 
 三. 使用
@@ -11,6 +11,6 @@
     2.弄清moudule的原理，修改module？
 ## 四.问题
 1. 克隆仓库的时候失败，报错：packfile is truncated.  
-
-
-
+2. 点击team里只有Apply Patch、Share Project.  
+原因：可能是断电导致的某些信息没有被识别到，也可能是我切换了eclipse的版本  
+解决办法：点击share project重新选择到项目git所在目录

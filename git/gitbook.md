@@ -1,8 +1,7 @@
 # gitbook
 ## 一. 安装配置
-1. README.md 和 SUMMARY.md 是两个必须文件
-
-    README.md 是对书籍的简单介绍，SUMMARY.md 是书籍的目录结构
+1. README.md 和 SUMMARY.md 是两个必须文件  
+README.md 是对书籍的简单介绍，SUMMARY.md 是书籍的目录结构
 
 ## 二. 基础
 

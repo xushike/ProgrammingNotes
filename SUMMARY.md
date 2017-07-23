@@ -16,6 +16,7 @@
     * [mysql](db/mysql.md)
     * [sql](db/sql.md)
     * [sqlDeveloper](db/sqlDeveloper.md)
+    * [sqlserver](db/sqlserver.md)
 * [algorithm算法](algorithm/algorithm.md)
 * [android](android/android.md)
 * [windows](windows/windows.md)
