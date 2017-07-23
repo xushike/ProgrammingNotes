@@ -1,9 +1,13 @@
 # eclipse
-一. 安装配置
+## 一. 安装配置
 1. 配置git
-二. 基础
+## 二. 基础
+1. 关于work space和work set
+    1. space必须设置，每次eclipse启动就会把space的项目加载进来，一个space只能同时被一个eclipse打开
+    2. set相当于项目的分类，比如有公司的，有学习的，有其他人的，就可以用set来分类
+    3. 个人觉得space可以看做书，set看做目录
 
-三. 使用
+## 三. 使用
 1. 关于git moudle：import的时候选择projects from folder or archive，切换分支的时候要注意，如果分支里的模块没有引入，是会报错的，所以切换之后第一次要引入  
 报的错是：Non-resolvable parent POM...
     >注：老版eclipse上没有这个选项，我还要试试下面两种方式行不行得通  
