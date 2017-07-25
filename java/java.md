@@ -20,5 +20,7 @@
 1. mac上安装之后查看java路径：/usr/libexec/java_home，一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
 
 二. 基础
+## 五. 问题
+1. 公有和私有jre的区别，什么时候用到？
 
 三. 使用

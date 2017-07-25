@@ -1,6 +1,13 @@
 # eclipse
+## 一. 概述
+1. 版本的特点
+    1. 3.5之前的安装插件很麻烦，
 ## 一. 安装配置
 1. 配置git
+2. 配置maven,主要设置两点
+    1. installations：maven的安装目录
+    2. user settings：settings.xml的目录
+    3. maven的默认依赖是1.5，在eclipse中显示的时候可能会比较别扭，可以去settings文件中修改profile，将其改为其他版本的jdk，这样默认显示就不会那么别扭了
 ## 二. 基础
 1. 关于work space和work set
     1. space必须设置，每次eclipse启动就会把space的项目加载进来，一个space只能同时被一个eclipse打开
