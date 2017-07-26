@@ -1,10 +1,12 @@
 # Summary
 
 * [前言](README.md)
-* [操作系统、硬件和维修](os/os.md)
+* [计算机、系统、硬件和维修](os/os.md)
     * [基础常识和重装系统](os/reinstallSystem.md)
 * [java](java/java.md)
 * [js](js/js.md)
+    * [npm](js/npm.md)
+    * [nodejs](js/nodejs.md)
 * [git](git/git.md)
     * [1.gitbook](git/gitbook.md)
 * [gastrology烹饪学](gastrology/gastrology.md)
@@ -37,6 +39,7 @@
 * [maven](maven.md)
 * [python](python/python.md)
 * [softwaretest软件测试](softwaretest/README.md)
+    * [JUnit](softwaretest/JUnit.md)
 * [softwareEngineering软件工程](se/README.md)
 * [accounting会计学](accounting.md)
 

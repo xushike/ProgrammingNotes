@@ -1,8 +1,8 @@
 # gitbook
 ## 一. 安装配置
+1. 我安装了gitbook和gitbook-cli之后执行gitbook的命令，结果还是显示installing gitbook 3.2.2，等它装完了之后命令才执行，不知道为何
 1. README.md 和 SUMMARY.md 是两个必须文件  
 README.md 是对书籍的简单介绍，SUMMARY.md 是书籍的目录结构
-
 ## 二. 基础
 
 1. 网上大神说的：
@@ -12,4 +12,6 @@ README.md 是对书籍的简单介绍，SUMMARY.md 是书籍的目录结构
 ## 三. 使用
 
 基本上暂时只需要掌握两个命令就行了：gitbook init 和gitbook build，前者根据summary.md生成目录和文件，后者是生成静态网页文件
+## 五. 问题
+1. gitbook和cli都安装了，为什么输命令后还显示installing gitbook 3.2.2?
 
