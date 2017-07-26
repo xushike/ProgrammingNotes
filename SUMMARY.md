@@ -17,6 +17,7 @@
     * [sql](db/sql.md)
     * [sqlDeveloper](db/sqlDeveloper.md)
     * [sqlserver](db/sqlserver.md)
+    * [oracle](db/oracle.md)
 * [algorithm算法](algorithm/algorithm.md)
 * [android](android/android.md)
 * [windows](windows/windows.md)
@@ -36,5 +37,6 @@
 * [maven](maven.md)
 * [python](python/python.md)
 * [softwaretest软件测试](softwaretest/README.md)
+* [softwareEngineering软件工程](se/README.md)
 * [accounting会计学](accounting.md)
 

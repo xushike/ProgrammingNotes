@@ -89,3 +89,5 @@ archetype是maven的一个插件
 1. settings移到新仓库地址下意义？
 2. 本地找不到会去远程找，没网的时候怎么办？
 3. 在依赖中引入jetty和直接安装jetty的插件有什么区别？
+4. clean的时候不会删除依赖吧？
+5. install的时候只是install？
