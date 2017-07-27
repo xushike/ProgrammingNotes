@@ -1,12 +1,19 @@
 # maven
 ## 一. 概述
+1. apache maven是一种创新的软件项目管理工具，提供了一个项目对象模型（POM）文件的新概念来管理项目的构建，相关性和文档。最强大的功能就是能够自动下载项目依赖库。
 1. 和maven同级别的还有ant、gradle
 ## 一. 安装配置
 1. 安装环境要求：  
-Maven 3.0/3.1 需要 JDK 1.5 或以上, 而Maven 3.2 要求 JDK 1.6 或以上版本
+Maven 3.0/3.1 需要 JDK 1.5 或以上, 而Maven 3.2 要求 JDK 1.6 或以上版本,如果是包含了jdk的maven则不需要安装jdk
 2. 安装步骤
     1. 下载zip解压
     2. 新建系统变量：M2_HOME，添加%M2_HOME%\bin到path中
+3. 修改本地仓库地址，默认是在用户文件夹下，windows中意味着在c盘，这样不是很好，最好换到其他盘
+    1. 找到maven目录下的 conf 下的 settings.xml 配置文件
+    2. 修改为其他目录
+    ```xml
+    <localRepository>xxx/m2/repository</localRepository>
+    ```
 3. maven安装目录说明
     * bin：maven的mvn运行脚本
     * boot：包含一个类加载器的框架，mvn用它来加载自己的类库
@@ -56,6 +63,9 @@ Maven 3.0/3.1 需要 JDK 1.5 或以上, 而Maven 3.2 要求 JDK 1.6 或以上版
         2. install：安装jar包到本地仓库
         3. 
         4. compile：编译
+        5. mvn eclipse:eclipse 将maven项目变成eclipse,其实是在项目中生成 .project 和 .classpath 两个文件
+        6. mvn eclipse:clean 清理（删除target目录下编译内容）
+        7. mvn clean 打包发布???
 4. maven生命周期
     1. clean
         1. pre-clean清理前的工作
@@ -83,6 +93,7 @@ archetype是maven的一个插件
         * version：版本号（snapshot快照、alpha内部测试、beta公测、release稳定、GA正式发布）
         * package：代码所在的包
 2. 使用镜像仓库
+3. Maven启用代理访问
 ## 四. 经验
 
 ## 五. 问题

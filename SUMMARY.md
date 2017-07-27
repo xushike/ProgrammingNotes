@@ -36,7 +36,7 @@
 * [network网络](network/network.md)
 * [readingNotes读书笔记](readingNotes/readingNotes.md)
 * [Philosophy哲学](Philosophy/Philosophy.md)
-* [maven](maven.md)
+* [maven](maven/maven.md)
 * [python](python/python.md)
 * [softwaretest软件测试](softwaretest/README.md)
     * [JUnit](softwaretest/JUnit.md)
