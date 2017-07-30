@@ -94,6 +94,22 @@ archetype是maven的一个插件
         * package：代码所在的包
 2. 使用镜像仓库
 3. Maven启用代理访问
+4. 定制库到maven本地资源库，虽然maven很多人用，但还是有很多jar不支持maven。这个时候可以
+    1. 比如要用到kaptcha，将其解压缩并将 kaptcha-version.jar 复制到其他地方，比如：C盘。发出下面的命令：
+    ```
+    mvn install:install-file -Dfile=c:\kaptcha-{version}.jar -DgroupId=com.google.code -DartifactId=kaptcha -Dversion={version} -Dpackaging=jar
+    ```
+    现在，“kaptcha” jar被复制到 Maven 本地存储库
+    2. 在 pom.xml 中声明 kaptcha 的坐标。
+    ```
+    <dependency>
+      <groupId>com.google.code</groupId>
+      <artifactId>kaptcha</artifactId>
+      <version>2.3</version>
+    </dependency>
+    ```
+    3. 构建，然后这个jar就可以在本地仓库检索了
+
 ## 四. 经验
 
 ## 五. 问题
