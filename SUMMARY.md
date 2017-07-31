@@ -31,6 +31,7 @@
 * [markdown](markdown.md)
 * [software&tool软件和工具](software&tool/software&tool.md)
     * [eclipse](software&tool/eclipse.md)
+    * [VSCode](software&tool/vscode.md)
 * [linux](linux/linux.md)
     * [ubuntu](linux/ubuntu.md)
     * [shell](linux/shell.md)
