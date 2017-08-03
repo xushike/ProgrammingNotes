@@ -45,5 +45,7 @@
 * [softwaretest软件测试](softwaretest/README.md)
     * [JUnit](softwaretest/JUnit.md)
 * [softwareEngineering软件工程](se/README.md)
+    * [restful](se/restful.md)
 * [accounting会计学](accounting.md)
+* [math](math/README.md)
 
