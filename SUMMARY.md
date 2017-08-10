@@ -5,6 +5,7 @@
     * [基础常识和重装系统](os/reinstallSystem.md)
     * [vhd](os/vhd.md)
     * [建站](os/bulidWeb.md)
+* [c语言](c/READ.md)
 * [java](java/java.md)
     * [java高级特性之多线程](java/javaMultiThread.md)
 * [js](js/js.md)
