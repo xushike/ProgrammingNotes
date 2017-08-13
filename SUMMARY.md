@@ -40,6 +40,7 @@
 * [word一些术语](word.md)
 * [network网络](network/network.md)
 * [readingNotes读书笔记](readingNotes/readingNotes.md)
+    * [manga动漫笔记](readingNotes/manga.md)
 * [Philosophy哲学](Philosophy/Philosophy.md)
 * [maven](maven/maven.md)
 * [python](python/python.md)
