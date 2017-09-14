@@ -1,5 +1,6 @@
 # java
-零. 概述
+[TOC]
+## 一. 概述
 1. ide(eclipse)中，设置里的compiler版本是jdk的编译版本，而installed JREs是jre(运行环境)的版本，前者不应该比后者高，否则编译出来会出问题，大概就是：  
 >JDK1.5编译的程序在JRE1.6中能不能运行？可以。
 >JDK1.6编译的程序在JRE1.5中能不能运行？一定不可以。  
@@ -16,11 +17,9 @@
 3. 在eclipse中我引入了dorado-hibernate的jar包，引用其中的方法没问题，但是点进去想看看方法的实现结果显示source not found，于是百度出解决方法：  
 安装jd-gui
 
-一. 安装配置
+## 一. 安装配置
 1. mac上安装之后查看java路径：/usr/libexec/java_home，一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
 
-二. 基础
+## 三. 基础
 ## 五. 问题
 1. 公有和私有jre的区别，什么时候用到？
-
-三. 使用
