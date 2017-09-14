@@ -17,8 +17,31 @@
 3. 在eclipse中我引入了dorado-hibernate的jar包，引用其中的方法没问题，但是点进去想看看方法的实现结果显示source not found，于是百度出解决方法：  
 安装jd-gui
 
-## 一. 安装配置
-1. mac上安装之后查看java路径：/usr/libexec/java_home，一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
+## 二. 安装配置
+### 2.1 windows下的安装配置
+1. 下载jdk并安装，路径中不能有中文，最好不要有空格
+2. 配置PATH、JAVA_HOME、CLASSPATH（这三者的配置只是为了方便使用？）
+    1. PATH的目的是将`jdk/bin`目录添加到执行路径中
+    2. CLASSPATH的目的是告诉Java执行环境，在哪些目录下可以找到您所要执行的Java程序所需要的类或者包。（待补充）
+3. 安装库源文件和文档
+    1. 库源文件在是jdk目录中src.zip
+    2. 文档去官网下载，一般是jdk-version-docs-all.zip
+4. 命令行下的简单运行
+```
+javac xxx.java  //编译
+java xxx        //运行
+```
+
+### 2.2 mac下的安装配置
+1. 安装后的路径查看：mac上安装之后查看java路径：
+```
+/usr/libexec/java_home
+```
+一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
+2. 将`jdk/bin`目录添加到执行路径中——执行路径是操作系统查找可执行文件时所遍历的目录列表
+（此处待补充）
+### 2.3 linux下的安装配置
+1. 如果是prm文件安装，则检查是否在`/usr/java/jdk1.8_version`下；但是推荐下载.tar.gz格式的文件安装，可以直接解压到任何地方
 
 ## 三. 基础
 ## 五. 问题
