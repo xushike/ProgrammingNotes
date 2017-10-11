@@ -1,7 +1,9 @@
 # gitbook
+[TOC]
 ## 一. 安装配置
-1. 我安装了gitbook和gitbook-cli之后执行gitbook的命令，结果还是显示installing gitbook 3.2.2，等它装完了之后命令才执行，不知道为何
-1. README.md 和 SUMMARY.md 是两个必须文件  
+1. 安装了npm之后，直接npm install gitbook-cli -g全局安装gitbook
+2. 安装了gitbook-cli之后执行gitbook的命令，结果还是显示installing gitbook 3.2.3，等它装完了之后命令才执行(大概安装5分钟)，不知道为何
+3. README.md 和 SUMMARY.md 是两个必须文件  
 README.md 是对书籍的简单介绍，SUMMARY.md 是书籍的目录结构
 ## 二. 基础
 
