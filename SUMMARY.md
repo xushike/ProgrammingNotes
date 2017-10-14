@@ -46,7 +46,8 @@
 * [word一些术语](word.md)
 * [network网络](network/network.md)
 * [readingNotes读书笔记](readingNotes/readingNotes.md)
-    * [manga动漫笔记](readingNotes/manga.md)
+    * [1.movies电影笔记](readingNotes/1.movies.md)
+    * [2.manga动漫笔记](readingNotes/2.manga.md)
 * [Philosophy哲学](Philosophy/Philosophy.md)
 * [maven](maven/maven.md)
 * [python](python/python.md)
@@ -55,6 +56,7 @@
 * [softwareEngineering软件工程](se/README.md)
     * [1.restful](se/1.restful.md)
     * [2.UML](se/2.UML.md)
+    * [3.DesignPattern](se/3.DesignPattern.md)
 * [accounting会计学](accounting.md)
 * [math](math/README.md)
 
