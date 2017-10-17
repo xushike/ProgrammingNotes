@@ -195,10 +195,40 @@ String showNum() {
 ###### 1.2.2.2 overload（重载等）
 1. 注意：父类方法和子类方法之间也可能发生重载，只需要子类中定义一个与父类方法名相同但参数列表不同的方法。
 
-###### 1.2.2.3 组合
+###### 1.2.2.3 组合和聚合(聚集)
 因为java的继承有个最大的缺点：破坏封装。所以有时候也可以考虑用组合，简单讲，组合就是把其他类当成另一个类的组合成分，最好用private修饰。组合和继承的开销是一样的。
 1. 什么时候用继承或组合
 要看两个类所代表的现实意义之间的关系：比如动物和猫、狗，如果用动物组合成猫狗就不合适，用继承更好；如果是人和手，用组合就好些。一个是is-a，一个是has-a
+2. 组合与聚合（聚集）的区别
+组合和聚合是有很大区别的，这个区别不是在形式上，而是在本质上：
+比如A类中包含B类的一个引用b，当A类的一个对象消亡时，b这个引用所指向的对象也同时消亡（没有任何一个引用指向它，成了垃圾对象），这种情况叫做组合，反之b所指向的对象还会有另外的引用指向它，这种情况叫聚合。
+在实际写代码时组合方式一般会这样写：
+A类的构造方法里创建B类的对象，也就是说，当A类的一个对象产生时，B类的对象随之产生，当A类的这个对象消亡时，它所包含的B类的对象也随之消亡。
+聚合方式则是这样：
+A类的对象在创建时不会立即创建B类的对象，而是等待一个外界的对象传给它
+传给它的这个对象不是A类创建的。
+现实生活中：
+人和手，脚是组合关系，因为当人死亡后人的手也就不复存在了。人和他的电脑是聚合关系。例子如下：
+```java
+class Hand{   
+}   
+class Computer{   
+}   
+//组合：   
+class Person{   
+private Hand hand;   
+public Person(){   
+hand = new Hand();  
+}   
+}   
+//聚合：   
+class Person{   
+private Computer computer;   
+public setComputer(){   
+computer = new Computer();   
+}   
+}  
+```
 ###### 1.2.2.4 初始化块
 1. 初始化块总在构造器之前执行，多个初始化块依次执行
 2. 初始化块其实是一个假象，在编译后，初始化块代码会消失，被"还原"到每个构造器中，且位于构造器所有代码的前面
@@ -405,21 +435,27 @@ public static void main(String[] args) {
 ##### 3.3.3 return
 return直接结束整个方法，不管在多少层循环之内
 ### 4 数组
-1. 定义数组的时候不能指定数组的长度，因为定义时只是定义了一个引用变量，并未指向任何有效的内存。
-2. 初始化分为两种
-#### 4.1 数组的初始化
-注意：不能同时使用静态和动态初始化。
-##### 4.1.1 静态初始化
-##### 4.1.2 动态初始化
+1. 定义数组的时候不能指定数组的长度，因为定义时只是定义了一个引用变量，并未指向任何有效的内存。动态初始化的时候可以指定长度。
+2. 初始化分为两种：静态初始化和动态初始化，如下
+```java
+int[] intArr = new Int[]{1,4,88};//静态初始化，不指定长度，直接给出里面的元素
+int[] intArr = {1,4,88};         //静态初始化语法简化，只有在定义数组的同时执行初始化才可这样写
+int[] intArr = new Int[10];      //动态初始化，指定长度，不给出里面的元素
+```
+注意：不能同时使用静态和动态初始化，也就是说不能指定长度同时还给元素的值。
 只指定数组的长度，由系统为每个数组元素指定初始值。
 * 整数类型：初始值为0
 * 浮点类型：初始值为0.0
 * 字符类型：初始值为'\u0000'
 * 布尔类型：初始值为false
 * 引用类型：初始值是null
+3. 关于多维数组
+比如一个int型的二维数组，相当于除了最后的那维是int，其他都是引用
 
 #### 4.2 foreach循环
 jdk5之后又了foreach循环。使用foreach循环无需获取数组长度和索引，迭代的时候将每次访问的数组元素的值赋给临时变量，改变这个临时变量并不能改变数组元素的值。
+1. 关于foreach循环时的顺序：对于数组，foreach按顺序从数组的第一个元素遍历到最后一个元素；对于Iterable容器，则依照迭代器的遍历顺序。
+2. 关于foreach的性能，网上很多说的是比for差（待补充）
 #### 4.3 java8增强工具类：Arrays
 java.util.Arrays里包含了一些static方法，可以直接操作数组（待补充）:
 1. int binarySearch(type[] a,type key)：用二分法查询元素key在数组a中的索引，如果没有则返回负数，要求a已经按升序排列。
@@ -495,6 +531,56 @@ String类是不可变类，而StringBuffer和StringBuilder则代表字符序列�
 #### 6.6 格式化
 ### 7 集合
 java集合有个缺点：对象进入集合后，集合就会忘记对象的数据类型，再次取出来就变成了Object类型。
+集合类主要负责保存、盛装其他数据，因此集合类也被称为容器类。所有集合类都位于java.util包下，jdk1.5在java.util.concurrent包下还提供了多线程支持的集合类。
+#### 7.1 Collection接口
+Collection接口是Set、Queue、List的父接口，所有的Collection实现类都重写了toString()方法，使得可以一次性输出集合中的所有元素。
+java8新增了removeIf(Predicate filter)方法，可以批量删除符合filter条件的所有元素，Predicate是函数是接口,例子如下:
+```java
+Collection books = new HashSet();
+books.add(new String("nginx"));
+...
+books.removeIf(ele -> ((String)ele).length() <10);//删除所有字符串长度小于10的元素
+```
+Predicate还有一个test()方法，用来判断对象是否满足Predicate中的条件
+##### 7.1.1 Stream
+java8新增了Stream等流式API，代表支持串行和并行聚集操作的元素。
+stream的创建方法大概是:Stream.builder().xxx().xxx()....build();
+stream的有大量的方法提供聚集操作，这些方法有的是"中间的"(intermediate，表示执行了该方法后还可以继续执行流的其他方法)，有的是“末端的”(表示执行了之后该流就被"消耗"且不再可用)
+1. 中间方法：
+    1. filter(Predicate filter)
+    2. mapToXxx(ToXxxFunction mapper)：调用ToXXXFunction对流中的元素执行一对一的转换，返回的新流包含所有转换后的对象
+    3. forEach(Comsumer action)
+    4. ...
+2. 终端方法：sum()、count()、average()等
+Collection接口提供了一个stream()默认方法，例子如下：
+```java
+//创建books集合
+//统计书名包含"疯狂"子串的数量
+books.stream().filter(ele -> ((String)ele).contains("疯狂")).count();
+//将集合中元素转换成书名字符串的长度后输出长度
+books.stream().mapToInt(ele -> ((String)ele).length()).forEach(System.out::println);
+```
+#### 7.2 Iterator接口
+Iterator接口是Collection接口的父接口，java8为Iterator接口新增了forEach(Comsumer action)的默认方法，而且Comsumer是函数式接口，所以可以用lambda表达式来遍历集合，如下
+```java
+Collection books = new HashSet();
+books.forEach(obj -> System.out.println("xxx"))；
+```
+Iterator接口只要用于遍历Collection中的元素，Iterator本身并不提供盛装对象的能力，Iterator对象也被称为迭代器。Iterator对象依附于集合而存在。
+Iterator中的几个主要方法:
+1. boolean hasNext()
+2. Object next():返回集合里的下一个元素，注意返回类型是Object
+3. void remove()：删除集合里上一次next方法返回的元素。注意如果在用Iterator遍历集合的时候用其他方法(通常是其他线程)改变了集合的元素，那么会引发异常。（Iterator是快速失败(fail-fast)机制，检测到集合被其他方法修改了的话会立即引发ConcurrentModificationException）
+4. void forEachRemaining(Comsumer action)：java8新增的默认方法，可用lambda表达式遍历集合元素
+
+#### 7.3 Set集合
+类似"罐子"，无须且不重复，当想把两个相同元素放入Set时，会放入失败。最常用的是HashSet和TreeSet
+##### 7.3.1 HashSet
+HashSet按Hash算法来存储集合中的元素，因此具有很好的存取和查找性能。同时具有以下特点：
+1. 无序
+2. 不是同步的，所以在多线程中使用应当用代码保证同步
+3. 元素值可以是null
+
 ### 8 泛型
 1. jdk1.5增加泛型支持很大程度上都是为了让集合能记住其元素的数据类型（另外的目的用于增强枚举类、反射等），可以在编译时检查集合中元素的类型，让代码更简洁(取出来使用的时候就不需要强制类型转换了)，程序更健壮。
 2. 泛型的本质是：允许在定义接口、类时声明类型形参，类型形参在整个接口、类体内可当成类型使用，几乎所有可以使用普通类型的地方都可以使用这种类型参数。
@@ -556,11 +642,28 @@ System.out.println(list3.get(0).getClass());//编译时不报错，仅仅提示"
 java不支持创建泛型数组，除非是无上限的类型通配符(即？)
 ### 9 异常处理
 java把所有的非正常情况分为两种，异常(Exception)和错误(Error)，都继承了Throwable类；后者一般是虚拟机相关的问题，比如系统崩溃、虚拟机错误、动态链接失败等，这种错误无法回复或不能捕捉，将导致app中断，通常app无法处理这些错误，因此不应该用catch捕捉error，也无须抛出error。
-java将异常分为两种;Checked异常和Runtime异常，前者是在编译阶段可以被处理的异常，它强制程序处理所有的Checked异常，而后者无需处理。前者可以很好地提醒我们，但是也带来一些繁琐之处，所以Checked异常是java领域备受争议的话题。
-1. try块和catch块后的花括号不可以省略；try块里声明的变量时代码块内局部变量，也就是说catch块块中不能访问该变量；多个catch块无须使用if、switch判断异常类型，系统会自动去判断，但依然可以在在块中提供细致的处理
-2. 如果try块被执行一次，那么try块后只有一个catch块会被执行，除非用了continue导致进入了下一次的try块
+java将异常分为两种;Checked异常和Runtime异常，前者是在编译阶段可以被处理的异常，它强制程序处理所有的Checked异常(要么要么显式抛出，要么显式捕获并处理)，而后者无需处理。前者可以很好地提醒我们，但是也带来一些繁琐之处，所以Checked异常是java领域备受争议的话题。
+>因为大部分的方法总是不能明确知道如何处理异常，因此只能声明抛出异常，这种情况很普遍，所以Checked异常降低了开发的生产率和代码的执行效率
+1. try块和catch块后的花括号不可以省略；try块里声明的变量时代码块内局部变量，也就是说catch块块中不能访问该变量；多个catch块无须使用if、switch判断异常类型，系统会自动去判断，但依然可以在在块中提供细致的处理。
+2. 如果try块被执行一次，那么try块后只有一个catch块会被执行，除非用了continue导致进入了下一次的try块。所以应该先处理小异常(子类)再处理大异常(父类)，如下
+```java
+try{
+    statements...
+}
+catch(RuntimeException e){
+System.out.println("运行时异常");
+}
+catch(NullPointerException ne){//编译会报错，因为因为RuntimeException包含NullPointException，所以此处的代码永远不会获得执行机会
+    System.out.println("空指针异常");
+}
+```
 #### 9.2 常见的异常
 1. ClassCastException
+2. IndexOutOfBoundsException数组越界异常
+3. ArrayIndexOutOfBoundsException等
+3. NumberFormatException数字格式异常
+4. ArithmeticException除0异常
+5. FileNotFoundException
 
 ### 10 注释
 ### 11 输入/输出
