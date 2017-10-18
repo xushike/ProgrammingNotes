@@ -5,21 +5,24 @@
 >JDK1.5编译的程序在JRE1.6中能不能运行？可以。
 >JDK1.6编译的程序在JRE1.5中能不能运行？一定不可以。  
 
-比如我前者是1.7，后者是1.6，当我代码打包后放到用1.7去运行应该没问题，但是用1.6去运行就可能出问题。
-在eclipse中每个项目可以单独设置自己的compiler版本(即jdk的版本)，但是jre的版本是和eclipse的设置通用的。
+比如我前者是1.7，后者是1.6，当我代码打包后放到用1.7去运行应该没问题，但是用1.6去运行就可能出问题。
+在eclipse中每个项目可以单独设置自己的compiler版本(即jdk的版本)，但是jre的版本是和eclipse的设置通用的。
 还有运行时服务器需要的jdk or jre版本我还没研究，因为目前我都是在jetty容器中测试的，而上面的可能只是针对项目，跟容器可能不一样，所以上面的结论可能都是错的(虽然网友也是上面的结论)。
 再加一条网友的结论吧：
 >Java Compiler选择的版本必须和'Project Facets'中指定的java版本一致。
 >否则eclipse会抛异常：Java compiler level does not match the version of the installe
 
-2. 关于project facets，相当于针对语言或者框架的首选项，比如里面的java设置了1.6，那么我新建一个项目，某人的jdk应该是1.6(当然我还要测试一下这个设置和项目以及ide设置的优先级才能确定)
+2. 关于project facets，相当于针对语言或者框架的首选项，比如里面的java设置了1.6，那么我新建一个项目，某人的jdk应该是1.6(当然我还要测试一下这个设置和项目以及ide设置的优先级才能确定)
 
 3. 在eclipse中我引入了dorado-hibernate的jar包，引用其中的方法没问题，但是点进去想看看方法的实现结果显示source not found，于是百度出解决方法：  
 安装jd-gui
 ### 1.2 java的一些常识
 1. java为工具类命令的习惯是添加一个字母s
-2. 关于clazz、Klass、JavaClass、ClassMirror等
+2. 关于clazz、Klass、JavaClass、ClassMirror等：
 RednaxelaFX大神的解释说是C++里class是关键字，所以要避开，就用这几个代替成习惯吧
+3. 迭代和遍历的异同：
+迭代按照某种顺序逐个访问集合或数组的每一项，遍历是按某种规则访问树形结构中的每个节点，两者都不能对执行代码进行迭代或遍历。个人觉得，比如访问数组中的每一项，这个叫迭代；访问数组中长度大于3的项，这个叫遍历。
+
 ### 1.4 java工具和进程
 #### 1.4.1 jar（Java Archive File）
 意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
@@ -462,12 +465,16 @@ java.util.Arrays里包含了一些static方法，可以直接操作数组（待�
 还提供了利用多cpu的工具方法（待补充）：
 ### 5 java基础类库
 #### 5.1 Object类
-jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
+
 ##### 5.1.1 clone()
 该方法用protected native修饰，属于浅复制(会对对象里的成员变量进行"简单复制"，如果成员变量是基本类型和String则会真的复制，如果成员变量是数组和引用类型则只生成一个新的引用)，会生成完全隔离的新对象。该方法非常高效，比数组的静态copy方法快2倍。如果想实现深克隆，则需要开发者自己去"递归"克隆。
 1. 如何使用该方法：
     1. 自定义类必须实现Cloneable接口，这是标记性的接口，接口里没有定义任何方法，否则会报CloneNotSupportedException
     2. 重写clone()方法通过super.clone()调用Object类的clone方法，不重写也可
+##### 5.1.2 equals()
+判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
+
+jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
 #### 5.2 Math类
 ##### 5.2.1 
 ##### 5.2.2 random 
@@ -530,8 +537,12 @@ String类是不可变类，而StringBuffer和StringBuilder则代表字符序列�
 #### 6.5 国际化
 #### 6.6 格式化
 ### 7 集合
-java集合有个缺点：对象进入集合后，集合就会忘记对象的数据类型，再次取出来就变成了Object类型。
-集合类主要负责保存、盛装其他数据，因此集合类也被称为容器类。所有集合类都位于java.util包下，jdk1.5在java.util.concurrent包下还提供了多线程支持的集合类。
+1. java集合有个缺点：对象进入集合后，集合就会忘记对象的数据类型，再次取出来就变成了Object类型。
+2. 集合类主要负责保存、盛装其他数据，因此集合类也被称为容器类。所有集合类都位于java.util包下，jdk1.5在java.util.concurrent包下还提供了多线程支持的集合类。
+3. 通常可以用Collections工具类的synchronizedXxx方法来保证集合的同步,如下(待补充)
+```java
+
+```
 #### 7.1 Collection接口
 Collection接口是Set、Queue、List的父接口，所有的Collection实现类都重写了toString()方法，使得可以一次性输出集合中的所有元素。
 java8新增了removeIf(Predicate filter)方法，可以批量删除符合filter条件的所有元素，Predicate是函数是接口,例子如下:
@@ -574,12 +585,66 @@ Iterator中的几个主要方法:
 4. void forEachRemaining(Comsumer action)：java8新增的默认方法，可用lambda表达式遍历集合元素
 
 #### 7.3 Set集合
-类似"罐子"，无须且不重复，当想把两个相同元素放入Set时，会放入失败。最常用的是HashSet和TreeSet
+类似"罐子"，无须且不重复，当想把两个相同元素放入Set时，会放入失败。Set最常用的是HashSet和TreeSet。Set下的HashSet、TreeSet、EnumSet都是线程不安全的。
+1. Set实现类的效率比较：EnumSet性能最好，但
 ##### 7.3.1 HashSet
-HashSet按Hash算法来存储集合中的元素，因此具有很好的存取和查找性能。同时具有以下特点：
-1. 无序
-2. 不是同步的，所以在多线程中使用应当用代码保证同步
-3. 元素值可以是null
+1. HashSet按Hash算法(hash算法，它能保证快速查找被检索的对象)来存储集合中的元素，因此具有很好的存取(插入)和查找性能。同时具有以下特点：
+    1. 无序
+    2. 不是同步的，所以在多线程中使用应当用代码保证同步
+    3. 元素值可以是null
+
+2. HashSet集合判断两个元素是否相等时通过equals()和hashCode()两个方法来判断，只有两者都相等才算相等。如果两个对象通过equals返回true但hashCode不同，会导致两个对象添加成功(从逻辑上来讲是不应该的),这和Set集合的规则冲突了；如果两个对象的hashCode相同但equals返回false会更麻烦，HashSet将试图把他们放在一个位置，用链式结构来保存多个对象，会导致HashSet的性能下降。所以在重写HashSet方法时，应该尽量保证两个对象equals()返回true时，他们的hashCode返回值也相等。
+3. HashSet中每个能存储元素的"槽位"(slot)通常称为"桶"(bucket)。
+4. 向hashSet中添加可变对象时必须十分小心，因为修改某个对象后可能导致和另外一个对象相等，从而使HashSet无法准确访问该对象。
+###### 7.3.1.1 LindkedHashSet
+是HashSet的子类，也是根据元素的hashCode值来决定元素的存储位置，但它同时用链表维护元素的次序(和添加顺序一致），所以性能略低于HashSet，但在迭代访问Set里的全部元素时有很好的性能。
+
+##### 7.3.2 TreeSet
+是SortedSet的实现类，如名所示，TreeSet可以确保集合元素处理排序状态(本质是红黑树？)。默认情况下是自然排序(按元素的实际值大小排序，不是插入顺序)，也支持定制排序。
+##### 7.3.3 EnumSet
+#### 7.4 List集合
+List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
+##### 7.4.1 ArrayList和Vector集合
+1. 这两个都是基于数组实现的List类(似乎带Array的都是基于数组实现的？)，前者线程不安全，后者线程安全(而且实现机制不太好)，性能较低，而且后者是jdk1.0开始就存在的很老的类了，不推荐使用后者。
+2. Vector还有个子类Stack，同样很老了，线程安全且性能较差，不推荐使用。如果要用到"栈"这种数据结构，可以考虑使用ArrayDeque，也是基于数组实现，因此性能也很好。
+3. 底层采用一个动态的、可分配的Object[]数组。他们用initialCapacity参数设置数组的长度，默认是10，不够的时候回自动增加，在添加大量元素的时候可以指定，减少重分配的次数，来提高性能。
+3. 用Arrays工具类的asList方法生成的List集合既不是ArrayList实现类的实例，也不是Vector实现类的实例，而是Arrays的内部类ArrayList的实例，该实例是一个固定长度的List集合，只能遍历里面的元素，不能增删。
+4. 如果需要遍历List，对于ArrayList、Vector，应该用随机访问(get)来遍历；对于LinkedList，则应该用迭代器(Iterator)来遍历。
+##### 7.4.2 LinkedList实现类
+是List集合，同时实现了Queue接口，所以除了能双端队列来使用外，还可以根据索引来随机访问元素。
+#### 7.5 Queue集合
+1. 用于模拟队列这种数据结构，通常是指"先进先出"(FIFO)，通常，队列不允许随机访问队列中的元素。
+2. 有一个PriorityQueue实现类，还有一个Deque接口。
+3. LinkedList与ArrayList、ArrayDeque的实现机制不同，后两者是基于数组，所以随机访问元素时性能较好(因为数组以一块连续的区域保存所有的元素)；LinkedList内部是链表形式，因此随机访问元素性能较差，但是插入、删除时性能出色(只需改变指针地址即可，但如果是后两者的话则可能需要重分配内部数组的大小)。但总体来讲ArrayList性能比LinkedList性能要好。
+##### 7.5.1 PriorityQueue实现类
+##### 7.5.2 Deque接口
+代表"双端队列"，即可当队列使用，也可当栈使用。
+###### 7.5.2.1 ArrayDeque实现类
+基于数组实现，创建时可以指定一个numElements参数来指定数组的大小，默认16
+#### 7.6 java8增强的Map集合
+1. Map和Set的关系非常密切，从java源码来看，java显示显示了Map，然后包装一个所有value为null的Map就实现了Set。而且Map的实现类的命名方式跟Set也很类似。
+2. 把Map的所有value放在一起来看，又非常类似于一个LIst；如果需要从Map中取出元素，则需要提供该元素key的索引，所以Map也被称为字典，或关联数组。
+3. 所有Map实现类都重写了toString()方法
+4. key和value之间是单向一对一关系，key不允许重复，key和valiue都可以是任何引用类型数据。
+##### 7.6.1 Hashtable和java8改进的HashMap
+1. 前者jdk1.0开始就已经存在了，连名字中的T都没大写，此时java还没提供Map接口，线程安全，不能使用null作为key或者value(否则出现NullPointException)，性能比后者低一点，总之不推荐再使用了；后者可以最多有一个key为null和无数个value为null。
+2. 类似于HashSet，这两个判断key相等也是要equals和HashCode；但判断value相等只需要equals。
+3. HashMap底层也是用的数组来存储key-value对
+###### 7.6.1.1 Properties
+是Hashtable的子类，在处理属性文件时特别方便(比如windows的ini)，由于属性名和值都是字符串，所以Properties的key和value都是字符串类型。也可以操作xml文件。
+主要方法有：
+1. getProperty()
+2. setProperty()
+3. load(InputStream inStream)：从属性文件(以输入流表示)中加载key-value对，追加到Properties里。
+4. store(OutputStream out,String comments)：将Properties的key-value对输出到指定的属性文件中(以输出流表示),comments相当于顶部注释的文字
+##### 7.6.2 LinkedHashMap
+类似LinkedHashSet
+##### 7.6.3 SortedMap接口和TreeMap实现类
+##### 7.6.4 WeakHashMap
+和HashMap用法基本类似，区别在于HashMap的key保留了强引用，但WeakHashMap保留的是弱引用。
+##### 7.6.5 IdentityHashMap
+与HashMap基本类似，区别在于处理key的相等：当且仅当两个key严格相等时，key才相等。在这一点上它有意违反了Map的通常规范。
+##### 7.6.6 EnumMap
 
 ### 8 泛型
 1. jdk1.5增加泛型支持很大程度上都是为了让集合能记住其元素的数据类型（另外的目的用于增强枚举类、反射等），可以在编译时检查集合中元素的类型，让代码更简洁(取出来使用的时候就不需要强制类型转换了)，程序更健壮。
@@ -664,10 +729,13 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 3. NumberFormatException数字格式异常
 4. ArithmeticException除0异常
 5. FileNotFoundException
+6. UnsupportedOperationException
 
 ### 10 注释
 ### 11 输入/输出
+### 12 JDBC
+1. 可以认为JDBC模仿了ODBC，前者安全性更高、更易部署，后者更复杂。
 ## 五. 问题
 1. 公有和私有jre的区别，什么时候用到？
 2. 如果继承树里的某一个类需要被初始化，则系统会同时初始化该类的所有父类。
-
+3. hashset和数组的效率比较
