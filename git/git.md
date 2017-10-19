@@ -1,19 +1,27 @@
+# git
+[TOC]
 ## 一. 概述  
+### 1.git的一些常识
+1. git的官方中文book[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
 ## 二. 安装配置
 ### 1. windows下的安装
 1. 下载git for windows
 2. 安装过程大同小异，注意设置git环境的时候选择第二项"use git from the windows command prompt"，如果选第一项就不能在cmd中使用git，要自己去配置path。自己配置的时候添git安装目录下的bin目录或者cmd目录都可以
-3. 关于ssh Key,安装完之后记得配置global username和useremail，这样才可以提交到远程，如果是github等提交的时候还需要输入账号密码
+3. 关于ssh Key,安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到远程；如果是需要登录的服务器(github等)提交的时候还需要输入账号密码
 
-### 2. mac下的安装
+### 2. mac下的几种安装
+#### 2.1 最简单的是用Xcode的Command Line Tools
+#### 2.1 用Homebrew安装
+#### 2.3 在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
 ### 3. linux下的安装
 ## 三. 基础
-1. 添加跟踪  
-- git add [被跟踪的文件名] 如果文件暂存后又被修改了，需要再次暂存然后提交
-2. 查看状态和历史
-- git status
-- git log
-3. git pull = git fetch +merge
+### 1. 添加跟踪  
+1. git add [被跟踪的文件名] 如果文件暂存后又被修改了，需要再次暂存然后提交
+### 2. 查看状态和历史
+1. git status
+2. git log
+默认是按时间顺序排序,但我新pull下来的时候调用该命令发现并没有按时间顺序排，过了一下午再去看发现又按时间排了
+### 3. git pull = git fetch +merge
 
 ## 四. 使用
 1. 本地和远程的关联
