@@ -1,5 +1,16 @@
 # sql
+[TOC]
+## 一. 概述
+SQL是用于访问和处理数据库的标准的计算机语言，结构化查询语言，使我们有能力访问数据库。
+### 1.SQL的常识
+1. 存在着很多不同版本的 SQL 语言，但是为了与 ANSI 标准相兼容，它们必须以相似的方式共同地来支持一些主要的关键词（比如 SELECT、UPDATE、DELETE、INSERT、WHERE 等等）。
+2. SQL对大小写不敏感
+3. 有些数据库要求每条SQL语句后加上分号，有些不用(MS Access 和 SQL Server 2000)。推荐加上。
+4. SQL 使用单引号来环绕文本值（大部分数据库系统也接受双引号）。如果是数值，请不要使用引号。
 ## 二. 基础
+
+
+
 1. isnull（exp,value）:  
 类似三木运算符，如果exp为null，返回value，否则返回exp；value和exp类型相同
 2. order by:  
