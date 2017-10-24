@@ -81,5 +81,6 @@ git branch --set-upstream my_local_branch_name origin/my_remote_branch_name
 6. 关于HEAD和分支指针的那张图片，一目了然
 
 7. LF will be replaced by CRLF
+8. git是如何判断冲突和不冲突的，界限在哪儿？
 
 

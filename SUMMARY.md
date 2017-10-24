@@ -2,6 +2,7 @@
 
 * [前言](README.md)
 * [AssemblyLanguage汇编语言](AssemblyLanguage/AssemblyLanguage.md)
+* [cache](cache/cache.md)
 * [Computer计算机原理、硬件和维修](Computer/ComputerOrganization.md)
     * [1.重装系统](Computer/1.reinstallSystem.md)
     * [2.vhd](Computer/2.vhd.md)
