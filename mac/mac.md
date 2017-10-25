@@ -15,7 +15,8 @@
 2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
 ### 3.快捷键打开dock
 snap
-### 4. 
+### 4. 视频播放
+[IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
 ## 五. 使用
 1. 如何将qq截图或者excel复制粘贴为图片？  
