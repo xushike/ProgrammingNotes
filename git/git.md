@@ -12,6 +12,7 @@ git开源免费的分布式版本控制系统。
 2. 安装过程大同小异，注意设置git环境的时候选择第二项"use git from the windows command prompt"，如果选第一项就不能在cmd中使用git，要自己去配置path。自己配置的时候添git安装目录下的bin目录或者cmd目录都可以
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
 4. 关于ssh Key,（待补充）
+5. 关于git自身的更新：
 ### 2. mac下的几种安装
 #### 2.1 最简单的是用Xcode的Command Line Tools
 #### 2.1 用Homebrew安装
