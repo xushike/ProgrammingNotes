@@ -8,6 +8,7 @@ npm是世界上最大的js包管理g工具。
 ```bash
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
+3. 或者把npm的源换成淘宝镜像(待补充)：
 ## 三. 基础
 ### 1. npm install 
 包名后可以跟[@version]即包的 版本号

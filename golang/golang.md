@@ -30,13 +30,15 @@ goWorkSpace  #goWorkSpace为GOPATH目录
 1. ...
 3. 配置GOROOT(C:\Go)和PATH(添加%GOROOT%\bin)，这样就可以在任意地方运行go开头的命令了
 4. 配置GOPATH:系统默认的gopath是GOROOT，`fmt`等包在GOROOT中，所以可以直接`import`；当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中
->设置GOPATH的时候只需要写src前面的目录，会自动去src下找；设置了GOPATH之后，`import`时就只会去GOROOT和GOPATH中找
+>设置GOPATH的时候只需要写src前面的目录，会自动去src下找；设置了GOPATH之后，`import`时就只会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下
 
-5.配置gobin(网友说不需要，待补充)
+5.配置gobin(需不需要看情况)
 ### 3. linux下的安装
 1. 。。。
 2. 有4个环境变量需要设置：GOROOT、GOPATH、GOBIN以及PATH，需要设置到某一个profile文件中(单一用户选择~./bash_profile，所有用户选择/etc/profile)
-
+3. 关于GOBIN:
+将`$GOPATH/bin`加入PATH中，这样可以方便的运行`go install`好的二进制程序。然而，当存在GOPATH中存在多个路径时，这种写法只会将最后一个路径跟上bin。在mac或linux下可以通过这种方式解决：
+`${GOPATH//://bin:}/bin`
 ## 三. 基础
 ### 1. 程序结构
 #### 1.3 变量
@@ -105,11 +107,12 @@ config.go中的package名称~~必须~~最好和目录config一致，而文件名
 4. 简单总结就是:
 ```go
 package 最后一层目录名(最好)or其他名字
-import 源文件所在目录src后的完整路径名
+import 源文件所在目录src后的完整路径名(go的import查找的是包的路径，并不是包名)
 //使用时最后一层目录名or其他名字来调用
 ```
 5. 可以用`./xxx`来import，这种方式不依赖GOPATH，但是不推荐
-#### 1.x 注释
+6. GOPATH和GOPATH下的src目录不应该添加到源代码管理中
+### 1.x 注释
 go的注释与C++保持一致
 ### 2. 数据类型
 Go语言将数据类型分为四类：

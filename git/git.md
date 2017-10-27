@@ -11,6 +11,16 @@ git开源免费的分布式版本控制系统。
 1. 下载git for windows
 2. 安装过程大同小异，注意设置git环境的时候选择第二项"use git from the windows command prompt"，如果选第一项就不能在cmd中使用git，要自己去配置path。自己配置的时候添git安装目录下的bin目录或者cmd目录都可以
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
+```bash
+#注意没配置的话会报错:unable to auto-detect email address
+#查看git user.name和email
+git config user.name
+git config user.email
+#配置全局的git user.name和email
+git config --global user.name "xxx"
+git config --global user.email "xxx"
+```
+为每个项目单独配置:(待补充)
 4. 关于ssh Key,（待补充）
 5. 关于git自身的更新：
 ### 2. mac下的几种安装
@@ -52,6 +62,7 @@ git remote add origin git@github.com:xushike/xxx.git
 #或者https的方式（待补充）
 ...
 ```
+如果关联错了(待补充)
 2. 用了上面的命令后只是仓库关联上了，还需要把分支关联(tracking)上：
 ```bash
 #这样当前分支就关联并且推送到远程的master分支，以后push的时候就可以只输入简化的git push，而不用加上-u等
@@ -61,7 +72,15 @@ git branch --set-upstream my_local_branch_name origin/my_remote_branch_name
 ```
 ### 2. 仓库基本文件
 #### 1. .gitignore文件
-该文件只要在主目录下就会生效
+该文件只要在主目录(?)下就会生效
+1. 规则
+    >以斜杠“/”开头表示目录；
+    以星号“*”通配多个字符；
+    以问号“?”通配单个字符
+    以方括号“[]”包含单个字符的匹配列表；
+    以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
+
+    此外，git 对于 .ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
 
 ## 五. 经验
 
