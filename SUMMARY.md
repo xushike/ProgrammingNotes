@@ -47,6 +47,7 @@
     * [2.GoogleChrome](software&tool/2.GoogleChrome.md)
     * [3.虚拟机VirtualMachine](software&tool/3.VirtualMachine.md)
     * [5.eclipse](software&tool/5.eclipse.md)
+    * [7.VisualStudio](software&tool/7.VisualStudio.md)
 * [linux](linux/linux.md)
     * [ubuntu](linux/ubuntu.md)
     * [shell](linux/shell.md)
