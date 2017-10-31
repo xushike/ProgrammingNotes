@@ -21,6 +21,8 @@ goWorkSpace  #goWorkSpace为GOPATH目录
   -- pkg  #golang将可执行文件所依赖的各种package编译后的.a中间文件存放路径，可自动生成
   -- src  #源码路径。按照golang默认约定，go run，go install等命令的当前工作路径（即在此路径下执行上述命令）。
 ```
+#### 2.3 build
+一般是在项目所在的目录下(不是GOPATH/src，当然也可以)执行该命令
 2. 只需要有src目录，bin和pkg自动生成；install后是跟main.go的父级目录名，生成的可执行文件也是父级目录名；
 ### 3. go的工具
 #### 3.1 Cgo

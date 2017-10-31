@@ -10,6 +10,13 @@ linux中所有内容以文件形式保存，包括硬件(一切皆文件)
 linux不靠扩展名区分文件类型(但是有约定俗成的一些规则：比如二进制软件包.rpm、简本文件.sh、配置文件.conf等，是linux为了照顾系统管理员，也可以不写)
 2. 开源软件：apache、nginx、mysql、php、mongoDB、python、ruby、sphinx、samba
 3. www.netcraft.com：对网站和服务器分析的网站
+### 1. 一些常识
+1. 复制粘贴快捷键(windows中cmd似乎不生效)：
+```
+ctrl+insert:复制
+shift+insert:粘贴
+```
+2. 清屏快捷键：`ctrl+L`
 ## 二. 安装配置
 ## 三. 基础
 ### 1. 常用命令
@@ -24,3 +31,4 @@ history
 ## 五. 问题
 1. 学会使用linux联机帮助
 2. 在命令行执行命令的时候输入命令会怎么样
+3. linux的鼠标中键表示什么？
