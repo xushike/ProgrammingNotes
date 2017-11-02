@@ -56,6 +56,7 @@
 * [life生活](life/life.md)
 * [word一些术语](word.md)
 * [network网络](network/network.md)
+    * [jwt](network/jwt.md)
 * [popularizationOfScience科普](popularizationOfScience/popularizationOfScience.md)
 * [readingNotes读书笔记](readingNotes/readingNotes.md)
     * [1.movies电影笔记](readingNotes/1.movies.md)
