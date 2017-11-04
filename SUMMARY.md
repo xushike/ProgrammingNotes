@@ -57,7 +57,7 @@
 * [word一些术语](word.md)
 * [network网络](network/network.md)
     * [1.jwt](network/1.jwt.md)
-    * [2.vps](network/2.vps.md)
+    * [2.ss](network/2.ss.md)
 * [popularizationOfScience科普](popularizationOfScience/popularizationOfScience.md)
 * [readingNotes读书笔记](readingNotes/readingNotes.md)
     * [1.movies电影笔记](readingNotes/1.movies.md)
