@@ -103,5 +103,7 @@ git branch --set-upstream my_local_branch_name origin/my_remote_branch_name
 
 7. LF will be replaced by CRLF
 8. git是如何判断冲突和不冲突的，界限在哪儿？
+9. 在maste分支上写了东西，然后想提交到develop分支上
+10. 切换关联的远程分支
 
 
