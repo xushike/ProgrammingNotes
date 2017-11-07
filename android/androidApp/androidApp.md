@@ -1,4 +1,4 @@
-# 1.androidApp
+# androidApp
 [TOC]
 ## 一. 概述
 ## 二. JuiceSSH
