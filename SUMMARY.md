@@ -20,6 +20,7 @@
     * [3.javafx](java/3.javafx.md)
     * [4.java网络编程](java/4.javaNet.md)
     * [5.java类加载和反射](java/5.javaClassLoader.md)
+    * [6.jms](java/6.jms.md)
 * [js](js/js.md)
     * [AngularJS](js/Angular.md)
     * [npm](js/npm.md)
