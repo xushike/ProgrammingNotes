@@ -23,6 +23,16 @@ shift+insert:粘贴
 >网友的回答：gcc 最开始的时候是 GNU C Compiler, 如你所知，就是一个c编译器。但是后来因为这个项目里边集成了更多其他不同语言的编译器，GCC就代表 the GNU Compiler Collection，所以表示一堆编译器的合集。 g++则是GCC的c++编译器。
 现在你在编译代码时调用的gcc，已经不是当初那个c语言编译器了，更确切的说他是一个驱动程序，根据代码的后缀名来判断调用c编译器还是c++编译器 (g++)。比如你的代码后缀是*.c，他会调用c编译器还有linker去链接c的library。如果你的代码后缀是cpp, 他会调用g++编译器，当然library call也是c++版本的。
 当然我说了这么多你可能感到有些混乱，没关系，你就把gcc当成c语言编译器，g++当成c++语言编译器用就是了。
+#### 1.3 学习linux的一些网站
+1. 查询linux命令：[http://man.linuxde.net/](http://man.linuxde.net/)
+2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
+#### 1.4 网友推荐的linux书籍(按学习顺序排列)
+1. 《鸟哥的Linux私房菜：基础学习篇》
+2. 《Linux Shell 脚本攻略》
+3. 《UNIX环境高级编程》
+4. 《Linux系统编程》
+5. 《Linux内核设计的艺术》
+6. 《Linux内核设计与实现》
 ## 二. 安装配置
 ## 三. 基础
 ### 1. 常用命令
@@ -41,3 +51,12 @@ history
 4. 移动到终端正在输入的命令前后面快捷键
 5. linux的计算器？
 6. sbin
+7. 删除包和依赖呢？
+```bash
+dpkg -P package #删除包（包括配置文件）
+dpkg -L package #列出与该包关联的文件
+```
+8. linux按时间顺序排列
+9. man 3 xxx
+10. dpkg所有参数在哪儿看
+11. 为什么`./`是运行
