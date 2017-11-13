@@ -56,7 +56,7 @@ git config --global user.email "xxx"
 
 ## 四. 使用
 ### 1. 本地和远程的关联
-1. 本地和远程都建好了库，如果想两者关联上，用下面的命令：
+1. 本地和远程仓库的关联（本地和远程都建好了仓库）：：
 ```bash
 #sshkey的方式，其中的origin是远程默认的名字，也可以换成其他名字(不是必须跟项目名一样)
 git remote add origin git@github.com:xushike/xxx.git
@@ -64,12 +64,12 @@ git remote add origin git@github.com:xushike/xxx.git
 ...
 ```
 如果关联错了(待补充)
-2. 用了上面的命令后只是仓库关联上了，还需要把分支关联(tracking)上：
+2. 分支关联，用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
 ```bash
-#这样当前分支就关联并且推送到远程的master分支，以后push的时候就可以只输入简化的git push，而不用加上-u等
+#关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track?)
 git push -u origin master 或者 git push --set-upstream origin master
 #如果只想关联，可以用
-git branch --set-upstream my_local_branch_name origin/my_remote_branch_name
+git branch --set-upstream-to my_local_branch_name origin/my_remote_branch_name
 ```
 ### 2. 仓库基本文件
 #### 1. .gitignore文件
@@ -105,5 +105,4 @@ git branch --set-upstream my_local_branch_name origin/my_remote_branch_name
 8. git是如何判断冲突和不冲突的，界限在哪儿？
 9. 在maste分支上写了东西，然后想提交到develop分支上
 10. 切换关联的远程分支
-
-
+11. git的feature
