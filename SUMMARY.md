@@ -69,6 +69,7 @@
     * [3.kindle相关](readingNotes/3.kindle.md)
 * [Philosophy哲学](Philosophy/Philosophy.md)
     * [AnCoderPrepares程序员的自我修养](Philosophy/1.AnCoderPrepares.md)
+* [php](php/php.md)
 * [maven](maven/maven.md)
 * [python](python/python.md)
 * [softwaretest软件测试](softwaretest/README.md)
