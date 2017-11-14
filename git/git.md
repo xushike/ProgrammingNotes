@@ -106,3 +106,7 @@ git branch --set-upstream-to my_local_branch_name origin/my_remote_branch_name
 9. 在maste分支上写了东西，然后想提交到develop分支上
 10. 切换关联的远程分支
 11. git的feature
+12. github的提交请求是怎么操作 
+13.  --global              使用全局配置文件
+    --system              使用系统级配置文件
+    --local               使用仓库级配置文件

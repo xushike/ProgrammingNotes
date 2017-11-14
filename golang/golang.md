@@ -29,8 +29,10 @@ goWorkSpace  #goWorkSpace为GOPATH目录
 ### 3. go的工具
 #### 3.1 Cgo
 编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
+### 4. go相关网站
+1. 网友写的Go web编程gitbook，比较详细，应该很值得读：[https://astaxie.gitbooks.io/build-web-application-with-golang/zh/](https://astaxie.gitbooks.io/build-web-application-with-golang/zh/)
 ## 二. 安装配置
-### 1. windows下的安装
+### 1 windows下的安装
 1. ...
 3. 配置GOROOT(C:\Go)和PATH(添加%GOROOT%\bin)，这样就可以在任意地方运行go开头的命令了
 4. 配置GOPATH:系统默认的gopath是GOROOT，`fmt`等包在GOROOT中，所以可以直接`import`；当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中
@@ -39,12 +41,22 @@ goWorkSpace  #goWorkSpace为GOPATH目录
 5.配置gobin(需不需要看情况)
 ### 2 mac下的安装
 #### 2.1 二进制发行版安装
-### 3. linux下的安装
-1. 。。。
+#### 2.2 第三方工具安装(homebrew等)
+### 3 linux下的安装
+#### 3.1 安装包（二进制发行版）安装(**推荐**)
+1. 下载xxx.tar.gz，安装到`/usr/local`下:
+```bash
+#查看压缩文件内容
+tar -ztvf xxx.tar.gz
+#解压到目录下
+sudo tar -zxvf xxx.tar.gz -C /usr/local 
+```
 2. 有4个环境变量需要设置：GOROOT、GOPATH、GOBIN以及PATH，需要设置到某一个profile文件中(单一用户选择~./bash_profile，所有用户选择/etc/profile)
 3. 关于GOBIN:
 将`$GOPATH/bin`加入PATH中，这样可以方便的运行`go install`好的二进制程序。然而，当存在GOPATH中存在多个路径时，这种写法只会将最后一个路径跟上bin。在mac或linux下可以通过这种方式解决：
 `${GOPATH//://bin:}/bin`
+#### 3.2 源码安装
+#### 3.3 第三方工具安装（apt、wget等）
 ## 三. 基础
 ### 1. 程序结构
 #### 1.3 变量

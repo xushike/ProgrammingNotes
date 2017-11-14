@@ -1,6 +1,10 @@
 # ubuntu
 [TOC]
-##  一. 安装配置
+## 一. 概述
+### 1 关于ubuntu的一些常识
+#### 1.1 关于代号
+1. Ubuntu16.04LTS的代号是Xenial Xerus(好客的非洲地松鼠)
+## 二. 安装配置
 ### 1 虚拟机安装配置
 1. 以16.04LTS为例，安装后第一步设置语言为中文(可不用)：
 2. 设置软件源为[阿里云](http://mirrors.aliyun.com/)，设置之后更新可用软件列表(似乎等同于命令`sudo apt-get update`)：
@@ -14,22 +18,33 @@
     #第二个是会把依赖也更新，有风险
     sudo apt-get dist-upgrade
     ```
-3. 安装搜狗输入法：
-    1. 如果双击deb包安装进度条一闪而过没有安装，那应该是缺少依赖
-    2. 用命令`sudo dpkg -i xxx.deb`安装则会显示所缺少的依赖，**然后**可以`sudo apt-get -f install`安装xxx和对应的依赖（其他软件同理）
-    2. 然后在语言支持中设置键盘输入法系统为`fcitx`（即`Free Chinese Input Toy for X`），注销重登即可
-4. 安装vmtools(可不用，而且似乎自带有？)，可以方便虚拟机里外系统的文件传输，方便的分辨率和鼠标移动：
+3. 安装vmtools(可不用，而且似乎自带有？)，可以方便虚拟机里外系统的文件传输，方便的分辨率和鼠标移动：
     1. 点击`重新安装vmtools`
     2. 解压`xxx.tar.gz`，然后再终端运行里面的`install.pl`，然后除了需要输入`yes`的地方其他基本一路回车
     3. 重启就可以了
+4. 工具和软件的安装
+    1. 安装搜狗输入法：
+        1. 如果双击deb包安装进度条一闪而过没有安装，那应该是缺少依赖
+        2. 用命令`sudo dpkg -i xxx.deb`安装则会显示所缺少的依赖，**然后**可以`sudo apt-get -f install`安装xxx和对应的依赖（其他软件同理）
+        2. 然后在语言支持中设置键盘输入法系统为`fcitx`（即`Free Chinese Input Toy for X`），注销重登即可
+    2. 安装google chrome
+    3. 安装vscode
+    4. 安装git：`sudo apt install git`
+    5. 
 
-##  二. 基础
+##  三. 基础
 ### 1. sudo  
 一般我们都是用普通账户登录的，权限不是很高，当需要系统级操作（比如安装软件）时就需要加上这个命令
-### 2. apt-cache search xxx
-在源软件列表中查找相应的软件包.
+### 2. apt(Advanced Packaging Tool）
+1. Linux下的一款安装包管理工具，是一个客户/服务器系统。apt-get是老版的命令，apt是新版的命令
+2. 工作原理：
+3. 常用命令：
+    1. `apt-cache search xxx`：在源软件列表中查找相应的软件包.
+### 3 查看信息相关命令
+1. 查看内核信息:
+    1. `uname -a`:
 ##  三. 使用
-1. 忘记密码：
+1. 忘记密码(待补充)：
 
     1. 重新启动，按ESC键进入Boot Menu，选择recovery mode（一般是第二个选项,但是我这儿是先进高级模式，然后再进recovery mode）。 
     2. 在#号提示符下用cat /etc/shadow，看看用户名。(我这儿几乎全是乱码，似乎$6前面的字符就能找到名字) 
