@@ -82,6 +82,9 @@ git branch --set-upstream-to my_local_branch_name origin/my_remote_branch_name
     以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
 
     此外，git 对于 .ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
+### 3 **一般正确操作步骤**
+1. 拉取和推送
+推送之前应该先pull，如果pull的内容和本地没有冲突，pull会成功，否则pull不执行，提示“和本地文件有冲突，需要先commit”，此时先commit然后pull解决冲突再push
 
 ## 五. 经验
 

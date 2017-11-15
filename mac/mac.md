@@ -14,7 +14,7 @@
 1. The Unarchiver:免费好用
 2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
 ### 3.快捷键打开dock
-snap
+1. snap：因为默认的cmd键和浏览器有冲突，所以我改成option键了。而且windows和ubuntu上不需要按插件，直接就可以win键快捷打开dock
 ### 4. 视频播放
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
