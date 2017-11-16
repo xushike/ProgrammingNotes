@@ -45,6 +45,7 @@ shift+insert:粘贴
 #### 1.7 关于`.bashrc`文件
 1. 在linux用户目录`$HOME`（/home/xxx）下`ls -al`可以看到4个隐藏文件：
     ```bash
+    .profile（待补充）
     .bash_history       记录之前输入的命令
     .bash_logout        当你退出时执行的命令
     .bash_profile       当你登入shell时执行
@@ -53,6 +54,7 @@ shift+insert:粘贴
     1. 后两个的区别：`.bash_profile`只在会话开始时被读取一次，而`.bashrc`则每次打开新的终端时，都要被读取
     2. 这些文件是每一位用户对终端功能和属性设置，修改.bashrc可以改变环境变量PATH、别名alias和提示符
     3. 除了可以修改用户目录下的.bashrc文件外，还可以修改如`/etc/profile`文件、`/etc/bashrc`文件及目录`/etc /profile.d`下的文件。但是修改/etc路径下的配置文件会应用到整个系统，属于系统级的配置，而修改用户目录下的.bashrc则只是限制在用户应用上，属于用户级设置。建议修改用户目录下的`.bashrc`，即无需root权限，也不会影响其他用户。
+    4. rc的意思是run commands，参见[https://en.wikipedia.org/wiki/Run_commands](https://en.wikipedia.org/wiki/Run_commands)
 2. PATH环境变量修改
     1. **PATH变量决定了shell将到哪些目录中寻找命令或程序**,作为惯例，所有环境变量名都是大写
     2. 设置变量时直接用名称，但使用时加上$(?):

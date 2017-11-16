@@ -3,12 +3,21 @@
 ## 一. 概述
 npm是世界上最大的js包管理g工具。
 ## 二. 安装配置
+### 1 windows下的安装
 1. 直接安装nodeJS，里面带有npm
 2. 使用淘宝定制的 cnpm (gzip 压缩支持) 命令行工具代替默认的 npm(解决了网速问题):
 ```bash
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
 3. 或者把npm的源换成淘宝镜像(待补充)：
+### 2 linux下的安装(ubuntu为例)
+1. sudo apt install npm
+2. 配置源，虽然仓库没有被qiang，但是速度较慢：
+    1. 临时使用
+    2. 使用cnpm(本质是安装)
+    3. 配置`~/.npmrc`(推荐，一劳永逸)：
+    ```bash
+    ```
 ## 三. 基础
 ### 1. npm install 
 包名后可以跟[@version]即包的 版本号

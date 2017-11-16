@@ -52,8 +52,13 @@ tar -ztvf xxx.tar.gz
 sudo tar -zxvf xxx.tar.gz -C /usr/local 
 ```
 2. 环境变量设置：
+    1. 设置GOROOT:
+        1. 只有go没安装在默认位置时才需要设置GOROOT，设置方式类似于JAVA_HOME，如`export GOROOT=$HOME/xxx`
+        2. 不管go安没安装在默认位置都需要把`$GOROOT/bin`加入PATH：`export PATH=$PATH:$GOROOT/bin`
+        
     1. 设置GOPATH：这个目录用来存放Go源码(src)，Go的可运行文件(bin)，以及相应的编译之后的包文件(pkg)
     >在go1.1到1.7，该变量必须设置，且不能和go安装目录一样;从1.8开始有默认值，在Unix上默认为`$HOME/go`,在Windows上默认为`%USERPROFILE%/go`
+    
 2. 有4个环境变量需要设置：GOROOT、GOPATH、GOBIN以及PATH，需要设置到某一个profile文件中(单一用户选择~./bash_profile，所有用户选择/etc/profile)
 3. 关于GOBIN:
 将`$GOPATH/bin`加入PATH中，这样可以方便的运行`go install`好的二进制程序。然而，当存在GOPATH中存在多个路径时，这种写法只会将最后一个路径跟上bin。在mac或linux下可以通过这种方式解决：
