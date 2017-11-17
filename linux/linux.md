@@ -89,7 +89,7 @@ shift+insert:粘贴
     >关于tar这个命令名字的来历：Initially, tar archives were used to store files conveniently on magnetic tape. The name "Tar" comes from this use（最初，tar档案被用来方便地在磁带上存储文件。 “焦油”这个名字来自这个用途。）
     1. `-z`或`--gzip`或`--ungzip`：通过gzip指令处理备份文件
     2. `-v`：显示操作过程
-    3. `-f [备份文件]`或`--file=[备份文件]`：指定备份文件
+    3. `-f [压缩或备份的文件]`或`--file=[压缩或备份的文件]`：指定备份文件
     4. `-c`或`--create`：建立新的备份文件
     5. `-x`或`--extract`或`--get`：从备份文件中还原文件
     6. `-t`或`--list`：列出备份文件的内容
