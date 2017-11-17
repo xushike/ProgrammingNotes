@@ -13,6 +13,8 @@ git开源免费的分布式版本控制系统。
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
 ```bash
 #注意没配置的话会报错:unable to auto-detect email address
+#查看所有配置
+git congfig -l #mac
 #查看git user.name和email
 git config user.name
 git config user.email
@@ -113,3 +115,5 @@ git branch --set-upstream-to my_local_branch_name origin/my_remote_branch_name
 13.  --global              使用全局配置文件
     --system              使用系统级配置文件
     --local               使用仓库级配置文件
+
+14. 为什么我 mac上的git config user.name等没有配置但是不输入密码 就可以提交，因为sshkey？ 
