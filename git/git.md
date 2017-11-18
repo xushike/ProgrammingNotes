@@ -56,23 +56,32 @@ git config --global user.email "xxx"
 默认是按时间顺序排序,但我新pull下来的时候调用该命令发现并没有按时间顺序排，过了一下午再去看发现又按时间排了
 ### 4. git pull = git fetch +merge
 
-## 四. 使用
+## 四. 高级
 ### 1. 本地和远程的关联
-1. 本地和远程仓库的关联（本地和远程都建好了仓库）：：
-```bash
-#sshkey的方式，其中的origin是远程默认的名字，也可以换成其他名字(不是必须跟项目名一样)
-git remote add origin git@github.com:xushike/xxx.git
-#或者https的方式（待补充）
-...
-```
-如果关联错了(待补充)
+1. 本地和远程仓库的关联（本地和远程都建好了仓库）:
+    1. 本地和远程关联
+        ```bash
+        #sshkey的方式，其中的origin是远程默认的名字，也可以换成其他名字(不是必须跟项目名一样)
+        git remote add origin git@github.com:xushike/xxx.git
+        #或者https的方式（待补充）
+        ...
+        ```
+    2. 查看关联
+        ```bash
+        #查看关联的远程仓库
+        git remote 
+        #查看关联仓库xxx的详细信息(包括分之的关联)
+        git remote show xxx
+        ```
+    3. 取消关联
+        1. 如果关联错了(待补充)
 2. 分支关联，用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
-```bash
-#关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track?)
-git push -u origin master 或者 git push --set-upstream origin master
-#如果只想关联，可以用
-git branch --set-upstream-to my_local_branch_name origin/my_remote_branch_name
-```
+    ```bash
+    #关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track)
+    git push -u origin master 或者 git push --track origin master
+    #如果只想关联，可以用
+    git branch --track my_local_branch_name origin/my_remote_branch_name
+    ```
 ### 2. 仓库基本文件
 #### 1. .gitignore文件
 该文件只要在主目录(?)下就会生效
@@ -84,12 +93,14 @@ git branch --set-upstream-to my_local_branch_name origin/my_remote_branch_name
     以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
 
     此外，git 对于 .ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
-### 3 **一般正确操作步骤**
-1. 拉取和推送
-推送之前应该先pull，如果pull的内容和本地没有冲突，pull会成功，否则pull不执行，提示“和本地文件有冲突，需要先commit”，此时先commit然后pull解决冲突再push
 
-## 五. 经验
 
+## 五. 使用经验
+### 1 推送的正确做法
+1. 先commit
+2. 然后pull(如果没有commit就pull，当pull和本地修改的文件冲突时会提示“和本地文件有冲突，需要先commit”，此时先commit然后pull),
+3. 如果pull后文件冲突，需要解决冲突
+4. 然后push
 ## 六. 问题
 
 1. git clone时用什么命令或软件可以显示进度？

@@ -55,16 +55,17 @@ shift+insert:粘贴
     2. 这些文件是每一位用户对终端功能和属性设置，修改.bashrc可以改变环境变量PATH、别名alias和提示符
     3. 除了可以修改用户目录下的.bashrc文件外，还可以修改如`/etc/profile`文件、`/etc/bashrc`文件及目录`/etc /profile.d`下的文件。但是修改/etc路径下的配置文件会应用到整个系统，属于系统级的配置，而修改用户目录下的.bashrc则只是限制在用户应用上，属于用户级设置。建议修改用户目录下的`.bashrc`，即无需root权限，也不会影响其他用户。
     4. rc的意思是run commands，参见[https://en.wikipedia.org/wiki/Run_commands](https://en.wikipedia.org/wiki/Run_commands)
+
 2. PATH环境变量修改
     1. **PATH变量决定了shell将到哪些目录中寻找命令或程序**,作为惯例，所有环境变量名都是大写
     2. 设置变量时直接用名称，但使用时加上$(?):
-    ```bash
-    #设置，比如在原基础上新增变量
-    PATH=$PATH:/usr/local/arm/3.4.1/bin
-    #使用，比如输出
-    echo $PATH
-    ```
-    这样设置的新PATH其实是局部变量，在新终端中不会生效（和win似乎是反着的），加上export才是全局，而且加上后只对当前和以后的终端生效
+        ```bash
+        #设置，比如在原基础上新增变量
+        PATH=$PATH:/usr/local/arm/3.4.1/bin
+        #使用，比如输出
+        echo $PATH
+        ```
+        这样设置的新PATH其实是局部变量，在新终端中不会生效（和win似乎是反着的），加上export才是全局，而且加上后只对当前和以后的终端生效
     3. 为了让修改永久添加到`$PATH`，只要将`export`的那行添加到`.bashrc`或`/etc/bashrc`文件中，然后用`source ~/.bashrc`使其立即生效。（一般会在`.bash_profile`文件中显式调用`.bashrc`，登陆linux启动bash时首先会去读取`~/.bash_profile`文件，这样`~/.bashrc`也就得到执行了，你的个性化设置也就生效了）
 3. alias别名
     1. 一般在.bashrc或/etc/bashrc文件里有几句话
@@ -75,6 +76,9 @@ shift+insert:粘贴
         ```
         可以在该配置文件中添加自己风格的别名，如“alias ll='ls -l'”，只需要在终端中输入“ll”就实现了“ls -l”的功能
 4. 提示符(意义不大)
+#### 1.8 关于文件扩展名
+1. 关于判断文件类型：与win不同的是，linux不是根据文件的扩展名来判断文件是否能执行，而是查看文件内的头部信息来判断，另外，gcc是根据文件扩展名来判断
+2. 关于是否加上文件名：虽然linux不通过扩展名判断，但还是推荐加上，为了使用时方便
 ## 二. 安装配置
 ## 三. 基础（命令）
 ### 1 查看相关命令

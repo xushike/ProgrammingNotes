@@ -5,6 +5,9 @@
     1. 小巧灵活、语法简单，适合做小工具。多个小工具一起甚至能形成操作系统，比如linux
     2. 硬件编程
     3. 对性能要求较高的应用程序。比如web服务器nginx（c语言写的），性能可以达到apache（C++写的）的10倍以上
+### 1 关于C语言的一些尝试
+#### 1.1 c的顺时针/螺旋规则
+参考:[http://c-faq.com/decl/spiral.anderson.html](http://c-faq.com/decl/spiral.anderson.html)
 ## 二. 安装配置
 ## 三. 基础
 ## 四. 使用
