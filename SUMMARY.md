@@ -86,6 +86,7 @@
     * [5.docker](se/5.docker)
 * [accounting会计学](accounting.md)
 * [math](math/README.md)
-* [temp草稿](temp/temp.md)
-    * [temp4life](temp/temp4life.md)
+* [zztemp草稿](zztemp/temp.md)
+    * [temp4life](zztemp/temp4life.md)
+    * [temp4study](zztemp/temp4study.md)
 

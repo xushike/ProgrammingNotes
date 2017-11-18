@@ -17,6 +17,7 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
     2. 使用cnpm(本质是安装)
     3. 配置`~/.npmrc`(推荐，一劳永逸)：
     ```bash
+    registry =https://registry.npm.taobao.org
     ```
 ## 三. 基础
 ### 1. npm install 

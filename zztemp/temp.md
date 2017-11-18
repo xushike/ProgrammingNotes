@@ -1,4 +1,6 @@
 # temp草稿
+## 一. 概述
+1. 目录前加zz，目的是能方便的找到该文件夹
 ## 一.问题
 1. https://angular.cn/guide/architecture
 1. http://jsfiddle.net
