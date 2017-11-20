@@ -46,7 +46,8 @@ HTML 应用程序，通常建议把所有的脚本都放置在 `<body> `元素�
         ```
         使用b的话，则函数的值和调用函数都会报错`ReferenceError`
         3. 函数声明（Function Declaration）提升提升create、init、assign
-3. 定义函数的方法
+### 3 函数
+1. 定义函数的方法
     1. 函数声明
     2. 函数表达式
         1. 典型的

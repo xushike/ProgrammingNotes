@@ -11,3 +11,7 @@ const (
 	Small = Big >> 99
 )
 ```
+
+7. Go playground 中的时间总是从 2009-11-10 23:00:00 UTC 开始， 如何校验这个值作为一个练习留给读者完成
+8. 事件冒泡
+9. go的blank identifier
