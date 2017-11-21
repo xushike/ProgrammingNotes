@@ -15,3 +15,6 @@ const (
 7. Go playground 中的时间总是从 2009-11-10 23:00:00 UTC 开始， 如何校验这个值作为一个练习留给读者完成
 8. 事件冒泡
 9. go的blank identifier
+10. angular@ViewChild
+11. querySelector的用法终于搞懂了，但是似乎并没有什么用
+12. element和node的区别
