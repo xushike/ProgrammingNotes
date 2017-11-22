@@ -159,7 +159,9 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 const声明,可以是字符、字符串、布尔或数字类型的值,不能用`:=`定义
 #### 1.5 指针
 指针特别有价值的地方在于我们可以不用名字而访问一个变量，但是这是一把双刃剑：要找到一个变量的所有访问者并不容易，我们必须知道变量全部的别名（译注：这是Go语言的垃圾回收器所做的工作）
-#### 1.6 包和文件
+#### 1.6 类型
+#### 1.7 结构体
+#### 1.9 包和文件
 1. 网友推荐的包目录结构如下：
 ```bash
 dir      
@@ -202,6 +204,68 @@ dir
     5. 可以用`./xxx`来import，这种方式不依赖GOPATH，但是不推荐
     6. GOPATH和GOPATH下的src目录不应该添加到源代码管理中
     7. 可执行命令的文件(比如hello.go)的包名必须是package main
+
+3. 关于包的初始化
+    1. 每个包在解决依赖的前提下，以导入声明的顺序初始化，每个包只会被初始化一次。因此，如果一个p包导入了q包，那么在p包初始化的时候可以认为q包必然已经初始化过了。初始化工作是自下而上进行的，main包最后被初始化。以这种方式，可以确保在main函数执行之前，所有依赖的包都已经完成初始化工作了
+    2. 可以用一个特殊的init初始化函数来简化初始化工作。每个文件都可以包含多个init初始化函数
+### 1.10 作用域
+1. 一个程序可能包含多个同名的声明，只要它们在不同的词法域就没有关系（但实际最好不要这样），内部声明的将屏蔽外部的声明
+    1. 例子1
+        ```go
+        func main() {
+            x := "hello!"
+            for i := 0; i < len(x); i++ {
+                x := x[i]
+                if x != '!' {
+                    x := x + 'A' - 'a'
+                    fmt.Printf("%c", x) // "HELLO" (one letter per iteration)
+                }
+            }
+        }
+        ```
+    2. 例子2,同样有三个不同的x变量，每个声明在不同的词法域，一个在函数体词法域，一个在for隐式的初始化词法域，一个在for循环体词法域；只有两个块是显式创建的：
+        ```go
+        func main() {
+            x := "hello"
+            for _, x := range x {
+                x := x + 'A' - 'a'
+                fmt.Printf("%c", x) // "HELLO" (one letter per iteration)
+            }
+        }
+        ```
+    3. 例子3，和for循环类似，if和switch语句也会在条件部分创建隐式词法域，还有它们对应的执行体词法域：
+        ```go
+        if x := f(); x == 0 {
+            fmt.Println(x)
+        } else if y := g(x); x == y {
+            fmt.Println(x, y)
+        } else {
+            fmt.Println(x, y)
+        }
+        fmt.Println(x, y) // compile error: x and y are not visible here
+        ```
+        第二个if语句嵌套在第一个内部，因此第一个if语句条件初始化词法域声明的变量在第二个if中也可以访问。switch语句的每个分支也有类似的词法域规则：条件部分为一个隐式词法域，然后每个是每个分支的词法域。
+2. 在包级别，声明的顺序并不会影响作用域范围，因此一个先声明的可以引用它自身或者是引用后面的一个声明，这可以让我们定义一些相互嵌套或递归的类型或函数。
+3. 更推荐的写法
+    ```go
+    /*对于如下代码，下面有go更推荐的写法*/
+    if f, err := os.Open(fname); err != nil {
+        return err
+    } else {
+        // f and err are visible here too
+        f.ReadByte()
+        f.Close()
+    }
+    /*更推荐的写法：Go语言的习惯是在if中处理错误然后直接返回，
+    这样可以确保正常执行的语句不需要代码缩进。*/
+    f, err := os.Open(fname)
+    if err != nil {
+        return err
+    }
+    f.ReadByte()
+    f.Close()
+    ```
+
 ### 1.x 注释
 go的注释与C++保持一致
 ### 2. 数据类型
