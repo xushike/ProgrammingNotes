@@ -24,7 +24,7 @@
     * [6.jms](java/6.jms.md)
     * [7.javaLib](java/7.javaLib.md)
 * [js](js/js.md)
-    * [AngularJS](js/Angular.md)
+    * [Angular](js/Angular.md)
     * [npm](js/npm.md)
     * [nodejs](js/nodejs.md)
     * [ReactJS](js/ReactJS.md)

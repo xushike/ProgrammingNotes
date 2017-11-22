@@ -1,4 +1,6 @@
-# AngularJS
+# Angular
+## 一 概述
+1. 本笔记主要记录angular2及以上版本
 ## 三. 基础
 ### 1 表达式
 #### 1.1 ngfor
@@ -16,6 +18,8 @@ var app = angular.module("myApp", []);
 ### 3 指令
 #### 3.1 ngif
 1. 
+### 4 管道
+1. http://blog.csdn.net/qq451354/article/details/54141024
 ## 四. 使用
 ## 五. 问题
 1. 表单验证
