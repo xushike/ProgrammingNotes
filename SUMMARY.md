@@ -57,6 +57,7 @@
     * [3.虚拟机VirtualMachine](software&tool/3.VirtualMachine.md)
     * [5.eclipse](software&tool/5.eclipse.md)
     * [7.VisualStudio](software&tool/7.VisualStudio.md)
+    * [8.office系列](software&tool/8.office.md)
 * [linux](linux/linux.md)
     * [3.ubuntu](linux/3.ubuntu.md)
     * [2.shell](linux/2.shell.md)

@@ -42,4 +42,15 @@ const (
 23. console对象
 24. https://www.cnblogs.com/yexiaochai/p/3567597.html
 25. js事件详解:https://segmentfault.com/a/1190000005016813
-
+26. 根据事件传递的状态来判断是否是从已点击的按钮传过来的？
+27. go的三个作者的中英文名
+28. 修改ubuntu锁屏时间
+29. oracle日期相关操作
+30. 区分点击和拖选
+	1.  input type ="radio"的内部实现原理，为什么我小范围拖动鼠标会被判断为点击，而选中一个单词就不会触发点击
+31. dom l3
+32. `ctrl+a  ctrl+k`
+33. https://ng.ant.design/#/docs/angular/introduce
+34. https://zhidao.baidu.com/question/429999513428017812.html
+35. https://material.angularjs.org/latest/demo/virtualRepeat
+36. 如何关闭某个应用的一个实例(比如同时打开两个vscode，如何关闭其中一个，快捷键)
