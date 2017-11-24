@@ -6,6 +6,12 @@
     3. SQLSever:Transac-SQL(T-SQL)
 ## 二. 基础
 1. 事务的ACID
+
 ## 五. 问题
 1. 不同数据库单表的极限是多少  
-目前我见得最多的就是oracle的四千万条数据
+    目前我见得最多的就是oracle的四千万条数据
+2. 数据结构中的mergelist表示什么意思？
+    1. 合并表(或归并表)
+    2. 一般用于将两个顺序表或两个链表合成一个表.
+3. sqlDeveloper和pl/sql Developer？
+4. 表的M/O(Mandatory or Optional)： “Mandatory”表示此查询字段必填；“Optional”表示此查询字段可选。
