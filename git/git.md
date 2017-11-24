@@ -52,8 +52,8 @@ git config --global user.email "xxx"
     1. 
 ### 3. 查看状态和历史
 1. `git status`
-2. `git log`
-默认是按时间顺序排序,但我新pull下来的时候调用该命令发现并没有按时间顺序排，过了一下午再去看发现又按时间排了
+2. 查看提交日志：`git log`，查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
+    1. `git log`默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
 ### 4. git pull = git fetch +merge
 
 ## 四. 高级
@@ -128,3 +128,4 @@ git config --global user.email "xxx"
     --local               使用仓库级配置文件
 
 14. 为什么我 mac上的git config user.name等没有配置但是不输入密码 就可以提交，因为sshkey？ 
+15. 可以绑定多个远程仓库吗？

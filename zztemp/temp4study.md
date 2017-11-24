@@ -1,4 +1,6 @@
 # temp4study
+1. http的笔记
+2. 知乎live：https://www.zhihu.com/lives/，可以回看吗
 1. tty -s
 2. 2009-11-10 23:00:00 UTC
 3. studyGO放go的一些实用程序,比如反转字符
@@ -53,3 +55,6 @@ const (
 25. js事件详解:https://segmentfault.com/a/1190000005016813
 37. 成都市城乡房屋管理局
 38. 异步查询，动态显示搜索结果
+39. git fetch
+40. 可记为博客
+	1. http://www.nowamagic.net/
