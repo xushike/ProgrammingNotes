@@ -28,6 +28,7 @@
     * [npm](js/npm.md)
     * [nodejs](js/nodejs.md)
     * [ReactJS](js/ReactJS.md)
+    * [TypeScript](js/TypeScript.md)
 * [git](git/git.md)
     * [1.gitbook](git/gitbook.md)
 * [gastrology烹饪学](gastrology/gastrology.md)
