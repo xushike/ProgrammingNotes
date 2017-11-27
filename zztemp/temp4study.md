@@ -58,3 +58,9 @@ const (
 39. git fetch
 40. 可记为博客
 	1. http://www.nowamagic.net/
+
+41. linux新建文件以及文件类型，创建时的后缀可以变为类型吗
+42. htmlelement->htmlinputelement
+43. restful
+44. libreoffice显示目录
+45. 代码生成器和项目命名规范
