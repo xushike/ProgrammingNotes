@@ -64,3 +64,47 @@ const (
 43. restful
 44. libreoffice显示目录
 45. 代码生成器和项目命名规范
+46. not all go tools are avaliable on the $GOPATH
+47. oracle的两条竖线
+48. 递归查询和插入
+49. oracle的价格
+50. 项目中的*号和go的星号和angular的星号
+51. 如果有两个db怎么办，框架里db的逻辑是怎么样的
+52. oracle函数：
+	CREATE OR REPLACE FUNCTION wlwk_f_split(p_str       IN VARCHAR2,
+                                       p_delimiter IN VARCHAR2 default (',') --分隔符，默认逗号
+                                       ) RETURN split_type IS
+  j        number := 0;
+  i        number := 1;
+  len      number := 0;
+  len1     number := 0;
+  str      VARCHAR2(1000);
+  my_split split_type := split_type();
+BEGIN
+  len  := LENGTH(p_str);
+  len1 := LENGTH(p_delimiter);
+
+  WHILE j < len LOOP
+    j := INSTR(p_str, p_delimiter, i);
+  
+    IF j = 0 THEN
+      j   := len;
+      str := SUBSTR(p_str, i);
+      my_split.EXTEND;
+      my_split(my_split.COUNT) := str;
+    
+      IF i >= len THEN
+        EXIT;
+      END IF;
+    ELSE
+      str := SUBSTR(p_str, i, j - i);
+      i   := j + len1;
+      my_split.EXTEND;
+      my_split(my_split.COUNT) := str;
+    END IF;
+  END LOOP;
+
+  RETURN my_split;
+END;
+
+55. http状态码
