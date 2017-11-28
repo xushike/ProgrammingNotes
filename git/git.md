@@ -129,3 +129,4 @@ git config --global user.email "xxx"
 
 14. 为什么我 mac上的git config user.name等没有配置但是不输入密码 就可以提交，因为sshkey？ 
 15. 可以绑定多个远程仓库吗？
+16. Pull Request 的命令行管理:[http://www.ruanyifeng.com/blog/2017/07/pull_request.html](http://www.ruanyifeng.com/blog/2017/07/pull_request.html)

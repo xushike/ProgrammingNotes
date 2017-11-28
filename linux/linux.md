@@ -26,6 +26,7 @@ shift+insert:粘贴
 #### 1.3 学习linux的一些网站
 1. 查询linux命令：[http://man.linuxde.net/](http://man.linuxde.net/)
 2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
+3. 鸟哥的linux私房菜(推荐)：[http://linux.vbird.org/linux_basic/0320bash.php#bash](http://linux.vbird.org/linux_basic/0320bash.php#bash)
 #### 1.4 网友推荐的linux书籍(按学习顺序排列)
 1. 《鸟哥的Linux私房菜：基础学习篇》
 2. 《Linux Shell 脚本攻略》
@@ -79,6 +80,8 @@ shift+insert:粘贴
 #### 1.8 关于文件扩展名
 1. 关于判断文件类型：与win不同的是，linux不是根据文件的扩展名来判断文件是否能执行，而是查看文件内的头部信息来判断，另外，gcc是根据文件扩展名来判断
 2. 关于是否加上文件名：虽然linux不通过扩展名判断，但还是推荐加上，为了使用时方便
+#### 1.9 关于distribution
+distribution一般是指发行版的意思，Linux真正意义上说只是一个内核，我们通常使用的都是基于Linux内核的发行版了。如常见的Linux发行版有：Ubuntu、Fedora、Suse、ArchLinux等
 ## 二. 安装配置
 ## 三. 基础（命令）
 ### 1 查看相关命令
