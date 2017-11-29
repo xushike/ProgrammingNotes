@@ -108,3 +108,11 @@ BEGIN
 END;
 
 55. http状态码
+56. 类型转换难道用as？
+57. 如何在有程序运行的情况下清shell屏
+58. 各种字符串和反斜杠的处理
+59. ele["contend"]和ele.content和ele.()等
+60. 试试在外面xshell可不可以连接到里面
+61. 内置的内置的make函数
+62. 复制打包等命令
+63.         let params = Object.assign({}, args || this.oldParams);
