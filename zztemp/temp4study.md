@@ -124,3 +124,7 @@ END;
 68. 我们项目中，getFirstRow和scala和getrows等的区别，以及获取回来的值的获取方法？
 69. analys tool missing
 70. 远程如何连到局域网内的机子？
+71. source 就是. ?
+  [http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral](http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral)
+
+72. go get显示copy状态

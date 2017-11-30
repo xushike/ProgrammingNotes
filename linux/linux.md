@@ -135,4 +135,5 @@ dpkg -L package #列出与该包关联的文件
 为什么 Linux 大部分软件都要求编译安装，就是因为动态链接库。
 13. linux和mac上各种格式包的安装和区别
 14. 内容太多终端显示不完怎么办，终端中如何翻页等
-
+15. login shell和non-login shell，参考鸟哥的linux私房菜
+16. copy的几种方式，除了cp还有什么

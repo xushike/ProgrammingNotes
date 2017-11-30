@@ -28,3 +28,7 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 ### 2. 打开文件时提示文本编码 unicode (utf-8) 不适用
 在应用程序中找到“文本编辑”，在偏好设置中->打开和存储->纯文本文件编码里的打开文件和储存文件都改为中文(GB18030)
 ### 3. xcode的使用
+### 4. .bash_profile和.bashrc和linux是反过来的？
+### 5. m2_home
+### 6. 终端和finder
+[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
