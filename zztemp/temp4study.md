@@ -116,3 +116,11 @@ END;
 61. 内置的内置的make函数
 62. 复制打包等命令
 63.         let params = Object.assign({}, args || this.oldParams);
+64. 为什么虚拟机关ubuntu经常停在黑屏
+65. oracle里我之前写那个，如果把agent_id写到里面和写到外面有什么区别？效率上来讲？先筛选再连接是不是更快?
+66. 四川500个机场的新闻
+67. js遍历对象和遍历数组等
+
+68. 我们项目中，getFirstRow和scala和getrows等的区别，以及获取回来的值的获取方法？
+69. analys tool missing
+70. 远程如何连到局域网内的机子？
