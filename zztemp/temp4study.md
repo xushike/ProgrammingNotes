@@ -128,3 +128,7 @@ END;
   [http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral](http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral)
 
 72. go get显示copy状态
+73. linux文件安装在什么位置比较好
+74. 同时执行多条命令怎么搞，连接多个命令用什么
+75. 公司项目中组件名字用`-`不要用`.`？
+76. r interface{}
