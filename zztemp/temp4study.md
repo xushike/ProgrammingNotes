@@ -137,4 +137,8 @@ END;
   3. vscode如何跳到上次的位置
   4. go http的默认超时时间
   5. 终端的管道语法和&&
-  6. teamviewer
+  6. teamviewer操作
+  7. angular笔记
+    1. ngmodel、value等还需要熟悉
+    2. 可以甲乙双绑，然后乙丙单帮或者其他吗
+    3. 表单的各种类型
