@@ -7,9 +7,6 @@
 2. `待补充`和`待验证`，顾名思义
 
 # 三. 笔记阅读方法:
-1. 推荐直接在[github](https://github.com/xushike/study)或使用带有markdown功能的工具阅读,
+1. 推荐直接在[github](https://github.com/xushike/study)或使用带有markdown功能的工具阅读,
 [点击跳转到笔记目录](./SUMMARY.md)
-2. 如果在[gitbooks.io](https://xushike.gitbooks.io/study/content/)中,则直接点击左边的目录或右边的绿色read按钮,gitbook网站自动生成的序号和本人自定义的排版有点冲突会稍微影响阅读
-
-
-
+2. 如果在[gitbooks.io](https://xushike.gitbooks.io/study/content/)中,则直接点击左边的目录或右边的绿色read按钮,gitbook网站自动生成的序号和本人自定义的排版有点冲突会稍微影响阅读
