@@ -6,7 +6,16 @@
 2. mac上的command键也被称为苹果键，和windows中的Ctrl键功能一样
 ## 二. 安装配置
 ## 三. 基础
-1. 
+### 1 快捷键
+### 2 命令行工具
+1. open命令打开
+    1. 对于文件,会使用关联程序打开;对于目录是finder打开,比如`open .`打开当前目录
+    2. `-a`指定用什么打开,`-e`强制用textedit编辑
+    3. 把文件拖入终端,等于把文件的路径复制到终端
+2. pbcopy和pbpaste
+    这两个工具可以打通命令行和剪切板,强大的地方在于将其作为unix工具:用于管道,IO重定向以及其他命令的整合,如
+    1. `ls ~ | pbcopy`:将home目录文件列表复制到剪切板
+    2. 将任意文件内容读入剪切板,如`pbcopy < hello.txt`
 ## 四. mac上好用工具介绍
 ### 1.白噪音
 让工作效率更高:[https://zhuanlan.zhihu.com/p/20508353](https://zhuanlan.zhihu.com/p/20508353)
