@@ -13,18 +13,25 @@
     2. `-a`指定用什么打开,`-e`强制用textedit编辑
     3. 把文件拖入终端,等于把文件的路径复制到终端
 2. pbcopy和pbpaste
-    这两个工具可以打通命令行和剪切板,强大的地方在于将其作为unix工具:用于管道,IO重定向以及其他命令的整合,如
+    前者允许将stdin或者文件复制到剪切板中,后者用于将剪切板的内容输出,如,
     1. `ls ~ | pbcopy`:将home目录文件列表复制到剪切板
     2. 将任意文件内容读入剪切板,如`pbcopy < hello.txt`
+    3. 重定向剪切板的内容到文件:`pbpaste >> a.file`
+    4. 其他:tee
+        如果想重定向到文件同时又想看到输出,可以用`tee`工具,如,`echo hello | tee a.file`
+3. mdfind
 ## 四. mac上好用工具介绍
-### 1.白噪音
+### 1 mac自带的
+1. spotlight
+    mac上的搜索神器,快捷键`cmd+space`,ios上也有
+### 2 白噪音
 让工作效率更高:[https://zhuanlan.zhihu.com/p/20508353](https://zhuanlan.zhihu.com/p/20508353)
-### 2.解压缩
+### 3 解压缩
 1. The Unarchiver:免费好用
 2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
-### 3.快捷键打开dock
+### 4 快捷键打开dock
 1. snap：因为默认的cmd键和浏览器有冲突，所以我改成option键了。而且windows和ubuntu上不需要按插件，直接就可以win键快捷打开dock
-### 4. 视频播放
+### 5 视频播放
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
 ## 五. 经验
