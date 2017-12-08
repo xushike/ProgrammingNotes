@@ -11,9 +11,9 @@ windows文件路径长度最多只支持260个字符，所以太长的目录可�
 ### 1 快捷键
 1. 调出程序最小化、最大化、移动(m，非全屏时可用)、关闭(c)等命令面板：`alt+空格`，而且可以在程序没有边框的时候使用
 ### 2 命令行输出到剪切板
-使用系统自带的clip命令,用法类似linux
-1. 将字符hello放入剪切板:`echo hello | clip`
-2. 将`dir`命令输出放入剪切板:`dir | clip`
+使用系统自带的clip命令,用法类似linux
+1. 将字符hello放入剪切板:`echo hello | clip`
+2. 将`dir`命令输出放入剪切板:`dir | clip`
 3. 将readme.txt的内容放入剪切板:`clip < readme.txt`
 4. 将空字符串放入剪切板,即清空剪切板:`echo | clip`
 ## 五. 问题

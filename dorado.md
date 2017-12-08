@@ -32,7 +32,7 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
         >dataPath
         >主要使用自定义片段
 
-    2. AutoForm  
+    2. AutoForm  
     和datagrid一样绑定dataset之后，我点击datagrid中的行，autoform自动绑定我点击的这行，隐藏属性？
     3. action  
         1.  updateAction:
@@ -44,10 +44,10 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
         >利用JS初始化mapping  
         >通过后台方法进行配置  
 
-2. 组件
+2. 组件
 
     1. autoform
-    >autoformElement的id似乎可以随意设置，但是name却不能乱设置，name要和dataType的属性名对应
+    >autoformElement的id似乎可以随意设置，但是name却不能乱设置，name要和dataType的属性名对应
 
 2. 一般开发步骤：
     1. 第一次要先马文hdf-parent，然后马文hex-install,然后配置vpn数据库之类的，然后就可以运行项目了  
@@ -56,7 +56,7 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
     ```xml
     <context:component-scan base-package="xxx.xxx.xxx"/>
     ```
-    4. 数据库开发配置：引入依赖包->生成实体映射类->建dao文件->数据源连接配置->修改app-context.xml(具体待补充)->修改web.xml文件->准备Model
+    4. 数据库开发配置：引入依赖包->生成实体映射类->建dao文件->数据源连接配置->修改app-context.xml(具体待补充)->修改web.xml文件->准备Model
 2. 调试：可以用浏览器传统的调试方法，但更推荐用dorado特有的在代码中添加debugger，相当于打了个断点，在浏览器调试的时候会自动停在这儿
 3. 基于数据模型的界面开发：
 4. EL表达式：分为普通和动态EL表达式；主要区别有亮点：后者求值更晚，后者可以多次计算
@@ -84,7 +84,7 @@ dorado5点dataset是平面的，dorado7的dataset是立体的
 9. get("data:#")
 10. uploadFileAction
 11. hibernate和mybatis对比
-12. 保存数据的时候，数据的几种状态(数据实体的系统状态)判断的原理
+12. 保存数据的时候，数据的几种状态(数据实体的系统状态)判断的原理
 四. 经验
 1. 在jetty中运行项目的时候，build文件夹里的class文件有时候不自动生成，refresh项目后立刻又生成了；网上说的是选中project里的build automatically；然后我实践发现我不选中这个它才会运行的时候生成，选中了反而不生成。然后我改了jdk的版本，发现不管选不选中都不生效了，于是关闭项目重启eclipse，然后再运行才有。然后我又删了class，重启项目之后突然又不生成了。最后发现antomatically选不选中应该是没有影响(也可能跟我系统有关)，但是一定要点击project里的clean，然后重新运行就有了。
 现在我的jetty已经正常运行了，但是每次修改都哟重新启动jetty，这个时候选中project的build automatically就不用每次重启了。所以上面鼓捣了半天的内容只是因为系统不兼容或者jdk不兼容？？？

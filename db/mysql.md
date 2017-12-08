@@ -2,7 +2,7 @@
 [TOC]
 ## 一. 概述  
 ### 一些常识
-1. mysql是开源的关系型数据库管理系统，最早由MySQL AB公司开发，目前属于oracle公司
+1. mysql是开源的关系型数据库管理系统，最早由MySQL AB公司开发，目前属于oracle公司
 1. MySQL数据库命令不区分大小写。但在MAC的终端，如果你想使用tab自动补全命令，那么你就必须使用大写
 
 ## 二. 安装配置
@@ -35,6 +35,6 @@ You can turn off this feature to get a quicker startup with -A
 1. 今天在命令行里创建表，字段名和表名我都没加``，结果一直最后一行报错，然后我加上它就好了。以前好像不用加的，难道我记错了？
 2. workbench左下角显示[not connection]()，原因在于没有启动数据库服务
 ## 五. 问题
-1. 我的mac上安装的mysql没有类似my.default的配置文件，网上说的要自己在etc目录下新建一个my.cnf
-2. mysql的自动补全需要在配置文件中设置一下，由于我的mac中没找到配置文件，暂时不折腾
+1. 我的mac上安装的mysql没有类似my.default的配置文件，网上说的要自己在etc目录下新建一个my.cnf
+2. mysql的自动补全需要在配置文件中设置一下，由于我的mac中没找到配置文件，暂时不折腾
 3. mysql连接数的极限是多少：300到700(300是机械硬盘的理想情况，实际可能200就gg)

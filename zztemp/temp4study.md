@@ -1,4 +1,5 @@
 # temp4study
+1. console.log参数的写法和文档的看法
 1. http的笔记
 2. 知乎live：https://www.zhihu.com/lives/，可以回看吗
 1. tty -s
@@ -37,6 +38,7 @@ const (
 	3. jquery保存了事件的委托，可以获得
 	4. Visual Event 2
 		1. https://stackoverflow.com/questions/446892/how-to-find-event-listeners-on-a-dom-node-when-debugging-or-from-the-javascript
+  5. 当时的业务场景是点击table一行的任意地方（除了超链接这些）会选中此行，后面我用event.
 
 20. dispatchEvent 
 21. web调试优化:https://segmentfault.com/a/1190000011868916
@@ -124,7 +126,7 @@ END;
 68. 我们项目中，getFirstRow和scala和getrows等的区别，以及获取回来的值的获取方法？
 69. analys tool missing
 70. 远程如何连到局域网内的机子？
-71. source 就是. ?
+71. source 就是. ?
   [http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral](http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral)
 
 72. go get显示copy状态
@@ -133,7 +135,7 @@ END;
 75. 公司项目中组件名字用`-`不要用`.`？
 76. go里的 interface{}
   1. goinaction说的类型的状态是什么意思
-  2. 将方法的接收者声明为指针有什么好处？维护接收者值的状态？
+  2. 将方法的接收者声明为指针有什么好处？维护接收者值的状态？
   3. vscode如何跳到上次的位置
   4. go http的默认超时时间
   5. 终端的管道语法和&&
@@ -162,3 +164,4 @@ END;
    2. 各种操作，比如单位转换
 
 88. ngOnInit（）和construct
+89. linux如何查看某个软件的版本和所有支持的命令
