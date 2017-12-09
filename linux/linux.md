@@ -31,12 +31,16 @@ shift+insert:粘贴
 2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
 3. 鸟哥的linux私房菜(推荐)：[http://linux.vbird.org/linux_basic/0320bash.php#bash](http://linux.vbird.org/linux_basic/0320bash.php#bash)
 #### 1.4 网友推荐的linux书籍(按学习顺序排列)
-1. 《鸟哥的Linux私房菜：基础学习篇》
-2. 《Linux Shell 脚本攻略》
-3. 《UNIX环境高级编程》
-4. 《Linux系统编程》
-5. 《Linux内核设计的艺术》
-6. 《Linux内核设计与实现》
+1. 某个博客
+    1. 《鸟哥的Linux私房菜：基础学习篇》
+    2. 《Linux Shell 脚本攻略》
+    3. 《UNIX环境高级编程》
+    4. 《Linux系统编程》
+    6. 《Linux内核设计与实现》
+    5. 《Linux内核设计的艺术》
+2. 知乎Han:
+    1. 《The Linux Command Line》(豆瓣 9.3分)，中文名“快乐的linux命令行”,作为入门和手册,中文翻译github地址:[http://billie66.github.io/TLCL/book/](http://billie66.github.io/TLCL/book/)
+    2. 《The Pragmatic Programmer》（豆瓣 8.9分），中文名“程序员修炼之道”
 #### 1.5 动态链接和静态链接
 1. 动态链接和静态链接的区别是，前者前者不会把依赖编译进程序里，而后者会；所以前者编译的程序占用更小，在程序有相同依赖时更节约空间，而后者
 2. 动态链接库和静态链接库一般是编译集成一系列的接口（函数），在linux中前者一般后缀为`.so`，后者为`.a`
@@ -82,7 +86,11 @@ shift+insert:粘贴
 4. 提示符(意义不大)
 #### 1.8 关于文件扩展名
 1. 关于判断文件类型：与win不同的是，linux不是根据文件的扩展名来判断文件是否能执行，而是查看文件内的头部信息来判断，另外，gcc是根据文件扩展名来判断
-2. 关于是否加上文件名：虽然linux不通过扩展名判断，但还是推荐加上，为了使用时方便
+2. 关于文件命名：
+    1. 关于扩展名
+        linux没有文件扩展名的概念,即linux不通过扩展名判断文件类型.但是还是推荐加上扩展名，这样使用时更方便,而且有些应用程序可能会用到文件扩展名
+    2. 关于标点符号
+        不要使用空格,支持`.`,`-`和`_`
 #### 1.9 关于distribution
 distribution一般是指发行版的意思，Linux真正意义上说只是一个内核，我们通常使用的都是基于Linux内核的发行版了。如常见的Linux发行版有：Ubuntu、Fedora、Suse、ArchLinux等
 #### 1.10 关于标准输入输出
@@ -140,8 +148,21 @@ pbcopy < myFile.txt
         >注意linux中.代表当前目录,..代表父目录
         5. 参数`-l`:以长格式(每个一行?)查看文件详细信息
 2. 查看命令历史：`history`
+3. 查看日期:`date`
+    1. 直接使用显示类似:`2017年12月 9日 星期六 20时19分25秒 CST`
+    2. 还可以用date的格式化输出功能,比如`date +%Y/%m/%d`,会显示`2017/12/09`.从这里也可以看出linux的命令选项前不仅可以用`-`,在特殊情况下还可以用`+`
+4. 查看日历:`cal`
+    1. 查看某年的日历:如,`cal 2017`,查看某年某月的日历:`cal [mon] [year]`
 ### 2 文件操作相关
-#### 2.1 压缩相关
+1. 关于linux的文件系统树
+    linux以分层目录来组织所有文件，第一级目录称为根目录(唯一)，对于连接到计算机的磁盘或存储设备，则是挂载到目录树的某个节点上，区别于win中的每个存储设备都有独自的文件系统
+#### 2.1 文件系统跳转
+1. 查看当前目录：`pwd`（print working directory）
+2. 更改工作目录,其中`.`是当前目录,`..`是父级目录,而且几乎所有情况下都可以省略`./`,因为它是隐含的：
+    1. 后面可接相对路径和绝对路径,直接`cd`则是跳转到home目录
+    2. 跳到上一次的目录:`cd -`
+    3. 跳到某个用户的目录:`cd ~[uerName]`
+#### 2.2 压缩相关
 1. 首先明确linux中打包和压缩是不同的，打包是把多个文件变成一个总的文件；因为linux中很多压缩程序只能对一个文件压缩，所以一般是先打包再压缩
 2. tar
     >关于tar这个命令名字的来历：Initially, tar archives were used to store files conveniently on magnetic tape. The name "Tar" comes from this use（最初，tar档案被用来方便地在磁带上存储文件。 “焦油”这个名字来自这个用途。）
@@ -161,9 +182,9 @@ pbcopy < myFile.txt
     # 解压缩：
     tar -zxv -f filename.tar.gz -C 欲解压缩的目录
     ```
-#### 2.2 文件移动复制
+#### 2.3 文件移动复制
 1. 
-### 3 剪切板xsel
+### N 剪切板xsel
 ```bash
 cat README.TXT | xsel  
 # 如有问题可以试试-b选项
@@ -175,9 +196,11 @@ xsel -c
 ```
 
 
-## 四. 使用
-1. 
-## 五. 问题
+## 四 使用
+1 
+## 五 问题
+### 1 已解决
+### 2 未解决
 1. 学会使用linux联机帮助
 2. 在命令行执行命令的时候输入命令会怎么样
 3. linux的鼠标中键表示什么？
@@ -199,3 +222,5 @@ dpkg -L package #列出与该包关联的文件
 14. 内容太多终端显示不完怎么办，终端中如何翻页等
 15. login shell和non-login shell，参考鸟哥的linux私房菜
 16. copy的几种方式，除了cp还有什么
+17. 关于linux常用目录
+    1. `/usr/bin`:大多数系统程序的安装目录

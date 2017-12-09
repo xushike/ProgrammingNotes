@@ -56,3 +56,7 @@ java所有对象都继承自Object，这就是单根结构
 #### 4.2 常量池（constant pool）
 常量池指在编译期被确定，并被保存在已编译的.class文件中的一些数据。它包括关于类、方法、接口中的常量，也包括字符串直接量。（我觉得这里的常量池应该指的每个class自带的常量池）
 ### 5 《goinactiongo语言实战》
+### 6 《The Linux Command Line》
+#### 6.1 主要笔记
+1. 人们说，“图形用户界面让简单的任务更容易完成， 而命令行界面使完成复杂的任务成为可能”，到现在这句话仍然很正确。
+>It’s been said that “graphical user interfaces make easy tasks easy, while command line interfaces make difficult tasks possible” and this is still very true today.

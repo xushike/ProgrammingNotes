@@ -45,7 +45,7 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 #### 1.2 打开文件时提示文本编码 unicode (utf-8) 不适用
 在应用程序中找到“文本编辑”，在偏好设置中->打开和存储->纯文本文件编码里的打开文件和储存文件都改为中文(GB18030)
 #### 1.3 关于mac的vscode里写markdown出现的�字符
-在mac版的vscode中看不出来，但是在win班vscode中会显示成![](../picture/mac/0-0-falseInWin.png),在linux版vscode中会显示成![](../picture/mac/0-1-falseInLinux.png),在github中直接预览会显示成![](../picture/mac/0-2-InGithub.png)，如果开启vscode的`"editor.renderControlCharacters": true(控制编辑器是否应呈现控制字符)`选项，则在win和linux中都会显示成bs(退格)字符![](../picture/mac/0-3-trueInWin.png)，推测是mac中输入法引起的，待验证
+在mac版的vscode中看不出来，但是在win班vscode中会显示成![](../picture/mac/0-0-falseInWin.png),在linux版vscode中会显示成![](../picture/mac/0-1-falseInLinux.png),在github中直接预览会显示成![](../picture/mac/0-2-InGithub.png)，如果开启vscode的`"editor.renderControlCharacters": true(控制编辑器是否应呈现控制字符)`选项，则在win,linux和mac中都会显示成bs(退格)字符![](../picture/mac/0-3-trueInWin.png)，经过我用简体拼音和搜狗拼音的简单测试，发现在mac版vscode的中文输入法下：按下任意字母，出现中文候选后删除，删除完刚才输入的字母再按删除就会出现这个控制字符，如果没有打开控制字符是否呈现的开关则看不到，所以目前的解决办法是打开开关。
 ### 2 未解决
 ### 3. xcode的使用
 ### 4. .bash_profile和.bashrc和linux是反过来的？

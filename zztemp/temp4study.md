@@ -162,6 +162,7 @@ END;
    1. 开发发货记录中`t.order_no = nvl(null,t.order_no)`中，如果order_no在表中的定义为可为空，那么这句就查不出东西，这是什么逻辑？
    新的写法： `&t.employee_id = @id`?
    2. 各种操作，比如单位转换
+   3. 分组,各种函数等
 
 88. ngOnInit（）和construct
 89. linux如何查看某个软件的版本和所有支持的命令
