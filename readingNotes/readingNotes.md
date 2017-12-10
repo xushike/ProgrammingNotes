@@ -60,3 +60,4 @@ java所有对象都继承自Object，这就是单根结构
 #### 6.1 主要笔记
 1. 人们说，“图形用户界面让简单的任务更容易完成， 而命令行界面使完成复杂的任务成为可能”，到现在这句话仍然很正确。
 >It’s been said that “graphical user interfaces make easy tasks easy, while command line interfaces make difficult tasks possible” and this is still very true today.
+2. 记住在Linux中，没有秘密存在
