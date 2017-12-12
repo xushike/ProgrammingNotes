@@ -28,17 +28,17 @@ const (
 17. developers.google.com
 18. querySelector笔记
 19. 获取事件的几种方法：
-	1. 原生的js似乎只能遍历所有属性来判断
-		1. http://blog.csdn.net/theforever/article/details/6029382
-	2. google  chrome dev tools 中`getEventListeners(document.querySelector("table tbody tr td span"))`，但只能在浏览器中用
-		1. https://developers.google.com/web/tools/chrome-devtools/console/command-line-reference?hl=zh-cn
-		1. http://blog.csdn.net/diquren/article/details/50543610
-		2. 有没有办法在js中调用呢
-		4. chrome 的开发者工具有此功能。选取元素后可以在右侧的 Event Listeners中看到绑定的事件
-	3. jquery保存了事件的委托，可以获得
-	4. Visual Event 2
-		1. https://stackoverflow.com/questions/446892/how-to-find-event-listeners-on-a-dom-node-when-debugging-or-from-the-javascript
-  5. 当时的业务场景是点击table一行的任意地方（除了超链接这些）会选中此行，后面我用event.
+    1. 原生的js似乎只能遍历所有属性来判断
+        1. http://blog.csdn.net/theforever/article/details/6029382
+    2. google  chrome dev tools 中`getEventListeners(document.querySelector("table tbody tr td span"))`，但只能在浏览器中用
+        1. https://developers.google.com/web/tools/chrome-devtools/console/command-line-reference?hl=zh-cn
+        1. http://blog.csdn.net/diquren/article/details/50543610
+        2. 有没有办法在js中调用呢
+        4. chrome 的开发者工具有此功能。选取元素后可以在右侧的 Event Listeners中看到绑定的事件
+    3. jquery保存了事件的委托，可以获得
+    4. Visual Event 2
+        1. https://stackoverflow.com/questions/446892/how-to-find-event-listeners-on-a-dom-node-when-debugging-or-from-the-javascript
+    5. 当时的业务场景是点击table一行的任意地方（除了超链接这些）会选中此行，后面我用event.
 
 20. dispatchEvent 
 21. web调试优化:https://segmentfault.com/a/1190000011868916
@@ -134,16 +134,17 @@ END;
 74. 同时执行多条命令怎么搞，连接多个命令用什么
 75. 公司项目中组件名字用`-`不要用`.`？
 76. go里的 interface{}
-  1. goinaction说的类型的状态是什么意思
-  2. 将方法的接收者声明为指针有什么好处？维护接收者值的状态？
-  3. vscode如何跳到上次的位置
-  4. go http的默认超时时间
-  5. 终端的管道语法和&&
-  6. teamviewer操作
-  7. angular笔记
-    1. ngmodel、value等还需要熟悉
-    2. 可以甲乙双绑，然后乙丙单帮或者其他吗
-    3. 表单的各种类型
+    1. recover()和匿名函数
+    1. goinaction说的类型的状态是什么意思
+    2. 将方法的接收者声明为指针有什么好处？维护接收者值的状态？
+    3. vscode如何跳到上次的位置
+    4. go http的默认超时时间
+    5. 终端的管道语法和&&
+    6. teamviewer操作
+    7. angular笔记
+        1. ngmodel、value等还需要熟悉
+        2. 可以甲乙双绑，然后乙丙单帮或者其他吗
+        3. 表单的各种类型
 77. go不能调存储过程
 78. plsql修改函数要这样：`CREATE OR REPLACE FUNCTION`?
 79. go中的变量带下划线会有警告
@@ -155,19 +156,23 @@ END;
 85. angular各种组件的封装
 86. oracle中''和null一样？而且可以赋值给各种类型？
 87. git
-  1. 合并之后出错的合理回滚方式？合作时别人出问题了也可以快速的恢复
-  2. 如何查看远程详细的改动
+    1. 合并之后出错的合理回滚方式？合作时别人出问题了也可以快速的恢复
+    2. 如何查看远程详细的改动
 
 87. oracle 
-   1. 开发发货记录中`t.order_no = nvl(null,t.order_no)`中，如果order_no在表中的定义为可为空，那么这句就查不出东西，这是什么逻辑？
-   新的写法： `&t.employee_id = @id`?
-   2. 各种操作，比如单位转换
-   3. 分组,各种函数等
-   4. 日期插入和各种格式变换
-   5. left join等出错时多查出数据是什么情况
-   6. 如果a表有两个employee_id(意义不一样),连employee表是连几次?
-   7. 什么情况下会用到右链接
-   8. 左链接的时候,如何先筛选左边然后链接?
+    1. 项目里Scalar等各用于什么情况
+    1. 分页的研究,为什么里面也需要排序?
+    2. 普通查询需要事务吗
+    1. 开发发货记录中`t.order_no = nvl(null,t.order_no)`中，如果order_no在表中的定义为可为空，那么这句就查不出东西，这是什么逻辑？
+    新的写法： `&t.employee_id = @id`?
+    2. 各种操作，比如单位转换
+    3. 分组,各种函数等
+    4. 日期插入和各种格式变换
+    5. left join等出错时多查出数据是什么情况
+    6. 如果a表有两个employee_id(意义不一样),连employee表是连几次?
+    7. 什么情况下会用到右链接
+    8. 左链接的时候,如何先筛选左边然后链接?
+    9. 多人同时操作的时候，是怎么保证一致性的，像线程那样锁住？
 
 88. ngOnInit（）和construct
 89. linux如何查看某个软件的版本和所有支持的命令
@@ -178,3 +183,6 @@ END;
 94. angular中组件绑定中不能使用下划线?比如`start_time`和`startTime`
 95. 切片数组的合理创建方法
 96. 一生何求
+97. ts的`?:`是什么写法
+98. 如何修改vscode里`tab`键的格数
+99. linux打包命令
