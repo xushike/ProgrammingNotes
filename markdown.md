@@ -64,8 +64,9 @@ System.out.println("hello world!");
 2. html注释`<!-- xxx -->`：大部分markdown编辑器都支持，缺点是注释的内容会生成到最终的产品里去，只不过被隐藏了。例子如下：
 <!-- 这里的内容不会显示出来 -->
 ### 14 表格
-markdown原生不支持,但支持html的table标签.gfm支持该表格书写.本人测试发现目前的表格内容不能再换行,所以功能比较单一,但是有些地方用表格效果还是很好
+markdown原生不支持,但支持html的table标签.gfm支持该表格写法,注意**表格语法前必须空出一行**,否则github中不会生效.
 1. 主要用法就是下面这样,注意中间的冒号决定所在列的对齐方向
+
     |标题1|标题2|标题3|标题4|标题5|
     |-|-|:-|-:|:-:|
     |内容1|内容2|内容3,哈哈哈哈哈哈啊哈哈|内容4,哈哈哈哈哈哈哈|内容5,哈哈哈哈哈哈哈啊|
@@ -79,6 +80,7 @@ markdown原生不支持,但支持html的table标签.gfm支持该表格书写.本
         * `全方大的空白&emsp;或&#8195;`
         * `不断行的空白格&nbsp;或&#160;`
 ## 四 GFM(Github Flavored Markdown)(待补充)
+官方参考:[https://github.github.com/gfm/](https://github.github.com/gfm/)
 Github用的GFM，风格很漂亮，简洁美观大方。 GFM对标准Markdown做了少了修改
 
 
