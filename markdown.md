@@ -42,9 +42,10 @@ Content from cell 1 | Content from cell 2
 Content in the first column | Content in the second column
 
 ### 9.转义
-    不想显示Markdown标记时可以在markdown符号前面加上反斜杠或者用``包裹，比如
+
+不想显示Markdown标记时可以在markdown符号前面加上反斜杠或者用``包裹，比如
 *This text will be bold*
-    \*This text will be bold\*
+\*This text will be bold\*
 
 ### 10.上标和下标
 19^th^
