@@ -244,3 +244,10 @@ END;
 131. js中新建之后没有声明类型和值,默认是string类型?
 132. js forEach效率和最好的遍历
     1. js 的foreach是有序的吗
+    2. 默认的变量是undefined?
+    3. 默认的字符串也是undefined?
+    4. js中传一个方法给另一个调用效率如何
+    5. js临时环境搭建
+
+133. `don't use underscores in Go names; var card_num should be cardNum`
+144. vscode移到行首行位快捷键

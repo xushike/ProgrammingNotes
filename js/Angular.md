@@ -25,3 +25,4 @@ var app = angular.module("myApp", []);
 1. 表单验证
 2. 声明周期
 3. npm run start \ maven install \ng server \node xxx等命令的场景和用法？
+4. angular为什么重量？vue和react

@@ -11,3 +11,5 @@
 1. Last Name = Family Name = surname= 姓; 
 2. First Name = Given Name = 名
 3. 外国人的名是在前，姓氏是在后面。比如HarryPotter，姓是Potter。
+## 五 问题
+1. 否定句中and和or，以及either等的用法

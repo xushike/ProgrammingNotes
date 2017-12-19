@@ -24,3 +24,4 @@
 25. linux的挂载和/dev/sda
 26. html标签中,不能监听退格键触发的事件?
 27. 马赛克和恢复
+28. python and lua
