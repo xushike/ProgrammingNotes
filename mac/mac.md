@@ -28,7 +28,10 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
     1. `ls ~ | pbcopy`:将home目录文件列表复制到剪切板
     2. 将任意文件内容读入剪切板,如`pbcopy < hello.txt`
     3. 重定向剪切板的内容到文件:`pbpaste >> a.file`
-3. mdfind
+3. 文本转语音（TTS）的工具:`say`
+4. Homebrew
+
+    mac下的包管理工具.Homebrew最棒的一点是：所有的文件都被约束在/usr/local/一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
 ## 四. mac上好用工具介绍
 ### 1 mac自带的
 #### 1.1 spotlight

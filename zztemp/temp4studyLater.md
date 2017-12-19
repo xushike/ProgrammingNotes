@@ -25,3 +25,10 @@
 26. html标签中,不能监听退格键触发的事件?
 27. 马赛克和恢复
 28. python and lua
+29. 云计算开源平台OpenStack
+30. Cookies 的跨域脚本攻击
+
+    [http://www.oschina.net/translate/yummy-cookies-across-domains](http://www.oschina.net/translate/yummy-cookies-across-domains)
+
+31. RESTful AP
+32. Jenkins
