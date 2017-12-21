@@ -70,7 +70,50 @@ HTML 应用程序，通常建议把所有的脚本都放置在 `<body> `元素�
 5. match()方法：调用者必须是string（之前在angular表单中用number类型调用该方法会报错）
 ### 4 对象
 #### 4.1 window
-1. 关于window.location和window.open：前者可以当字符串使用，
+所有浏览器都支持 window对象。它表示浏览器窗口。
+所有js全局对象、函数以及变量都是window对象的成员。甚至HTML DOM的document 也是window对象的属性之一
+1. 关于Window和window
+
+    官网的说法是windowh和self是对Window本身的引用,但知乎网友的回答应该准确:Window是接口，window是实例而且是单实例，全局变量是window的属性。
+1. 关于window尺寸
+
+    浏览器窗口的尺寸不包括工具栏和滚动条.有三种方法可以获取:
+    1. 对于IE9和其他大部分browser:
+        - window.innerHeight - 浏览器窗口的内部高度
+        - window.innerWidth - 浏览器窗口的内部宽度
+    2. 对于Internet Explorer 8、7、6、5：
+        - document.documentElement.clientHeight
+        - document.documentElement.clientWidth
+    3. 其他:
+        - document.body.clientHeight
+        - document.body.clientWidth
+    4. 所有最佳实践如下,
+        ```JavaScript
+        var w=window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+        ```
+3. 常用属性
+    1. console
+
+        用于向浏览器控制台输出,它的方法应该主要用于调试, 而不是显示给用户.打印单个对象时,直接输出对象的字符形式;打印多个对象时类似c的printf风格.也接受字符串拼接.google develop tools中可以打印样式甚至图片.常用方法如下,
+        1. log()
+        2. info()
+        3. warn()
+        4. error()
+        5. time()和timeEnd():一般都是两个一起使用,前者启动计时器,后者以毫秒为单位输出计时器经过的时间.
+        想为打印的输出增加样式,使用`console.log("%c需要输出的信息 ", "css 代码")`,如
+        ```javascript
+        console.log("%cMy stylish message", "color: red; font-style: italic");
+        ```
+2. 常用方法
+    1. window.open() - 打开新窗口
+    2. window.close() - 关闭当前窗口
+    3. window.moveTo() - 移动当前窗口
+    4. window.resizeTo() - 调整当前窗口的尺寸
+
+3. 关于window.location和window.open：前者可以当字符串使用，
+#### 4.2 Array
 ### 5 事件
 
 ## 四. 使用

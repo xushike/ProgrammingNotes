@@ -33,3 +33,7 @@
 31. RESTful AP
 32. Jenkins
 33. 元编程
+34. 反编译
+35. js调试断点、堆栈跟踪stack trace,调用栈是什么gui
+36. 断言的作用
+37. jquery
