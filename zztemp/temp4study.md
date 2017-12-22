@@ -252,3 +252,6 @@ END;
 133. `don't use underscores in Go names; var card_num should be cardNum`
 144. vscode移到行首行位快捷键
 145. axure
+146. 图片后缀名的大写和小写会影响显示？比如代码里是jpg，但是图片实际是JPG，这样本地显示出来了，但是线上显示不出来。
+147. es5的`export class StringUtility...`和`export function format`
+148. linux的install.log
