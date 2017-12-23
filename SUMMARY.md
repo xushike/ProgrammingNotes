@@ -97,6 +97,7 @@
     * [4.jenkins](se/4.jenkins.md)
     * [5.docker](se/5.docker.md)
     * [6.DataVisualization数据可视化](se/6.DataVisualization.md)
+    * [7.abandonTechnology可放弃的技术](se/7.abandonTechnology.md)
 * [accounting会计学](accounting.md)
 * [math](math/README.md)
 * [zztemp草稿](zztemp/temp.md)
