@@ -60,21 +60,24 @@ git config --global user.email "xxx"
 ### 1. 本地和远程的关联
 1. 本地和远程仓库的关联（本地和远程都建好了仓库）:
     1. 本地和远程关联
+
         ```bash
         #sshkey的方式，其中的origin是远程默认的名字，也可以换成其他名字(不是必须跟项目名一样)
-        git remote add origin git@github.com:xushike/xxx.git
+        git remote add origin https://github.com:xushike/xxx.git
         #或者https的方式（待补充）
         ...
         ```
     2. 查看关联
+
         ```bash
         #查看关联的远程仓库
         git remote 
         #查看关联仓库xxx的详细信息(包括分之的关联)
         git remote show xxx
         ```
-    3. 取消关联
-        1. 如果关联错了(待补充)
+
+    3. 取消关联:`git remote remove origin`
+
 2. 分支关联，用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
     ```bash
     #关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track)
@@ -130,3 +133,5 @@ git config --global user.email "xxx"
 14. 为什么我 mac上的git config user.name等没有配置但是不输入密码 就可以提交，因为sshkey？ 
 15. 可以绑定多个远程仓库吗？
 16. Pull Request 的命令行管理:[http://www.ruanyifeng.com/blog/2017/07/pull_request.html](http://www.ruanyifeng.com/blog/2017/07/pull_request.html)
+
+17. ip前的git和https有什么区别
