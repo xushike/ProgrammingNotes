@@ -255,3 +255,4 @@ END;
 146. 图片后缀名的大写和小写会影响显示？比如代码里是jpg，但是图片实际是JPG，这样本地显示出来了，但是线上显示不出来。
 147. es5的`export class StringUtility...`和`export function format`
 148. linux的install.log
+149. 网页当页内跳转如何回到前一个位置

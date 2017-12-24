@@ -1,6 +1,6 @@
 # english
 ## 一. 概述
-## 二. 一些词语
+## 二. 常用非编程词语
 ### 1. -ish
 1. 放在一些词后面，意思是：类似。例如：girlish-少女般的
 2. 放在形容词的后面，意思是：有点儿，或者叫“些（xue）微” - 岳云鹏语。例如greenish-微绿色
@@ -11,5 +11,10 @@
 1. Last Name = Family Name = surname= 姓; 
 2. First Name = Given Name = 名
 3. 外国人的名是在前，姓氏是在后面。比如HarryPotter，姓是Potter。
+## 三 常用编程词语
+1. Parse tree:语法树
+
+    syntax tree:语法树
+    abstract syntax tree:抽象语法树
 ## 五 问题
 1. 否定句中and和or，以及either等的用法
