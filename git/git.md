@@ -80,10 +80,10 @@ git config --global user.email "xxx"
 
 2. 分支关联，用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
     ```bash
-    #关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track)
+    #关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track,-u也可以?)
     git push -u origin master 或者 git push --track origin master
-    #如果只想关联，可以用
-    git branch --track my_local_branch_name origin/my_remote_branch_name
+    #如果只想关联，可以如下使用(远程分支前是/还是空格?)
+    git branch --track my_local_branch_name origin my_remote_branch_name
     ```
 ### 2. 仓库基本文件
 #### 1. .gitignore文件
