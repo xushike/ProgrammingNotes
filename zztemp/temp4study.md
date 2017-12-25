@@ -256,3 +256,12 @@ END;
 147. es5的`export class StringUtility...`和`export function format`
 148. linux的install.log
 149. 网页当页内跳转如何回到前一个位置
+150. linux多个root登录会怎么样？
+151. windows中按时间排序,批量修改和复制移动等等.
+152. 生产者消费者和订阅的区别
+153. oracle外面的join后可以不跟条件吗
+154. oracle多个and和or
+155. js中都为true时返回什么
+156. angular的Input()和ViewChild()
+157. constructor和ngoninit、ngAfterViewInit\FormControl
+158. TSlint
