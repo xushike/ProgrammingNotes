@@ -36,7 +36,9 @@
 #### 2.5 run
 编译且运行
 #### 2.6 get
-递归获取依赖,前提是安装了对应的y源码控制工具(比如git),如`go get github.com/xushike/studyGo`
+通过源码控制工具(比如git)递归获取代码包及其依赖,已有的不会再去获取,如`go get github.com/xushike/studyGo`
+1. 参数`-u`:强制更新已有的代码包及其依赖
+2. 参数`-v`:打印出被构建的代码包的名字
 #### 2.7 vet
 可以捕获一些常见的错误，如格式化字符串等
 #### 2.7 fmt
@@ -530,3 +532,5 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 15. why golang don't support Stored Procedure or Generic?
 16. 一些文章
     1. [http://blog.csdn.net/libaineu2004/article/details/49722651](http://blog.csdn.net/libaineu2004/article/details/49722651)
+
+17. go声明字符串和多行字符串可用``(加入笔记)

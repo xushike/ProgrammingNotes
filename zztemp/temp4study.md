@@ -222,19 +222,9 @@ END;
 115. 瞅字由贬义吗
 116. golang for range 中除了index和element，还可以像if那样再声明其他变量吗
 117. varchar2和varchar
-118. `ctrl+l`和`clear`
 119. `pwd`等命令会在结尾的时候加上换行符,有时候会不太方便,怎么去掉
 120. 小米wifi后面的符号怎么弄的,搜狗等怎么输入滑稽符号
 121. 移动基站到底是什么样的
-122. 编辑百度百科`delete键`的词条
-121. 
-122. nihao
-122. \b
-123. &#34
-
-�
-124. <p>&#8</p><p>&#8</p><p>&#8</p><p>&#8</p><p>&#8</p>
-124. <p>&#34</p><p>&#34</p><p>&#0</p><p>&#8</p>
 125.  字元
 126. 如何定位到光标的位置,vscode回到上一次光标的 位置
 127. git新建分支和推送分支等操作
@@ -261,7 +251,7 @@ END;
 152. 生产者消费者和订阅的区别
 153. oracle外面的join后可以不跟条件吗
 154. oracle多个and和or
-155. js中都为true时返回什么
 156. angular的Input()和ViewChild()
 157. constructor和ngoninit、ngAfterViewInit\FormControl
 158. TSlint
+159. x7f-xff中的￥

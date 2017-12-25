@@ -228,6 +228,9 @@ pbcopy < myFile.txt
     4. 注意,跳转时路径中间必须都是目录,不能包含文件,比如`cd ./xxx.txt`就不行
 #### 2.2 文件创建
 1. 创建目录:`mkdir`,可跟多个参数,如`mkdir dir1 dir2 dir3`
+    1. 参数`-p`(`--parents`):若所要建立目录的上层目录目前尚未建立，则会一并建立上层目录
+
+来自: http://man.linuxde.net/mkdir
 2. 创建文件:
 #### 2.3 文件移动、复制、重命名、删除、链接
 1. 复制文件和目录:`cp`
@@ -243,7 +246,7 @@ pbcopy < myFile.txt
     用法和`cp`很像,而且`scp`可以跨服务器,传输是安全的,还非常不占资源,当你服务器硬盘变为只读 read only system时，用scp可以帮你把文件移出来。
     1. 基本用法:`scp item user_name@remote_ip:dir`
 3. 移动或重命名文件:`mv`
-    使用方法和`cp`很像,操作成功后原来的文件名不再存在
+    使用方法和`cp`很像,但是不用加`-r`,操作成功后原来的文件名不再存在
     1. 移动或重命名单个文件或目录:`mv item1 item2`
         1. 对于`mv file1 file2`,如果file2存在,则被重写为file1;如果file2不存在,则创建file2.每种情况下file1都不会存在
         2. 对于`mv dir1 dir2`,如果dir2存在,移动dir1及它的内容到dir2中;如果dir2不存在,创建dir2,将dir1的内容移到dir2.
