@@ -21,6 +21,7 @@ var app = angular.module("myApp", []);
 ### 4 管道
 1. http://blog.csdn.net/qq451354/article/details/54141024
 ## 四. 使用
+1. 双向绑定中某方的数据延迟取得也会生效
 ## 五. 问题
 1. 表单验证
 2. 声明周期
