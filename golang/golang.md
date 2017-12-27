@@ -534,3 +534,4 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
     1. [http://blog.csdn.net/libaineu2004/article/details/49722651](http://blog.csdn.net/libaineu2004/article/details/49722651)
 
 17. go声明字符串和多行字符串可用``(加入笔记)
+18. go new 对象
