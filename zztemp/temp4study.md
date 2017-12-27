@@ -258,3 +258,35 @@ END;
 160. js string默认取值是什么
 161. 主从高可用
 162. go grpc为什么啥不用
+163. 在各种语言（js等）的map()等lambda表达式中return的话只会退出lambda？
+164. 没有primarykey,可以插入重复数据吗
+165. go有序列化吗
+166. 冷热启动
+167. js的map和foreach
+168. ubuntu永久了变卡是什么gui
+
+169. 
+```
+
+    //选择运营商产品
+    carrierProductChange(f) {
+        let form = f.value;
+        console.log("form:", form)
+        if (form.up_product_id != "" && form.carrier_pool_name != undefined) {
+            this.carrierProductList.forEach(pro => {
+                if (pro["up_product_id"] == form.up_product_id) {
+                    this.carrier_pool_name = pro["product_name"]
+                    return
+                }
+                console.log("第三层")
+
+            });
+            console.log("第二层")
+        }
+        console.log("第一层层")
+    }
+```
+并没有真正return,每次这三层都会打印,如何在return时真正退出方法?其他语言的情况?
+170. js中return、continue、break
+171. angular和react中没被渲染(比如隐藏、ngif为false)的组件能被获取到吗，能修改值吗
+172. angular不推荐通过dom的方式修改htmml的值?那如何修改其他ngmodel的值（不用数据绑定）
