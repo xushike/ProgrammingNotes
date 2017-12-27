@@ -290,3 +290,5 @@ END;
 170. js中return、continue、break
 171. angular和react中没被渲染(比如隐藏、ngif为false)的组件能被获取到吗，能修改值吗
 172. angular不推荐通过dom的方式修改htmml的值?那如何修改其他ngmodel的值（不用数据绑定）
+173. typescript的as感觉很有用，转换成原生js后是什么
+174. js && 中可以用赋值语句吗
