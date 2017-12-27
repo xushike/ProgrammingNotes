@@ -292,3 +292,10 @@ END;
 172. angular不推荐通过dom的方式修改htmml的值?那如何修改其他ngmodel的值（不用数据绑定）
 173. typescript的as感觉很有用，转换成原生js后是什么
 174. js && 中可以用赋值语句吗
+175. 感觉我的mac写ts还需要一些插件,明明没问题却总是报错
+176. package.json的学习
+177. jquery现状如何,感觉不需要也可以写好项目
+178. http2.0和js模块化
+
+    [https://zhuanlan.zhihu.com/p/26118022](https://zhuanlan.zhihu.com/p/26118022)
+179. 悲观锁和乐观锁

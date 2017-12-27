@@ -2,12 +2,19 @@
 [TOC]
 ## 一 概述
 TypeScript是JavaScript的一个超集，而且本质上向这个语言添加了**可选的静态类型和基于类的面向对象**编程。是由微软开发的自由和开源的编程语言。TypeScript可以编译出纯净、简洁的JavaScript代码，并且可以运行在任何浏览器上
-### 1 关于TypeScript的一些诶常识
-#### 1.1 编译错了依然会生成文件?
+### 1 TypeScript的历史
+2. 优缺点
+### 2 关于TypeScript的一些常识
+#### 2.1 编译错了依然会生成文件?
 ## 二 安装配置
-### 1 npm安装
+### 1 npm安装(推荐)
 1. `npm install typescript -g`
 2. 用`tsc -v`查看是否正确安装了typescript
+### 2 配置
+1. 大型项目中使用`tsconfig.json`来配置,很方便.
+### 3 常用命令
+1. 编译成js文件:`tsc xxx.ts...`,默认覆盖已有的
+    1. 参数`--watch`:每次保存时会自动用增量编译(incremental compilation)的方式编译ts文件
 ## 三 基础
 ### 1 数据类型
 #### 1.1 基础类型(和js几乎相同，除了是静态)
@@ -86,11 +93,70 @@ TypeScript是JavaScript的一个超集，而且本质上向这个语言添加了
     ```
 #### 1.2 高级类型
 
-### 2 变量声明
-### 3 接口
+### 2 变量
+### 3 interfaces接口
+1. 接口的用处
+
+    会根据一个对象是否符合某种特定结构来进行类型检查.编译成js时接口的代码会消失,所以ts接口的唯一的目的是在开发阶段里起到辅助的作用.
+    ```typescript
+    interface Food {
+        name: string;
+        calories: number;
+    }
+
+    function speak(food: Food): void {
+        console.log("Our " + food.name + " has " + food.calories + " calories.");
+    }
+
+    var ice_cream = {
+        name: "ice cream",
+        calories: 200
+    }
+
+    speak(ice_cream);
+    ```
 ### 4 类
+和Java,C#中的类非常相似，包括了继承，抽象类，接口实现，setters/getters 方法等
+1. 类,如下
+
+    ```typescript
+    class Menu {
+        items: Array<string>;  
+        pages: number;       
+
+        constructor(item_list: Array<string>, total_pages: number) {
+        this.items = item_list;    
+        this.pages = total_pages;
+        }
+    
+        // Methods
+        list(): void {
+        console.log("Our menu for today:");
+        for(var i=0; i<this.items.length; i++) {
+            console.log(this.items[i]);
+        }
+        }
+    
+    } 
+    
+    var sundayMenu = new Menu(["pancakes","waffles","orange juice"], 1);
+    
+    sundayMenu.list();
+    ```
+2. 继承
 ### 5 函数
 ### 6 泛型
+泛型（Generics）是允许同一个函数接受不同类型参数的一种模板。相比于使用 any 类型，使用泛型来创建可复用的组件要更好，因为泛型会保留参数类型。如,
+```typescript
+function genericFunc(argument) {
+    var arrayOfT = []; // Create empty array of type T.
+    arrayOfT.push(argument); // Push, now arrayOfT = [argument].
+    return arrayOfT;
+}
+var arrayFromString = genericFunc("beep");
+console.log(arrayFromString[0]); // "beep"
+console.log(typeof arrayFromString[0]);
+```
 ### 7 枚举
 ### 8 类型推论
 ### 9 高级类型
