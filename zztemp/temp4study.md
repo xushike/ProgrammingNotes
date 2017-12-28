@@ -292,3 +292,24 @@ END;
 172. angular不推荐通过dom的方式修改htmml的值?那如何修改其他ngmodel的值（不用数据绑定）
 173. typescript的as感觉很有用，转换成原生js后是什么
 174. js && 中可以用赋值语句吗
+175. angular中number类型的input的max绑定变量没有生效是什么原因。
+176. 
+```javascript
+	ngAfterViewInit(): void {
+		if (this.isAdd) {
+			this.upChannel.valueChanges.subscribe(
+				res => {
+					if (res) {
+						this.http.post(AppSettings.apis.queryProductListByChannelID, { up_channel_id: res }).subscribe(
+							res => {
+								this.upProductList = res
+							}
+						)
+					} else {
+						this.upProductList = [{}]
+					}
+				}
+			)
+		}
+	}
+```
