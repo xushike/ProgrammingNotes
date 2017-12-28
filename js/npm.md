@@ -1,7 +1,7 @@
 # npm
 [TOC]
 ## 一. 概述
-npm是世界上最大的js包管理g工具。
+npm是世界上最大的js包管理工具。
 ## 二. 安装配置
 ### 1 windows下的安装
 1. 直接安装nodeJS，里面带有npm
@@ -19,6 +19,8 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
     ```bash
     registry =https://registry.npm.taobao.org
     ```
+### 3 mac下的安装
+1. mac下home目录默认没有`.npmrc`文件,使用`npm config set registry https://registry.npm.taobao.org`命令会生成并配置好`.npmrc`,一步到位.
 ## 三. 基础
 ### 1. npm install 
 包名后可以跟[@version]即包的 版本号
@@ -47,3 +49,4 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
 ## 五. 问题
 1. 淘宝镜像
     1. cnpm uninstall并不能生效，不知道为什么
+2. package-lock.json

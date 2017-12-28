@@ -313,3 +313,10 @@ END;
 		}
 	}
 ```
+175. 感觉我的mac写ts还需要一些插件,明明没问题却总是报错
+176. package.json的学习
+177. jquery现状如何,感觉不需要也可以写好项目
+178. http2.0和js模块化
+
+    [https://zhuanlan.zhihu.com/p/26118022](https://zhuanlan.zhihu.com/p/26118022)
+179. 悲观锁和乐观锁
