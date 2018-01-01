@@ -163,6 +163,7 @@ console.log(typeof arrayFromString[0]);
 ### 10 Symbols
 ### 11 迭代器和生成器
 ### 12 模块
+导出和导入
 ### 13 命名空间
 ### 14 命名空间和模块
 ### 15 模块解析
@@ -171,3 +172,7 @@ console.log(typeof arrayFromString[0]);
 ### 18 装饰器
 ### 19 Mixins
 ### 10 三斜线指令
+## 五 问题
+1. 和typings的关系  
+## 六 学习
+1. [http://web.jobbole.com/87535/](http://web.jobbole.com/87535/)

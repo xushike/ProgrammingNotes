@@ -4,8 +4,10 @@
 1. js5是没有块级作用域的。函数是JavaScript中唯一拥有自身作用域的结构，也就是说js有函数作用域和一个全局的作用域；js6中有块级作用域
 2. js对大小写敏感
 3. 大多数浏览器在提及对 JavaScript 的支持情况 时，一般都以 ECMAScript 兼容性和对 DOM 的支持情况为准
-### 1. js的一些常识
-#### 1.1 js的历史
+### 1. 简介
+### 2. 历史
+### 3. 常识
+#### 3.1 js的历史
 js诞生于1995年,当时的主要目的是处理以前由服务器端语言(如Perl)负责的一些输入验证操作(在之前是发送到服务端验证,当时网速不好经常等很久才能验证输入是否正确).但现在js已经不仅是验证表单输入了,而是具备了与浏览器窗口及其所有内容**交互的能力**,是一门功能全面的编程语言.
 说它简单，是因为学会使用它只需片刻功夫; 而说它复杂，是因为要真正掌握它则需要数年时间。要想全面理解和掌握js,关键在于弄清楚 它的本质、历史和局限性。
 (待补充)
@@ -16,7 +18,7 @@ js诞生于1995年,当时的主要目的是处理以前由服务器端语言(如
 2. js的名字
 
     只是为了蹭java的热度,除此之外可以说跟java没有关系.
-#### 1.2 js的参数传递
+#### 3.2 js的参数传递
 java的参数传递是值传递，也就是传递的是原对象的副本，传递后不会对原对象有影响。而js比较特殊，对于基本类型是值传递；对于对象则是共享传递，也就是说如果对形参的属性进行修改，则实参(原对象)的属性真的被修改了，如果是对形参整体赋值，则相当于把实参的地址给了形参然后形参指向了新的对象。例子如下:
 ```js
 var obj = {x : 1};
@@ -32,8 +34,17 @@ o = 100;
 foo(obj);
 console.log(obj.x); // 仍然是1, obj并未被修改为100.
 ```
-#### 1.3 每行结尾
+#### 3.3 每行结尾
 可用分号也可用回车,推荐分号
+#### 3.4 js中实现异步编程的四种方式
+1. 回调函数
+2. 事件监听
+3. 发布订阅模式
+4. Promise对象
+### 3 相关网址
+1. 廖雪峰的js标准参考教程:[http://javascript.ruanyifeng.com/](http://javascript.ruanyifeng.com/)
+2. 廖雪峰的es6入门:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)
+### 4 相关书籍
 ## 二. 安装配置
 
 ## 三. 基础
@@ -146,50 +157,6 @@ age="hello";
 #### 1.6 变量的零值
 js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么变量的值和类型都是undefined
 ### 4 js中常用对象
-#### 4.1 window
-所有浏览器都支持 window对象。它表示浏览器窗口。
-所有js全局对象、函数以及变量都是window对象的成员。甚至HTML DOM的document 也是window对象的属性之一
-1. 关于Window和window
-
-    官网的说法是windowh和self是对Window本身的引用,但知乎网友的回答应该准确:Window是接口，window是实例而且是单实例，全局变量是window的属性。
-1. 关于window尺寸
-
-    浏览器窗口的尺寸不包括工具栏和滚动条.有三种方法可以获取:
-    1. 对于IE9和其他大部分browser:
-        - window.innerHeight - 浏览器窗口的内部高度
-        - window.innerWidth - 浏览器窗口的内部宽度
-    2. 对于Internet Explorer 8、7、6、5：
-        - document.documentElement.clientHeight
-        - document.documentElement.clientWidth
-    3. 其他:
-        - document.body.clientHeight
-        - document.body.clientWidth
-    4. 所有最佳实践如下,
-        ```JavaScript
-        var w=window.innerWidth
-        || document.documentElement.clientWidth
-        || document.body.clientWidth;
-        ```
-3. 常用属性
-    1. console
-
-        用于向浏览器控制台输出,它的方法应该主要用于调试, 而不是显示给用户.打印单个对象时,直接输出对象的字符形式;打印多个对象时类似c的printf风格.也接受字符串拼接.google develop tools中可以打印样式甚至图片.常用方法如下,
-        1. log()
-        2. info()
-        3. warn()
-        4. error()
-        5. time()和timeEnd():一般都是两个一起使用,前者启动计时器,后者以毫秒为单位输出计时器经过的时间.
-        想为打印的输出增加样式,使用`console.log("%c需要输出的信息 ", "css 代码")`,如
-        ```javascript
-        console.log("%cMy stylish message", "color: red; font-style: italic");
-        ```
-2. 常用方法
-    1. window.open() - 打开新窗口
-    2. window.close() - 关闭当前窗口
-    3. window.moveTo() - 移动当前窗口
-    4. window.resizeTo() - 调整当前窗口的尺寸
-
-3. 关于window.location和window.open：前者可以当字符串使用，
 #### 4.2 Array对象
 1. 三种定义方法:略
 
@@ -214,6 +181,30 @@ js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么
 2. 常用方法
     1. `test()`:搜索字符串指定的值，根据结果返回真或假
     2. `exec()`返回字符串中检索到的指定值,没有则返回null
+#### 4.4 Promise对象(es6规范)
+简单说就是一个容器,里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果.
+1. Promise对象的两个特点
+    1. 对象的状态不受外界影响
+
+        有三种状态：`pending`（进行中）、`fulfilled`（已成功）和`rejected`（已失败）.只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是Promise这个名字的由来，它的英语意思就是“承诺”.
+    2. 一旦状态改变，就不会再变，任何时候都可以得到这个结果.
+
+        状态改变只有两种可能:从`pending`变为`fulfilled`和从`pending`变为`rejected`.改变后称为`resolved`（已定型）.这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。(个人疑问:什么情况下事件会错过?)
+2. Promise的优缺点
+    1. 优点
+    
+        可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，Promise 对象提供统一的接口，使得控制异步操作更加容易。
+    2. 缺点
+        1. 无法取消,一旦建立就会立即执行
+        2. 如果不设置回调函数，Promise内部抛出的错误，不会反应到外部
+        3. 当处于pending状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）
+3. 关于stream和Promise的选择
+
+    如果某些事件不断地反复发生，一般来说，使用 Stream 模式是比部署Promise更好的选择
+4. 常用方法
+    1. `resolve()`:将现有对象转为 Promise 对象
+        1. 不带有任何参数使用:立即(在本轮“事件循环”（event loop）的结束时，而不是在下一轮“事件循环”的开始时)返回一个resolved状态的Promise 对象
+
 ### 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼)
 1. 定义函数(三种方法)

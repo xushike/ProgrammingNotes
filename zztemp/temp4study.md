@@ -1,7 +1,5 @@
 # temp4study
-1. console.log参数的写法和文档的看法
 1. http的笔记
-2. 知乎live：https://www.zhihu.com/lives/，可以回看吗
 1. tty -s
 2. 2009-11-10 23:00:00 UTC
 3. studyGO放go的一些实用程序,比如反转字符
@@ -43,13 +41,9 @@ const (
 20. dispatchEvent 
 21. web调试优化:https://segmentfault.com/a/1190000011868916
 22. chrome控制台console：https://segmentfault.com/a/1190000002511877
-23. console对象
 24. https://www.cnblogs.com/yexiaochai/p/3567597.html
-26. 根据事件传递的状态来判断是否是从已点击的按钮传过来的？
-27. go的三个作者的中英文名
 29. oracle日期相关操作
 31. dom l3
-32. `ctrl+a  ctrl+k`
 33. https://ng.ant.design/#/docs/angular/introduce
 34. https://zhidao.baidu.com/question/429999513428017812.html
 35. https://material.angularjs.org/latest/demo/virtualRepeat
@@ -320,3 +314,7 @@ END;
 
     [https://zhuanlan.zhihu.com/p/26118022](https://zhuanlan.zhihu.com/p/26118022)
 179. 悲观锁和乐观锁
+180. angular中,如果使用了双向绑定,组件ngif消失了再出现,此时的绑定是?如何让他消失的时候绑定也清除?
+181. ie的适配,angular的例子
+182. google Development tools
+183. js lambda从es6开始的?
