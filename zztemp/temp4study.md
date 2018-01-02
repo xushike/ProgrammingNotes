@@ -318,3 +318,15 @@ END;
 181. ie的适配,angular的例子
 182. google Development tools
 183. js lambda从es6开始的?
+184. angular2的单双绑定的写法总结
+185. 换成ngAfterView和@viewchild的写法；以及formControl的onchange()方法可用否
+186. upload在localhost的情况下传不上去是什么情况?但是在192.xxx就可以
+187. typescript对象的属性获取要加get和()?
+188. xshell
+189. 工单设置完之后停留在当前页？
+190. 卡片工单管理里增加按工单状态等筛选
+191. 当前项目中引入的dic的服务的注解是Injectable，代表什么
+192. angular construction中的参数如果是异步获取的 ，会等获取完后生成吗?比如dic
+    异步方法如果写在construction里面会怎么样，会影响加载速度吗
+
+193. 项目中的table能根据每列单独排序吗？
