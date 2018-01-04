@@ -334,3 +334,26 @@ END;
     java和go呢?
 195. oracle to_char()   
 194. 类成员不可用const关键字?
+195. plsql工具的笔记
+196. 为什么要用框架
+197. md可以写流程图吗
+198. 如果调用angular特有的onModuleChange()，那么在组件初始化的时候会触发该方法吗？
+199. powershell的使用
+200. win7中命令行中打开文件，前端开发，修改html，vscode相关好用插件
+201. 百度商桥的原理
+202. less等批量修改文本的内容
+
+203. 这个闭包的意义是什么,不写闭包好像也可以直接执行
+
+    以及为什么本地看不到这个百度商桥
+
+    ```html
+    <script> 
+            var _hmt = _hmt || []; 
+            (function() { var hm = document.createElement("script"); 
+            hm.src = "https://hm.baidu.com/hm.js?af089629a31007e7e029023df7b214a0"; 
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s); })();
+        </script>        
+    ``` 
+205. 原生js如何进行dom类型转换
