@@ -159,6 +159,11 @@ npm是世界上最大的js包管理工具。
 5. npm deprecate:表示放弃一个包，该包在npm中没有取消，安装该包的用户会看到警告信息
 6. npm view：显示一个包(在npm上)的详细信息
 ## 五. 问题
+### 1 已解决
+1. 用`npm list -g`命令出现大量的`npm ERR! extraneous:...`
+
+    当时我的npm版本是3.10.10，升级之后(5.6.0)问题解决
+### 2 未解决
 1. 淘宝镜像
     1. cnpm uninstall并不能生效，不知道为什么
 2. package-lock.json

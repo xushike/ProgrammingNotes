@@ -33,20 +33,27 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
 
     mac下的包管理工具.Homebrew最棒的一点是：所有的文件都被约束在/usr/local/一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
 ## 四. mac上好用工具介绍
-### 1 mac自带的
-#### 1.1 spotlight
-mac上的搜索神器,快捷键`cmd+space`,ios上也有
-#### 1.2 Bootcamp
-用于在mac上安装windows系统,简单方便.安装之后,还会将win的按键映射到mac键盘上,具体参考苹果支持
-### 2 白噪音
-让工作效率更高:[https://zhuanlan.zhihu.com/p/20508353](https://zhuanlan.zhihu.com/p/20508353)
-### 3 解压缩
-1. The Unarchiver:免费好用
-2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
-### 4 快捷键打开dock
-1. snap：因为默认的cmd键和浏览器有冲突，所以我改成option键了。而且windows和ubuntu上不需要按插件，直接就可以win键快捷打开dock
-### 5 视频播放
-[IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
+### mac自带的
+1. spotlight
+
+    mac上的搜索神器,快捷键`cmd+space`,ios上也有
+2. Bootcamp
+
+    用于在mac上安装windows系统,简单方便.安装之后,还会将win的按键映射到mac键盘上,具体参考苹果支持
+### 第三方
+2. 白噪音
+    
+    让工作效率更高:[https://zhuanlan.zhihu.com/p/20508353](https://zhuanlan.zhihu.com/p/20508353)
+3. 解压缩
+    1. The Unarchiver:免费好用
+    2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
+4. snap：快捷键打开dock
+
+    默认的cmd键和浏览器有冲突，所以我改成option键了。而且windows和ubuntu上不需要按插件，直接就可以win键快捷打开dock
+5. 视频播放
+
+    [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
+6. Homebrew (待补充)
 
 ## 五. 经验
 1. 如何将qq截图或者excel复制粘贴为图片？  
@@ -69,8 +76,8 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 ![](../picture/mac/0-3-trueInWin.png)，
 经过我用简体拼音和搜狗拼音的简单测试，发现在mac版vscode的中文输入法下：按下任意字母，出现中文候选后删除，删除完刚才输入的字母再按删除就会出现这个控制字符，如果没有打开控制字符是否呈现的开关则看不到，所以目前的解决办法是打开开关。
 ### 2 未解决
-### 3. xcode的使用
-### 4. .bash_profile和.bashrc和linux是反过来的？
-### 5. m2_home
-### 6. 终端和finder
-[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
+3. xcode的使用
+4. .bash_profile和.bashrc和linux是反过来的？
+5. m2_home
+6. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
+7. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
