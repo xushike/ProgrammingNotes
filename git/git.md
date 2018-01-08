@@ -11,17 +11,18 @@ git开源免费的分布式版本控制系统。
 1. 下载git for windows
 2. 安装过程大同小异，注意设置git环境的时候选择第二项"use git from the windows command prompt"，如果选第一项就不能在cmd中使用git，要自己去配置path。自己配置的时候添git安装目录下的bin目录或者cmd目录都可以
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
-```bash
-#注意没配置的话会报错:unable to auto-detect email address
-#查看所有配置
-git congfig -l #mac
-#查看git user.name和email
-git config user.name
-git config user.email
-#配置全局的git user.name和email
-git config --global user.name "xxx"
-git config --global user.email "xxx"
-```
+
+    ```bash
+    #注意没配置的话会报错:unable to auto-detect email address
+    #查看所有配置
+    git congfig -l #mac
+    #查看git user.name和email
+    git config user.name
+    git config user.email
+    #配置全局的git user.name和email
+    git config --global user.name "xxx"
+    git config --global user.email "xxx"
+    ```
 为每个项目单独配置:(待补充)
 4. 关于ssh Key,（待补充）
 5. 关于git自身的更新：
@@ -135,3 +136,4 @@ git config --global user.email "xxx"
 16. Pull Request 的命令行管理:[http://www.ruanyifeng.com/blog/2017/07/pull_request.html](http://www.ruanyifeng.com/blog/2017/07/pull_request.html)
 
 17. ip前的git和https有什么区别
+18. git移除remote再重新添加，然后识别好像就有点问题，指令能够正常使用，vscode的状态看不了了。
