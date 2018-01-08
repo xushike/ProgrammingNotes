@@ -2,6 +2,42 @@
 ## 一 概述
 ### 1 历史
 ### 2 常识
+#### HTML attribute 与 DOM property 的对比(待整理)
+```
+attribute 是由 HTML 定义的。property 是由 DOM (Document Object Model) 定义的。
+
+Attributes are defined by HTML. Properties are defined by the DOM (Document Object Model).
+
+少量 HTML attribute 和 property 之间有着 1:1 的映射，如id。
+
+有些 HTML attribute 和 property名字不一样，如colspan对应colSpan,for对应htmlFor.
+
+有些 DOM property 没有对应的 attribute，如textContent,innerHTML.
+
+大量 HTML attribute看起来映射到了property…… 但却不像我们想的那样！
+
+最后一类尤其让人困惑…… 除非我们能理解这个普遍原则：
+
+attribute 初始化 DOM property，然后它们的任务就完成了。property 的值可以改变；attribute 的值不能改变。
+
+例如，当浏览器渲染<input type="text" value="Bob">时，它将创建相应 DOM 节点， 其value property 被初始化为 “Bob”。
+
+当用户在输入框中输入 “Sally” 时，DOM 元素的value property 变成了 “Sally”。 但是这个 HTML value attribute 保持不变。如果我们读取 input 元素的 attribute，就会发现确实没变： input.getAttribute('value') // 返回 "Bob"。
+
+HTML attribute value指定了初始值；DOM value property 是当前值。
+
+disabled attribute 是另一个古怪的例子。按钮的disabled property 是false，因为默认情况下按钮是可用的。 当我们添加disabled attribute 时，只要它出现了按钮的disabled property 就初始化为true，于是按钮就被禁用了。
+
+添加或删除disabled attribute会禁用或启用这个按钮。但 attribute 的值无关紧要，这就是我们为什么没法通过 <button disabled="false">仍被禁用</button>这种写法来启用按钮。
+
+设置按钮的disabled property（如，通过 Angular 绑定）可以禁用或启用这个按钮。 这就是 property 的价值。
+
+就算名字相同，HTML attribute 和 DOM property 也不是同一样东西。
+```
+
+1. 参考stackoverflow的回答,大意是html的attribute渲染时会转换成dom的property,而且attribute的值会随property一起变化等等:[What is the difference between attribute and property?](https://stackoverflow.com/questions/258469/what-is-the-difference-between-attribute-and-property)
+2. 本人简单测了下(待补充),普通的html对attribute和property两种写法都是支持的,比如`label`标签的`for`和`htmlFor`;而且chrome inspector shows both attributes and properties.
+3. 关于文中说的**property的值可以改变；attribute的值不能改变**,我简单测了下,其中好像只有`value`符合,而`href`,`for`和`htmlFor`都是attribute跟着property一起变化.(其他的测试待补充),所以文中的这个说法很可能只是针对angular的.
 ### 3 网址
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
 ### 4 书籍
