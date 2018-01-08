@@ -55,6 +55,7 @@
     * [sql](db/sql.md)
     * [sqlDeveloper](db/sqlDeveloper.md)
     * [sqlserver](db/sqlserver.md)
+    * [pl/sql](db/PLSQL.md)
 * [algorithm算法](algorithm/algorithm.md)
 * [windows](windows/windows.md)
 * [mac](mac/mac.md)
