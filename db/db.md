@@ -15,3 +15,4 @@
     2. 一般用于将两个顺序表或两个链表合成一个表.
 3. sqlDeveloper和pl/sql Developer？
 4. 表的M/O(Mandatory or Optional)： “Mandatory”表示此查询字段必填；“Optional”表示此查询字段可选。
+5. 一个 split 会产生 2GB 的垃圾?

@@ -41,6 +41,9 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 ### 3 网址
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
 ### 4 书籍
+### 5 js工具网站
+1. 10 款优秀的在线 JavaScript 工具推荐:[http://www.iteye.com/news/25351](http://www.iteye.com/news/25351)
+1. 在线编辑工具——由HTML编辑器、CSS编辑器、JavaScript编辑器和输出界面4个部分组成，你可以方便地进行代码测试:[jsfiddle.net](https://jsfiddle.net/)
 ## 三 基础
 ### 1 热更新
 ## 四 经验
