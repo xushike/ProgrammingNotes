@@ -48,3 +48,4 @@
 46. 响应式编程
 47. [http://blog.jobbole.com/tag/jeff-atwood/](http://blog.jobbole.com/tag/jeff-atwood/)以及stackoverflow作者的博客
 48. 观察者模式,发布订阅
+49. js标准的注释怎么写
