@@ -370,3 +370,28 @@ END;
 216. [http://www.01happy.com/golang-err-is-shadowed-during-return/](http://www.01happy.com/golang-err-is-shadowed-during-return/)
 217. linux vscode不显示下划线
 218. plsql dev快捷键和技巧
+219. js中 && 和大小与的优先级
+220. oracle的模糊查询用`%`为什么没有生效
+
+221. 额
+
+```typescript
+let val = input.card_id
+        for (let index = 0; index < this.dataList.length; index++) {
+            if (val == this.dataList[index].card_id) {
+                //
+                console.log("found item:",input)
+                if (checked) {
+                    this.dataList[index].checked = false
+                } else {
+                    this.dataList[index].checked = true
+                }
+            }
+        }
+```
+当input没有card_id的时候，循环里的判断会一直成功？
+
+
+222. angular textarea的cols没有生效的原因
+223. oracle一直显示正在执行
+224. 项目最近界面的文件名叫`新版系统1`
