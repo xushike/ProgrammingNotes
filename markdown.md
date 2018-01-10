@@ -27,7 +27,7 @@ _You **can** combine ~~them~~_
     前面是显示的链接，后面是实际链接，引号里是鼠标移上去的tips
 [https://github.com](https://github.com "github官网")
 ### 5. 图片
-    可以使用相对路径和绝对路径，语法和链接类似
+    可以使用相对路径和绝对路径，语法和链接类似.如果想图片所在的行没有文字,需要在前后都换行.
 ![Image of Test](img/test.png "Image of Test")
 ### 6. 引用
     引用中再嵌套引用只需要多加一个>

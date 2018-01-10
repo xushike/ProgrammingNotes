@@ -395,3 +395,4 @@ let val = input.card_id
 222. angular textarea的cols没有生效的原因
 223. oracle一直显示正在执行
 224. 项目最近界面的文件名叫`新版系统1`
+225. 修改项目中tab的切换方式为angular的api

@@ -12,6 +12,8 @@
 ### 5 angular第三方组件简介
 ### 6 网站
 1. Angular2资源大全,感觉比较全面:[https://github.com/lightningtgc/awesome-ng2](https://github.com/lightningtgc/awesome-ng2)
+2. Angular2優質學習資源收集:[https://hk.saowen.com/a/53955f7eb930c2ddc880fbff0713dd3861ed79eb455f5e9c7f09509dcad1864d](https://hk.saowen.com/a/53955f7eb930c2ddc880fbff0713dd3861ed79eb455f5e9c7f09509dcad1864d)
+3. [http://plnkr.co/](http://plnkr.co/)
 ### 7 文档
 ## 二 安装配置
 ### 1 win
@@ -21,6 +23,14 @@
 ## 三. 基础
 ### 1 架构
 1. 当应用启动时，Angular 会从根组件开始启动，并解析整棵组件树，数据由上而下流下下一级子组件。
+#### 常见错误
+写的很好很详细:[https://segmentfault.com/a/1190000004969541](https://segmentfault.com/a/1190000004969541)
+1. 直接调用DOM APIs
+
+    会导致几个问题:
+    - 测试复杂度会增加,测试用例变慢
+    - 无法从浏览器中解藕,不能兼容其他环境比如`web worker`,服务端或者`Electron`
+    - 代码不易读
 ### 2 模板和数据绑定
 #### 显示数据
 #### 模板语法
@@ -41,10 +51,39 @@
         <div *ngFor="let hero of heroes">{{hero.name}}</div>
         <input #heroInput> {{heroInput.value}}
         ```
+
+        1. 模板输入变量:比如`*ngFor`中的`let hero`是模板输入变量,不同于模板引用变量.
+        2. 模板引用变量
+            
+            通常是加`#`前缀来声明(比如`#elseBlock`)模板引用变量(也可以加`ref-`前缀),引用的是它所附着到的DOM元素、组件或指令,可以在整个模板的任意位置访问(所以模板引用变量不应该重复).通过`xxx.value`来获取它的值.如,
+
+            ```html
+            <input #phone placeholder="phone number">
+            <button (click)="callPhone(phone.value)">Call</button>
+            ```
+
+
     2. 表达式上下文变量(优先级从高到低):
         - 模板变量
         - 指令的上下文变量
         - 组件的成员
+    3. 空属性路径和安全导航操作符`?.`
+
+        对于`<div>The article is {{title}}<div>`,如果title为空,该div依然会被渲染出来,只不过只显示"The article is"(在非angular环境中也是如此).但是,如果是`{{obj.title}}`,当obj为undefined或null时,会抛出错误.有几种解决方法:
+        1. `NgIf`
+        2. `&&`,如`hero && hero.name`
+        3. 安全导航操作符`?.`
+
+            会在第一个空值的时候跳出,显示是空的,但应用正常工作.如`a?.b?.c?.d`.比上面两者更好用.
+
+    4. 非空断言操作符`!`
+
+        ts2开始，我们可以使用`--strictNullChecks`标志强制开启严格空值检.当确定某个值不会为空时,可以通过该操作符就可以告诉编译器某些值不为空,避免被编译器抛出错误.如,
+        ```html
+        <div *ngIf="hero">
+            The hero's name is {{hero!.name}}
+        </div>
+        ```
     3. 只能引用表达式上下文中的成员,不能做的是:
         - 不能引用全局命名空间中的任何东西，比如`window`或`document`
         - 不能调用`console.log`或`Math.max`
@@ -54,6 +93,8 @@
         - 执行迅速:计算代价较高时，应该考虑缓存那些从其它值计算得出的值。
         - 尽量简单
         - 幂等性:没有副作用
+
+    
 3. 模板语句
 
     用于响应事件,出现在=号右侧的引号中,就像这样:`(event)="statement"`,其中`statement`是组件实例的方法.能改变应用状态,即有副作用,这也是它的主要作用.
@@ -156,6 +197,7 @@
 
         ![](../picture/js/angula-1-banana-in-box.png
         )
+
         实际上是属性绑定和事件绑定的语法糖,比如`[num]`和`(numChange)`,使用非常方便.
 
         ```
@@ -282,9 +324,17 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 
             因为列表每次有元素变化就会重新渲染整个列表,开销较大,所以有`trackBy`来追踪,基本用法`trackBy:trackByFun`,其中`trackByFun`必须是方法名.(待实践和补充)(从服务器拉取的时候一般都是重新渲染全部,因为引用改变了?直接添加和删除某个元素只渲染单独一个元素?假如追踪的是元素的id,当元素value变化时,是只渲染变化的元素,还是什么都不渲染?)
 
-        3. 关于模板输入变量和模板引用变量
-            1. 模板输入变量:上例的`let hero`是模板输入变量,不同于模板引用变量.
-            2. 模板引用变量:变量名加#来声明(比如`#elseBlock`),引用的是它所附着到的元素、组件或指令,可以在整个模板的任意位置访问.
+    3. `NgSwitch`
+
+        类似js的switch,`NgSwitch`,`NgSwitchCase`和`NgSwitchDefault`协作使用.注意`NgSwitch`是属性指令,所以不能写成`ngSwitch`.例子如下,
+        ```html
+        <div [ngSwitch]="currentHero.emotion">
+            <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></app-happy-hero>
+            <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="currentHero"></app-sad-hero>
+            <app-confused-hero *ngSwitchCase="'confused'" [hero]="currentHero"></app-confused-hero>
+            <app-unknown-hero  *ngSwitchDefault           [hero]="currentHero"></app-unknown-hero>
+        </div>
+        ```
     4. 其他:微语法:需要自己写结构指令时可参考微语法的源码.
     5. 其他:`<ng-container>`
 
@@ -301,8 +351,24 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
         ```
 3. 组件
 #### 管道
+作用不必多说
+1. 一般使用,可带参数
+    
+    ```html
+    <div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+    ```
+    1. 参数`json`:对调试很有帮助
+2. 链式管道(chain pipes),即多级管道(multiple pipes)
+
+    ```html
+    <div>
+        Title through a pipe chain:
+        {{title | uppercase | lowercase}}
+    </div>
+    ```
 #### 动画
 ### 3 表单
+关于`ngForm`(待补充)
 ### 4 引导启动
 ### 5 NgModules
 ### 6 依赖注入
@@ -386,7 +452,14 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
         }
         ```
 #### @Output
-使用场景:子组件将信息通过事件的形式通知到父级组件.
+使用场景:子组件将信息通过事件的形式通知到父级组件.除了用装饰器,也可在metadata的outputs数组中标记出来,如
+```javascript
+@Component({
+    inputs: ['hero'],
+    outputs: ['clicks:myClick']  // propertyName:alias
+
+})
+```
 #### @HostListener
 绑定全局事件,会随着 component destroy 而 unbind
 
@@ -430,3 +503,6 @@ var app = angular.module("myApp", []);
 14. angular实用技巧点滴:[https://www.jianshu.com/p/c2e73a09bc38](https://www.jianshu.com/p/c2e73a09bc38)
 15. Angular2新人常犯的5个错误:[https://segmentfault.com/a/1190000004969541](https://segmentfault.com/a/1190000004969541)
 16. 一直困惑我的:[https://segmentfault.com/a/1190000008625978](https://segmentfault.com/a/1190000008625978)
+17. 怎样理解Angular2中的ViewContainerRef，ViewRef和TemplateRef？(知乎):[https://www.zhihu.com/question/54554874](https://www.zhihu.com/question/54554874)
+18. blog about make your angular fast:[https://blog.thoughtram.io/angular/2017/02/02/making-your-angular-app-fast.html](https://blog.thoughtram.io/angular/2017/02/02/making-your-angular-app-fast.html)
+19. zonejs:[http://www.zcfy.cc/article/how-the-hell-does-zone-js-really-work-995.html](http://www.zcfy.cc/article/how-the-hell-does-zone-js-really-work-995.html)
