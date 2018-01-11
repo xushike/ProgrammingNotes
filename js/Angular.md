@@ -1,4 +1,5 @@
 # Angular
+[TOC]
 ## 一 概述
 1. 本笔记主要记录angular2及以上版本
 2. 中文官网,感觉做的不错:[https://www.angular.cn/](https://www.angular.cn/)
@@ -20,8 +21,15 @@
 1. 
 ### 3 mac
 1. 需要先安装node和npm
-## 三. 基础
+## 三. 核心基础知识
 ### 1 架构
+1. 通过引导根模块来启动应用。 在开发期间，你通常在一个main.ts文件中引导AppModule
+
+    ```typescript
+    import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+    import { AppModule } from './app/app.module';   
+    platformBrowserDynamic().bootstrapModule(AppModule);
+    ```
 1. 当应用启动时，Angular 会从根组件开始启动，并解析整棵组件树，数据由上而下流下下一级子组件。
 #### 常见错误
 写的很好很详细:[https://segmentfault.com/a/1190000004969541](https://segmentfault.com/a/1190000004969541)
@@ -31,10 +39,23 @@
     - 测试复杂度会增加,测试用例变慢
     - 无法从浏览器中解藕,不能兼容其他环境比如`web worker`,服务端或者`Electron`
     - 代码不易读
+### 2 模块
+angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全无关,但是实际使用是两者互补,初学时容易混淆.
+1. 模块的好处
+    - js中应避免使用全局函数。因为他们很容易被其他脚本文件覆盖。AngularJS 模块让所有函数的作用域在该模块下，避免了该问题。
+    - 将一些特性做成模块,方便组织
+1. 根模块
+    
+    angular要求至少有一个模块,也就是根模块,用来引导并运行应用.
+2. 自带模块
+
+    Angular 自身的许多特性也是通过 Angular 模块组织的
+    1. HttpModule:HTTP服务
+    2. RouterModule:路由器
 ### 2 模板和数据绑定
 #### 显示数据
 #### 模板语法
-简单来说,组件扮演着控制器或视图模型的角色,模板则扮演视图的角色.html是angular模板的语言.
+简单来说,组件扮演着控制器或视图模型的角色,模板则扮演视图的角色.模板以HTML形式存在(html是angular模板的语言)，告诉Angular如何渲染组件.
 1. angular模板的特殊html元素
 
     - 被禁用的:`<script>`,防止恶意内容,写了也会被angular过滤
@@ -204,15 +225,7 @@
         [(target)]="expression"
         bindon-target="expression"
         ```
-        1. `ngModule`指令
-
-            我们希望能在像`<input>`和`<select>`这样的HTML元素上使用双向数据绑定,但是原生HTML不支持.所以Angular提供了`ngModule`**在表单元素上**使用双向数据绑定,其本质是`[ngModel]`和`(ngModelChange)`.(在angular1.x中也有`ng-module`实现双绑).不过,使用该指令之前必须导入FormsModule并把它添加到Angular模块的imports列表中。
-            当我们需要do something more or something different时,可以不使用"banana in a box"语法,比如`<input>`标签可以用`value`属性和`input`事件达到同样效果,
-
-            ```html
-            <input [value]="currentHero.name"
-            (input)="currentHero.name=$event.target.value" >
-            ```
+        1. `ngModule`指令(参考表单)
 
 
 #### 生命周期钩子
@@ -261,7 +274,7 @@
 #### 组件样式
 #### 动态组件
 #### 指令
-angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.x开始,用绑定就能达到原来的效果.
+angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.x开始,用绑定就能达到原来的效果.angular有三种指令:属性指令,结构型指令和组件指令.
 1. 属性型指令
 
     用于监听和修改其它HTML元素或组件的行为,包括attribute,property等.常用的有:
@@ -326,7 +339,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 
     3. `NgSwitch`
 
-        类似js的switch,`NgSwitch`,`NgSwitchCase`和`NgSwitchDefault`协作使用.注意`NgSwitch`是属性指令,所以不能写成`ngSwitch`.例子如下,
+        语法类似js的switch.本质和`NgIf`一样,即false时从DOM中移除.`NgSwitch`,`NgSwitchCase`和`NgSwitchDefault`协作使用.注意`NgSwitch`是属性指令,所以不能写成`ngSwitch`.例子如下,
         ```html
         <div [ngSwitch]="currentHero.emotion">
             <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></app-happy-hero>
@@ -349,7 +362,9 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
             </ng-container>
         </select>
         ```
-3. 组件
+3. 组件指令
+
+    组件是一个带模板的指令,虽然严格来说组件就是一个指令，但是组件非常独特，在Angular中位于中心地位.
 #### 管道
 作用不必多说
 1. 一般使用,可带参数
@@ -368,17 +383,56 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
     ```
 #### 动画
 ### 3 表单
-关于`ngForm`(待补充)
+表单处理是angular的核心能力,本人感觉优于其他两个框架.angular为每个`<form>`表单都附加了一个`NgForm`指令.angular有两种表单.
+#### 模板驱动表单(对应FormsModule模块)
+1. 简介
+
+    异步,操控时需要等待指令/视图渲染完成,因为有`ngModule`,所以代码量更少,但是异步可能会让开发变得更复杂.比如，如果我们用@ViewChild(NgForm)查询来注入表单控件，并在生命周期钩子ngAfterViewInit中检查它，就会发现它没有子控件。 我们必须使用setTimeout等待一个节拍才能从控件中提取值、测试有效性，或把它设置为新值。
+1. `ngModule`
+    1. 作用1:双绑
+        我们希望能在像`<input>`和`<select>`这样的HTML元素上使用双向数据绑定,但是原生HTML不支持.所以Angular提供了`ngModule`**在表单元素上**使用双向数据绑定,其本质是`[ngModel]`和`(ngModelChange)`.(在angular1.x中也有`ng-module`实现双绑).不过,使用该指令之前必须导入FormsModule并把它添加到Angular模块的imports列表中。
+        当我们需要do something more or something different时,也可以不使用"banana in a box"语法,比如`<input>`标签可以用`value`属性和`input`事件达到同样效果,
+
+        ```html
+        <input [value]="currentHero.name"
+        (input)="currentHero.name=$event.target.value" >
+        ```
+    2. 作用2:追踪表单状态
+#### 响应式表单(对应ReactiveFormsModule模块)
+1. 简介
+    
+    同步
+2. 响应式验证器
+
+    响应式验证器是一些简单、可组合的函数.在模板驱动表单中配置验证器有些困难，因为我们必须把验证器包装进指令中。
+#### 两者比较
+1. 哪个更好:各有所长.可两者都用.
 ### 4 引导启动
 ### 5 NgModules
-### 6 依赖注入
-#### 1
-#### x 参考
-1. [掌握Angular2的依赖注入-segmentfault](https://segmentfault.com/a/1190000006672079)
+### 6 服务
+几乎任何东西都可以是一个服务.典型的服务是一个类,具有明确的用途,能把一件特定的事情做好.常见的有:
+- 日志服务
+- 数据服务
+- 消息总线
+- 税款计算器
+- 应用程序配置
+
+服务没有什么特别属于Angular的特性
+1. 最佳实践
+    
+    组件类应保持精简。组件本身不从服务器获得数据、不进行验证输入，也不直接往控制台写日志。 它们把这些任务委托给服务。
+#### 依赖注入
+用于提供类的实例,负责处理类所需的全部依赖,大多数依赖都是服务.
+1. 过程
+
+    1. Angular创建组件时,会首先为组件所需的服务请求一个注入器(injector)
+    2. 注入器维护一个服务实例的容器，存放着以前创建的实例。 如果请求的服务实例不在容器中，注入器就会创建一个服务实例，并且添加到容器中，然后把这个服务返回给 Angular
+    3. 当所有请求的服务都被解析完并返回时，Angular 会以这些服务为参数去调用组件的构造函数,这就是依赖注入 。
 ### 7 HttpClient
 ### 8 路由与导航
 ### 9 测试
 ### 11 angular metadata
+
 1. 使用方法
 
     如果用的TypeScript,angular specify the metadata with decorators(装饰器) such as @Component() and @Input().如果用的其他语言,则只能在专门定义metadata的地方定义metadata,且声明使用的字面量也不一样.如,
@@ -451,7 +505,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
             ...
         }
         ```
-#### @Output
+#### @Output('xxx')
 使用场景:子组件将信息通过事件的形式通知到父级组件.除了用装饰器,也可在metadata的outputs数组中标记出来,如
 ```javascript
 @Component({
@@ -462,29 +516,40 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 ```
 #### @HostListener
 绑定全局事件,会随着 component destroy 而 unbind
+#### @NgModule
+用于标记一个类为模块,接收一个用来描述模块属性的元数据对象.
+1. 最重要的属性有：
+    1. `declarations`数组:声明本模块中拥有的视图类。Angular 有三种视图类：组件、指令和管道。
+    2. exports - declarations 的子集，可用于其它模块的组件模板。
+    3. `imports`数组:本模块声明的组件模板需要的类所在的其它**模块**.(?)只能放NgModule类.
+    4. providers - 服务的创建者，并加入到全局服务列表中，可用于应用任何部分。
+    5. `bootstrap`数组:指定应用的主视图（称为根组件），它是所有其它视图的宿主。只有根模块才能设置bootstrap属性。Angular 创建它并插入index.html宿主页面.
+     
+#### @Component
+把紧随其后的类标记成了组件类,如果不用该装饰器,则后面的类仅仅是一个普通类.该装饰器接收一个配置对象,Angular会基于这些信息创建和展示组件及其视图.
+1. 配置对象的配置项
+    1. `selector`:CSS选择器，它告诉 Angular 在父级 HTML 中查找<hero-list>标签，创建并插入该组件。
+    2. `templateUrl`:组件 HTML 模板的模块相对地址.也可用`template`,后面跟html字面量.
+    3. `providers`:组件所需服务的依赖注入提供商数组.写在这儿的是局部,写在根模块的是全局的.
+    4. `styles`数组:
+#### @Injectable
+#### @Directive
 
-
-
-
-
-
-
-### 2 模块
-1. 模块定义了一个应用程序，模块控制器通常属于一个应用程序。
-2. 模块的好处：JavaScript 中应避免使用全局函数。因为他们很容易被其他脚本文件覆盖。AngularJS 模块让所有函数的作用域在该模块下，避免了该问题。
-2. 创建模块的方法：
-```javascript
-<script>
-var app = angular.module("myApp", []); 
-</script>
-```
-### 4 管道
-1. http://blog.csdn.net/qq451354/article/details/54141024
-## 四. 经验
+## 四 其他基础知识
+### 1 编译器
+### 1 动画
+### 2 变更检测
+### 3 事件
+### 5 路由器
+### 6 测试
+## 五 经验
 1. 双向绑定中某方的数据延迟取得也会生效
-## 五 angular material2
+## 六 angular第三方组件
+### 1 angular material2
 1. [https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md](https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md)
-## 六. 问题
+## 七 问题
+### 1 已解决
+### 2 未解决
 1. 表单验证
 2. 声明周期
 3. npm run start \ maven install \ng server \node xxx等命令的场景和用法？
@@ -506,3 +571,11 @@ var app = angular.module("myApp", []);
 17. 怎样理解Angular2中的ViewContainerRef，ViewRef和TemplateRef？(知乎):[https://www.zhihu.com/question/54554874](https://www.zhihu.com/question/54554874)
 18. blog about make your angular fast:[https://blog.thoughtram.io/angular/2017/02/02/making-your-angular-app-fast.html](https://blog.thoughtram.io/angular/2017/02/02/making-your-angular-app-fast.html)
 19. zonejs:[http://www.zcfy.cc/article/how-the-hell-does-zone-js-really-work-995.html](http://www.zcfy.cc/article/how-the-hell-does-zone-js-really-work-995.html)
+20. 管道: http://blog.csdn.net/qq451354/article/details/54141024
+21. [掌握Angular2的依赖注入-segmentfault](https://segmentfault.com/a/1190000006672079)
+22. angular4:[https://v2.angular.cn/docs/ts/latest/](https://v2.angular.cn/docs/ts/latest/)
+23. angular exportAs
+### 3 思考
+1. 大多数应用只有一个组件树，它们引导单一根组件
+
+    什么情况使用多组件树?

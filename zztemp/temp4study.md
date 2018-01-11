@@ -401,3 +401,4 @@ let val = input.card_id
 227. js引入的模块没用的话会占用性能吗/
 228. ngmodule单独写的作用是什么， 
 229. [https://valor-software.com/ng2-file-upload/](https://valor-software.com/ng2-file-upload/)
+230. 将项目表单的验证写成服务
