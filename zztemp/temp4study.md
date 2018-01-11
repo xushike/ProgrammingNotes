@@ -396,3 +396,8 @@ let val = input.card_id
 223. oracle一直显示正在执行
 224. 项目最近界面的文件名叫`新版系统1`
 225. 修改项目中tab的切换方式为angular的api
+
+226. 突然断电的话，vm会保存吗
+227. js引入的模块没用的话会占用性能吗/
+228. ngmodule单独写的作用是什么， 
+229. [https://valor-software.com/ng2-file-upload/](https://valor-software.com/ng2-file-upload/)
