@@ -402,3 +402,7 @@ let val = input.card_id
 228. ngmodule单独写的作用是什么， 
 229. [https://valor-software.com/ng2-file-upload/](https://valor-software.com/ng2-file-upload/)
 230. 将项目表单的验证写成服务
+231. 咨询李春牙医是否可报
+234. angular在表单组件上双绑某个值和事件，那么值会先变化然后触发事件？
+235. ngModel和ngvalue,以及[ngModel]几者的区别，以及name
+236. app.module的和page.module的区别

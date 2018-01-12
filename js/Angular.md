@@ -299,7 +299,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
             除非有特别理由,否则angular推荐使用移除.
         2. 关于`*ngIf`
 
-            这个`*`其实是语法糖(其他几个结构指令也是如此),Angular把`*ngIf`属性翻译成一个`<ng-template>`元素并用它来包裹宿主元素,其中`NgIf`是类名,`ngIf`是属性名.如,
+            这个`*`其实是语法糖(其他几个结构指令也是如此),Angular把`*ngIf`属性翻译成一个`<ng-template>`元素并用它来包裹宿主元素,其中`NgIf`是类名,`ngIf`是属性名.(结合官方文档和我的实际测试，应该只有`*ngIf`和`*ngFor`是支持`<ng-template>`的,其他包括`NgSwitch`都不支持)如,
 
             ```html
             <div *ngIf="hero" >{{hero.name}}</div>
