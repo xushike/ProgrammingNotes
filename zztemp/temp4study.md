@@ -406,3 +406,6 @@ let val = input.card_id
 234. angular在表单组件上双绑某个值和事件，那么值会先变化然后触发事件？
 235. ngModel和ngvalue,以及[ngModel]几者的区别，以及name
 236. app.module的和page.module的区别
+237. 看看别人优秀的angular代码
+238. angualr的disabled
+239. 限制某些框输入的小数位数.

@@ -206,9 +206,13 @@ angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全�
         angular会优先匹配指令的事件属性(即带`@Output`的事件属性).
         1. `$event`(事件对象)
 
-            事件对象有两种形态,取决于目标事件:
-            1. 如果目标事件是原生DOM元素事件,`$event`就是DOM事件对象,有target和target.value这样的属性。
-            2. 如果事件属于指令(指`@Output`声明的事件属性),`$event`则是`emit(xxx)`的`xxx`.
+            事件对象有三种形态,取决于目标事件:
+            1. 如果目标事件是原生DOM元素事件,`$event`就是DOM事件对象,有target和target.value这样的属性。似乎angular封装的事件也是这样,比如`ngSubmit($event)`
+            2. 如果事件属于自定义指令(即`@Output`声明的事件属性),`$event`则是`emit(xxx)`的`xxx`.
+                1. 特殊情况:`ngModelChange($event)`
+                    
+                    其`$event`是表单元素对应的value值,比如`<input name="first_name" ngModel (ngModelChange)="onShow($event)">`中`$event`就是input的value值.
+
         2. `EventEmitter`
 
             实现自定义事件,可用于父子组件交互
@@ -299,7 +303,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
             除非有特别理由,否则angular推荐使用移除.
         2. 关于`*ngIf`
 
-            这个`*`其实是语法糖(其他几个结构指令也是如此),Angular把`*ngIf`属性翻译成一个`<ng-template>`元素并用它来包裹宿主元素,其中`NgIf`是类名,`ngIf`是属性名.(结合官方文档和我的实际测试，应该只有`*ngIf`和`*ngFor`是支持`<ng-template>`的,其他包括`NgSwitch`都不支持)如,
+            这个`*`其实是语法糖(其他几个结构指令也是如此),Angular把`*ngIf`属性翻译成一个`<ng-template>`元素并用它来包裹宿主元素,其中`NgIf`是类名,`ngIf`是属性名.(结合官方文档和我的实际测试，应该只有能带`*`的支持`<ng-template>`的,其他包括`NgSwitch`都不支持)如,
 
             ```html
             <div *ngIf="hero" >{{hero.name}}</div>
@@ -339,7 +343,8 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 
     3. `NgSwitch`
 
-        语法类似js的switch.本质和`NgIf`一样,即false时从DOM中移除.`NgSwitch`,`NgSwitchCase`和`NgSwitchDefault`协作使用.注意`NgSwitch`是属性指令,所以不能写成`ngSwitch`.例子如下,
+        语法类似js的switch.本质和`NgIf`一样,即false时从DOM中移除.`NgSwitch`,`NgSwitchCase`和`NgSwitchDefault`协作使用.注意`NgSwitch`是属性指令,所以**不能写成`*ngSwitch`,而必须写成`ngSwitch`**.例子如下,
+
         ```html
         <div [ngSwitch]="currentHero.emotion">
             <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></app-happy-hero>
@@ -348,6 +353,8 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
             <app-unknown-hero  *ngSwitchDefault           [hero]="currentHero"></app-unknown-hero>
         </div>
         ```
+        
+        实测发现,`ngSwitch`没带星号,所以不能写成用`ng-template`包裹的形式,但是`*ngSwitchCase`和`*ngSwitchDefault`,而且不管哪种形式,`*ngSwitchCase`和`*ngSwitchDefault`都要写在`ngSwitch`所在的元素块的内部.
     4. 其他:微语法:需要自己写结构指令时可参考微语法的源码.
     5. 其他:`<ng-container>`
 
@@ -384,24 +391,67 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 #### 动画
 ### 3 表单
 表单处理是angular的核心能力,本人感觉优于其他两个框架.angular为每个`<form>`表单都附加了一个`NgForm`指令.angular有两种表单.
-#### 模板驱动表单(对应FormsModule模块)
+#### 模板驱动表单(Template-Driven Forms,对应的是FormsModule模块)
 1. 简介
 
     异步,操控时需要等待指令/视图渲染完成,因为有`ngModule`,所以代码量更少,但是异步可能会让开发变得更复杂.比如，如果我们用@ViewChild(NgForm)查询来注入表单控件，并在生命周期钩子ngAfterViewInit中检查它，就会发现它没有子控件。 我们必须使用setTimeout等待一个节拍才能从控件中提取值、测试有效性，或把它设置为新值。
+
+    使用该指令之前必须导入FormsModule并把它添加到Angular模块的imports列表中,导入之后所有的`<form>`都可以直接使用其中的指令了.
 1. `ngModule`
-    1. 作用1:双绑
-        我们希望能在像`<input>`和`<select>`这样的HTML元素上使用双向数据绑定,但是原生HTML不支持.所以Angular提供了`ngModule`**在表单元素上**使用双向数据绑定,其本质是`[ngModel]`和`(ngModelChange)`.(在angular1.x中也有`ng-module`实现双绑).不过,使用该指令之前必须导入FormsModule并把它添加到Angular模块的imports列表中。
+
+    该指令只能用于表单元素,比如`input`,`select`等
+    1. 用法1:直接单独使用:`ngModel`
+        
+        将自动关联表单控件(`input`,`select`等)的`name`属性(必须设置`name`属性),来并使用该值作为`ngForm`对象的属性名,然后`ngForm`就可以控制该控件并跟踪控件的状态.比如`<input name="first_name" ngModel>`,可以通过`ngForm.value.first_name`来获取控件的值.
+
+    1. 用法2:单绑或双绑
+        我们希望能在像`<input>`和`<select>`这样的HTML元素上使用双向数据绑定,但是原生HTML不支持.所以Angular提供了`ngModule`**在表单元素上**使用双向数据绑定,其本质是`[ngModel]`和`(ngModelChange)`.(在angular1.x中也有`ng-module`实现双绑).不过,
         当我们需要do something more or something different时,也可以不使用"banana in a box"语法,比如`<input>`标签可以用`value`属性和`input`事件达到同样效果,
 
         ```html
         <input [value]="currentHero.name"
         (input)="currentHero.name=$event.target.value" >
         ```
-    2. 作用2:追踪表单状态
-#### 响应式表单(对应ReactiveFormsModule模块)
+        该用法同时具有用法1的作用(所以也必须有`name`属性),且不用再单独声明`ngModel`.
+    2. 用法3:`#xxx="ngModel"`
+
+        在模板中获取元素的状态,要求元素上已经有用法1或用法2.下面列出几种易混淆的情况的区别并分析为什么需要该写法:
+        1. 假如元素**声明了模板引用变量`#firstName`且只有该属性**,我们可以通过`firstName.value`获取该元素的值,但是不能获取它的状态;
+        2. 如果元素**声明了属性`name="first_name"`且只有该属性**,然后再使用`ngModel`的用法1或用法2,则`ngForm`(已绑`#f`)可以获取该元素值和状态等.本人实测获取值需要用`f.control.controls.first_name?.value`,可以感觉到该写法很麻烦,所以此时我们需要`ngModel`的用法3
+        3. 用法3要求元素上必须已有用法1或者用法2,官网的解释是:
+            
+            >Why "ngModel"? A directive's exportAs property tells Angular how to link the reference variable to the directive. You set name to ngModel because the ngModel directive's exportAs property happens to be "ngModel".
+
+            官网中说的name也就是此处的firstName,而要求已有用法1或用法2是因为元素上必须要声明过`ngModel`指令才能将模板引用变量firstName链接到该`ngModel`指令.
+
+2. `ngForm`
+
+    一般写法是`<form #f="ngForm" ...>`把`ngForm`的值赋值给`#f`变量,然后就可以通过`#f`变量方便的控制表单`ngForm`各元素(带`ngModel`指令和`name`属性的元素),并监听元素的属性和状态.
+
+3. 表单的事件和方法
+    1. `(ngSubmit)="method(xxx)"`:提交表单
+    2. `reset()`:重置表单
+
+4. 关于`#`,`ngModel`和`name`
+    1. `ngModel`,见前面部分
+    2. `name`的作用如html
+    3. `#`:
+5. 关于`f.form.value`和`ngForm.value`
+
+    在html模板中,这两个是一样的.`(ngSubmit)="onSubmit(f)`中写的是f,但是因为f赋值给了ngForm,所以实际传的是ngForm,所以在组件中接受的ngForm,获取值时用`xxx.value`而不是`xxx.form.value`
+
+6. 表单css状态
+
+    |状态|为真时的 CSS 类|为假时的 CSS 类|
+    |-|-|-|
+    |控件被访问过。|ng-touched	|ng-untouched|
+    |控件的值变化了。|ng-dirty|	ng-pristine|
+    |控件的值有效。|ng-valid	|ng-invalid|
+
+#### 响应式表单(Reactive Forms,对应的是ReactiveFormsModule模块)
 1. 简介
     
-    同步
+    同步,使用时需导入ReactiveFormsModule模块,
 2. 响应式验证器
 
     响应式验证器是一些简单、可组合的函数.在模板驱动表单中配置验证器有些困难，因为我们必须把验证器包装进指令中。
@@ -534,6 +584,8 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
     4. `styles`数组:
 #### @Injectable
 #### @Directive
+1. 配置对象
+    1. `host`:(待补充)
 
 ## 四 其他基础知识
 ### 1 编译器
@@ -549,6 +601,18 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 1. [https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md](https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md)
 ## 七 问题
 ### 1 已解决
+1. 直接修改dom会影响angular的form获取的值吗?
+
+    实测是不会的,而且还发现一点,假如有如下代码,
+
+    ```html
+    <input #hi15>
+    <span>15的值是:{{hi15?.value}}</span>
+    ```
+
+    当我在input中输入的时候,`span`中的值并没有立刻改变,只有我每次回车或是提交的时候才会改变.所以我猜测input元素**默认情况**下是只有确认输入的时候才会去调用input()事件,正在输入的时候没有去调用,当然,注册了该事件或是双绑后就不一样了.
+
+
 ### 2 未解决
 1. 表单验证
 2. 声明周期
@@ -575,6 +639,12 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 21. [掌握Angular2的依赖注入-segmentfault](https://segmentfault.com/a/1190000006672079)
 22. angular4:[https://v2.angular.cn/docs/ts/latest/](https://v2.angular.cn/docs/ts/latest/)
 23. angular exportAs
+24. angualr正式的代码是封装过的吗?在界面上能调dom吗?
+25. angularform表单的最佳实践
+26. `[attr.disabled]="input.disabled ? true : null"`为什么一定要这样写.
+27. 它说的`Object destructuring` (对象解构) :[https://segmentfault.com/a/1190000009037539#articleHeader11](https://segmentfault.com/a/1190000009037539#articleHeader11)
+
+    可否用于id的排序
 ### 3 思考
 1. 大多数应用只有一个组件树，它们引导单一根组件
 

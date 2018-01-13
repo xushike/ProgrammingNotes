@@ -54,5 +54,6 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 ## 五 问题
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)
-3. 异步事件
+3. 异步事件,哪些事件是异步的
     1. 击键
+4. 防止表单重复提交以及一些常见的问题
