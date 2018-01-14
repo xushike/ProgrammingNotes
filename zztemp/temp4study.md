@@ -409,3 +409,39 @@ let val = input.card_id
 237. 看看别人优秀的angular代码
 238. angualr的disabled
 239. 限制某些框输入的小数位数.
+240. ngValue，ngGroup
+241. Object.assign({}, this.info);的浅拷贝
+
+    项目中使input声明传进来的不用浅拷贝是否有影响
+242. select 有绑定值时，想绑定一个空值用。。。没有绑定值时默认是第一个。。。
+243. 为什么声明了`#downCardType`还是不能在ngif中获取它的值呢？
+245. 如果把ngif的值的绑定到模板引用变量，会很慢，但是绑定组件中的值则不会。。。
+
+    还有个问题就是，如果是多层判断，那么后面的不会生效。如，
+    ```
+    <tr *ngIf="downCardType.value == '40'">
+                    <td class="col-name">
+                        <em class="required">*</em>虚拟池：</td>
+                    <td>
+                        <select name="is_create_virtual_pool" [ngModel]="1" #createVirtualPool="ngModel">
+                            <option value="1">追加</option>
+                            <option value="0">新增</option>
+                        </select>
+                        <span *ngIf="createVirtualPool?.value == 1">
+                            <select required name="virtual_pool_id" ngModel #virtualPool="ngModel">
+                                <option value="">----所有----</option>
+                                <option *ngFor="let item of virtualPoolList" [ngValue]="item.virtual_pool_id">{{ item.name }}</option>
+                            </select>
+                            <span class="error" [innerHTML]="getErrorFor(virtualPool)"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr *ngIf="downCardType.value == '40'">
+                    <span >hi{{createVirtualPool.value}}</span>
+                </tr>
+                ```
+
+                246. ngModelChange何change
+
+246. 什么样的产品可以放放同一个池子？
+247. js 的any类型可以这样赋值`a.xxx=xx`，但是对象只能这样赋值`a["xxx"]=xx`？
