@@ -27,13 +27,13 @@ npm是世界上最大的js包管理工具。
 1. mac下home目录默认没有`.npmrc`文件,使用`npm config set registry https://registry.npm.taobao.org`命令会生成并配置好`.npmrc`,一步到位.
 ## 三. 基础
 ### 1 安装卸载命令
-1. 安装模块`npm install` 
+1. 安装模块`npm install`(简写`npm i`)
 
     1. 不加参数使用:会根据目录下的package.json配置文件下载所需的模块.
     2. 本地安装`npm install xxx`:会安装在当前目录的node_modules目录(没有则自动创建该目录)里.
     3. 全局安装则加上参数`-g`(`--global`):安装全局依赖，如果没有指定包名，则将当前目录中的包安装至全局(?)。
     4. 参数`--dry-run`:走一遍安装的流程并报告结果，但实际上没有安装任何依赖
-    5. 关于模块名后的版本号
+    5. 关于模块名后的版本号(即版本发布时的tag)
         
         包名后可以直接跟[@version]即包的版本号来安装制定版本,也可以用通用的版本名称,如
         - `@latest`或`@next`:最新版本
@@ -139,26 +139,27 @@ npm是世界上最大的js包管理工具。
             .listen(process.env.npm_package_config_port)
         ```
     8. `engines`:指明了该模块运行的平台，比如Node或npm的某个版本或者浏览器
-### npm-shrinkwrap.json
+### 相关文件说明
+#### npm-shrinkwrap.json
 用于将项目的模块版本进行精确锁定,使用流程如下
 1. `npm install ...`安装模块
 2. `npm prune`:清除未使用的模块
 3. `npm shrinkwrap`:生成`npm-shrinkwrap.json`
 4. 提交该json文件到git,这样其他人clone项目之后执行`npm install`所还原的依赖树就是一样的.
+#### npm-debug.log
+npm的错误报告
 
-
-
-
-## 四. 使用
+## 四 经验
 ### 1. 发布包的步骤
 1. npmadduser登录
 2. npminit
     1. 提问，根据回答生成package.json文件
 3. npm publish
+    1. 版本tag:默认是`latest`
 4. npm unpublish（不推荐使用）
 5. npm deprecate:表示放弃一个包，该包在npm中没有取消，安装该包的用户会看到警告信息
 6. npm view：显示一个包(在npm上)的详细信息
-## 五. 问题
+## 五 问题
 ### 1 已解决
 1. 用`npm list -g`命令出现大量的`npm ERR! extraneous:...`
 

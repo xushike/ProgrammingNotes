@@ -447,3 +447,24 @@ let val = input.card_id
 247. js 的any类型可以这样赋值`a.xxx=xx`，但是对象只能这样赋值`a["xxx"]=xx`？
 248. gitkeep
 249. 项目中的前端代码生成了新的之后发布到线下服务器不用强制刷新页面就能获取吗?我当时先启动的后端,然后生成 的前端,结果没用生效,强制刷新也没有用;然后先复制好前端再启动后端似乎就行了.(待测试)
+250. ts中这样写为什么报错
+```typescript
+var arr = [{ name: "wang", age: 3 }, { name: "wang", age: 4 }]
+for (let [i, item] of arr.entries()) {
+    console.log("item:", item)
+}
+```
+251. stackoverflow for loop性能的文章
+    1. foreach的return是不是没有用
+252. 局域网能访问localhost启动的服务吗
+    在虚拟机里，如果开启了虚拟机的防火墙呢
+253. 没有登录能访问api吗
+254. angular-cli ng的命令
+255. 查看linux内存占用状态
+256. if else 和case switch的直观比较
+257. go的{}中一定要用逗号结尾？
+258. js 0 和"0"相等吗
+259. 多重管道在项目中的应用
+260. angular表单提示，可以做成侧边那种吗
+
+        有没有经典的现成例子
