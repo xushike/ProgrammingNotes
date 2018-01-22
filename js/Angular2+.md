@@ -379,6 +379,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 
     组件是一个带模板的指令,虽然严格来说组件就是一个指令，但是组件非常独特，在Angular中位于中心地位.
 #### 管道
+管道的源码部分:[https://segmentfault.com/a/1190000008646187](https://segmentfault.com/a/1190000008646187)
 作用不必多说,angular4又加入了`async pipe`,默认是只能在angular的模板中使用,如果要在js中使用,推荐使用DI的方式.
 1. 关于纯管道(Pure Pipe)和非纯管道(Impure Pipe)
 

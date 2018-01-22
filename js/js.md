@@ -235,3 +235,4 @@ var 一切=undefined；
 1. js中alert输出的内容太长了怎么换行？我再dorado中输出的时候就遇到过这个问题。
 2. js null和undefined的区别，两个都占用内存空间吗，用什么方法去验证呢？
 3. 网友说的js的排序原理不固定,但是基本和`快速排序法`类似.
+4. js闭包问题:[https://segmentfault.com/a/1190000003818163](https://segmentfault.com/a/1190000003818163)

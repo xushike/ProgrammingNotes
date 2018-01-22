@@ -471,3 +471,10 @@ for (let [i, item] of arr.entries()) {
 261. md 的todo list;mac设置默认输入法
 262. 腾讯百度等为啥自称厂
 263. angular2渐进式编程.
+264. 自定义指令和系统指令一样的话，默认用哪个
+265. markdown流程图
+266. oracle时间转换为天
+267. js中各种遍历的比较：[https://www.incredible-web.com/blog/performance-of-for-loops-with-javascript/](https://www.incredible-web.com/blog/performance-of-for-loops-with-javascript/)
+
+    结论似乎不准确,还有一点就是for of entries()方法效率似乎比较低,总之最好别用
+268. 我们项目的ts编译后是es5还是什么

@@ -169,3 +169,4 @@ npm的错误报告
     1. cnpm uninstall并不能生效，不知道为什么
 2. package-lock.json
 3. 注册npm账户的好处,除了记录自己使用的仓库,还有什么?
+4. 深入 Node 模块的安装和发布；[https://segmentfault.com/a/1190000004221514](https://segmentfault.com/a/1190000004221514)
