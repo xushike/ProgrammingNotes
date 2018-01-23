@@ -647,3 +647,4 @@ dpkg -L package #列出与该包关联的文件
     3. 参考:[http://www.jianshu.com/p/dde6a01c4094](http://www.jianshu.com/p/dde6a01c4094)
 18. linux的命令一共有4中,除了type识别的三种还有:shell函数(即小型shell脚本)?
 19. gdb调试工具
+20. sftp:[https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html](https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html)
