@@ -63,3 +63,6 @@
 58. ionic 2和nativescript2
 59. java9和javafx如何了
 60. curl命令
+61. Gatsbyjs
+62. git remove origin之后再追踪vscode就没有pull的那个提示了,怎么弄出来?
+63. GraphQL
