@@ -57,3 +57,4 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 3. 异步事件,哪些事件是异步的
     1. 击键
 4. 防止表单重复提交以及一些常见的问题
+5. 如何使用Firebug, Developer Tools来扒前端代码
