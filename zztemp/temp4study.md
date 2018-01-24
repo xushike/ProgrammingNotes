@@ -478,3 +478,6 @@ for (let [i, item] of arr.entries()) {
 
     结论似乎不准确,还有一点就是for of entries()方法效率似乎比较低,总之最好别用
 268. 我们项目的ts编译后是es5还是什么
+269. js引用传递的坑和优点.
+270. js到ts:[https://segmentfault.com/a/1190000010774159](https://segmentfault.com/a/1190000010774159)
+271. 深入js的for of:[http://www.jb51.net/article/70106.htm](http://www.jb51.net/article/70106.htm)
