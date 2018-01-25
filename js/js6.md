@@ -25,3 +25,4 @@ ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代
 参考:[http://www.infoq.com/cn/articles/es6-in-depth-destructuring/](http://www.infoq.com/cn/articles/es6-in-depth-destructuring/)
 
 ## 五 问题
+1. 对象结构带来了性能提升吗,更少资源?

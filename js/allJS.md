@@ -15,4 +15,5 @@
 和js很像,由google开发,影响比较多,用到再补充吧
 #### 10 meteor
 #### 11 Gatsbyjs
+#### 12 jQuery
 ## 五 问题

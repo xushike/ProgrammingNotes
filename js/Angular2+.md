@@ -21,6 +21,7 @@
 1. Angular2资源大全,感觉比较全面:[https://github.com/lightningtgc/awesome-ng2](https://github.com/lightningtgc/awesome-ng2)
 2. Angular2優質學習資源收集:[https://hk.saowen.com/a/53955f7eb930c2ddc880fbff0713dd3861ed79eb455f5e9c7f09509dcad1864d](https://hk.saowen.com/a/53955f7eb930c2ddc880fbff0713dd3861ed79eb455f5e9c7f09509dcad1864d)
 3. [http://plnkr.co/](http://plnkr.co/)
+4. 大神的博客:[https://orangexc.xyz/](https://orangexc.xyz/)
 ### 7 文档
 ## 二 安装配置
 ### 1 win
@@ -545,6 +546,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
     响应式验证器是一些简单、可组合的函数.在模板驱动表单中配置验证器有些困难，因为我们必须把验证器包装进指令中。
 3. 待研究
     1. [https://www.jianshu.com/p/925adede7c60](https://www.jianshu.com/p/925adede7c60)
+    2. [https://segmentfault.com/a/1190000009041192](https://segmentfault.com/a/1190000009041192)
 #### 两者比较
 1. 哪个更好:各有所长.可两者都用.
 ### 4 引导启动
@@ -679,7 +681,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 参考自定义管道
 1. 配置对象
     1. `host`:(待补充)
-
+#### @ViewChild
 ## 四 其他基础知识
 ### 1 编译器
 ### 1 动画
@@ -704,6 +706,10 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 ## 六 angular第三方组件
 ### 1 angular material2
 1. [https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md](https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md)
+2. github:[https://github.com/angular/material2#feature-status](https://github.com/angular/material2#feature-status)
+##### 引入
+1. 安装命令`npm install --save @angular/material`
+2. 待补充
 ## 七 问题
 ### 1 已解决
 1. 直接修改dom会影响angular的form获取的值吗?
@@ -763,3 +769,4 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 
     什么情况使用多组件树?
 2. angular2还可以开发react native。(自行上GitHub搜索angular2 react native).
+3. youyuxi说:ng serve 对SSL的支持
