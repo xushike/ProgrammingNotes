@@ -45,6 +45,7 @@ npm是世界上最大的js包管理工具。
     删除制定的依赖包并且完全移除为了该包而安装的任何文件
     1. 常用参数，和install一样
     2. 别名:`remove 、rm、r、un、unlink`
+    3. 卸载之后还需要执行`npm cache clean`,如果版本号大于5,使用`npm cache verify`(待补充)
 3. `npm update`
 
     升级所有依赖包至版本规则允许的最高版本,并安装缺失的依赖包

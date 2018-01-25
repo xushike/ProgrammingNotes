@@ -8,3 +8,4 @@
 
     其他信息可先参考百度百科.
 4. android的c++开发包叫做ndk,就是native开发包
+5. Android上页面推荐使用rem单位?
