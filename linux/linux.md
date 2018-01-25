@@ -283,6 +283,7 @@ pbcopy < myFile.txt
         3. gonme中,拖动文件同时按下`ctrl+shift`会创建一个链接(什么链接?)而不是移动或复制文件
 
 #### 2.4 压缩相关
+#### tar
 1. 首先明确linux中打包和压缩是不同的，打包是把多个文件变成一个总的文件；因为linux中很多压缩程序只能对一个文件压缩，所以一般是先打包再压缩
 2. tar
     >关于tar这个命令名字的来历：Initially, tar archives were used to store files conveniently on magnetic tape. The name "Tar" comes from this use（最初，tar档案被用来方便地在磁带上存储文件。 “焦油”这个名字来自这个用途。）
@@ -303,6 +304,9 @@ pbcopy < myFile.txt
     tar -zxv -f filename.tar.gz -C 欲解压缩的目录
     ```
 3. 打包
+#### zip
+1. 解压`unzip`
+2. 压缩`zip`
 ### 3 过滤器
 管道线经常用来对数据完成复杂的操作。有可能会把几个命令放在一起组成一个管道线。 通常，以这种方式使用的命令被称为过滤器。
 1. 排序`sort`
