@@ -482,3 +482,9 @@ for (let [i, item] of arr.entries()) {
 270. js到ts:[https://segmentfault.com/a/1190000010774159](https://segmentfault.com/a/1190000010774159)
 271. 深入js的for of:[http://www.jb51.net/article/70106.htm](http://www.jb51.net/article/70106.htm)
 272. linux删除后的撤销
+273. es6展开运算符
+274. angular json的管道怎么用
+275. 项目问题
+
+    1. constructor中注入的服务比如dic,可以直接用dic,不用加this;但是在方法外面必须要加dic?
+    2. 项目中的系统繁忙500错误,通过什么获取
