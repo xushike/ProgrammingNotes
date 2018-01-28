@@ -488,3 +488,4 @@ for (let [i, item] of arr.entries()) {
 
     1. constructor中注入的服务比如dic,可以直接用dic,不用加this;但是在方法外面必须要加dic?
     2. 项目中的系统繁忙500错误,通过什么获取
+276. 研究下word等的`1.`,`2.`
