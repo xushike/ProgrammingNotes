@@ -764,6 +764,7 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 
     Angular 2中的脏值检查,深度解析了神奇的属性绑定背后的脏值检查:[https://vsavkin.com/change-detection-in-angular-2-4f216b855d4c](https://vsavkin.com/change-detection-in-angular-2-4f216b855d4c)
 30. angular-cli:[http://blog.csdn.net/crper/article/details/62884688](http://blog.csdn.net/crper/article/details/62884688)
+31. 教程:[http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/](http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/)
 ### 3 思考
 1. 大多数应用只有一个组件树，它们引导单一根组件
 

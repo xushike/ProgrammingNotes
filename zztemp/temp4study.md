@@ -489,3 +489,11 @@ for (let [i, item] of arr.entries()) {
     1. constructor中注入的服务比如dic,可以直接用dic,不用加this;但是在方法外面必须要加dic?
     2. 项目中的系统繁忙500错误,通过什么获取
 276. 研究下word等的`1.`,`2.`
+277. 熟悉下ng 时用到的js插件
+278. angular transform的源代码,和项目中ydj写得的区别
+    1. 项目中`{ title: "完成时间", field: "finish_time", pipes: { date: "MM-dd HH:mm",placeholder: "---" } },`这样写可以多重管道?
+279. css里夫优先还是子优先?
+280. 不同的指令和组件加到不同的地方,具体记录
+281. ts中只定义未赋值的值是undefined,js中也是吗
+282. 根据状态显示不同的颜色,好像引入全局方法会更好?
+283. 带_的私有变量是那个语言的语法
