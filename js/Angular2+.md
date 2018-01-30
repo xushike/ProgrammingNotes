@@ -369,7 +369,33 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
         </div>
         ```
         
-        实测发现,`ngSwitch`没带星号,所以不能写成用`ng-template`包裹的形式,但是`*ngSwitchCase`和`*ngSwitchDefault`,而且不管哪种形式,`*ngSwitchCase`和`*ngSwitchDefault`都要写在`ngSwitch`所在的元素块的内部.
+        
+        实测发现,`ngSwitch`没带星号,所以不能写成用`ng-template`包裹的形式,但是`*ngSwitchCase`和`*ngSwitchDefault`能,而且不管哪种形式,`*ngSwitchCase`和`*ngSwitchDefault`都要写在`ngSwitch`所在的元素块的内部.如下:
+
+        ```html
+        <div [ngSwitch]="currentHero.emotion">
+            <ng-template [ngSwitchCase]="'happy'">
+                <app-happy-hero [hero]="currentHero"></app-happy-hero>
+            </ng-template>
+            <ng-template [ngSwitchCase]="'sad'">
+                <app-sad-hero [hero]="currentHero"></app-sad-hero>
+            </ng-template>
+            <ng-template [ngSwitchCase]="'confused'">
+                <app-confused-hero [hero]="currentHero"></app-confused-hero>
+            </ng-template>
+            <ng-template ngSwitchDefault>
+                <app-unknown-hero [hero]="currentHero"></app-unknown-hero>
+            </ng-template>
+        </div>
+        ```
+
+    4. `ngNonBindable`:告诉Angular不要绑定页面的某个部分,如
+
+        ```html
+        <div ngNonBindable>
+        {{我不会被绑定}}
+        </div>
+        ```
     4. 其他:微语法:需要自己写结构指令时可参考微语法的源码.
     5. 其他:`<ng-container>`
 
