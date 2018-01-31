@@ -163,7 +163,27 @@ js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么
 
     1. js数组中的元素可以不是同一类型.
     2. 其实还有第四种定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`,非常不推荐使用.
-2. 
+2. 数组常用方法
+    1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
+
+        ```JavaScript
+        obj = {divisor: 10}
+        remainder = function (value) {
+            return value % this.divisor;
+        }
+        numbers = [6, 12, 25, 30];
+        result = numbers.map(remainder, obj);
+        console.log(result);
+        ```
+
+        如果把方法写在map的callback()里面,
+
+        ```
+        result = numbers.map((ele)=>{
+            return ele % this.divisor;    
+        }, obj);
+        ```
+        则`this`会变成`{}`,目前还不清楚为啥.
 
 #### RegExp对象
 字符模式对象,用于正则表达式

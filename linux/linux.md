@@ -284,16 +284,20 @@ pbcopy < myFile.txt
 
 #### 2.4 压缩相关
 #### tar
-1. 首先明确linux中打包和压缩是不同的，打包是把多个文件变成一个总的文件；因为linux中很多压缩程序只能对一个文件压缩，所以一般是先打包再压缩
+1. 首先明确linux中打包和压缩是不同的，打包是把多个文件变成一个总的文件；因为linux中很多压缩程序只能对一个文件压缩，所以一般是先打包再压缩,参考:["为什么linux的包都是.tar.gz？要解压两次"](https://www.zhihu.com/question/37019479?sort=created)
 2. tar
+
+    不加`-z`或`-a`的话就只是打包,而没有压缩.
+
     >关于tar这个命令名字的来历：Initially, tar archives were used to store files conveniently on magnetic tape. The name "Tar" comes from this use（最初，tar档案被用来方便地在磁带上存储文件。 “焦油”这个名字来自这个用途。）
     1. `-z`或`--gzip`或`--ungzip`：通过gzip指令处理备份文件
-    2. `-v`：显示操作过程
+    2. `-v`(`--verbose`)：显示操作过程
     3. `-f [压缩或备份的文件]`或`--file=[压缩或备份的文件]`：指定备份文件
     4. `-c`或`--create`：建立新的备份文件
     5. `-x`或`--extract`或`--get`：从备份文件中还原文件
     6. `-t`或`--list`：列出备份文件的内容
     6. `-C [目录]`：在指定目录解压缩。
+    7. `-a`(`--auto-compress`):使用归档后缀名来决定压缩程序,也就是用了该参数就不用`-z`参数了.
     ```bash
     # 最常用的例子如下
     # 压缩：
@@ -652,3 +656,4 @@ dpkg -L package #列出与该包关联的文件
 18. linux的命令一共有4中,除了type识别的三种还有:shell函数(即小型shell脚本)?
 19. gdb调试工具
 20. sftp:[https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html](https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html)
+21. linux cheat

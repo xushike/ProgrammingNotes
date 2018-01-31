@@ -74,6 +74,7 @@
     * [5.eclipse](software&tool/5.eclipse.md)
     * [7.VisualStudio](software&tool/7.VisualStudio.md)
     * [8.office系列](software&tool/8.office.md)
+    * [11.plsqldev](software&tool/11.plsqldev.md)
 * [linux](linux/linux.md)
     * [3.ubuntu](linux/3.ubuntu.md)
     * [2.shell](linux/2.shell.md)
