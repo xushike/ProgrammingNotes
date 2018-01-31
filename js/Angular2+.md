@@ -22,6 +22,8 @@
 2. Angular2優質學習資源收集:[https://hk.saowen.com/a/53955f7eb930c2ddc880fbff0713dd3861ed79eb455f5e9c7f09509dcad1864d](https://hk.saowen.com/a/53955f7eb930c2ddc880fbff0713dd3861ed79eb455f5e9c7f09509dcad1864d)
 3. [http://plnkr.co/](http://plnkr.co/)
 4. 大神的博客:[https://orangexc.xyz/](https://orangexc.xyz/)
+5. 网友的项目:[https://github.com/liepeng328/angular-base](https://github.com/liepeng328/angular-base)
+6. 网友的组件库:[https://github.com/ElemeFE/element-angular](https://github.com/ElemeFE/element-angular)
 ### 7 文档
 ## 二 安装配置
 ### 1 win
@@ -723,6 +725,8 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 ### 3 事件
 ### 5 路由器
 ### 6 测试
+### 7 部署
+
 ## 五 经验
 1. 双向绑定中某方的数据延迟取得也会生效
 ### 1 实际开发还需要的其他模块

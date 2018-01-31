@@ -40,7 +40,7 @@ npm是世界上最大的js包管理工具。
     6. 参数`--save`:安装模块并写入到当前项目`package.json`文件的`dependencies`中
     7. 参数`--save-dev`:安装模块并写入到当前项目`package.json`文件的`ddevDependencies`中
         
-2. `npm uninstall`
+2. 卸载模块`npm uninstall`
 
     删除制定的依赖包并且完全移除为了该包而安装的任何文件
     1. 常用参数，和install一样
