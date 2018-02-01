@@ -506,3 +506,15 @@ for (let [i, item] of arr.entries()) {
 291. vscode返回光标上一次所在的位置
 292. 聚合发货系统是谁写的,应该用的响应式表单
 293. 管道多参数的写法
+294. oracle nvl 以及项目中的&写法,以及oracle的空不等于空的问题如何解决
+    1. `u.down_order_no = nvl(@down_order_no, u.down_order_no)`和`@order_no is null or o.order_no = @order_no`
+    2. 当有外链接其他表的时候不要用`&`这种写法,因为两个表可能会有相同名字的字段,这样就识别不出来了.
+    3. ''和null相等吗,is null判断''呢?
+    4. 连接查询的时候,把连接查询的条件放在where前面和后面有区别吗?
+
+295. js的isNaN()对于''
+296. `ng-container`和`ng-template`的区别
+    1. 默认情况前者里面的内容会被渲染出来,后者不会
+    2. 前者可用*指令,后者不行?
+297. angular中如何层级设置样式/
+298. ul中可以放div吗

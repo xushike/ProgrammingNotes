@@ -372,7 +372,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
         ```
         
         
-        实测发现,`ngSwitch`没带星号,所以不能写成用`ng-template`包裹的形式,但是`*ngSwitchCase`和`*ngSwitchDefault`能,而且不管哪种形式,`*ngSwitchCase`和`*ngSwitchDefault`都要写在`ngSwitch`所在的元素块的内部.如下:
+        实测发现,`ngSwitch`没带星号,**所以不能写到`ng-template`上**,但是`*ngSwitchCase`和`*ngSwitchDefault`能,而且不管哪种形式,`*ngSwitchCase`和`*ngSwitchDefault`都要写在`ngSwitch`所在的元素块的内部.如下:
 
         ```html
         <div [ngSwitch]="currentHero.emotion">
