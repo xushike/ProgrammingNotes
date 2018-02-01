@@ -518,3 +518,6 @@ for (let [i, item] of arr.entries()) {
     2. 前者可用*指令,后者不行?
 297. angular中如何层级设置样式/
 298. ul中可以放div吗
+299. js
+    1. 一个ts中可以放多个`export class xxx`?
+    2. const一定要放在`export class xxx`的外面?

@@ -7,6 +7,9 @@
 ### 2 历史
 1. 从网友口中得知angular2未来会致力于3d和vr,感觉有盼头.
 ### 3 常识
+#### angular风格指南
+[风格指南](http://origin.angular.live/docs/ts/latest/guide/style-guide.html#!#naming)
+
 ### 4 angular-cli常用命令
 1. `ng serve`:启动开发服务器并监听文件变化,变化时重构
     1. 参数`-o`(`--open`):启动后打开地址
@@ -711,7 +714,8 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
     2. `templateUrl`:组件 HTML 模板的模块相对地址.也可用`template`,后面跟html字面量.
     3. `providers`:组件所需服务的依赖注入提供商数组.写在这儿的是局部,写在根模块的是全局的.
     4. `styles`数组:
-#### @Injectable
+#### @Injectable()
+Don't forget the parentheses,否则会导致一个难以诊断的错误
 #### @Directive
 #### @Pipe
 参考自定义管道
@@ -741,6 +745,14 @@ github地址:[https://github.com/angular/angular-cli](https://github.com/angular
 #### 安装
 prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 #### 常用命令
+
+### 3 angular4英雄教程
+#### 多个组件
+#### 服务
+#### 路由
+1. 英雄的id是数字，而路由参数的值总是字符串。 所以我们需要通过 JavaScript 的 (+) 操作符把路由参数的值转成数字。
+
+
 ## 六 angular第三方组件
 ### 1 angular material2
 1. [https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md](https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md)
