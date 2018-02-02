@@ -94,6 +94,7 @@ age="hello";
         3. `replace()`字符替换
         4. `split(string)`:字符串转数组
         5. `trim()`:去掉空格,es6新增.
+        6. `test()`(待补充)
     4. 模板字符串(es6)
 2. 数字:即number对象
 
@@ -259,3 +260,8 @@ var 一切=undefined；
 2. js null和undefined的区别，两个都占用内存空间吗，用什么方法去验证呢？
 3. 网友说的js的排序原理不固定,但是基本和`快速排序法`类似.
 4. js闭包问题:[https://segmentfault.com/a/1190000003818163](https://segmentfault.com/a/1190000003818163)
+5. 网友说:"javascript里最长的正整数长度为21位，再多就会用科学计数法进行计数"
+6. 如果是弱类型,那么有什么方式分辨类型呢?还是说分辨具体类型的意义不大了?
+7. js字符,数字等的相互转换的最佳实践
+    1. `parseInt()`
+    2. string类型的2.3转成number是?
