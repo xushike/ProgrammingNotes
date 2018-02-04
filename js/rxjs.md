@@ -1,6 +1,7 @@
 # rxjs
 ## 一 概述
 ### 1 简介
+作者Ben Lesh
 1. prerequisites:最好先掌握typescript和js
 ## 三 基础
 ## 五 问题

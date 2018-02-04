@@ -4,6 +4,18 @@
 1. 本笔记主要记录angular2及以上版本
 ### 1 简介
 1. 特性与优点:[https://v2.angular.cn/features.html](https://v2.angular.cn/features.html)
+2. 补充
+
+    - angular4 rewrote View Engine => 40% size application.
+    - scalability
+    - google大牛:普通的渲染复杂度是O(n),如果有Observable,大概是O(log(n))
+#### Angular Tooling
+- Ahead of Time(AOT) Compiler
+- Angular Universal
+- Command Line Interface(CLI)
+- Augury(Chrome Dev Tool)
+- Language Services:IDE Integration
+- Protractor and Karma for testing
 ### 2 历史
 1. 从网友口中得知angular2未来会致力于3d和vr,感觉有盼头.
 ### 3 常识
@@ -736,6 +748,8 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 
 ### 4 路由与导航
 1. ActivatedRoute不需要取消订阅?
+#### 动态路由
+1. `loadChildren`
 
 ### 5 HTTP
 1. 官网教程:不幸的是，Angular 的Observable并没有一个toPromise操作符... 没有打包在一起发布。Angular的Observable只是一个骨架实现.(?)

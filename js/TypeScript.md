@@ -1,11 +1,25 @@
 # TypeScript
 [TOC]
 ## 一 概述
-TypeScript是JavaScript的一个超集，而且本质上向这个语言添加了**可选的静态类型和基于类的面向对象**编程。是由微软开发的自由和开源的编程语言。TypeScript可以编译出纯净、简洁的JavaScript代码，并且可以运行在任何浏览器上
-### 1 TypeScript的历史
-2. 优缺点
-### 2 关于TypeScript的一些常识
-#### 2.1 编译错了依然会生成文件?
+TypeScript是JavaScript的一个超集，而且本质上向这个语言添加了**可选的静态类型和基于类的面向对象**编程。是由微软开发的自由和开源的编程语言。TypeScript可以编译出纯净、简洁的JavaScript代码，并且可以运行在任何浏览器上.
+
+### 1 简介
+作者是Anders Hejlsberg,微软的架构师,超级大牛.说:TypeScript makes JavaScript scale.
+- Better readability and intergratable software.
+- Any browser,host,and OS.
+#### TypeScript complier编译器(tsc)
+- tsconfig.json:configures compliation options for JS.
+- Static ytpe checking and code refactoring(重构).
+
+Works with all the popular frameworks.
+#### Typescript Adoptions
+- google
+- Microsoft:vscode就是用typescript写的.
+- Netflix:网页播放器是用typescript写的. 
+### 2 历史
+### 3 常识
+#### 编译错了依然会生成文件?
+
 ## 二 安装配置
 ### 1 npm安装(推荐)
 1. `npm install typescript -g`
@@ -15,7 +29,7 @@ TypeScript是JavaScript的一个超集，而且本质上向这个语言添加了
 ### 3 常用命令
 1. 编译成js文件:`tsc xxx.ts...`,默认覆盖已有的
     1. 参数`--watch`:每次保存时会自动用增量编译(incremental compilation)的方式编译ts文件
-## 三 基础
+## 三 基础知识
 ### 1 数据类型
 #### 1.1 基础类型(和js几乎相同，除了是静态)
 1. 数字：number
@@ -95,6 +109,9 @@ TypeScript是JavaScript的一个超集，而且本质上向这个语言添加了
 
 ### 2 变量
 ### 3 interfaces接口
+- Interfaces describe the shape of your JS objects.
+- Interface disapper during compliation to JS.
+- Coercions do not add runtime checks.
 1. 接口的用处
 
     会根据一个对象是否符合某种特定结构来进行类型检查.编译成js时接口的代码会消失,所以ts接口的唯一的目的是在开发阶段里起到辅助的作用.
@@ -173,14 +190,26 @@ console.log(typeof arrayFromString[0]);
 ### 16 声明合并
 ### 17 JSX
 ### 18 装饰器
+
+
 ### 19 Mixins
 ### 10 三斜线指令
-## 五 问题
+
+## 四 高级知识
+### 1 features
+- Enums枚举
+- Interfaces接口
+- Decorators装饰器
+- Protected/Private
+- Union Types 
+## 五 经验
+
+## 六 问题
 1. 和typings的关系  
 2. 笔记:将number类型用`as`声明为string类型,然后调用match()方法会报"没有match()方法"错
 
     这是因为变量依然是number类型,所以不存在match()方法
 3. ts中数值都是单精度?
 4. 笔记:如果input组件被声明为number类型,那么在ts中,其value值也是number类型
-## 六 学习
+## 七 学习
 1. [http://web.jobbole.com/87535/](http://web.jobbole.com/87535/)
