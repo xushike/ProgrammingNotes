@@ -14,11 +14,13 @@
 1. `ng serve`:启动开发服务器并监听文件变化,变化时重构
     1. 参数`-o`(`--open`):启动后打开地址
 2. `ng lint`:保持代码风格的统一
+
 ### 5 angular第三方组件简介
 1. [http://shark.mail.netease.com/shark-angular2/index.html](http://shark.mail.netease.com/shark-angular2/index.html)
 2. [https://ng-bootstrap.github.io/#/home](https://ng-bootstrap.github.io/#/home)
 3. [https://material.angular.io/](https://material.angular.io/)
 4. [https://valor-software.com/ngx-bootstrap/#/](https://valor-software.com/ngx-bootstrap/#/)
+
 ### 6 网站
 1. 中文官网,感觉做的不错:[https://www.angular.cn/](https://www.angular.cn/)
 1. Angular2资源大全,感觉比较全面:[https://github.com/lightningtgc/awesome-ng2](https://github.com/lightningtgc/awesome-ng2)
@@ -27,13 +29,16 @@
 4. 大神的博客:[https://orangexc.xyz/](https://orangexc.xyz/)
 5. 网友的项目:[https://github.com/liepeng328/angular-base](https://github.com/liepeng328/angular-base)
 6. 网友的组件库:[https://github.com/ElemeFE/element-angular](https://github.com/ElemeFE/element-angular)
+
 ### 7 文档
 ## 二 安装配置
+
 ### 1 win
 1. 
 ### 3 mac
 1. 需要先安装node和npm
-## 三. 核心基础知识
+
+## 三. 基础知识
 ### 1 架构
 1. 通过引导根模块来启动应用。 在开发期间，你通常在一个main.ts文件中引导AppModule
 
@@ -62,9 +67,9 @@ angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全�
     angular要求至少有一个模块,也就是根模块,用来引导并运行应用.
 2. 自带模块
 
-    Angular 自身的许多特性也是通过 Angular 模块组织的
-    1. HttpModule:HTTP服务
-    2. RouterModule:路由器
+    Angular自身的许多特性也是通过Angular模块组织的,在`@angular/core`中的一般是核心模块,非core的(类似`@angular/router`这样的)一般都是独立附属模块,
+    1. HttpModule:HTTP服务,在`@angular/http`
+    2. RouterModule:路由器,在`@angular/router`
 #### 组件
 1. 网友总结的angular组件的几点使用经验:
     1. 好的命名
@@ -261,7 +266,7 @@ angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全�
         - 首次调用一定在`ngOninit()`之前.
     2. `ngOnInit()`:
     
-        只调用一次.该方法里可操作dom,可操作`@input()`的值.最常用.
+        只调用一次.该方法里可操作dom,可操作`@input()`的值,可获取路由的参数值.最常用.
     3. `ngDoCheck`
 
         自定义的方法，用于检测和处理值的改变,由zone.js实现,会检查整个组件树,一般会非常频繁且难以预料.
@@ -722,12 +727,18 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 1. 配置对象
     1. `host`:(待补充)
 #### @ViewChild
-## 四 其他基础知识
+
+## 四 高级知识
 ### 1 编译器
 ### 1 动画
 ### 2 变更检测
 ### 3 事件
-### 5 路由器
+
+### 4 路由与导航
+1. ActivatedRoute不需要取消订阅?
+
+### 5 HTTP
+1. 官网教程:不幸的是，Angular 的Observable并没有一个toPromise操作符... 没有打包在一起发布。Angular的Observable只是一个骨架实现.(?)
 ### 6 测试
 ### 7 部署
 

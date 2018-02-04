@@ -38,15 +38,20 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 1. 参考stackoverflow的回答,大意是html的attribute渲染时会转换成dom的property,而且attribute的值会随property一起变化等等:[What is the difference between attribute and property?](https://stackoverflow.com/questions/258469/what-is-the-difference-between-attribute-and-property)
 2. 本人简单测了下(待补充),普通的html对attribute和property两种写法都是支持的,比如`label`标签的`for`和`htmlFor`;而且chrome inspector shows both attributes and properties.
 3. 关于文中说的**property的值可以改变；attribute的值不能改变**,我简单测了下,其中好像只有`value`符合,而`href`,`for`和`htmlFor`都是attribute跟着property一起变化.(其他的测试待补充),所以文中的这个说法很可能只是针对angular的.
+
 ### 3 网址
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
+
 ### 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
+
 ### 5 js工具网站
 1. 10 款优秀的在线 JavaScript 工具推荐:[http://www.iteye.com/news/25351](http://www.iteye.com/news/25351)
 1. 在线编辑工具——由HTML编辑器、CSS编辑器、JavaScript编辑器和输出界面4个部分组成，你可以方便地进行代码测试:[jsfiddle.net](https://jsfiddle.net/)
+
 ## 三 基础
 ### 1 热更新
+
 ## 四 经验
 1. 知乎张克军
 
@@ -71,6 +76,7 @@ Bulma
 #### 异步加载
 #### 样式预处理器
 #### 代码自动review工具
+
 ## 五 问题
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)

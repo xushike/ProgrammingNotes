@@ -265,3 +265,5 @@ var 一切=undefined；
 7. js字符,数字等的相互转换的最佳实践
     1. `parseInt()`
     2. string类型的2.3转成number是?
+8. const和let
+9. 在字符串中使用变量的方法
