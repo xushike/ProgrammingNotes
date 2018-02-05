@@ -528,3 +528,22 @@ for (let [i, item] of arr.entries()) {
     2. 笔记:`err == context.ERR_DataNotExist`表示数据不存在
     3. 需要把错误信息展示给用户的临时方法是:后台把`err_msg`放在success中,`response.Success(map[string]interface{}{"err_msg": "获取代理商产品数据失败"})`
 301. 最后那个项目还没看,腾讯视频搜索:TypeScript，Angular，和移动端跨平台开发
+302. 公司项目
+    1. 前后端api的命名和restful的关系.
+        1. 根据RESTful来调整api的名称?
+    2. 上有产品和下游产品,代理商的关系
+    3. 虚拟池的类型是由下游卡类型决定的吗
+    4. 规范所有池的命名?
+    5. 不可点击时增加鼠标标志
+    6. go的map返回到前端是什么?切片在js中相当于数组用?
+    7. 划拨的时候卡片类型就相当于虚拟池类型?
+303. js
+    1. 如果js比较(比如大小的比较)两边有一边为undefined,会怎么样
+    2. js for of跳出循环
+        1. 用return不仅跳出,而且终止所在的方法
+    3. js调试
+304. 笔记
+    1. 公司项目前端里,当变量实际类型是number型的时候是不能调用`match()`方法的
+    2. js里string类型乘以数字会变成number类型.
+305. vscode搜索类名等的快捷键
+306. MDN中for of中的let和const有区别吗
