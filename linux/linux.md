@@ -657,3 +657,4 @@ dpkg -L package #列出与该包关联的文件
 19. gdb调试工具
 20. sftp:[https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html](https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html)
 21. linux cheat
+22. [命令行的艺术:linux bash命令大全详解](http://ourjs.com/detail/5923d49cf1239006149616a6)

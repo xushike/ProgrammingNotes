@@ -45,7 +45,7 @@ npm是世界上最大的js包管理工具。
     删除制定的依赖包并且完全移除为了该包而安装的任何文件
     1. 常用参数，和install一样
     2. 别名:`remove 、rm、r、un、unlink`
-    3. 卸载之后还需要执行`npm cache clean`,如果版本号大于5,使用`npm cache verify`(待补充)
+    3. 之前卸载之后还需要执行`npm cache clean`清理,但是npm@5之后还要加上`--force`,但是可能会导致一些不必要的问题,所以慎用,清理之后使用`npm cache verify`(待补充).具体见缓存部分.
 3. `npm update`
 
     升级所有依赖包至版本规则允许的最高版本,并安装缺失的依赖包
@@ -53,7 +53,8 @@ npm是世界上最大的js包管理工具。
         - `-depth Infinity`:npm@2.6.1k开始，update命令默认只升级最顶层的依赖，即直接的依赖，加上该命令则升级所有依赖
         - `--save`:升级同时将升级的版本号记录到package.json
 4. 清除未用到的模块`npm prune`
-### 2 查看相关命令
+
+### 2 查看命令
 1. 查看已安装模块:`npm list`
 
     显示模块名和版本信息
@@ -71,8 +72,24 @@ npm是世界上最大的js包管理工具。
 5. 查看模块的主页和文档
     - `npm home [moduleName]`
     - `npm docs [moduleName]`
-### 3 配置相关命令
+### 3 配置命令
 1. 查看所有配置:`npm config ls -l`
+2. 查看某个配置:`npm config get xxx`
+    - 比如查看cache目录,可以用`npm config get cache`
+
+### 4 缓存
+在 npm@5 以前，每个缓存的模块在 ~/.npm 文件夹中以模块名的形式直接存储，例如 koa 模块存储在 ~/.npm/koa 文件夹中。而 npm@5 版本开始，数据存储在 ~/.npm/_cacache 中，并且不是以模块名直接存放。
+npm 的缓存是使用 pacote 模块进行下载和管理，基于 cacache 缓存存储。由于 npm 会维护缓存数据的完整性，一旦数据发生错误，就回重新获取。因此不推荐手动清理缓存，除非需要释放磁盘空间，这也是要强制加上 --force 参数的原因。
+
+目前没有提供用户自己管理缓存数据的命令，随着你不断安装新的模块，缓存数据也会越来越多，因为 npm 不会自己删除数据。
+
+1. `npm cache clean`
+
+    删除缓存目录下的所有数据。从 npm@5 开始，为了保证缓存数据的有效性和完整性，需要加上 --force 参数。
+2. `npm cache verify`
+    
+    验证缓存数据的有效性和完整性，清理垃圾数据。
+
 ### 4 运行相关命令
 1. 更改包后重建:`npm rebuild [moduleName]`
 ### 5 package.json
@@ -160,11 +177,15 @@ npm的错误报告
 4. npm unpublish（不推荐使用）
 5. npm deprecate:表示放弃一个包，该包在npm中没有取消，安装该包的用户会看到警告信息
 6. npm view：显示一个包(在npm上)的详细信息
-## 五 问题
+## 六 问题
 ### 1 已解决
 1. 用`npm list -g`命令出现大量的`npm ERR! extraneous:...`
 
     当时我的npm版本是3.10.10，升级之后(5.6.0)问题解决
+
+2. "Unexpected end of JSON input while parsing near"
+
+    `npm cache clean --force`
 ### 2 未解决
 1. 淘宝镜像
     1. cnpm uninstall并不能生效，不知道为什么

@@ -547,3 +547,4 @@ for (let [i, item] of arr.entries()) {
     2. js里string类型乘以数字会变成number类型.
 305. vscode搜索类名等的快捷键
 306. MDN中for of中的let和const有区别吗
+307. [从 Node 到 Go：一个粗略的比较—GO平均性能比JavaScript快十几倍](http://ourjs.com/detail/59d475953506837194998ad2)

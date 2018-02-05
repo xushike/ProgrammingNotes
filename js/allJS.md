@@ -2,7 +2,11 @@
 ## 一 概述
 ### 1 简介
 该目录用于记录常见的js库,比较重要的js库会有单独的笔记
-## 三 常见js(排名不分先后)
+### 4 文档
+### 5 网站
+1. 有点意思的js网站:[http://ourjs.com/](http://ourjs.com/)
+## 三 基础
+### 1 常见js(排名不分先后)
 #### 1 javascript
 #### 2 npm
 #### 3 typescript
@@ -21,4 +25,6 @@
 ##### json-server.js
 ##### mock.js
 #### 14 NativeScript
+#### 15 asm.js
+阮一峰:[http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html](http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html)
 ## 五 问题
