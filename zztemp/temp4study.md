@@ -548,3 +548,31 @@ for (let [i, item] of arr.entries()) {
 305. vscode搜索类名等的快捷键
 306. MDN中for of中的let和const有区别吗
 307. [从 Node 到 Go：一个粗略的比较—GO平均性能比JavaScript快十几倍](http://ourjs.com/detail/59d475953506837194998ad2)
+308. 如何利用git的工作流等来方便工作
+309. go按字符分割切片
+310. a(b())
+    当b执行return()时,各种语言的表现都一样吗
+
+311. 对于GPRS,放在类名里,用Gprs还是GPRS?用在目录名呢?
+312. go
+
+    ```golang
+    type CardInfo struct {
+        CardID string `json:"card_id"`
+    }
+    ```
+    这种写法的意思?
+
+    2. `[]model.CardInfo{}`后面这个大括号是语法要求加的吗?
+    3. `[]byte(xxx)`?
+
+313. oracle
+    1. 哪些情况下inner join和left join一样??
+    2. group by 表达式
+
+314. 我们项目前端对ie的支持怎么样,能不能支持ie8以后的?
+
+    1. 其他的框架呢?
+315. 项目
+    1. getStirng可以去获取number吗
+    
