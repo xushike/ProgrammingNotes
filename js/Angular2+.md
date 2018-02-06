@@ -41,7 +41,8 @@
 4. 大神的博客:[https://orangexc.xyz/](https://orangexc.xyz/)
 5. 网友的项目:[https://github.com/liepeng328/angular-base](https://github.com/liepeng328/angular-base)
 6. 网友的组件库:[https://github.com/ElemeFE/element-angular](https://github.com/ElemeFE/element-angular)
-
+7. angular4修仙之路:[https://segmentfault.com/a/1190000008754631](https://segmentfault.com/a/1190000008754631)
+8. 大神的blog:[http://asdfblog.com/](http://asdfblog.com/)
 ### 7 文档
 ## 二 安装配置
 
@@ -840,6 +841,7 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
     Angular 2中的脏值检查,深度解析了神奇的属性绑定背后的脏值检查:[https://vsavkin.com/change-detection-in-angular-2-4f216b855d4c](https://vsavkin.com/change-detection-in-angular-2-4f216b855d4c)
 30. angular-cli:[http://blog.csdn.net/crper/article/details/62884688](http://blog.csdn.net/crper/article/details/62884688)
 31. 教程:[http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/](http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/)
+32. 掌握angular的依赖注入:[掌握Angular2的依赖注入](https://segmentfault.com/a/1190000006672079)
 ### 3 思考
 1. 大多数应用只有一个组件树，它们引导单一根组件
 
