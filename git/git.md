@@ -171,7 +171,16 @@ Git共有三个级别的config文件，分别是system、global和local:
 覆写关系为：小范围覆盖大范围属性；自上到下，作用范围越大。
 
 ## 四. 高级
-### 1 本地和远程的关联
+### 1 github
+#### 项目操作
+- star:作用是收藏
+- watch:作用是关注,更新时会收到通知(?)
+- fork:可以pull request
+
+#### 文件操作
+- raw:在浏览器中以 text/plain 查看原始文件
+
+### 2 本地和远程的关联
 1. 本地和远程仓库的关联（本地和远程都建好了仓库）:
     1. 本地和远程关联
 
@@ -215,6 +224,7 @@ Git共有三个级别的config文件，分别是system、global和local:
 2. 然后pull(如果没有commit就pull，当pull和本地修改的文件冲突时会提示“和本地文件有冲突，需要先commit”，此时先commit然后pull),
 3. 如果pull后文件冲突，需要解决冲突
 4. 然后push
+
 ## 六 问题
 
 1. git clone时用什么命令或软件可以显示进度？

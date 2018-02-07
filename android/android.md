@@ -1,6 +1,11 @@
 # android
 [TOC]
 ## 一 概述
+### 1 简介
+Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是Android系统的命名都是以点心来命名的.
+### 4 文档
+### 5 网站
+1. 菜鸟教程for Android:[Android 基础入门教程](http://www.runoob.com/w3cnote/android-tutorial-android-studio.html)
 ## 三 基础
 ### 1 未整理
 1. Android应用的界面使用布局（ViewGroup 对象）和微件（View 对象）层次结构构建。布局是一种不可见的容器，用于控制其子视图在屏幕上的位置。微件是界面组件，例如按钮和文本框。

@@ -1,7 +1,7 @@
 # frontEnd前端
 ## 一 概述
-### 1 历史
-### 2 常识
+### 2 历史
+### 3 常识
 #### HTML attribute 与 DOM property 的对比(待整理)
 ```
 attribute 是由 HTML 定义的。property 是由 DOM (Document Object Model) 定义的。
@@ -39,13 +39,19 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 2. 本人简单测了下(待补充),普通的html对attribute和property两种写法都是支持的,比如`label`标签的`for`和`htmlFor`;而且chrome inspector shows both attributes and properties.
 3. 关于文中说的**property的值可以改变；attribute的值不能改变**,我简单测了下,其中好像只有`value`符合,而`href`,`for`和`htmlFor`都是attribute跟着property一起变化.(其他的测试待补充),所以文中的这个说法很可能只是针对angular的.
 
-### 3 网址
+#### 各浏览器的激进版
+- 黄色的Chrome([Chrome Canary](https://www.google.com/chrome/browser/canary.html)):可与chrome同时运行.
+- 紫色的Safari([Safari Technology Preview](https://developer.apple.com/safari/technology-preview/))
+- 深蓝色的Firefox([Firefox Nightly](https://www.mozilla.org/en-US/firefox/nightly/all/))
+- 改头换面的IE([Microsoft Edge](https://www.microsoft.com/en-us/windows/microsoft-edge))
+
+### 5 网址
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
 
 ### 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 
-### 5 js工具网站
+### 6 js工具网站
 1. 10 款优秀的在线 JavaScript 工具推荐:[http://www.iteye.com/news/25351](http://www.iteye.com/news/25351)
 1. 在线编辑工具——由HTML编辑器、CSS编辑器、JavaScript编辑器和输出界面4个部分组成，你可以方便地进行代码测试:[jsfiddle.net](https://jsfiddle.net/)
 
@@ -76,8 +82,12 @@ Bulma
 #### 异步加载
 #### 样式预处理器
 #### 代码自动review工具
+## 四 高级
+### 1 值得期待的技术
+#### WebAssembly
+知乎:[如何评论浏览器最新的 WebAssembly 字节码技术？](https://www.zhihu.com/question/31415286)
 
-## 五 问题
+## 六 问题
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)
 3. 异步事件,哪些事件是异步的

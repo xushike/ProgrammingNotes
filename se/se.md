@@ -1,7 +1,7 @@
 # softwareEngineering软件工程
 [TOC]
 ## 三 基础
-### 1 一些概念等
+### 1 一些概念
 #### 1 MVC、MVVM
 - 模型-视图-控制器 (MVC) 
 - 模型-视图-视图模型 (MVVM) 
@@ -16,12 +16,21 @@
 知乎网友的解释:[https://www.zhihu.com/question/24844900/answer/35126766](https://www.zhihu.com/question/24844900/answer/35126766)
 看了基本就很容易理解了.
 
-### 2 软件工程总览
-#### 区块链
+#### 4 区块链
 [比特币的技术缺陷：区块链信息越来越大怎么办？](http://ourjs.com/detail/59264ed1f1239006149616af)
-## 四 高级
 
-## 五 问题
+## 四 高级
+### 1 JIT(Just in time compiling)
+#### V8中的JIT
+1. 缺点
+    1. JIT 基于运行期分析编译，而 Javascript 是一个没有类型的语言，于是， 大部分时间，JIT 编译器其实是在猜测 Javascript 中的类型
+#### AOT(Ahead of time)
+
+## 五 经验
+### 1 coding style guideline
+公司或者项目组最好能有一个这样的东西
+
+## 六 问题
 ### 1 已解决
 ### 2 未解决
 1. 可做笔记:[http://blog.csdn.net/lcg910978041/article/details/50696196](http://blog.csdn.net/lcg910978041/article/details/50696196)
