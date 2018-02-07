@@ -1,13 +1,32 @@
 # git
 [TOC]
-## 一. 概述
+## 一 概述
 git开源免费的分布式版本控制系统。
-### 1.git的一些常识
-1. git的官方中文book[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
-### 2.三棵树
+### 1 简介
+### 2 历史
+### 3 常识
+#### 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)
-## 二. 安装配置
-### 1. windows下的安装
+
+#### git的ssh和https
+git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
+##### 凭证助手credential helper
+Git现在默认包含如下的两个helper:
+- Cache:将凭据在内存中进行短时间的缓存
+
+    使用`git config --global credential.helper cache`
+- Store
+    
+    将凭据保存在磁盘上,明文存储.
+    1. 使用`git config --global credential.helper store`    
+    2. `git config –global credential.helper store –file=git_credentails`
+
+### 4 文档
+### 5 网站
+1. git的官方中文book[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
+
+## 二 安装配置
+### 1 win
 1. 下载git for windows
 2. 安装过程大同小异，注意设置git环境的时候选择第二项"use git from the windows command prompt"，如果选第一项就不能在cmd中使用git，要自己去配置path。自己配置的时候添git安装目录下的bin目录或者cmd目录都可以
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
@@ -26,20 +45,20 @@ git开源免费的分布式版本控制系统。
 为每个项目单独配置:(待补充)
 4. 关于ssh Key,（待补充）
 5. 关于git自身的更新：
-### 2. mac下的几种安装
-#### 2.1 最简单的是用Xcode的Command Line Tools
-#### 2.1 用Homebrew安装
-#### 2.3 在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
-### 3. linux下的安装
-## 三. 基础
-### 1. 初始化仓库
+### 2 mac下的几种安装
+#### 方式一(最简单):用Xcode的Command Line Tools
+#### 方式二:Homebrew安装
+#### 方式三:在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
+### 3 linux
+## 三 基础
+### 1 初始化仓库
 1. 如果在Windows系统，为了避免遇到各种莫名其妙的问题，请确保目录名（包括父目录）不包含中文  
 2. 注意初始化之后本地是没有分支的，这个时候`git branch`为空，只有第一次commit之后才会有分支，而且只有有分支之后才能和远程仓库关联。
-### 2. 添加跟踪(放入暂存区)和修改  
+### 2 添加跟踪(放入暂存区)和修改  
 1. `git add [被跟踪的文件名]`:用于把文件放入暂存区(放入暂存区的文件会被关联)，如果文件暂存后又被修改了，需要再次暂存然后提交。参数说明：
     1. `-u`:暂存所有已关联的文件(新建的文件不受影响)
     2. `-f`:如果想暂存的文件被ignore了，加上该命令可以强制暂存
-### 2. 撤销更改
+### 3 撤销更改
 理解这几个命令之前最好先了解git的三棵树。
 1. `git reset [xxx1] [xxx2] [xxx3]`:
     [xxx1]参数说明:
@@ -51,7 +70,7 @@ git开源免费的分布式版本控制系统。
 
     [xxx3]参数说明:
     1. 
-### 3 查看状态和历史
+### 4 查看状态和历史
 1. `git status`
 2. 查看提交日志：`git log`
     1. 查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
