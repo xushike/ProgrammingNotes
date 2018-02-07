@@ -12,9 +12,11 @@ git开源免费的分布式版本控制系统。
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 ##### 凭证助手credential helper
 Git现在默认包含如下的两个helper:
-- Cache:将凭据在内存中进行短时间的缓存
-
-    使用`git config --global credential.helper cache`
+- Cache
+    
+    将凭据在内存中进行短时间的缓存,默认15分钟
+    1. 使用`git config --global credential.helper cache`
+    2. 参数`cache –timeout=[num]`:设置时间,如`git config credential.helper cache –timeout=3600`
 - Store
     
     将凭据保存在磁盘上,明文存储.
