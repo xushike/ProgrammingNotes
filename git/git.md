@@ -17,18 +17,28 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
     将凭据在内存中进行短时间的缓存,默认15分钟
     1. 使用`git config --global credential.helper cache`
     2. 参数`cache –timeout=[num]`:设置时间,如`git config credential.helper cache –timeout=3600`
-- Store
+- Store(待测试)
     
     将凭据保存在磁盘上,明文存储,所以不安全.
     1. 指定凭证助手:`git config --global credential.helper store`    
-    2. 指定明文密码保存位置:`git config –global credential.helper store –file=git_credentails`,可以为不同项目指定不同的文件从而达到使用多账号的目的.
-    3. 然后再push输入一次账号密码,以后就不用输入了.
+    2. 指定明文密码保存位置
+        可以为不同项目指定不同的文件从而达到使用多账号的目的.
+        1. `git config --global credential.helper store --file=~/cred.txt`,但是该命令似乎并不生效,可以通过修改config文件达到目的,
+
+            ```
+            [credential]
+            helper = store --file=D:/credential/cred1.txt
+            ```
+            
+            再次push，便会将账户信息存至`D:/credential/cred1.txt`中.如果想清除账户，删除指定的文件即可。.
 
 - mananger
 
     安装了GitGUI，自动会在system级别中设置credential.helper为manager
 - wincred
 
+#### ssh-agent
+安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
 ### 4 文档
 ### 5 网站
 1. git的官方中文book,但是有些内容并不生效:[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
@@ -51,19 +61,23 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
     为每个项目单独配置:(待补充)
 
 4. 配置ssh Key(可选)
-    
+
+    主要用于ssh方式的秘密吗登录.    
     1. 查看目录下是否有公钥
         
         SSH 公钥默认储存在账户的主目录下的 `~/.ssh` 目录,进入该目录查看是否有`xxx`和 `xxx.pub` 来命名的一对文件，这个 `xxx`通常就是`id_dsa`或`id_rsa`.有`.pub`后缀的文件就是公钥，另一个文件则是密钥。
+
     2. 没有则交互式创建:`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`,会在`~/.ssh`下生成公钥和密钥.或者直接输入`ssh-keygen`也行,但是选项有点多.
+
+        会要求输入密码,应该是用于ssh登录服务器命令行界面的(待确认),所以只是使用git的话可以不用输入.
 
     3. 添加到ssh-agent(多账户时才用)
 
-        安装了git之后就会有ssh-agent,用于管理多个ssh key.比如上面新建了个人的key,如果我还需要再创建一个公司的key,可以:
+        比如上面新建了个人的key,如果我还需要再创建一个公司的key,可以:
         1. 创建ssh key:`ssh-keygen -t rsa -b 4096 -f $home/.ssh/company -C "wdwangtw@gmail.com"`
         2. 开启ssh-agent:`eval  "ssh-agent -s"`
-        3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`
-        4. 修改ssh-agent的配置文件(默认是在`~/.ssh`目录下的`config`文件)
+        3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`,如果报错"could not open a connection to your authentication agent",则输入`ssh-agent bash`,再输入`ssh-add ~/.ssh/conpany/xxx`
+        4. 创建或修改ssh-agent的配置文件(默认是在`~/.ssh`目录下的`config`文件)
 
             ```
             Host myhost personal 
@@ -96,7 +110,8 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
         Copies the contents of the id_rsa.pub file to your clipboard,然后粘贴到服务器需要你填入的地方.
         1. 如果换电脑,可以把本地的key拷过去,也可以重新生成key.
 
-    5. 如果之前用的https协议,此时需要remote origin:``,然后重新设置origin:`git remote add origin git@github.com:xushike/study.git`
+    5. 如果之前用的https协议,此时需要remote origin,然后重新设置origin:`git remote add origin git@github.com:xushike/study.git`
+    6. 对于github,可以测试是否成功设置ssh key:`ssh -T git@github.com`
 5. 关于git自身的更新：
 
 ### 2 mac
@@ -107,7 +122,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 ### 3 linux
 1. 未整理
     1. linux下ssh-agent的全局配置文件是`/etc/ssh/ssh_config`?
-
+    2. linux下启动命令是:eval `ssh-agent`?
 ## 三 基础
 ### 1 初始化仓库
 1. 如果在Windows系统，为了避免遇到各种莫名其妙的问题，请确保目录名（包括父目录）不包含中文  
@@ -142,6 +157,8 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
     上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.(待补充)
 
 4. 查看远程信息
+    - 查看关联的仓库`git remote -v`
+
 ### 4. git pull = git fetch +merge
 
 ### 5 配置
@@ -172,7 +189,7 @@ Git共有三个级别的config文件，分别是system、global和local:
         ```
 
     3. 取消关联:`git remote remove origin`
-    4. 注意,每次重新关联都需要
+    4. 注意,每次remove origin再重新关联远程仓库之后,都需要重新推送并关联分支.
 
 2. 分支关联，用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
     ```bash
@@ -234,3 +251,5 @@ Git共有三个级别的config文件，分别是system、global和local:
 20. global和本地都配置了,则优先使用的哪个?
 21. 网友的文章:[https://segmentfault.com/a/1190000011168654](https://segmentfault.com/a/1190000011168654)
 22. git的分支合并等操作
+23. 笔记
+    1. [Pro Git（中文版）](https://git.oschina.net/progit/)
