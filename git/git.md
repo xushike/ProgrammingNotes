@@ -20,6 +20,7 @@ Git现在默认包含如下的两个helper:
     将凭据保存在磁盘上,明文存储.
     1. 使用`git config --global credential.helper store`    
     2. `git config –global credential.helper store –file=git_credentails`
+    3. 然后再push输入一次账号密码,以后就不用输入了.
 
 ### 4 文档
 ### 5 网站
