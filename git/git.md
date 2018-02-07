@@ -10,8 +10,8 @@ git开源免费的分布式版本控制系统。
 
 #### git的ssh和https
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
-##### 凭证助手credential helper
-Git现在默认包含如下的两个helper:
+##### 凭证助手credential helper(待测试)
+用于存储git的凭证,Git现在默认包含如下几个helper:
 - Cache
     
     将凭据在内存中进行短时间的缓存,默认15分钟
@@ -19,14 +19,19 @@ Git现在默认包含如下的两个helper:
     2. 参数`cache –timeout=[num]`:设置时间,如`git config credential.helper cache –timeout=3600`
 - Store
     
-    将凭据保存在磁盘上,明文存储.
-    1. 使用`git config --global credential.helper store`    
-    2. `git config –global credential.helper store –file=git_credentails`
+    将凭据保存在磁盘上,明文存储,所以不安全.
+    1. 指定凭证助手:`git config --global credential.helper store`    
+    2. 指定明文密码保存位置:`git config –global credential.helper store –file=git_credentails`,可以为不同项目指定不同的文件从而达到使用多账号的目的.
     3. 然后再push输入一次账号密码,以后就不用输入了.
+
+- mananger
+
+    安装了GitGUI，自动会在system级别中设置credential.helper为manager
+- wincred
 
 ### 4 文档
 ### 5 网站
-1. git的官方中文book[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
+1. git的官方中文book,但是有些内容并不生效:[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
 
 ## 二 安装配置
 ### 1 win
@@ -36,23 +41,73 @@ Git现在默认包含如下的两个helper:
 
     ```bash
     #注意没配置的话会报错:unable to auto-detect email address
-    #查看所有配置
-    git congfig -l #mac
     #查看git user.name和email
     git config user.name
     git config user.email
-    #配置全局的git user.name和email
+    #配置用户级的git user.name和email
     git config --global user.name "xxx"
     git config --global user.email "xxx"
     ```
-为每个项目单独配置:(待补充)
-4. 关于ssh Key,（待补充）
+    为每个项目单独配置:(待补充)
+
+4. 配置ssh Key(可选)
+    
+    1. 查看目录下是否有公钥
+        
+        SSH 公钥默认储存在账户的主目录下的 `~/.ssh` 目录,进入该目录查看是否有`xxx`和 `xxx.pub` 来命名的一对文件，这个 `xxx`通常就是`id_dsa`或`id_rsa`.有`.pub`后缀的文件就是公钥，另一个文件则是密钥。
+    2. 没有则交互式创建:`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`,会在`~/.ssh`下生成公钥和密钥.或者直接输入`ssh-keygen`也行,但是选项有点多.
+
+    3. 添加到ssh-agent(多账户时才用)
+
+        安装了git之后就会有ssh-agent,用于管理多个ssh key.比如上面新建了个人的key,如果我还需要再创建一个公司的key,可以:
+        1. 创建ssh key:`ssh-keygen -t rsa -b 4096 -f $home/.ssh/company -C "wdwangtw@gmail.com"`
+        2. 开启ssh-agent:`eval  "ssh-agent -s"`
+        3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`
+        4. 修改ssh-agent的配置文件(默认是在`~/.ssh`目录下的`config`文件)
+
+            ```
+            Host myhost personal 
+            User xushike
+            HostName github.com
+            IdentityFile ~/.ssh/id_rsa
+
+            Host myhost company
+            User wdwangtw
+            HostName github.com
+            IdentityFile ~/.ssh/company
+            ```
+
+            其格式为:
+
+            ```
+            Host myhost USER_HOST     ;USER_HOST为自定义host名字，如上面的personal和company
+            User USER_NAME                 ;USER_NAME为自定义名称
+            HostName SERVER_HOST   ;SERVER_HOST为实际服务器host，此时为GitHub
+            IdentityFile PRIVATE_KEY      ;PRIVATE_KEY为本地key
+            ```
+
+            当再次clone一个新Repos时，如果其ssh地址为git@github.com:wdwangtw/xxx.git，使用git clone git@company:wdwangtw/TestUserwd.git即可clone到本地（注意github.com换成了自定义的company），并且push时也不用输入任何验证。
+        5. 告诉ssh 允许 ssh-agent 转发(可选)
+
+            加入我有a和b两个服务器的钥匙,此时在a服务器上想不输入密码的连到b服务器,就需要配置转发功能.添加`ForwardAgent yes`到`config`文件中.然后每个服务器都需要这样设置.
+            
+    4. 将公钥添加到github或者gitlab等服务器的账户里
+        
+        Copies the contents of the id_rsa.pub file to your clipboard,然后粘贴到服务器需要你填入的地方.
+        1. 如果换电脑,可以把本地的key拷过去,也可以重新生成key.
+
+    5. 如果之前用的https协议,此时需要remote origin:``,然后重新设置origin:`git remote add origin git@github.com:xushike/study.git`
 5. 关于git自身的更新：
-### 2 mac下的几种安装
+
+### 2 mac
 #### 方式一(最简单):用Xcode的Command Line Tools
 #### 方式二:Homebrew安装
 #### 方式三:在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
+
 ### 3 linux
+1. 未整理
+    1. linux下ssh-agent的全局配置文件是`/etc/ssh/ssh_config`?
+
 ## 三 基础
 ### 1 初始化仓库
 1. 如果在Windows系统，为了避免遇到各种莫名其妙的问题，请确保目录名（包括父目录）不包含中文  
@@ -73,18 +128,26 @@ Git现在默认包含如下的两个helper:
 
     [xxx3]参数说明:
     1. 
-### 4 查看状态和历史
-1. `git status`
+### 4 查看
+1. 查看工作区状态`git status`
 2. 查看提交日志：`git log`
     1. 查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
     2. `git log`默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
 
+3. 查看配置文件
+    - 查看项目的配置文件`git config --local --list`
+    - 查看用户的配置文件`git config --global --list`
+    - 查看系统的配置文件`git config --system --list`
+
+    上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.(待补充)
+
+4. 查看远程信息
 ### 4. git pull = git fetch +merge
 
 ### 5 配置
 #### Git仓库的配制文件
-分为三个部分：
-1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--file参数（或者省去）。
+Git共有三个级别的config文件，分别是system、global和local:
+1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--local参数（或者省去）。
 2. ~/.gitconfig：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用--global参数。
 3. /etc/gitconfig：系统级别仓库配置（适用于所有仓库），获取或设置时使用--system参数。
 
@@ -96,10 +159,8 @@ Git现在默认包含如下的两个helper:
     1. 本地和远程关联
 
         ```bash
-        #sshkey的方式，其中的origin是远程默认的名字，也可以换成其他名字(不是必须跟项目名一样)
+        #其中的origin是远程默认的名字，也可以换成其他名字
         git remote add origin https://github.com:xushike/xxx.git
-        #或者https的方式（待补充）
-        ...
         ```
     2. 查看关联
 
@@ -111,13 +172,14 @@ Git现在默认包含如下的两个helper:
         ```
 
     3. 取消关联:`git remote remove origin`
+    4. 注意,每次重新关联都需要
 
 2. 分支关联，用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
     ```bash
     #关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track,-u也可以?)
     git push -u origin master 或者 git push --track origin master
-    #如果只想关联，可以如下使用(远程分支前是/还是空格?)
-    git branch --track my_local_branch_name origin my_remote_branch_name
+    #如果只想关联，可以如下使用
+    git branch --track local_branch_name origin/remote_branch_name
     ```
 ### 2 `.gitignore`文件
 该文件只要在主目录(?)下就会生效
@@ -170,3 +232,5 @@ Git现在默认包含如下的两个helper:
 18. git移除remote再重新添加，然后识别好像就有点问题，指令能够正常使用，vscode的状态看不了了。
 19. git提交多了会导致变慢吗?
 20. global和本地都配置了,则优先使用的哪个?
+21. 网友的文章:[https://segmentfault.com/a/1190000011168654](https://segmentfault.com/a/1190000011168654)
+22. git的分支合并等操作
