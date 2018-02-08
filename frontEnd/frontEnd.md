@@ -83,9 +83,14 @@ Bulma
 #### 样式预处理器
 #### 代码自动review工具
 ## 四 高级
-### 1 值得期待的技术
+### 1 前端趋势
 #### WebAssembly
 知乎:[如何评论浏览器最新的 WebAssembly 字节码技术？](https://www.zhihu.com/question/31415286)
+
+#### server-side rendering
+服务端渲染
+1. 网友的评价
+    1. This allowed for single page applications to be search engine friendly.
 
 ## 六 问题
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)

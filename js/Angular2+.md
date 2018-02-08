@@ -759,6 +759,7 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 
 ## 五 经验
 1. 双向绑定中某方的数据延迟取得也会生效
+
 ### 1 实际开发还需要的其他模块
 - 处理表单和输入的模块
 - http模块
@@ -766,11 +767,17 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 - 对动画的支持的模块
 - 基于material设计风格的UI组件
 - 用以进行单元测试、端对端和性能测试的工具集
+
 ### 2 angular cli(angular官方脚手架)
 github地址:[https://github.com/angular/angular-cli](https://github.com/angular/angular-cli)
+
 #### 安装
 prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
+
 #### 常用命令
+1. `ng serve`
+    1. 参数`--host 0.0.0.0 --port 4201`:牛逼的地方在于支持套接字
+    2. 参数`-e`(`--environment`)
 
 ### 3 angular4英雄教程
 #### 多个组件
@@ -778,15 +785,16 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 #### 路由
 1. 英雄的id是数字，而路由参数的值总是字符串。 所以我们需要通过 JavaScript 的 (+) 操作符把路由参数的值转成数字。
 
+### 4 angular第三方组件
+#### angular material2
+1. 参考链接
+    1. [https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md](https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md)
+    2. github:[https://github.com/angular/material2#feature-status](https://github.com/angular/material2#feature-status)
+2. 使用方法
+    1. 安装命令`npm install --save @angular/material`
+    2. 待补充
 
-## 六 angular第三方组件
-### 1 angular material2
-1. [https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md](https://github.com/angular/material2/blob/master/src/lib/dialog/dialog.md)
-2. github:[https://github.com/angular/material2#feature-status](https://github.com/angular/material2#feature-status)
-##### 引入
-1. 安装命令`npm install --save @angular/material`
-2. 待补充
-## 七 问题
+## 六 问题
 ### 1 已解决
 1. 直接修改dom会影响angular的form获取的值吗?
 

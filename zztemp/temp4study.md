@@ -575,5 +575,6 @@ for (let [i, item] of arr.entries()) {
     1. 其他的框架呢?
 315. 项目
     1. getStirng可以去获取number吗
+    2. 自定义错误的错误码有没有大概的规则
     
 316. github的fork,star,watch等意义和作用.

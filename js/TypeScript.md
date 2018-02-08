@@ -205,11 +205,21 @@ console.log(typeof arrayFromString[0]);
 ## 五 经验
 
 ## 六 问题
+### 1 已解决
+5. "Cannot read property 'xxx' of undefined"
+
+    这个错经常报.可能原因有两个:
+    1. 运行时xxx上确实没有xxx方法
+    2. xxx可能为null或undefined,需要先判断
+
+### 2 未解决
 1. 和typings的关系  
 2. 笔记:将number类型用`as`声明为string类型,然后调用match()方法会报"没有match()方法"错
 
     这是因为变量依然是number类型,所以不存在match()方法
 3. ts中数值都是单精度?
 4. 笔记:如果input组件被声明为number类型,那么在ts中,其value值也是number类型
+
+
 ## 七 学习
 1. [http://web.jobbole.com/87535/](http://web.jobbole.com/87535/)
