@@ -303,11 +303,9 @@ angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全�
 
     钩子的名字:钩子方法由接口名加上`ng`前缀构成,比如`OnInit`接口的钩子方法是`ngOnInit`.只有在指令/组件中定义过才会被angular调用.
 4. 关于`ngOninit()`钩子和`constructor`构造函数
-    1. 构造函数会在所有钩子之前执行,子组件的构造函数中不能获取input()输入的值.构造函数里不应有复杂的逻辑(特别是那些需要从服务器获取数据的逻辑),最好只有对局部变量进行简单的初始化(例如把构造函数的参数赋值给属性)和依赖注入.
-    2. 指令的构造函数完成之前，那些被绑定的输入属性还都没有值。 如果我们需要基于这些属性的值来初始化这个指令，这种情况就会出问题。 而当`ngOnInit()`执行的时候，这些属性都已经被正确的赋值过了。
-    3. 构造函数里dom还没渲染出来;而`ogOninit()`时dom已经渲染完成了,可以访问dom(待测试),而且构造函数也不能获取组件输入属性的值.
-    4. 关于构造函数中的参数
-        1. 常用于引入服务,angular会自动去完成依赖注入,如`constructor(private userService: UserService) {}`
+    1. 构造函数会在所有钩子之前执行,子组件的构造函数中不能获取`input()`输入的值;此时dom还在渲染中,所以也不能访问dom.
+    2. 构造函数里不应有复杂的逻辑(特别是那些需要从服务器获取数据的逻辑),最好只有对局部变量进行简单的初始化(例如把构造函数的参数赋值给属性)和依赖注入.
+    3. `ngOninit()`里可以获取`input()`输入的值,可以获取dom.
     5. 参考:[https://segmentfault.com/a/1190000008685752](https://segmentfault.com/a/1190000008685752)
     6. 最佳实践
 
@@ -742,6 +740,7 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 #### @ViewChild
 
 ## 四 高级知识
+
 ### 1 编译器
 ### 1 动画
 ### 2 变更检测
@@ -755,7 +754,27 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 ### 5 HTTP
 1. 官网教程:不幸的是，Angular 的Observable并没有一个toPromise操作符... 没有打包在一起发布。Angular的Observable只是一个骨架实现.(?)
 ### 6 测试
+
 ### 7 部署
+
+### 8 ElementRef
+简单来说就是angular对DOM的抽象.大概有:ElementRef、TemplateRef、ViewRef 、ComponentRef 、ViewContainerRef和Renderer 等
+#### 优点
+- 提高安全性
+- 统一不同平台的API接口
+#### 用法
+简单使用如下,
+```
+constructor(
+    private elementRef: ElementRef,
+    private renderer2: Renderer2,
+) { }
+this.renderer2.setStyle(this.elementRef.nativeElement, "background-color", color)
+```
+
+一般elementRef就是所在的DOM元素,如果要获取子元素,有两种方法
+- 声明`@ViewChild`(推荐):但是如果多个元素定义了相同的变量，使用@viewChild时只能选择到第一个元素.(待测试)
+- `querySelector()`:使用CSS选择器获取DOM
 
 ## 五 经验
 1. 双向绑定中某方的数据延迟取得也会生效

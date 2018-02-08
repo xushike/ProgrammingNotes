@@ -92,6 +92,11 @@ Bulma
 1. 网友的评价
     1. This allowed for single page applications to be search engine friendly.
 
+### 2 跨站点脚本（XSS）
+除了`<script>`标签,还有其他dom元素和属性允许执行代码,比如`<img onerror="...">`和`<a href="javascript:...">`
+
+## 五 经验
+
 ## 六 问题
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)

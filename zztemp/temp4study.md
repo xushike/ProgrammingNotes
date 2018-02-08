@@ -104,7 +104,6 @@ BEGIN
 END;
 
 55. http状态码
-56. 类型转换难道用as？
 57. 如何在有程序运行的情况下清shell屏
 58. 各种字符串和反斜杠的处理
 59. ele["contend"]和ele.content和ele.()等
@@ -171,7 +170,6 @@ END;
     10. 同时操作多条数据，比如插入多条、修改多条
     11. plsql的sql语句中0和‘0’一样吗
 
-88. ngOnInit（）和construct
 89. linux如何查看某个软件的版本和所有支持的命令
 90. linux蓝色的目录是什么gui
 91. git推送的时候不输入密码怎么做到的
@@ -181,7 +179,6 @@ END;
 95. 切片数组的合理创建方法
 96. 一生何求
 97. ts的`?:`是什么写法
-98. 如何修改vscode里`tab`键的格数
 99. linux打包命令
 100. js
     1. 中的`||`和`&&`,在判断空和true、false时的用法一样吗？多个连接的时候如何判断？
@@ -356,7 +353,6 @@ END;
             s.parentNode.insertBefore(hm, s); })();
         </script>        
     ``` 
-205. 原生js如何进行dom类型转换
 206. 手机和电脑如何截长屏
 207. 英语中有顿号吗，否则用什么来表示顿号？
 208. 研究下项目中subscribe的写法
@@ -394,8 +390,6 @@ let val = input.card_id
 
 222. angular textarea的cols没有生效的原因
 223. oracle一直显示正在执行
-224. 项目最近界面的文件名叫`新版系统1`
-225. 修改项目中tab的切换方式为angular的api
 
 226. 突然断电的话，vm会保存吗
 227. js引入的模块没用的话会占用性能吗/
@@ -412,7 +406,6 @@ let val = input.card_id
 240. ngValue，ngGroup
 241. Object.assign({}, this.info);的浅拷贝
 
-    项目中使input声明传进来的不用浅拷贝是否有影响
 242. select 有绑定值时，想绑定一个空值用。。。没有绑定值时默认是第一个。。。
 243. 为什么声明了`#downCardType`还是不能在ngif中获取它的值呢？
 245. 如果把ngif的值的绑定到模板引用变量，会很慢，但是绑定组件中的值则不会。。。
@@ -459,12 +452,11 @@ for (let [i, item] of arr.entries()) {
 252. 局域网能访问localhost启动的服务吗
     在虚拟机里，如果开启了虚拟机的防火墙呢
 253. 没有登录能访问api吗
-254. angular-cli ng的命令
+
 255. 查看linux内存占用状态
 256. if else 和case switch的直观比较
 257. go的{}中一定要用逗号结尾？
-258. js 0 和"0"相等吗
-259. 多重管道在项目中的应用
+
 260. angular表单提示，可以做成侧边那种吗
 
         有没有经典的现成例子
@@ -484,6 +476,8 @@ for (let [i, item] of arr.entries()) {
 272. linux删除后的撤销
 273. es6展开运算符
 274. angular json的管道怎么用
+    
+    在代码里用管道
 275. 项目问题
 
     1. constructor中注入的服务比如dic,可以直接用dic,不用加this;但是在方法外面必须要加dic?
@@ -499,10 +493,11 @@ for (let [i, item] of arr.entries()) {
 284. console.log多参数的写法
 285. 工单回填时的运营商池编号是干嘛的
 286. shell中如何大段落的复制
-287. `/no`被转成表情了怎么办
+
 288. 研究git 的flow,如何临时新建一个分支,开发部分代码然后再合并回去
 289. 项目中上游渠道1000表示什么,在那儿设置的
 290. 一键部署和发布(线下)
+
 291. vscode返回光标上一次所在的位置
 292. 聚合发货系统是谁写的,应该用的响应式表单
 293. 管道多参数的写法
@@ -577,4 +572,3 @@ for (let [i, item] of arr.entries()) {
     1. getStirng可以去获取number吗
     2. 自定义错误的错误码有没有大概的规则
     
-316. github的fork,star,watch等意义和作用.
