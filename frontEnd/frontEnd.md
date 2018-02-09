@@ -84,6 +84,7 @@ Bulma
 #### 代码自动review工具
 ## 四 高级
 ### 1 前端趋势
+[2018 年最值得关注的 JavaScript 趋势](http://36kr.com/p/5110763.html)
 #### WebAssembly
 知乎:[如何评论浏览器最新的 WebAssembly 字节码技术？](https://www.zhihu.com/question/31415286)
 
