@@ -571,4 +571,4 @@ for (let [i, item] of arr.entries()) {
 315. 项目
     1. getStirng可以去获取number吗
     2. 自定义错误的错误码有没有大概的规则
-    
+316. 点击链接的时候光标转圈圈是自动的吗?
