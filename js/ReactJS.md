@@ -20,7 +20,7 @@ dead-simple functional component model.
 ## 六 问题
 1. what is one-way data flow?
 2. Flux
-
+3. [[翻译]在 React 中抛弃 .bind(this)](https://codesky.me/archives/loosing-bind-this-in-react.wind?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)
 ## 七 学习
 1. [https://www.zhihu.com/question/39825457?sort=created](https://www.zhihu.com/question/39825457?sort=created)
 2. [https://yq.aliyun.com/articles/72028](https://yq.aliyun.com/articles/72028)

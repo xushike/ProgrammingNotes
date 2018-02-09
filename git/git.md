@@ -263,3 +263,5 @@ Git共有三个级别的config文件，分别是system、global和local:
 22. git的分支合并等操作
 23. 笔记
     1. [Pro Git（中文版）](https://git.oschina.net/progit/)
+
+24. git hook

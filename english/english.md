@@ -19,6 +19,8 @@
 
 #### 4 反之亦然
 `or vice versa`和`and vice versa`,前者用于否定句,后者用于肯定.
+#### 5 version和revision(版本和修订版)
+
 ## 三 常用编程词语
 1. Parse tree:语法树
 
