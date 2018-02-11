@@ -226,7 +226,8 @@ Git共有三个级别的config文件，分别是system、global和local:
 4. 然后push
 
 ## 六 问题
-
+### 1 已解决
+### 2 未解决
 1. git clone时用什么命令或软件可以显示进度？
 2. git 可以只clone分支而不是master吗？
 3. 写到一半，要切换到另外一个分支怎么弄？
@@ -265,3 +266,4 @@ Git共有三个级别的config文件，分别是system、global和local:
     1. [Pro Git（中文版）](https://git.oschina.net/progit/)
 
 24. git hook
+25. merge的时候,保存信息时不知道怎么操作,最后出现`Merge made by the 'recursive' strategy.`

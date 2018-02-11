@@ -5,7 +5,7 @@
 #### 网友评价
 1. 不啰嗦版 Java 。跟 Java 无缝集成，充分利用现有的 Java 库是很大的优势。它的 coroutine 也即将出炉，而且官方也支持编译输出成 JavaScript ，可玩性很强
 2. 更友好、更简单的 scala
-
+3. kotlin值得尝试,大概比java少些1/3代码
 
 ### 3 常识
 #### 为什么google要把Kotlin作为官方语言
@@ -16,3 +16,5 @@
 1. 慕课网网友总结的资料地址:[http://www.imooc.com/article/18049](http://www.imooc.com/article/18049)
 
 ## 六 问题
+1. 网友:适度的函数式编程支持，map-filter-fold 代替了一大堆 for-loop，简洁明了，代码中没有 map/list 构造工作干扰视线
+2. gradle
