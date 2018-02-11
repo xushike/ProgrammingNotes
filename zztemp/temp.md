@@ -2,16 +2,12 @@
 ## 一. 概述
 1. 目录前加zz，目的是能方便的找到该文件夹
 ## 一.问题
-1. https://angular.cn/guide/architecture
 1. http://jsfiddle.net
 2. http://blog.csdn.net/catwindboy/article/details/70210609
 3. angular的最佳实践
-4. angular自定义管道
 5. Angular Material
 6. https://www.cnblogs.com/Ewin/archive/2009/10/05/1578322.html
 7. tealeg/xlsx
-8. AngularJS 是1.x的，2.x以上统一为 Angular
-9. angular2和angular4
 9. http://www.bootcdn.cn/angular-material-data-table/readme/#demo
 10. material-data-table和angular material是什么关系
 11. https://weibo.com/segmentfault?ssl_rnd=1510906303.845&is_hot=1
@@ -45,7 +41,6 @@
 24. http://blog.csdn.net/shenlei19911210
 25. cp的博客
 26. http://blog.csdn.net/u013589443/article/details/72875875
-27. 调试dom元素时的hover、focus等的查看
 28. typescript implements的作用和typescript学习
 29. 压缩失败了，回去多练习几次。。。
 30. 爸爸去哪儿里的vipkid

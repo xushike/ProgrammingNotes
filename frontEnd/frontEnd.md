@@ -85,6 +85,7 @@ Bulma
 #### 热更新
 给BS架构的页面加载提速的终极方案就是CDN,而CS架构不存在加载压力,但是更新不灵活,所以需要前端热更新
 
+#### 懒加载
 ## 四 高级
 ### 1 前端趋势
 [2018 年最值得关注的 JavaScript 趋势](http://36kr.com/p/5110763.html)
@@ -119,3 +120,4 @@ Bulma
 
     知乎:[https://www.zhihu.com/question/27928975](https://www.zhihu.com/question/27928975)
 11. [在 React、Vue项目中使用 SVG](http://mp.weixin.qq.com/s/Lez6iRkfaHCjGV1m2PMQ_Q)
+12. 这个界面感觉很不错:[https://research.hackerrank.com/developer-skills/2018/](https://research.hackerrank.com/developer-skills/2018/)

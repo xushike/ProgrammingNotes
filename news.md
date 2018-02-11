@@ -18,3 +18,5 @@
 1. [2017 开发者报告：Java最流行的语言，JavaScript最常用的语言，Go最有前途的语言](http://ourjs.com/detail/596c080ff12390061496174f)
 2. [GitHub2017年度开发者报告 JavaScript依然遥遥领先Python突飞猛进](http://ourjs.com/detail/59e622b93506837194998af9)
 ### 2018 
+#### head
+1. [2018 年开发者技能报告](https://research.hackerrank.com/developer-skills/2018/)
