@@ -20,11 +20,20 @@
 [比特币的技术缺陷：区块链信息越来越大怎么办？](http://ourjs.com/detail/59264ed1f1239006149616af)
 
 ## 四 高级
-### 1 JIT(Just in time compiling)
+### 1 未来方向
+#### 无服务器
+[http://www.oschina.net/news/93020/talk-about-severless](http://www.oschina.net/news/93020/talk-about-severless)
+
+### 2 JIT(Just in time compiling)
 #### V8中的JIT
 1. 缺点
     1. JIT 基于运行期分析编译，而 Javascript 是一个没有类型的语言，于是， 大部分时间，JIT 编译器其实是在猜测 Javascript 中的类型
 #### AOT(Ahead of time)
+### 3 DevOps
+### 4 容器
+### 5 微服务
+#### Service Mesh(服务网格技术)
+### 6 OpenStack
 
 ## 五 经验
 ### 1 coding style guideline
@@ -37,3 +46,6 @@
 2. "file should end with a newline (eofline)"
 
     参考stackoverflow:[https://stackoverflow.com/questions/729692/why-should-text-files-end-with-a-newline/729712#729712](https://stackoverflow.com/questions/729692/why-should-text-files-end-with-a-newline/729712#729712)
+
+## 七 学习
+1. [京东活动系统--亿级流量架构应对之术](https://my.oschina.net/u/3772106/blog/1611971)
