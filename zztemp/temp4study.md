@@ -572,3 +572,6 @@ for (let [i, item] of arr.entries()) {
     1. getStirng可以去获取number吗
     2. 自定义错误的错误码有没有大概的规则
 316. 点击链接的时候光标转圈圈是自动的吗?
+317. 模态和非模态
+    1. [态和非模态对话框的区别](http://blog.sina.com.cn/s/blog_752af88e0100wyn1.html)
+    2. [JavaFX实现一个简单的模态窗口](http://blog.csdn.net/chenweionline/article/details/5035936)

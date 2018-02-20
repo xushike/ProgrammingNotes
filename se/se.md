@@ -4,7 +4,7 @@
 ### 1 一些概念
 #### 1 MVC、MVVM
 - 模型-视图-控制器 (MVC) 
-- 模型-视图-视图模型 (MVVM) 
+- 模型-视图-视图模型 (Model-View-ViewModel,MVVM) 
 
 #### 2 new,工厂模式和依赖注入的通俗易懂比较
 [http://blog.csdn.net/mrli113/article/details/70792498](http://blog.csdn.net/mrli113/article/details/70792498)
