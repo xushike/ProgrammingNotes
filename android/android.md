@@ -5,7 +5,21 @@
 Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是Android系统的命名都是以点心来命名的.
 
 ### 3 常识
-1. `xmlns:xxx="..."`:表示命名空间
+#### xml文件开头的声明
+形如`xmlns:xxx="..."`:因为XML文件不仅仅用于Android,还可以用于很多地方,所以这句声明表示该XML文件用于Android的开发和布局(这也就是所有属性前都加了`android:`的原因),也可以理解为命名空间(?)
+1. 而且,所有的布局文件中都需要加入xmlns开头的两个声明,否则不能正确运行.
+2. 更多信息(待研究):[What does “xmlns” in XML mean?](https://stackoverflow.com/questions/1181888/what-does-xmlns-in-xml-mean)
+
+#### 代码的`@`
+一般表示指定某种资源
+
+- 指定id:`android:id = " @+id/ben_text_view"`
+
+    指定id时,值以字母开头,不能有空格和特殊符号;其中的"+"号只有在第一次声明id的时候用到
+- 指定图片路径:`android:src = " @drawable/[pic_name]"`,不需要图片的扩展名
+- 指定颜色
+    1. 值`@android:color/[color_name]`:指定Android标准颜色,比较有限
+    2. 十六进制,支持所有颜色
 
 ### 4 文档
 ### 5 网站
@@ -19,6 +33,45 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
     3. 不建议使用太多的风格和字体,一般3到4种即可
     4. 颜色也不要太多,特别是材料(倾向于使用大片的饱和色)
     5. 对于重要元素可以使用浮动,高亮等
+    6. 关于文本和设备边缘的间隔:16dp最佳;文件之间的间隔:8dp最佳.
+## 二 安装配置
+### 1 win
+### 2 mac
+#### 新建项目
+1. Company Domain:看起来像一个网址,一般填入的是`[my_name].com`,这个值反转后就是应用发布后的包名(package name)(google app和手机会根据这个来识别你的应用?),所以必须是在全世界发布的app中都是唯一的才行.
+3. project location:AS会创建一个默认位置,一般用它就好.
+4. 选择设备和版本
+
+    设备有手机和平板,TV,Wear,Glass等选项.选版本时选"help me choose"会出现不同版本的使用情况
+
+5. 选择模板
+
+    blank activity和empty activity
+
+6. 创建后的文件结构查看方式:推荐用Android
+
+    **app目录里的文件大概如下**
+    1. mainfests
+    2. java
+    3. res
+        1. drawable:放置图片
+        1. layout:包含app设计和布局的xml
+        2. menu
+        3. mipmap
+        4. values
+
+7. 在手机上运行
+    1. 开启开发者选项和USB调试
+        
+        第一次需要点击版本号好几次(?),然后设置里就有开发者选项了.
+
+    2. usb连接
+    3. install derver(windows only):因为mac下默认是允许连接的
+    4. install apo
+
+8. 在模拟器上运行
+
+    第一次运行模拟器的时候可能会不正常,大部分问题都可以解决,但更推荐使用真机.
 
 ## 三 基础
 ### 1 未整理
@@ -35,19 +88,26 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 [http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/](http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/)
 
 ### 2 Udacity的google Android课程
-#### 入门课程
+整个纳米学位共分四个部分，分别是开发入门，多屏应用，网络调用和数据存储
+
+#### 课程1 入门课程
 ##### 课程1A:视图VIEWS
 使用大驼峰写法
 1. 显示文字的叫TextView
 
     1. 默认背景颜色是透明色
     2. 宽高参数值`wrap_content`:根据文字的长度自动调整宽高
-    3. 值前面的`@`表示要引用资源,比如引用图片,自带的颜色等.
+    3. 属性`textStyle`:指定文字是粗体或斜体
+    4. 属性`textAlignment`:文字在视图中对齐的方式
+    5. 属性`textSize`:文字大小,推荐使用sp
+    6. 属性`fontFamily`:设置字体
+    7. 属性`textColor`:文字颜色
 
 2. 图片=>ImageView
-    1. 对齐属性`scaleType`
+    1. 属性`scaleType`:图片的对齐方式
         1. `center`:居中,不会对图片大小做修改
-        2. `centerCrop`:居中,同时自动调整图片大小(保持原有的纵横比?)
+        2. `centerCrop`:居中,同时自动调整图片大小填充满整个屏幕(保持原有的纵横比?)
+    2. 
 3. 按钮=>Button
 4. others
 ##### XML语法
@@ -87,8 +147,23 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 
 - 相对布局（RelativeLayout）
 
+    其中的子元素不设置的话默认会放在左上角.
+    1. 子元素布局
+
+        用`layout_xxx`来设置,比如相对于某个兄弟元素的左边可以用`layout_toLeftOf`,较某兄弟元素下面用`layout_below`,和父元素的右对齐可以用`layout_alignParentRight`
+
+- 约束布局(ConstraintLayout)
+
+    Android Studio默认使用约束布局
+
 ##### 宽度和高度
 "子视图的高宽和位置是由父视图决定的"这句话如何理解
+##### 内外边距
+内外边距可用于所有视图,padding和margin的默认值是0;设置了margin之后就像在视图的周围有一道防护,阻止其他元素进入.
+##### 课程1C:课程实践
+#### 课程2 用户输入
+##### 课程2A:制作一款交互性应用
+
 
 ### 3 Android官网的培训
 [https://developer.android.com/training](https://developer.android.com/training)
@@ -107,3 +182,7 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 4. android的c++开发包叫做ndk,就是native开发包
 5. Android上页面推荐使用rem单位?
 6. [Listview与Adapter的关系和简单应用](http://blog.sina.com.cn/s/blog_a364999b01014kzl.html)
+
+7. ViewGroup中设置的属性是干嘛的
+8. dimens文件
+9. `layout_padding`和`margin`的区别,我怎么感觉两者差不多呢?

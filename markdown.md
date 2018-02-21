@@ -18,6 +18,10 @@ Markdown一种轻量级的「标记语言」,开发者是John Gruber,他创建�
     熟悉后一劳永逸
 
 - 支持基本的HTMl语法
+- 纯文本内容，兼容所有的文本编辑器与字处理软件
+- 导出多种格式
+
+    pdf,html等
 
 ### 3 常识
 #### Daring Fireball 
@@ -26,6 +30,7 @@ Daring Fireball是一个由苹果公司的狂热粉丝 John Gruber 创立的博�
 ### 4 文档
 ### 5 网址
 1. 不过我看daringfireball上面的markdown文档似乎一直没有更新。比较推荐的是segmentfault上的文档:[https://segmentfault.com/markdown](https://segmentfault.com/markdown)
+2. 图灵社区的markdown简易指南:[怎样使用Markdown](http://www.ituring.com.cn/article/23)
 
 ## 二 安装配置
 ## 三 基础
@@ -34,7 +39,7 @@ Daring Fireball是一个由苹果公司的狂热粉丝 John Gruber 创立的博�
 Table Of Contents (index file)，内容列表、索引，vscode自带的预览目前还不支持
 
 #### 标题
-一个#表示一级标题，一直到六级标题，#后面最好跟上空格
+一个#表示一级标题，一直到六级标题，个人经验是#后面最好跟上空格
 
 #### 强调
 *This text will be italic*
@@ -55,11 +60,19 @@ _You **can** combine ~~them~~_
 可以使用相对路径和绝对路径，语法和链接类似.如果想图片所在的行没有文字,需要在前后都换行.
 ![Image of Test](img/test.png "Image of Test")
 #### 引用
-引用中再嵌套引用只需要多加一个>
+引用中再嵌套引用只需要多加一个>,如下
 > We're living the future so
 >> the present is our past.
+
 #### 列表
 分为有序和无序，有序的时候数字随便填，会自动计算的
+
+##### 有序
+写法是`1. `
+
+##### 无序
+写法是`-`or`*`
+
 #### 表格
 First Header | Second Header
 ------------ | -------------
@@ -98,6 +111,10 @@ markdown原生不支持,但支持html的table标签.gfm支持该表格写法,注
     |标题1|标题2|标题3|标题4|标题5|
     |-|-|:-|-:|:-:|
     |内容1|内容2|内容3,哈哈哈哈哈哈啊哈哈|内容4,哈哈哈哈哈哈哈|内容5,哈哈哈哈哈哈哈啊|
+
+#### 分割线
+分割线的语法只需要另起一行，连续输入三个星号 *** 即可。
+
 #### 其他
 ##### 缩进
 1. 半角状态下，在标题下缩进了制表符之后的文字会被识别为普通文字

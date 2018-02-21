@@ -125,3 +125,9 @@ Bulma
 13. web端=>桌面端
 
     1. node-webkit
+14. 优达学院
+    1. 可以使用 Photoshop、Paint、Preview 或 GIMP 等软件或在线工具更改图片的大小
+    2. 可以使用手机的摄像头应用或以下在线录制工具：
+        - CamStudio (Windows)
+        - Quicktime (Mac 10.x)
+        - Jing (Windows/Mac)
