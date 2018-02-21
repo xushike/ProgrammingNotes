@@ -19,6 +19,11 @@ Works with all the popular frameworks.
 ### 2 历史
 ### 3 常识
 #### 编译错了依然会生成文件?
+### 4 文档
+1. [TypeScript Handbook](http://dreamapple.leanapp.cn/gitbook/typescript/index.html)
+
+### 5 网址
+
 
 ## 二 安装配置
 ### 1 npm安装(推荐)
