@@ -34,6 +34,8 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
     4. 颜色也不要太多,特别是材料(倾向于使用大片的饱和色)
     5. 对于重要元素可以使用浮动,高亮等
     6. 关于文本和设备边缘的间隔:16dp最佳;文件之间的间隔:8dp最佳.
+    7. 最好不要有启动动画
+
 ## 二 安装配置
 ### 1 win
 ### 2 mac
@@ -163,6 +165,9 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 ##### 课程1C:课程实践
 #### 课程2 用户输入
 ##### 课程2A:制作一款交互性应用
+##### 课程3B:面向对象编程
+###### intent
+android框架的重点之一,调用其他应用.comment intents.
 
 
 ### 3 Android官网的培训
@@ -186,3 +191,8 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 7. ViewGroup中设置的属性是干嘛的
 8. dimens文件
 9. `layout_padding`和`margin`的区别,我怎么感觉两者差不多呢?
+10. 不同视图的id可以相同?
+11. logcat
+
+## 七 待整理
+1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
