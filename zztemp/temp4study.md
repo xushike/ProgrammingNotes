@@ -577,3 +577,24 @@ for (let [i, item] of arr.entries()) {
     2. [JavaFX实现一个简单的模态窗口](http://blog.csdn.net/chenweionline/article/details/5035936)
 
 318. 大牛说的:Swift 和 Kotlin 很像
+319. [【码云周刊第 58 期】打包巨慢怎么办？这些工具让你爱不释手！](https://my.oschina.net/gitosc/blog/1615755)
+320. findIndex是es还是ts的方法
+321. go升级到1.10
+322. 杨哥说的总结 的规范是啥
+323. issue如何理解
+324. [使用 Sourcegraph 更好地搜索和浏览 GitHub上的代码](https://zhuanlan.zhihu.com/p/27620085)
+325. 学会使用`go generate`
+
+    go generate是一个你可以用来自动自成Go代码的命令。你可以结合例如jsonenums(一个用于为枚举类型自动生成JSON编组样板代码的类库)这样的元编程来使用go generate快速自动实现重复乏味代码的编写。在Go标准类库里面已经有大量可以用于解析AST的接口，而AST使得编写元编程工具更简单，更容易。
+
+326. [五步让你成为GO 语言高手](http://www.jb51.net/article/62728.htm)
+
+    开始以为是标题党,看了才发现应该不是...
+327. 如何在编译器中打开go等的源码
+328. go实现对gitbook文件内容的排序
+
+    对文件做拷贝、打印、搜索、排序、统计或类似事情的程序都有一个差不多的程序结构：一个处理输入的循环，在每个元素上执行计算处理，在处理的同时或最后产生输出。
+
+329. hash的原理到底是什么
+
+    go语言圣经:对hash结构的遍历顺序是无法保证的(即随机的)

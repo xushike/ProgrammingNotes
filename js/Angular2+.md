@@ -869,9 +869,13 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 30. angular-cli:[http://blog.csdn.net/crper/article/details/62884688](http://blog.csdn.net/crper/article/details/62884688)
 31. 教程:[http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/](http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/)
 32. 掌握angular的依赖注入:[掌握Angular2的依赖注入](https://segmentfault.com/a/1190000006672079)
-### 3 思考
+33. angular的viewref的作用
+## 七 待整理
 1. 大多数应用只有一个组件树，它们引导单一根组件
 
     什么情况使用多组件树?
 2. angular2还可以开发react native。(自行上GitHub搜索angular2 react native).
 3. youyuxi说:ng serve 对SSL的支持
+4. 项目中
+    1. 动态创建组件的时候,如果api请求出错会怎么样?
+        出错时阻止页面的生成会不会更好?

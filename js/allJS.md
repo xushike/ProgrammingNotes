@@ -26,6 +26,8 @@
 在前后端分离开发中，一般在功能开发前，前端人员与服务端会制定相关的api，制定好它返回数据格式，定好后我们就可以快速的建立一个内存服务器了。
 ##### json-server.js
 ##### mock.js
+[你是如何构建 Web 前端 Mock Server 的？](https://www.zhihu.com/question/35436669)
+
 #### 14 NativeScript
 #### 15 asm.js
 阮一峰:[http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html](http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html)

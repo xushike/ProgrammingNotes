@@ -53,6 +53,7 @@
     * [3.dom](frontEnd/3.dom.md)
     * [4.SVG](frontEnd/4.SVG.md)
     * [5.xhtml](frontEnd/5.xhtml.md)
+    * [6.WebAssembly](frontEnd/6.WebAssembly.md)
 * [ios](ios/ios.md)
 * [ssh&ssm](ssh/ssh.md)
     * [1.spring](ssh/spring.md)

@@ -230,6 +230,11 @@ Git共有三个级别的config文件，分别是system、global和local:
 
 ## 六 问题
 ### 1 已解决
+1. git pull 时`cannot lock ref ...`
+
+    1. 第一种可能:就是我经常遇到的,网络或者什么不太重要原因,会出现这个,再git pull一下就好了.
+    
+
 ### 2 未解决
 1. git clone时用什么命令或软件可以显示进度？
 2. git 可以只clone分支而不是master吗？
