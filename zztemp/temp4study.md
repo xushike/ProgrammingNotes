@@ -600,3 +600,10 @@ for (let [i, item] of arr.entries()) {
     go语言圣经:对hash结构的遍历顺序是无法保证的(即随机的)
 330. github gist
 331. [github指南?](https://services.github.com/index.html)
+332. linux
+    1. 向标准错误流输入了东西之后如何看到?可以看到之前的吗?打印到标准错误流有什么用?
+
+334. `ifconfig.me/all`
+335. `noscript`
+336. png和jpg可以直接修改后缀名转换吗?用go圣经中的转换有何不同?jpg和jepg的区别,以及mp4和mpeg4等
+337. PopCount的原理和实现

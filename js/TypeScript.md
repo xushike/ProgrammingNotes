@@ -113,6 +113,7 @@ Works with all the popular frameworks.
 #### 1.2 高级类型
 
 ### 2 变量
+
 ### 3 interfaces接口
 - Interfaces describe the shape of your JS objects.
 - Interface disapper during compliation to JS.
@@ -166,9 +167,11 @@ Works with all the popular frameworks.
     sundayMenu.list();
     ```
 2. 继承
+
 3. 类中的静态属性和普通属性的区别
 
     通过转换后的ES5代码可知,类中的静态变量是属于构造函数的，而成员属性是属于实例.
+    
 ### 5 函数
 ### 6 泛型
 泛型（Generics）是允许同一个函数接受不同类型参数的一种模板。相比于使用 any 类型，使用泛型来创建可复用的组件要更好，因为泛型会保留参数类型。如,

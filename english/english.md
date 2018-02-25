@@ -20,6 +20,8 @@
 #### 4 反之亦然
 `or vice versa`和`and vice versa`,前者用于否定句,后者用于肯定.
 #### 5 version和revision(版本和修订版)
+#### 6 前缀和后缀:prefix和suffix
+go的strings包中有相关方法
 
 ## 三 常用编程词语
 1. Parse tree:语法树
