@@ -21,6 +21,9 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
     1. 值`@android:color/[color_name]`:指定Android标准颜色,比较有限
     2. 十六进制,支持所有颜色
 
+#### Android Go
+谷歌推出的专为低配手机用的系统,相当于Android8的精简版
+
 ### 4 文档
 ### 5 网站
 1. 菜鸟教程for Android:[Android 基础入门教程](http://www.runoob.com/w3cnote/android-tutorial-android-studio.html)
@@ -90,7 +93,12 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 [http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/](http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/)
 
 ### 2 Udacity的google Android课程
-整个纳米学位共分四个部分，分别是开发入门，多屏应用，网络调用和数据存储
+整个纳米学位免费的课程如下
+- Android 基础：用户界面
+- Android 基础：用户输入
+- Android 基础：多屏应用
+- Android 基础：网络
+- Android 基础：数据存储
 
 #### 课程1 入门课程
 ##### 课程1A:视图VIEWS
@@ -172,6 +180,10 @@ android框架的重点之一,调用其他应用.comment intents.
 
 ### 3 Android官网的培训
 [https://developer.android.com/training](https://developer.android.com/training)
+
+### 4 ARCore 
+### 5 Google Lens
+能实时识别用智能手机相机所拍摄的物品并提供与之相关的内容，都是通过利用强大的计算机视觉算法实现的
 
 ## 五 经验
 ### 1 app推荐
