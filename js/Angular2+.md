@@ -879,3 +879,4 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 4. 项目中
     1. 动态创建组件的时候,如果api请求出错会怎么样?
         出错时阻止页面的生成会不会更好?
+5. 学习项目中如何自定义验证器的
