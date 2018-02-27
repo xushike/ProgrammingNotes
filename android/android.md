@@ -58,11 +58,11 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
     **app目录里的文件大概如下**
     1. mainfests
     2. java
-    3. res
+    3. res:包含应用外观的所有内容
         1. drawable:放置图片
         1. layout:包含app设计和布局的xml
         2. menu
-        3. mipmap
+        3. mipmap:放置应用图标
         4. values
 
 7. 在手机上运行
@@ -208,3 +208,4 @@ android框架的重点之一,调用其他应用.comment intents.
 
 ## 七 待整理
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
+2. 导入项目的几种方式
