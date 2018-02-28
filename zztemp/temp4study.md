@@ -620,3 +620,21 @@ for (let [i, item] of arr.entries()) {
     
 341. linux中如何递归搜索文件目录
 342. linux中直接执行`shutdown`会在一分钟后关机?
+
+343. [利用K8S技术栈打造个人私有云（连载之：K8S集群搭建）](https://my.oschina.net/hansonwang99/blog/1616599)
+344. innerHTML表示啥,dom结构?值还是?
+345. csv和excel
+346. ng-container直接包裹文字会被渲染成什么,span or 什么都没有?
+
+347. oracle
+
+    1. 对于`insert into xxx (...) select @xxx from c`,其中`@xxx`可以不是c的字段?此时相当于直接插入`@xxx`?其他sql语言也是这样吗/
+    2. id等用varchar和number的区别
+
+348. 扫MQ和扫数据库的区别是啥?
+
+    直接扫数据库如何?
+
+349. tooltip,title和hover等的区别和使用环境
+
+    项目中的mdtooltip需要引入,后面再改吧

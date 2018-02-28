@@ -22,6 +22,9 @@
 #### angular风格指南
 [风格指南](http://origin.angular.live/docs/ts/latest/guide/style-guide.html#!#naming)
 
+#### 关于开发时网友的angular图标
+开发模式下才有,发布的时候就没有(待补充)
+
 ### 4 angular-cli常用命令
 1. `ng serve`:启动开发服务器并监听文件变化,变化时重构
     1. 参数`-o`(`--open`):启动后打开地址
@@ -43,6 +46,7 @@
 6. 网友的组件库:[https://github.com/ElemeFE/element-angular](https://github.com/ElemeFE/element-angular)
 7. angular4修仙之路:[https://segmentfault.com/a/1190000008754631](https://segmentfault.com/a/1190000008754631)
 8. 大神的blog:[http://asdfblog.com/](http://asdfblog.com/)
+
 ### 7 文档
 ## 二 安装配置
 
@@ -317,17 +321,17 @@ angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全�
 angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.x开始,用绑定就能达到原来的效果.angular有三种指令:属性指令,结构型指令和组件指令.
 1. 属性型指令
 
-    用于监听和修改其它HTML元素或组件的行为,包括attribute,property等.常用的有:
+    用于监听和修改其它HTML元素或组件的行为,包括attribute,property等,即改变组件的外观或行为.常用的有:
     1. `ngClass`
         
         添加或移除多个 CSS 类时，NgClass指令可能是更好的选择
     2. `NgStyle`
 
-        可以同时设置多个内联样式
+        可以同时设置多个内联样式,如`[ngStyle]="{'color':'blue','font-weight':'bold'}`
     3. `NgModel`
 2. 结构型指令
 
-    塑造或重塑DOM的结构，这通常是通过添加、移除和操纵它们所附加到的宿主元素来实现.在angular中,结构型指令使用的是**微语法**.一个宿主元素可以有多个属性型指令,但只能有一个结构型指令.常见结构指令有:
+    塑造或重塑DOM的结构，这通常是通过添加、移除和操纵它们所附加到的宿主元素来实现.在angular中,结构型指令使用的是**微语法**.一个宿主元素可以有多个属性型指令,但只能有一个结构型指令.在开发环境下,结构指令会被翻译成形如`ng-reflect-xxx`.常见结构指令有:
     1. `NgIf`
 
         为false时,会从DOM中物理删除(移除它的宿主元素，取消它监听过的DOM事件,移除变更检测),而不是使用CSS来隐藏元素.这些组件和DOM节点可以被当做垃圾收集起来，并且释放它们占用的内存。该指令还可防范空指针错误.
@@ -434,6 +438,7 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 3. 组件指令
 
     组件是一个带模板的指令,虽然严格来说组件就是一个指令，但是组件非常独特，在Angular中位于中心地位.
+
 #### 管道
 管道的源码部分:[https://segmentfault.com/a/1190000008646187](https://segmentfault.com/a/1190000008646187)
 作用不必多说,angular4又加入了`async pipe`,默认是只能在angular的模板中使用,如果要在js中使用,推荐使用DI的方式.
@@ -757,12 +762,16 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 
 ### 7 部署
 
-### 8 ElementRef
+### 8 ElementRef等
 简单来说就是angular对DOM的抽象.大概有:ElementRef、TemplateRef、ViewRef 、ComponentRef 、ViewContainerRef和Renderer 等
-#### 优点
-- 提高安全性
-- 统一不同平台的API接口
-#### 用法
+1. 优点
+    - 提高安全性
+    - 统一不同平台的API接口
+
+        在有些环境中,比如web worker,是不能直接操作DOM的,通过封装后的接口就可以操作
+
+#### 8.1 ElementRef
+在组件中注入的话,表示对该组件`selector`的引用,然后调用`nativeElement`就可以获取封装后的native元素(在浏览器中 native 元素就是 DOM 元素).
 简单使用如下,
 ```
 constructor(
@@ -775,6 +784,9 @@ this.renderer2.setStyle(this.elementRef.nativeElement, "background-color", color
 一般elementRef就是所在的DOM元素,如果要获取子元素,有两种方法
 - 声明`@ViewChild`(推荐):但是如果多个元素定义了相同的变量，使用@viewChild时只能选择到第一个元素.(待测试)
 - `querySelector()`:使用CSS选择器获取DOM
+
+#### 8.2 TemplateRef
+
 
 ## 五 经验
 1. 双向绑定中某方的数据延迟取得也会生效
@@ -790,10 +802,10 @@ this.renderer2.setStyle(this.elementRef.nativeElement, "background-color", color
 ### 2 angular cli(angular官方脚手架)
 github地址:[https://github.com/angular/angular-cli](https://github.com/angular/angular-cli)
 
-#### 安装
+#### 2.1 安装
 prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 
-#### 常用命令
+#### 2.2 常用命令
 1. `ng serve`
     1. 参数`--host 0.0.0.0 --port 4201`:牛逼的地方在于支持套接字
     2. 参数`-e`(`--environment`)
@@ -825,7 +837,9 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
     ```
 
     当我在input中输入的时候,`span`中的值并没有立刻改变,只有我每次回车或是提交的时候才会改变.所以我猜测input元素**默认情况**下是只有确认输入的时候才会去调用input()事件,正在输入的时候没有去调用,当然,注册了该事件或是双绑后就不一样了.
+2. `Binding expression cannot contain chained expression`
 
+    绑定表达式不能包含链式表达式。在`<ng-template>`上使用`[ngIf]`的时候报的这个错,好像不能使用在`<ng-template>`上,目前还没找到解决办法.(待研究)
 
 ### 2 未解决
 1. 表单验证
@@ -880,3 +894,9 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
     1. 动态创建组件的时候,如果api请求出错会怎么样?
         出错时阻止页面的生成会不会更好?
 5. 学习项目中如何自定义验证器的
+
+6. ng-template和ng-container的区别
+
+    还有上面的ngIf等的写法有什么不同?如果用ngif,ng-container还会显示吗,还是说变得跟ng-template一样了?
+
+7. ngAfterViewInit和nginit的区别是啥,前者用于什么场景?

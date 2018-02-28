@@ -64,3 +64,5 @@ redis-cli
 redis-benchmark
 
 redis-conf
+
+1. http://blog.csdn.net/qq_30242609/article/details/52913145
