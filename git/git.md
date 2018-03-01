@@ -39,6 +39,11 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
 #### ssh-agent
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
+
+#### git pull = git fetch +merge
+#### 关于HEAD的指向
+`HEAD`指向的是当前分支,`HEAD~1`是前一个commit,是当前所在commit的前一个或父commit;(待补充)
+
 ### 4 文档
 ### 5 网站
 1. git的官方中文book,但是有些内容并不生效:[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
@@ -145,12 +150,25 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
     1. `[path]` or `-- [path]`：这里的path是要撤销的目录或者文件名，如果有该参数(在[xxx1]是`--mixed`或空 的情况下)，则会跳过移动HEAD指针这个操作，直接复制到index，比如`git reset [path]`；如果没有该参数，则不会跳过移动HEAD指针这个操作
 
     [xxx3]参数说明:
-    1. 
-### 4 查看
+
+### 4 拉取和推送
+#### 4.1 拉取
+快速合并(fast-forward)
+
+#### 4.2 commit
+最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
+将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(原来的多个就会消失掉),当然该命令是强大且危险的.
+也可以在压制前新建一个分支备份下.
+1. 压制`git rebase`:
+    1. 比如压制最后的三个commit:`git rebase -i HEAD~3`
+#### 4.3 推送
+
+### 5 查看
 1. 查看工作区状态`git status`
 2. 查看提交日志：`git log`
     1. 查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
     2. `git log`默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
+    3. 参数`--oneline --graph --decorate --all`:查看所有的提交
 
 3. 查看配置文件
     - 查看项目的配置文件`git config --local --list`
@@ -161,10 +179,31 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
 4. 查看远程信息
     - 查看关联的仓库`git remote -v`
+5. 查看变更:`git diff`
 
-### 4. git pull = git fetch +merge
+### 5 远程仓库相关:git remote
+可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,比如`git pull upstream master`
+1. 查看路径信息:`git remote -v`
+2. 用于添加到新的远程仓库的连接:`git remote add`
+3. 重命名:`git remote rename [name] [new_name]`
 
-### 5 配置
+
+### 6 分支管理
+1. 新建分支`git branch -b [branch_name]`
+
+### 7 多人协作
+1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
+    1. 参数`--author="[user_name]"`:根据名字筛选
+2. 根据commit来筛选:
+    1. 形如`git show 5966b66`
+    2. 形如`git log --grep=bug`:搜索的方式来查找,注意如果写成不含等号的,如`git log --grep "fort"`,则Git 将显示顺序包含字符 f、o、r、t 的 commit.
+3. README
+
+    最后，如果你添加的任何代码更改会使项目发生极大的变化，则应更新 README 文件以向其他人说明此更改。
+4. pull request
+
+
+### 8 配置
 #### Git仓库的配制文件
 Git共有三个级别的config文件，分别是system、global和local:
 1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--local参数（或者省去）。
@@ -173,15 +212,38 @@ Git共有三个级别的config文件，分别是system、global和local:
 
 覆写关系为：小范围覆盖大范围属性；自上到下，作用范围越大。
 
+### 8 其他
+#### 8.1 不常用命令
+1. `fsck`:文件系统检测
+
+
 ## 四. 高级
 ### 1 github
-#### 项目操作
-- star:作用是收藏
-- watch:作用是关注,更新时会收到通知(?)
-- fork:可以pull request
+#### 1.1 项目操作
+- star:作用是收藏,不会看到项目的实时更新
+- watch:作用是关注,更新时会收到通知
+- fork:将项目复制一份到自己账户,会显示"forked from ...",然后可以对自己的项目进行各种修改.最佳实践是新建一个分支(通常称为特性分支)再修改.
 
-#### 文件操作
+    注意git是没有`fork`这个命令的,
+
+#### 1.2 文件操作
 - raw:在浏览器中以 text/plain 查看原始文件
+
+#### 1.3 Issue
+Issues（问题）"并不代表实际存在错误，它可以是需要对项目进行的任何改变。GitHub 的问题跟踪器相当高级。每个问题都可以：
+- 应用一个或多个标签
+- 被分配给个人
+- 确定一个里程碑（例如问题将由下一个主要版本解决）
+**但问题跟踪器最重要的一个方面在于，每个问题都可以有自己的评论区，使开发者围绕这个问题展开对话。**
+
+Issue 的另一个很棒的功能在于：
+- 你可以订阅某个 Issue ，这样你便会获得新评论和代码更改的通知
+- 你可以就具体变更与项目维护者持续交流
+
+如果你查看了 Issues 列表，没有看到与你要做的事情类似的内容，那么你可以创建自己的新 Issue
+
+
+
 
 ### 2 本地和远程的关联
 1. 本地和远程仓库的关联（本地和远程都建好了仓库）:
@@ -275,3 +337,7 @@ Git共有三个级别的config文件，分别是system、global和local:
 
 24. git hook
 25. merge的时候,保存信息时不知道怎么操作,最后出现`Merge made by the 'recursive' strategy.`
+
+## 七 待整理
+1. 关于ssh的配置,可参考官方文档:[https://help.github.com/articles/connecting-to-github-with-ssh/](https://help.github.com/articles/connecting-to-github-with-ssh/)
+2. 有时项目会对特性分支的命名有特定要求。例如，如果一个分支将要解决错误修复，那么许多项目会要求添加一个 bugfix- 前缀。回到我们处理登录表单错误的分支，它得被命名为 bugfix-login-form。
