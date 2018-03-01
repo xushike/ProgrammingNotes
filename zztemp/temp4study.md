@@ -637,4 +637,5 @@ for (let [i, item] of arr.entries()) {
 
 349. tooltip,title和hover等的区别和使用环境
 
-    项目中的mdtooltip需要引入,后面再改吧
+    1. 项目中的mdtooltip需要引入,后面再改吧
+    2. 哪种是可以复制的?可以复制的话应该更好吧
