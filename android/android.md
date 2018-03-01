@@ -9,6 +9,9 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 形如`xmlns:xxx="..."`:因为XML文件不仅仅用于Android,还可以用于很多地方,所以这句声明表示该XML文件用于Android的开发和布局(这也就是所有属性前都加了`android:`的原因),也可以理解为命名空间(?)
 1. 而且,所有的布局文件中都需要加入xmlns开头的两个声明,否则不能正确运行.
 2. 更多信息(待研究):[What does “xmlns” in XML mean?](https://stackoverflow.com/questions/1181888/what-does-xmlns-in-xml-mean)
+3. 还可以使用tools命名空间,帮助很大 
+
+    比如`tools:text`,相当于占位符,在预览的时候不会显示,而是用于动态展示.
 
 #### 代码的`@`
 一般表示指定某种资源
@@ -43,7 +46,7 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 ### 1 win
 ### 2 mac
 #### 新建项目
-1. Company Domain:看起来像一个网址,一般填入的是`[my_name].com`,这个值反转后就是应用发布后的包名(package name)(google app和手机会根据这个来识别你的应用?),所以必须是在全世界发布的app中都是唯一的才行.
+1. Company Domain:应用的唯一标识符,看起来像一个网址,一般填入的是`[my_name].com`,这个值反转后就是应用发布后的包名(package name)(google app和手机会根据这个来识别你的应用?),所以必须是在全世界发布的app中都是唯一的才行.
 3. project location:AS会创建一个默认位置,一般用它就好.
 4. 选择设备和版本
 
@@ -54,17 +57,6 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
     blank activity和empty activity
 
 6. 创建后的文件结构查看方式:推荐用Android
-
-    **app目录里的文件大概如下**
-    1. mainfests
-    2. java
-    3. res:包含应用外观的所有内容
-        1. drawable:放置图片
-        1. layout:包含app设计和布局的xml
-        2. menu
-        3. mipmap:放置应用图标
-        4. values
-
 7. 在手机上运行
     1. 开启开发者选项和USB调试
         
@@ -83,10 +75,63 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 1. Android应用的界面使用布局（ViewGroup 对象）和微件（View 对象）层次结构构建。布局是一种不可见的容器，用于控制其子视图在屏幕上的位置。微件是界面组件，例如按钮和文本框。
 2. 嵌套布局会增加绘制界面所需的时间。
 3. 您还可以使用顶部或底部边缘创建水平对齐，不过，按钮在其图像周围包含内边距，因此如果您按照这种方式对齐这些视图，视觉对齐将是错误的。
+4. 关于接口,抽象类和具体类
+    接口是完全没有实现,抽象类是部分实现,具体类是完全实现;编写代码的时候具体用哪个要看情况.
 
+### 2 文件结构
+#### 2.1 android视图模式
+该视图模式也是google官方推荐的模式,app目录里的文件大概如下
+1. mainfests
+    - AndroidManifest.xml
 
-### 2 ...
+        视图主文件,包含:
+        1. 包名(package name)
+        2. 应用组件:如activity name,intents,通知权限,最低api等
+2. java
+3. res:包含应用外观的所有内容
+    1. drawable:放置图片
+    1. layout:包含app设计和布局的xml
+    2. menu
+    3. mipmap:放置应用图标
+    4. values
+### 3 Intent
+分为隐式和显式Intent,显式就是指定具体的Intent,隐式就是不知道具体的,比如打开一个网页,不管哪个浏览器app,只要能打开网页就行.
+#### 3.1 隐式Intent
+可以设置更具体的一些信息,同时还要对没有可选的情况进行处理
 
+### 4 布局
+#### 4.1 ViewGroups
+类似于视图的容器,分类如下
+
+- 线性布局（LinearLayout）
+    1. 位置权重
+
+        类似于比例布局
+        1. 如果权重为0,则宽高会使用设置的值
+
+- 相对布局（RelativeLayout）
+
+    其中的子元素不设置的话默认会放在左上角.
+    1. 子元素布局
+
+        用`layout_xxx`来设置,比如相对于某个兄弟元素的左边可以用`layout_toLeftOf`,较某兄弟元素下面用`layout_below`,和父元素的右对齐可以用`layout_alignParentRight`
+
+- 约束布局(ConstraintLayout)
+
+    Android Studio默认使用约束布局
+
+### 5 日志
+根据日志的严重情况分为五个类别,分别是xxx,都接受两个参数,第一个是消息来自何处,一般填类名,第二个参数就是消息内容.
+
+### 6 可回收的视图
+#### 6.1 ListView
+1. 视图回收
+2. 查看内存:tools=>android=>enable ADB Integration(启用ADB集成)
+
+    可以查看内存等的使用情况
+3. ArrayAdapter
+#### GridView
+#### RecyclcerView
 
 ## 四 高级
 ### 1 真机调试
@@ -146,26 +191,6 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 - 子（Child）
 - 兄弟姐妹（Sibling）
 
-##### ViewGroups
-类似于视图的容器,分类如下
-
-- 线性布局（LinearLayout）
-    1. 位置权重
-
-        类似于比例布局
-        1. 如果权重为0,则宽高会使用设置的值
-
-- 相对布局（RelativeLayout）
-
-    其中的子元素不设置的话默认会放在左上角.
-    1. 子元素布局
-
-        用`layout_xxx`来设置,比如相对于某个兄弟元素的左边可以用`layout_toLeftOf`,较某兄弟元素下面用`layout_below`,和父元素的右对齐可以用`layout_alignParentRight`
-
-- 约束布局(ConstraintLayout)
-
-    Android Studio默认使用约束布局
-
 ##### 宽度和高度
 "子视图的高宽和位置是由父视图决定的"这句话如何理解
 ##### 内外边距
@@ -205,7 +230,10 @@ android框架的重点之一,调用其他应用.comment intents.
 9. `layout_padding`和`margin`的区别,我怎么感觉两者差不多呢?
 10. 不同视图的id可以相同?
 11. logcat
+12. 如何给xml中的属性注释
 
 ## 七 待整理
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
 2. 导入项目的几种方式
+3. ADB
+4. [Android 性能优达学城课程，其中也介绍了Memory Monitor](https://classroom.udacity.com/courses/ud825/lessons/3846748822/concepts/37868186490923)
