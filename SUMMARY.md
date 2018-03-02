@@ -2,9 +2,8 @@
 
 * [前言](README.md)
 * [android](android/android.md)
-    * [androidApp](android/androidApp/androidApp.md)
-        * [1.weixin](android/androidApp/1.weixin.md)
-    * [Kotlin](android/Kotlin.md)
+    * [1.Kotlin](android/1.Kotlin.md)
+    * [2.weixin](android/2.weixin.md)
 * [ar](ar/ar.md)
 * [Apache](apache/Apache.md)
 * [AssemblyLanguage汇编语言](AssemblyLanguage/AssemblyLanguage.md)

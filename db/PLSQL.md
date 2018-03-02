@@ -9,10 +9,18 @@
     4. 允许一次发送语句的整块到数据库。这降低了网络流量，并提供高性能的应用程序
 
 ## 三 基础
+### 1 语法
+#### 1.1 增删改查
+
+#### 1.2 函数
+##### decode
+流程控制,效果类似于`if else`
+1. 可用于`order by`的指定排序,如`order by decode(m.status,10,20,30,90,0,99)`
+
 ### 2 注释
 1. 单行注释:`--`
-2. 多行注释:`/**/
-`
-## 五 问题
-1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
+2. 多行注释:`/**/`
 
+## 六 问题
+1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
+2. Oracle调优经验

@@ -8,13 +8,15 @@ npm是世界上最大的js包管理工具。
     - npm被依赖榜单:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
     - npm getting-started:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
 ## 二 安装配置
-### 1 windows下的安装
+### 1 win
 1. 直接安装nodeJS，里面带有npm
 2. 配置
 
     win的npm配置文件`.npmrc`的默认位置是`C:\\Users\\Administrator\\.npmrc`,包安装的默认位置是`C:\Users\xxx\AppData\Roaming\npm`
     1. 换源：`npm config set registry https://registry.npm.taobao.org`
-### 2 linux下的安装(ubuntu为例)
+
+### 2 linux
+#### 2.1 ubuntu
 1. sudo apt install npm
 2. 配置源，虽然仓库没有被qiang，但是速度较慢：
     1. 临时使用
@@ -23,8 +25,10 @@ npm是世界上最大的js包管理工具。
     ```bash
     registry =https://registry.npm.taobao.org
     ```
-### 3 mac下的安装
+
+### 3 mac
 1. mac下home目录默认没有`.npmrc`文件,使用`npm config set registry https://registry.npm.taobao.org`命令会生成并配置好`.npmrc`,一步到位.
+
 ## 三. 基础
 ### 1 安装卸载命令
 1. 安装模块`npm install`(简写`npm i`)

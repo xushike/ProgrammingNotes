@@ -95,3 +95,5 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 5. m2_home
 6. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
 7. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
+
+8. 合上盖子是什么状态?每隔一段时间就会自动联网?

@@ -46,6 +46,7 @@
 6. 网友的组件库:[https://github.com/ElemeFE/element-angular](https://github.com/ElemeFE/element-angular)
 7. angular4修仙之路:[https://segmentfault.com/a/1190000008754631](https://segmentfault.com/a/1190000008754631)
 8. 大神的blog:[http://asdfblog.com/](http://asdfblog.com/)
+9. [Angular开发者中文社区](http://www.ngfans.net/)
 
 ### 7 文档
 ## 二 安装配置
@@ -827,19 +828,27 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 
 ## 六 问题
 ### 1 已解决
-1. 直接修改dom会影响angular的form获取的值吗?
+#### 1.1 直接修改dom会影响angular的form获取的值吗?
+实测是不会的,而且还发现一点,假如有如下代码,
 
-    实测是不会的,而且还发现一点,假如有如下代码,
+```html
+<input #hi15>
+<span>15的值是:{{hi15?.value}}</span>
+```
 
-    ```html
-    <input #hi15>
-    <span>15的值是:{{hi15?.value}}</span>
-    ```
+当我在input中输入的时候,`span`中的值并没有立刻改变,只有我每次回车或是提交的时候才会改变.所以我猜测input元素**默认情况**下是只有确认输入的时候才会去调用input()事件,正在输入的时候没有去调用,当然,注册了该事件或是双绑后就不一样了.
 
-    当我在input中输入的时候,`span`中的值并没有立刻改变,只有我每次回车或是提交的时候才会改变.所以我猜测input元素**默认情况**下是只有确认输入的时候才会去调用input()事件,正在输入的时候没有去调用,当然,注册了该事件或是双绑后就不一样了.
-2. `Binding expression cannot contain chained expression`
+#### 1.2 `Binding expression cannot contain chained expression`
+绑定表达式不能包含链式表达式。在`<ng-template>`上使用`[ngIf]`的时候报的这个错,好像不能使用在`<ng-template>`上,目前还没找到解决办法.(待研究)
 
-    绑定表达式不能包含链式表达式。在`<ng-template>`上使用`[ngIf]`的时候报的这个错,好像不能使用在`<ng-template>`上,目前还没找到解决办法.(待研究)
+#### 1.3 怎样理解Angular2中的ViewContainerRef，ViewRef和TemplateRef？
+参考(知乎):[https://www.zhihu.com/question/54554874](https://www.zhihu.com/question/54554874)
+1. 关于`EmbeddedViewRef`
+
+    [官网文档](https://angular.cn/api/core/EmbeddedViewRef)说的是代表angular视图(View),是创建和销毁元素的最小组合,其属性可以改变,但View中元素的结构（数量和顺序）不能。 只能通过ViewContainerRef插入，移动或移除嵌套视图来更改元素的结构。 每个视图可以包含许多视图容器(View Containers)。
+2. 关于`TemplateRef`
+
+    其实例的`createEmbeddedView()`方法会创建一个`ViewRef`(也叫视图,不知道和)的实例`ViewRef_`,ViewRef_的 rootNodes 属性包含了 `<template>`模板中的内容.
 
 ### 2 未解决
 1. 表单验证
@@ -860,7 +869,6 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 14. angular实用技巧点滴:[https://www.jianshu.com/p/c2e73a09bc38](https://www.jianshu.com/p/c2e73a09bc38)
 15. Angular2新人常犯的5个错误:[https://segmentfault.com/a/1190000004969541](https://segmentfault.com/a/1190000004969541)
 16. 一直困惑我的:[https://segmentfault.com/a/1190000008625978](https://segmentfault.com/a/1190000008625978)
-17. 怎样理解Angular2中的ViewContainerRef，ViewRef和TemplateRef？(知乎):[https://www.zhihu.com/question/54554874](https://www.zhihu.com/question/54554874)
 18. blog about make your angular fast:[https://blog.thoughtram.io/angular/2017/02/02/making-your-angular-app-fast.html](https://blog.thoughtram.io/angular/2017/02/02/making-your-angular-app-fast.html)
 19. zonejs:[http://www.zcfy.cc/article/how-the-hell-does-zone-js-really-work-995.html](http://www.zcfy.cc/article/how-the-hell-does-zone-js-really-work-995.html)
 20. 管道: http://blog.csdn.net/qq451354/article/details/54141024
@@ -898,5 +906,11 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 6. ng-template和ng-container的区别
 
     还有上面的ngIf等的写法有什么不同?如果用ngif,ng-container还会显示吗,还是说变得跟ng-template一样了?
+    1. 网友:`ng-container`渲染所包含的模板内容，不包含自身
 
 7. ngAfterViewInit和nginit的区别是啥,前者用于什么场景?
+8. [Angular2 VS Angular4 深度对比:特性、性能](https://www.cnblogs.com/powertoolsteam/archive/2017/08/09/angular2_vs_angular4.html)
+9. [swimlane/ngx-datatable](https://github.com/swimlane/ngx-datatable)
+
+    感觉挺不错的,里面的实时刷新展示,排序,加载条等值的研究
+10. 网友总结的:[angular4 实践](http://blog.csdn.net/zhd930818/article/details/78869757)

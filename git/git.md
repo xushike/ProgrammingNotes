@@ -4,12 +4,19 @@
 git开源免费的分布式版本控制系统。
 ### 1 简介
 ### 2 历史
+#### 2.1 为什么需要版本控制
+在实际工作中，我们脑子里怎么可能记得一个几千行的文件每次都改了什么内容
+
 ### 3 常识
+#### commit id（版本号）
+就是commit信息里的那一长串数字,SHA1计算出来的一个非常大的数字，用十六进制表示.
+
 #### 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)
 
 #### git的ssh和https
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
+
 ##### 凭证助手credential helper(待测试)
 用于存储git的凭证,Git现在默认包含如下几个helper:
 - Cache
@@ -41,8 +48,8 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
 
 #### git pull = git fetch +merge
-#### 关于HEAD的指向
-`HEAD`指向的是当前分支,`HEAD~1`是前一个commit,是当前所在commit的前一个或父commit;(待补充)
+#### 关于HEAD的指向(重点,易错点)
+**`HEAD`表示当前版本,即最新的那个commit**,`HEAD~1`(或者`HEAD^`)是上个版本(前一个commit),是当前所在commit的前一个或父commit.以此类推,上上个版本是`HEAD~2`(或`HEAD^^`)...
 
 ### 4 文档
 ### 5 网站
@@ -169,6 +176,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
     1. 查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
     2. `git log`默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
     3. 参数`--oneline --graph --decorate --all`:查看所有的提交
+    4. 参数`--pretty=oneline`:只看commit的`-m`信心
 
 3. 查看配置文件
     - 查看项目的配置文件`git config --local --list`
@@ -180,6 +188,8 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 4. 查看远程信息
     - 查看关联的仓库`git remote -v`
 5. 查看变更:`git diff`
+
+    `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改
 
 ### 5 远程仓库相关:git remote
 可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,比如`git pull upstream master`
@@ -242,9 +252,6 @@ Issue 的另一个很棒的功能在于：
 
 如果你查看了 Issues 列表，没有看到与你要做的事情类似的内容，那么你可以创建自己的新 Issue
 
-
-
-
 ### 2 本地和远程的关联
 1. 本地和远程仓库的关联（本地和远程都建好了仓库）:
     1. 本地和远程关联
@@ -272,7 +279,13 @@ Issue 的另一个很棒的功能在于：
     #如果只想关联，可以如下使用
     git branch --track local_branch_name origin/remote_branch_name
     ```
-### 2 `.gitignore`文件
+
+### 3 撤销和回滚(难点)
+#### 3.1 未整理
+所有没有 commit 的本地改动，都会随着 reset --hard 丢掉，无法恢复。不带`--hard`参数就没事.(?)
+参考[廖雪峰的版本回退](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013744142037508cf42e51debf49668810645e02887691000)
+
+### 4 `.gitignore`文件
 该文件只要在主目录(?)下就会生效
 1. 规则
     - 以斜杠“/”开头表示目录；
@@ -341,3 +354,7 @@ Issue 的另一个很棒的功能在于：
 ## 七 待整理
 1. 关于ssh的配置,可参考官方文档:[https://help.github.com/articles/connecting-to-github-with-ssh/](https://help.github.com/articles/connecting-to-github-with-ssh/)
 2. 有时项目会对特性分支的命名有特定要求。例如，如果一个分支将要解决错误修复，那么许多项目会要求添加一个 bugfix- 前缀。回到我们处理登录表单错误的分支，它得被命名为 bugfix-login-form。
+
+3. mac上是我github账户下的所有项目的提交都不需要输入账号密码吗?
+
+    原因是什么,为什么win我没配置对?

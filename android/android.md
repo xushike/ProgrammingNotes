@@ -237,3 +237,6 @@ android框架的重点之一,调用其他应用.comment intents.
 2. 导入项目的几种方式
 3. ADB
 4. [Android 性能优达学城课程，其中也介绍了Memory Monitor](https://classroom.udacity.com/courses/ud825/lessons/3846748822/concepts/37868186490923)
+
+5. 微信公众平台接口测试帐号申请 
+6. JuiceSSH

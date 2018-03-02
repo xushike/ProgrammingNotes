@@ -639,6 +639,32 @@ for (let [i, item] of arr.entries()) {
 
     1. 项目中的mdtooltip需要引入,后面再改吧
     2. 哪种是可以复制的?可以复制的话应该更好吧
+    3. [CSS3实现漂亮ToolTips效果](https://www.imooc.com/learn/331)
 
 350. [用于提供审查、性能度量和渐进式网页应用最佳实践。](https://github.com/GoogleChrome/lighthouse)
 351. Lighthouse 项目的一个分支名称为 add-a11y-tests。你认为这是一个用于特性分支的好名字吗？ （提示 - a11y 代表"accessibility"。在"accessibility" 中，a 和 y 之间有十一个字母，所以缩写为了 a11y！）
+352. 如何做一个这样的博客:[大漠穷秋的github](https://damoqiongqiu.github.io/)
+
+353. `background-color`和`background`
+354. `:before`和`:after`的用法
+355. `perfect-scrollbar`滚动条
+356. js获取日期的前一个月?
+
+    getDate()-30?
+
+357. 在js or ts 中加`debugger`字段的调试方法?
+358. 项目中select选中后的长度改变
+
+    比如邮费那儿,当字段太长的时候选择出来就只能显示部分字段
+
+359. [成都公租房租赁补贴开始申请 最高补贴100%](http://cd.qq.com/a/20180301/004785.htm)
+
+360. zookeeper的配置是什么意思
+361. go中错误的最佳实践
+
+    如果err有很多层,怎么判断是从哪层传过来的?
+362. ts里在变量名前面加`_`和后面`_`有没有什么特殊意义
+363. hadra启动命令行的`-d`和`-w`等的意义
+364. wlwk_merchant项目本地前端启动的特殊性
+    
+    必须先非本地启动的方式获取session_id然后保存为固定的,然后才能以固定的session_id本地启动

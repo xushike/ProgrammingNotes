@@ -29,6 +29,9 @@ go的strings包中有相关方法
     syntax tree:语法树
     abstract syntax tree:抽象语法树
 
+2. 注释:comment,annotation
+
+
 ## 五 经验
 1. 坚持听bbconlin
 
