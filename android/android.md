@@ -27,6 +27,13 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 #### Android Go
 谷歌推出的专为低配手机用的系统,相当于Android8的精简版
 
+#### Android Instant Apps和微信小程序
+两者都是免安装的应用.只不过 Instant Apps 是基于 Android 操作系统的，微信小程序是基于微信 App 生态的，但本质上还是不一样的，Instant Apps 本质上还是原生 App，只不过允许你在下载安装之前，先体验下 App 部分模块的功能，觉得不错，适合你，那么你可以再下载安装，而微信小程序本质上不是原生应用，他是基于一种类似 React Native 的框架来达到原生的体验，而且只能在微信内部运行。
+Instant Apps 体验更好，功能更强大，可以独立运行在手机上，而微信小程序没法独立运行，是基于微信生态下的应用，而且技术上也有一些限制。
+1. Instant Apps的缺点
+    1. Instant Apps 深度链接的识别需要依赖 Google Play(但是国内需要梯子)
+    2. 只支持 Android 平台，iOS 不支持
+
 ### 4 文档
 ### 5 网站
 1. 菜鸟教程for Android:[Android 基础入门教程](http://www.runoob.com/w3cnote/android-tutorial-android-studio.html)
@@ -58,10 +65,10 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 
 6. 创建后的文件结构查看方式:推荐用Android
 7. 在手机上运行
+    大神推荐Nexus 5
     1. 开启开发者选项和USB调试
         
         第一次需要点击版本号好几次(?),然后设置里就有开发者选项了.
-
     2. usb连接
     3. install derver(windows only):因为mac下默认是允许连接的
     4. install apo
@@ -126,10 +133,8 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 ### 6 可回收的视图
 #### 6.1 ListView
 1. 视图回收
-2. 查看内存:tools=>android=>enable ADB Integration(启用ADB集成)
-
-    可以查看内存等的使用情况
 3. ArrayAdapter
+
 #### GridView
 #### RecyclcerView
 
@@ -213,6 +218,14 @@ android框架的重点之一,调用其他应用.comment intents.
 ## 五 经验
 ### 1 app推荐
 洋葱数学
+
+### 2 各机型的一些笔记
+#### 2.1 魅族
+SmartBar
+
+#### 2.2 小米
+
+
 
 ## 六 问题
 ### 2 未解决

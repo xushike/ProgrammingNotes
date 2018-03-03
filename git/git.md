@@ -164,11 +164,23 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
 #### 4.2 commit
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
-将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(原来的多个就会消失掉),当然该命令是强大且危险的.
+将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
 1. 压制`git rebase`:
-    1. 比如压制最后的三个commit:`git rebase -i HEAD~3`
+    1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
+    2. 交互式参数`p`(`pick`):使 commit 保持原样
+    2. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
+    3. 交互式参数`s`(`squash`):将此 commit 的更改结合到之前的 commit 中（列表中位于其上面的 commit ）
+    3. 交互式参数`f`(`fixup`):将此 commit 的更改结合到前一个 commit 中，但删除提交说明
+    3. 交互式参数`x`(`exec`):运行 shell 命令
+    3. 交互式参数`d`(`drop`):删除 commit
+2. 注意,多人合作的情况下,压制**不应包含已push的commit**,因为其他人可能已经pull了你准备压制的commit,如果你再压制,其他人可能需要做非常麻烦的修改才能同步.
+3. 问题
+    1. 暂停commit等的意义是什么
+    2. 取消`git rebase`事务是用`git rebase –abort`?
+
 #### 4.3 推送
+如果远程服务器上有本地没有的commit(比如本地进行过压制操作,就会出现这种情况),此时普通的push会被拒绝,需要加上`-f`参数
 
 ### 5 查看
 1. 查看工作区状态`git status`
