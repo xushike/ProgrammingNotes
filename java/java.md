@@ -711,6 +711,7 @@ java将异常分为两种;Checked异常和Runtime异常，前者是在编译阶�
 >因为大部分的方法总是不能明确知道如何处理异常，因此只能声明抛出异常，这种情况很普遍，所以Checked异常降低了开发的生产率和代码的执行效率
 1. try块和catch块后的花括号不可以省略；try块里声明的变量时代码块内局部变量，也就是说catch块块中不能访问该变量；多个catch块无须使用if、switch判断异常类型，系统会自动去判断，但依然可以在在块中提供细致的处理。
 2. 如果try块被执行一次，那么try块后只有一个catch块会被执行，除非用了continue导致进入了下一次的try块。所以应该先处理小异常(子类)再处理大异常(父类)，如下
+
 ```java
 try{
     statements...
@@ -722,6 +723,8 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
     System.out.println("空指针异常");
 }
 ```
+
+
 #### 9.2 常见的异常
 1. ClassCastException
 2. IndexOutOfBoundsException数组越界异常
@@ -731,6 +734,9 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 5. FileNotFoundException
 6. UnsupportedOperationException
 
+#### 9.3 他人关于对异常处理
+1. 异常处理是一种哲学，当碰到的异常导致程序无法往下运行的时候推荐抛出runtimeexception
+
 ### 10 注释
 ### 11 输入/输出
 ### 12 JDBC
@@ -739,8 +745,11 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 1. 公有和私有jre的区别，什么时候用到？
 2. 如果继承树里的某一个类需要被初始化，则系统会同时初始化该类的所有父类。
 3. hashset和数组的效率比较
+4. jdk1.5新增的Concurrent，并发的lock
 
 ## 七 待整理
+1. 标签就是用来替换java脚本的
+
 ### 2 网友的面试
 #### 问题汇总
 1. 如何用aop是想对接口性能实现监控

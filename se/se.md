@@ -3,8 +3,10 @@
 ## 三 基础
 ### 1 一些概念和术语
 #### 1.1 MVC、MVVM
-- 模型-视图-控制器 (MVC) 
-- 模型-视图-视图模型 (Model-View-ViewModel,MVVM) 
+##### 模型-视图-控制器 (MVC) 
+我们开发人员开发顺序是从底层（DB）往上面开发
+
+##### 模型-视图-视图模型 (Model-View-ViewModel,MVVM) 
 
 #### 1.2 new,工厂模式和依赖注入的通俗易懂比较
 [http://blog.csdn.net/mrli113/article/details/70792498](http://blog.csdn.net/mrli113/article/details/70792498)
@@ -27,6 +29,11 @@
 
 #### 1.7 RPC
 [如何编写高性能的 RPC 框架](https://my.oschina.net/u/1014759/blog/1618972)
+
+#### 1.8 分布式系统
+#### 1.9 中间件
+#### 1.10 用户从终端的输入
+系统接收到的都是字符串
 
 ## 四 高级
 ### 1 未来方向
