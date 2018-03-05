@@ -10,14 +10,23 @@
 
 ## 三 基础
 ### 1 语法
-#### 1.1 增删改查
+#### 1.1 增
+#### 1.5 分组group by
+1. 按日期分组:`group by char(t.xxx,'yyyy-mm-dd')`
 
-#### 1.2 函数
-##### decode
+    上面是按日分组.如果是按周分组是`group by char(t.xxx,'yyyy-IW')`,按月分组则是`group by char(t.xxx,'yyyy-mm')`,按季度是`group by char(t.xxx,'yyyy-Q`,按年是`group by char(t.xxx,'yyyy')`
+
+2. 按时间段分组:``
+
+### 2 函数
+##### 2.1 decode
 流程控制,效果类似于`if else`
 1. 可用于`order by`的指定排序,如`order by decode(m.status,10,20,30,90,0,99)`
 
-### 2 注释
+##### 2.2 sum
+一般用法:`sum(t.xxx)`
+
+### 3 注释
 1. 单行注释:`--`
 2. 多行注释:`/**/`
 

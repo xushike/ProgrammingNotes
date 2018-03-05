@@ -42,6 +42,7 @@
     * [rxjs](js/rxjs.md)
     * [vue](js/vue.md)
     * [jQuery](js/jQuery.md)
+    * [Bootstrap](js/Bootstrap.md)
 * [git](git/git.md)
     * [1.gitbook](git/gitbook.md)
     * [2.svn](git/svn.md)

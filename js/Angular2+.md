@@ -47,6 +47,7 @@
 7. angular4修仙之路:[https://segmentfault.com/a/1190000008754631](https://segmentfault.com/a/1190000008754631)
 8. 大神的blog:[http://asdfblog.com/](http://asdfblog.com/)
 9. [Angular开发者中文社区](http://www.ngfans.net/)
+10. [angular官网推荐的相关UI库,组件,工具,书籍等](https://angular.cn/resources/),不知道有没有版本限制
 
 ### 7 文档
 ## 二 安装配置
@@ -914,3 +915,4 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 
     感觉挺不错的,里面的实时刷新展示,排序,加载条等值的研究
 10. 网友总结的:[angular4 实践](http://blog.csdn.net/zhd930818/article/details/78869757)
+11. [知乎网友讨论的angular可用的组件](https://www.zhihu.com/question/46414912/answer/109608048)

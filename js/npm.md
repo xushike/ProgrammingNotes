@@ -7,6 +7,7 @@ npm是世界上最大的js包管理工具。
 1. 相关网址
     - npm被依赖榜单:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
     - npm getting-started:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
+
 ## 二 安装配置
 ### 1 win
 1. 直接安装nodeJS，里面带有npm
@@ -76,6 +77,7 @@ npm是世界上最大的js包管理工具。
 5. 查看模块的主页和文档
     - `npm home [moduleName]`
     - `npm docs [moduleName]`
+
 ### 3 配置命令
 1. 查看所有配置:`npm config ls -l`
 2. 查看某个配置:`npm config get xxx`
@@ -96,6 +98,7 @@ npm 的缓存是使用 pacote 模块进行下载和管理，基于 cacache 缓�
 
 ### 4 运行相关命令
 1. 更改包后重建:`npm rebuild [moduleName]`
+
 ### 5 package.json
 一般每个项目的根目录下都有该配置文件,可通过`npm init`交互式生成
 1. 版本控制
@@ -161,6 +164,7 @@ npm 的缓存是使用 pacote 模块进行下载和管理，基于 cacache 缓�
             .listen(process.env.npm_package_config_port)
         ```
     8. `engines`:指明了该模块运行的平台，比如Node或npm的某个版本或者浏览器
+
 ### 相关文件说明
 #### npm-shrinkwrap.json
 用于将项目的模块版本进行精确锁定,使用流程如下
@@ -168,6 +172,7 @@ npm 的缓存是使用 pacote 模块进行下载和管理，基于 cacache 缓�
 2. `npm prune`:清除未使用的模块
 3. `npm shrinkwrap`:生成`npm-shrinkwrap.json`
 4. 提交该json文件到git,这样其他人clone项目之后执行`npm install`所还原的依赖树就是一样的.
+
 #### npm-debug.log
 npm的错误报告
 
@@ -181,6 +186,7 @@ npm的错误报告
 4. npm unpublish（不推荐使用）
 5. npm deprecate:表示放弃一个包，该包在npm中没有取消，安装该包的用户会看到警告信息
 6. npm view：显示一个包(在npm上)的详细信息
+
 ## 六 问题
 ### 1 已解决
 1. 用`npm list -g`命令出现大量的`npm ERR! extraneous:...`
@@ -190,6 +196,7 @@ npm的错误报告
 2. "Unexpected end of JSON input while parsing near"
 
     `npm cache clean --force`
+    
 ### 2 未解决
 1. 淘宝镜像
     1. cnpm uninstall并不能生效，不知道为什么

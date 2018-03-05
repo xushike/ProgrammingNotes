@@ -362,6 +362,7 @@ Issue 的另一个很棒的功能在于：
 
 24. git hook
 25. merge的时候,保存信息时不知道怎么操作,最后出现`Merge made by the 'recursive' strategy.`
+26. vscode的git没有显示远程有多少个更新的pull是什么情况
 
 ## 七 待整理
 1. 关于ssh的配置,可参考官方文档:[https://help.github.com/articles/connecting-to-github-with-ssh/](https://help.github.com/articles/connecting-to-github-with-ssh/)
