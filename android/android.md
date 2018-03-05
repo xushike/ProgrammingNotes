@@ -49,6 +49,9 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
     6. 关于文本和设备边缘的间隔:16dp最佳;文件之间的间隔:8dp最佳.
     7. 最好不要有启动动画
 
+3. 某机构收集的android学习资料:[Android 学习资料收集](https://github.com/Freelander/Android_Data)
+
+
 ## 二 安装配置
 ### 1 win
 ### 2 mac
@@ -101,6 +104,7 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
     2. menu
     3. mipmap:放置应用图标
     4. values
+
 ### 3 Intent
 分为隐式和显式Intent,显式就是指定具体的Intent,隐式就是不知道具体的,比如打开一个网页,不管哪个浏览器app,只要能打开网页就行.
 #### 3.1 隐式Intent
@@ -137,6 +141,9 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 
 #### GridView
 #### RecyclcerView
+
+### 7 Activity
+
 
 ## 四 高级
 ### 1 真机调试

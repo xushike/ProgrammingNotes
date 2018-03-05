@@ -264,6 +264,13 @@ Issue 的另一个很棒的功能在于：
 
 如果你查看了 Issues 列表，没有看到与你要做的事情类似的内容，那么你可以创建自己的新 Issue
 
+#### 1.4 展示 Demo
+GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览器正确渲染了，因此这个功能不仅可以作为项目的展示页，也可以展示各种 HTML demo 文件。
+
+#### 1.5 添加 LICENSE
+创建项目时，有添加 LICENSE 选项；
+创建项目后，添加新文件，输入文件名 LICENSE 时右侧会出现 LICENSE 模板选项。
+
 ### 2 本地和远程的关联
 1. 本地和远程仓库的关联（本地和远程都建好了仓库）:
     1. 本地和远程关联
@@ -371,3 +378,9 @@ Issue 的另一个很棒的功能在于：
 3. mac上是我github账户下的所有项目的提交都不需要输入账号密码吗?
 
     原因是什么,为什么win我没配置对?
+
+4. RawGit 作为一个缓存代理，提供的功能是缓存 GitHub 中 raw 文件并添加上正确的 Content-Type header，从而使文件能被浏览器正确渲染。
+
+RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 Gist 代码的渲染展示提供了方便。
+
+使用方法：https://rawgit.com/ 或 https://raw.githack.com/
