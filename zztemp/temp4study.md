@@ -673,6 +673,17 @@ for (let [i, item] of arr.entries()) {
 366. oracle
     
     1. `column ambiguously defined`
+    2. `not a GROUP BY expression`
+    3. `date format picture ends before converting entire input string`
+    4. `ORA-00907`怎么看的
+    3. 用`as`重命名为已有的字段名会怎么样,会不会有问题?
+    2. number类型和date类型的相互转化
+    3. number类型和日期类型的使用环境
+    4. oracle的分页要仔细研究研究
+    5. plsql中''和null相等吗
+
+367. 待笔记
+判断输入的空字符是否为null的时候,结果为true;判断是否为'',也是true,而且直接比较`null`和`''`好像也是相等的
 
 367. 数据库报表的设计和sql调优
 
@@ -684,3 +695,6 @@ for (let [i, item] of arr.entries()) {
 367. 项目中go每个api的公共部分的意义吃透
 368. to_char和to_date可以混用吗
 369. 光标变成那种没写一个就删除右边一个的时候,按`insert`键就可以恢复?
+370. 中午的时候看下销售报表
+371. 项目中使用的是`https://material.angular.io/`
+372. 任务调度系统,数据库的job

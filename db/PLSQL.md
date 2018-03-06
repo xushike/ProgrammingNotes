@@ -19,12 +19,16 @@
 2. 按时间段分组:``
 
 ### 2 函数
-##### 2.1 decode
+#### 2.1 decode
 流程控制,效果类似于`if else`
 1. 可用于`order by`的指定排序,如`order by decode(m.status,10,20,30,90,0,99)`
 
-##### 2.2 sum
+#### 2.2 sum
 一般用法:`sum(t.xxx)`
+
+#### 2.3 to_char(),to_number(),to_date()
+1. number转date:`to_date(20180203,'yyyy-mm-dd')`,后面这个`yyyy-mm-dd`格式不管怎么写,最终转换出来都是类似这样的`2018/2/3`
+2. date转char:`to_char(sysdate,'yyyy-mm-dd')`,会被转换成`2018-03-06`
 
 ### 3 注释
 1. 单行注释:`--`
