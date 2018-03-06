@@ -53,7 +53,7 @@
 ## 二 安装配置
 
 ### 1 win
-1. 
+
 ### 3 mac
 1. 需要先安装node和npm
 
@@ -747,7 +747,9 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 参考自定义管道
 1. 配置对象
     1. `host`:(待补充)
+
 #### @ViewChild
+
 
 ## 四 高级知识
 
@@ -767,18 +769,25 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 
 ### 7 部署
 
-### 8 ElementRef等
-简单来说就是angular对DOM的抽象.大概有:ElementRef、TemplateRef、ViewRef 、ComponentRef 、ViewContainerRef和Renderer 等
-1. 优点
-    - 提高安全性
-    - 统一不同平台的API接口
-
-        在有些环境中,比如web worker,是不能直接操作DOM的,通过封装后的接口就可以操作
+### 8 ElementRef、TemplateRef等
+简单来说，`ElementRe`、`TemplateRef`、`ViewRef `、`ComponentRef `、`ViewContainerRef`和`Renderer `等是angular对DOM、视图等的的抽象.具有如下优点:
+- 提高安全性
+- 统一不同平台的API接口:在有些环境中,比如web worker,是不能直接操作DOM的,通过封装后的接口就可以操作
 
 #### 8.1 ElementRef
-在组件中注入的话,表示对该组件`selector`的引用,然后调用`nativeElement`就可以获取封装后的native元素(在浏览器中 native 元素就是 DOM 元素).
-简单使用如下,
+源码如下,可以看出是对`nativeElement`的抽象,
+
+```JavaScript
+export declare class ElementRef {
+    nativeElement: any;
+    constructor(nativeElement: any);
+}
 ```
+
+在组件中注入的话,表示对该组件(即`selector`指向)的引用,然后调用`nativeElement`就可以获取封装后的native元素(在浏览器中 native 元素就是 DOM 元素).
+简单使用如下,
+
+```JavaScript
 constructor(
     private elementRef: ElementRef,
     private renderer2: Renderer2,
@@ -791,6 +800,42 @@ this.renderer2.setStyle(this.elementRef.nativeElement, "background-color", color
 - `querySelector()`:使用CSS选择器获取DOM
 
 #### 8.2 TemplateRef
+(从v4开始)是对`<ng-template #xxx>`的引用,主要用于方便地创建内嵌视图(Embedded Views),通过源码可知是由DOM和视图组成,源码如下,
+
+```JavaScript
+export declare abstract class TemplateRef<C> {
+    elementRef: ElementRef;
+    abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
+}
+```
+
+已知`<ng-template #xxx>`渲染后会被解析成comment元素(即注释元素),而`elementRef`包含的就是comment元素,另外的`EmbeddedViewRef`是内嵌视图,继承自视图`ViewRef`,源码是
+
+```JavaScript
+export declare abstract class EmbeddedViewRef<C> extends ViewRef {
+    readonly abstract context: C;
+    readonly abstract rootNodes: any[];
+}
+```
+
+通过`createEmbeddedView()`方法创建`embeddedView`,然后输出`embeddedView`的内容,
+
+```JavaScript
+export class AppComponent {
+  @ViewChild('xxx')
+  tpl: TemplateRef<any>;
+
+  ngAfterViewInit() {
+    let embeddedView = this.tpl.createEmbeddedView(null);
+    console.dir(embeddedView);
+  }
+}
+```
+![](../picture/js/angular-2-embeddedView.png)
+可以发现`embeddedView`包含的是`<ng-template #xxx>`模板中的内容,所以可以通过遍历创建的内嵌视图`embeddedView`中的`rootNodes`来动态添加`<ng-template #xxx>`元素(直接添加它的`nativeElement`不是更简单?),不过更优雅的做法是使用`ViewContainerRef`
+
+#### 8.3 ViewContainerRef
+表示一个视图容器,主要作用是创建和管理内嵌视图或组件视图.可以动态创建内嵌视图,并能指定内嵌视图的插入位置
 
 
 ## 五 经验
@@ -919,3 +964,4 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
     感觉挺不错的,里面的实时刷新展示,排序,加载条等值的研究
 10. 网友总结的:[angular4 实践](http://blog.csdn.net/zhd930818/article/details/78869757)
 11. [知乎网友讨论的angular可用的组件](https://www.zhihu.com/question/46414912/answer/109608048)
+12. 两种视图的比较:[What is the difference between a view, a host view and an embedded view](https://stackoverflow.com/questions/40423772/what-is-the-difference-between-a-view-a-host-view-and-an-embedded-view#)

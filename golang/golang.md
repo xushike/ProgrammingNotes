@@ -933,4 +933,6 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 11. 有空的话应该都看完:[极客学院的go教程](http://wiki.jikexueyuan.com/list/go/)
 
 12. flag包是干嘛的 
-13. go的socket
+13. go的socket.
+
+14. [用go写一个windows外挂](http://www.ituring.com.cn/article/468550)
