@@ -965,3 +965,5 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 10. 网友总结的:[angular4 实践](http://blog.csdn.net/zhd930818/article/details/78869757)
 11. [知乎网友讨论的angular可用的组件](https://www.zhihu.com/question/46414912/answer/109608048)
 12. 两种视图的比较:[What is the difference between a view, a host view and an embedded view](https://stackoverflow.com/questions/40423772/what-is-the-difference-between-a-view-a-host-view-and-an-embedded-view#)
+
+13. `ng new  项目名称  ---style=scss`修改css预处理器

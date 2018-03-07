@@ -30,6 +30,12 @@
 1. number转date:`to_date(20180203,'yyyy-mm-dd')`,后面这个`yyyy-mm-dd`格式不管怎么写,最终转换出来都是类似这样的`2018/2/3`
 2. date转char:`to_char(sysdate,'yyyy-mm-dd')`,会被转换成`2018-03-06`
 
+#### 2.4 like,instr和substr
+`like`用于模糊查询,`instr`用于判断是否包含某字符串,`substr`用于截取字符串;因为like的效率比较低,所以能用后面的情况下尽量用后面的
+
+#### 2.5 distinct去重
+如果后面跟多个字段就是对多个字段去重,所以想对多个字段中的单个字段去重的话还是用`group by`
+
 ### 3 注释
 1. 单行注释:`--`
 2. 多行注释:`/**/`
@@ -37,3 +43,4 @@
 ## 六 问题
 1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
 2. Oracle调优经验
+3. 变量的声明

@@ -682,6 +682,12 @@ for (let [i, item] of arr.entries()) {
     4. oracle的分页要仔细研究研究
     5. plsql中''和null相等吗
 
+        实测是相等的
+    6. group by可以用nvl,但是不能用decode
+    7. 待笔记
+
+        1. plsql中当前日期是大于当前月份的
+
 367. 待笔记
 判断输入的空字符是否为null的时候,结果为true;判断是否为'',也是true,而且直接比较`null`和`''`好像也是相等的
 
@@ -698,3 +704,5 @@ for (let [i, item] of arr.entries()) {
 370. 中午的时候看下销售报表
 371. 项目中使用的是`https://material.angular.io/`
 372. 任务调度系统,数据库的job
+373. 原生css支持驼峰写法吗?比如`background-color`=>`backgroundColor`
+374. 虚拟机死机如何强制唤醒
