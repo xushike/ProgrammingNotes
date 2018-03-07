@@ -19,11 +19,20 @@
 ### 2 历史
 1. 从网友口中得知angular2未来会致力于3d和vr,感觉有盼头.
 ### 3 常识
-#### angular风格指南
+#### 3.1 angular风格指南
 [风格指南](http://origin.angular.live/docs/ts/latest/guide/style-guide.html#!#naming)
 
-#### 关于开发时网友的angular图标
+#### 3.2 关于开发时网友的angular图标
 开发模式下才有,发布的时候就没有(待补充)
+
+#### 3.3 常见错误
+写的很好很详细:[https://segmentfault.com/a/1190000004969541](https://segmentfault.com/a/1190000004969541)
+1. 直接调用DOM APIs
+
+    会导致几个问题:
+    - 测试复杂度会增加,测试用例变慢
+    - 无法从浏览器中解藕,不能兼容其他环境比如`web worker`,服务端或者`Electron`
+    - 代码不易读
 
 ### 4 angular-cli常用命令
 1. `ng serve`:启动开发服务器并监听文件变化,变化时重构
@@ -68,14 +77,6 @@
     ```
 1. 当应用启动时，Angular 会从根组件开始启动，并解析整棵组件树，数据由上而下流下下一级子组件。
 
-#### 常见错误
-写的很好很详细:[https://segmentfault.com/a/1190000004969541](https://segmentfault.com/a/1190000004969541)
-1. 直接调用DOM APIs
-
-    会导致几个问题:
-    - 测试复杂度会增加,测试用例变慢
-    - 无法从浏览器中解藕,不能兼容其他环境比如`web worker`,服务端或者`Electron`
-    - 代码不易读
 ### 2 模块和组件
 #### 2.1 模块
 angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全无关,但是实际使用是两者互补,初学时容易混淆.
@@ -616,7 +617,8 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 1. 哪个更好:各有所长.可两者都用.
 ### 4 引导启动
 ### 5 NgModules
-### 6 服务
+### 6 服务和依赖注入
+#### 6.1 服务
 几乎任何东西都可以是一个服务.典型的服务是一个类,具有明确的用途,能把一件特定的事情做好.常见的有:
 - 日志服务
 - 数据服务
@@ -628,14 +630,27 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
 1. 最佳实践
     
     组件类应保持精简。组件本身不从服务器获得数据、不进行验证输入，也不直接往控制台写日志。 它们把这些任务委托给服务。
-#### 依赖注入
-用于提供类的实例,负责处理类所需的全部依赖,大多数依赖都是服务.
-1. 过程
 
+#### 6.2 依赖注入
+>维基百科对依赖注入的定义:依赖注入是将所依赖的传递给将使用的从属对象(即客户端),该服务是将会变成客户端的状态的一部分.传递服务给客户端,而非允许客户端来建立或寻找服务,是本设计模式的基本要求.
+
+用于提供类的实例,负责处理类所需的全部依赖,大多数依赖都是服务.依赖注入中包含三种角色:调用者、服务和注入器 (Injector).angular2有统一的依赖注入接口:**所有依赖注入都在组件的构造方法中完成**.
+1. 依赖注入的过程
     1. Angular创建组件时,会首先为组件所需的服务请求一个注入器(injector)
     2. 注入器维护一个服务实例的容器，存放着以前创建的实例。 如果请求的服务实例不在容器中，注入器就会创建一个服务实例，并且添加到容器中，然后把这个服务返回给 Angular
     3. 当所有请求的服务都被解析完并返回时，Angular 会以这些服务为参数去调用组件的构造函数,这就是依赖注入。
-2. angular2有统一的依赖注入接口:所有依赖注入都在组件的构造方法中完成.
+2. 优点
+    1. 降低了客户端与实现模块间的耦合:对接口进行编程，不要对实现进行编程
+
+#### 6.3 Injector 
+参考:[Angular 4.x Injector](https://segmentfault.com/a/1190000009283057)(待整理)
+1. 未整理
+    1. Angular 使用第三方库 core-js 提供的 Reflect API ，来实现对 Metadata 信息的存储与读取
+    2. Angular 中注入器是有层级结构的，即创建完注入器，我们可以基于它创建它的子注入器。
+
+        - resolveAndCreate() - 根据设置的 provider 数组创建注入器
+        - resolveAndCreateChild() - 调用已有注入器对象上的该方法，创建子注入器
+
 ### 7 HttpClient
 ### 8 路由与导航
 ### 9 测试
@@ -837,6 +852,63 @@ export class AppComponent {
 #### 8.3 ViewContainerRef
 表示一个视图容器,主要作用是创建和管理内嵌视图或组件视图.可以动态创建内嵌视图,并能指定内嵌视图的插入位置
 
+#### 8.4 angular的两种视图:hostView和EmbeddedView
+参考:[What is the difference between a view, a host view and an embedded view](https://stackoverflow.com/questions/40423772/what-is-the-difference-between-a-view-a-host-view-and-an-embedded-view#)
+1. hostView
+
+    可知hostView相当于由component形成的视图,包含组件的element和data,调用createComponent()方法时hostView负责创建组件的view;If a component is specified in the other component template, then host view is not used. 
+    1. 创建方法
+
+        ```JavaScript
+        constructor(private injector: Injector,
+            private r: ComponentFactoryResolver) {
+            let factory = this.r.resolveComponentFactory(AppComponent);
+            let componentRef = factory.create(injector);
+            let view = componentRef.hostView;
+        }
+        ```
+2. EmbeddedView
+
+    而EmbeddedView是`ng-template`创建的视图,但是没有wrapper component element and component data like injector等,不过仍然是有效的视图,同时能够像其他视图一样change detection.
+
+3. 指令没有视图
+
+#### 8.5 Renderer
+angular中有个renderer知道如何去渲染每一个组件
+
+### 9 ViewEncapsulation
+首先需要了解WebComponents和shadow DOM
+
+#### 9.1 Web Components
+参考:[Web Components](https://developer.mozilla.org/zh-CN/docs/Web/Web_Components)
+WebComponents通过一种标准化的非侵入的方式封装一个组件，每个组件能组织好它自身的 HTML 结构、CSS 样式、JavaScript 代码，并且不会干扰页面上的其他元素。
+由以下四种技术组成：
+- Custom Elements - 自定义元素
+- HTML Templates - HTML模板
+- Shadow DOM - 影子DOM
+- HTML Imports - HTML导入
+
+#### 9.2 shadow DOM
+见DOM笔记中的shadow DOM
+
+#### 9.3 ViewEncapsulation 
+ViewEncapsulation允许设置三个可选的值：
+- ViewEncapsulation.Emulated:无 Shadow DOM，但是通过 Angular 提供的样式包装机制来封装组件，使得组件的样式不受外部影响。这是 Angular 的默认设置。
+- ViewEncapsulation.Native:使用原生的 Shadow DOM 特性
+- ViewEncapsulation.None:无 Shadow DOM，并且也无样式包装
+
+使用方法如下:
+```JavaScript
+@Component({
+  selector: 'my-app',
+  template: `...`,
+  styles: [`...`],
+  encapsulation: ViewEncapsulation.None // None | Emulated | Native
+})
+```
+
+### 10 视图检测
+参考:[https://blog.angularindepth.com/everything-you-need-to-know-about-change-detection-in-angular-8006c51d206f](https://blog.angularindepth.com/everything-you-need-to-know-about-change-detection-in-angular-8006c51d206f)(待整理)
 
 ## 五 经验
 1. 双向绑定中某方的数据延迟取得也会生效

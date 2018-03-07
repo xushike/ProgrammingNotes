@@ -8,17 +8,57 @@
     3. 支持静态和动态SQL
     4. 允许一次发送语句的整块到数据库。这降低了网络流量，并提供高性能的应用程序
 
+### 3 常识
+#### 3.1 oracle中的错误
+都是形如`ORA-[num]`的形式
+
 ## 三 基础
-### 1 语法
+### 1 语法和子句
 #### 1.1 增
-#### 1.5 分组group by
+#### 1.2 删
+#### 1.3 改
+#### 1.4 查
+`select * from  xxx`
+
+#### 1.5 group by分组
+在`group by`子句的字段可以不在`select`后面,但是对于在`select`后面的非组函数字段,则必须在`group by`子句中
 1. 按日期分组:`group by char(t.xxx,'yyyy-mm-dd')`
 
     上面是按日分组.如果是按周分组是`group by char(t.xxx,'yyyy-IW')`,按月分组则是`group by char(t.xxx,'yyyy-mm')`,按季度是`group by char(t.xxx,'yyyy-Q`,按年是`group by char(t.xxx,'yyyy')`
 
 2. 按时间段分组:``
 
+#### 1.6 having过滤分组后的结果
+放在group by后面
+1. 和where的异同
+
+    where子句中不能使用组函数,但是having可以;其他情况可以通用,从sql优化角度看,尽量使用where,因为having是先分组再过滤,而where是先过滤再分组
+    
+
+#### 1.7 order by排序
+有个快捷写法:用select后面字段的序号代替字段,比如`select deptno,avg(sal) from emp group by deptno order by 2`,那么里面的2就代表了avg(sal)
+
+
 ### 2 函数
+#### 2.1 分组函数(组函数)
+常用的有六个:avg,sum,min,max,count,wm_concat(行转列);注意这几个函数都不会计算空值,比如`count(*)`是14,但`count(comm)`可能是10,最佳实践是使用`nvl`函数,如`count(nvl(comm,0))`
+1. 组函数的嵌套:可以直接嵌套,比如
+```sql
+--求部门平均工资的最大值
+select max(avg(sal))
+from emp
+group by deptno
+```
+其实按我个人不知道的情况下的理解应该是用max函数将整个求平均工资的语句包起来,事实上却不是我想的这样,需要多理解理解这个group by
+
+##### avg
+当字段的值为空时不会参与计算
+
+##### wm_concat
+行转列,中间用逗号拼接
+
+#### 2.2 nvl滤空函数
+
 #### 2.1 decode
 流程控制,效果类似于`if else`
 1. 可用于`order by`的指定排序,如`order by decode(m.status,10,20,30,90,0,99)`
@@ -36,11 +76,24 @@
 #### 2.5 distinct去重
 如果后面跟多个字段就是对多个字段去重,所以想对多个字段中的单个字段去重的话还是用`group by`
 
-### 3 注释
+### 3 命令行命令
+#### 3.1 show user:查看当前用户
+#### 3.2 desc [表名]:查看表结构
+#### 3.3 host cls:清屏
+#### 3.4 /:执行上一条语句
+#### 3.5 a(--append) [xxx]:增加命令,一定要和[xxx]空两个空格以上
+
+
+### 4 注释
 1. 单行注释:`--`
 2. 多行注释:`/**/`
+
+## 五 经验
+### 1 总结
+1. 在oracle中,很多的问题都是通过子查询解决的
 
 ## 六 问题
 1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
 2. Oracle调优经验
 3. 变量的声明
+4. job是啥
