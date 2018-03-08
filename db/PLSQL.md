@@ -59,6 +59,11 @@ group by deptno
 
 #### 2.2 nvl滤空函数
 
+#### 2.3 日期函数
+##### ADD_MONTHS(date,number_months):增减月份
+
+
+
 #### 2.1 decode
 流程控制,效果类似于`if else`
 1. 可用于`order by`的指定排序,如`order by decode(m.status,10,20,30,90,0,99)`
