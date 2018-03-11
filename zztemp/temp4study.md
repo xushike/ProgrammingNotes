@@ -716,3 +716,4 @@ for (let [i, item] of arr.entries()) {
 379. 文字放在图片的右边的总结
 380. svg的使用
 381. 项目中的`DateUtility`等几个工具类有空研究下
+382. 不知道在angular单页面应用中是否有效:[三种方法能够确定浏览器窗口的尺寸](http://www.w3school.com.cn/js/js_window.asp)

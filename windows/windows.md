@@ -39,10 +39,6 @@ windows系统不区分大小写，但其他系统严格区分大小写
 1. powershell
 #### 第三方
 1. git bash：比默认shell好用
-2. f.lux
-    跨平台,调节色温,过滤蓝光=>护眼,不知道是不是真的有用,但用了感觉良好.官网:[https://justgetflux.com/](https://justgetflux.com/)
-    1. 设置屏幕亮度
-    2. 设置当前的地理位置（f.lux以此来推算出当地现在时间的）
 
 ## 六 问题
 ### 1 已解决

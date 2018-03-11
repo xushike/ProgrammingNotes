@@ -55,7 +55,7 @@
 6. 网友的组件库:[https://github.com/ElemeFE/element-angular](https://github.com/ElemeFE/element-angular)
 7. angular4修仙之路:[https://segmentfault.com/a/1190000008754631](https://segmentfault.com/a/1190000008754631)
 8. 大神的blog:[http://asdfblog.com/](http://asdfblog.com/)
-9. [Angular开发者中文社区](http://www.ngfans.net/)
+9. 网友自己做的网站(?):[Angular开发者中文社区](http://www.ngfans.net/)
 10. [angular官网推荐的相关UI库,组件,工具,书籍等](https://angular.cn/resources/),不知道有没有版本限制
 
 ### 7 文档
@@ -66,7 +66,7 @@
 ### 3 mac
 1. 需要先安装node和npm
 
-## 三. 基础知识
+## 三 基础知识
 ### 1 架构
 1. 通过引导根模块来启动应用。 在开发期间，你通常在一个main.ts文件中引导AppModule
 
@@ -75,7 +75,8 @@
     import { AppModule } from './app/app.module';   
     platformBrowserDynamic().bootstrapModule(AppModule);
     ```
-1. 当应用启动时，Angular 会从根组件开始启动，并解析整棵组件树，数据由上而下流下下一级子组件。
+2. 当应用启动时，Angular 会从根组件开始启动，并解析整棵组件树，数据由上而下流下下一级子组件。
+3. Angular 在创建 AppComponent 实例后，会自动调用 AppComponent 原型上的 createInternal 方法，才开始创建组件中元素，所以之前我们在构造函数中是获取不到通过 ViewChild 装饰器查询的视图元素
 
 ### 2 模块和组件
 #### 2.1 模块
@@ -323,6 +324,55 @@ angular模块是一个带有`@NgModule`装饰器的类,和js中的模块完全�
 #### 组件交互
 #### 组件样式
 #### 动态组件
+##### ng-content
+(本人暂时将其放在动态组件下)在angular中是一个占位符,特点是会进行内容投影(Content Projection),一个实例多个地方使用.有两个重要作用:
+- **提高性能**:因为 ng-content 只是移动元素，所以可以在编译时完成，而不是在运行时，这大大减少了实际应用程序的工作量。
+- **组件化**
+1. 使用支持多种选择器(?)的select属性,假如有
+```JavaScript
+...
+template: `
+  <div class="box red">
+    <ng-content></ng-content>
+  </div>
+  <div class="box blue">
+    <ng-content select="counter"></ng-content>
+  </div>
+  `,
+```
+和
+```html
+<wrapper>
+  <span>This is not a counter</span>
+  <counter></counter>
+</wrapper>
+```
+
+那么counter 组件被正确投影到第二个蓝色框中，而 span 元素最终会在全部红色框中.
+
+2. 使用ngProjectAs来处理被其他组件包裹的内部组件,假如有
+```html
+<wrapper>
+  <ng-container>
+    <counter></counter>
+  </ng-container>
+</wrapper>
+```
+
+那么counter 组件会被投影到第一个红色框中,为了解决这个问题，我们必须使用 ngProjectAs 属性，它可以应用于任何元素上。如下
+```html
+<wrapper>
+  <ng-container ngProjectAs="counter">
+    <counter></counter>
+  </ng-container>
+</wrapper>
+```
+此时红色和蓝色都会有counter.
+
+3. 注意Root Component 中无法使用ng-content
+    
+    大神说的:主要是因为Angular 2 编译器不会处理 index.html 文件中设置的绑定信息，另外出于安全因素考虑.
+
 #### 指令
 angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.x开始,用绑定就能达到原来的效果.angular有三种指令:属性指令,结构型指令和组件指令.
 1. 属性型指令
@@ -428,9 +478,15 @@ angular1.x包含了超过70个内置指令,实际上不需要那么多,angular2.
         </div>
         ```
     4. 其他:微语法:需要自己写结构指令时可参考微语法的源码.
+
     5. 其他:`<ng-container>`
 
-        angular提供的语法元素，不会污染样式或元素布局，因为Angular压根不会把它放进DOM中(就像是js中if块中的花括号).如,
+        angular提供的语法元素，不会污染样式或元素布局(ng-template也是)，因为Angular压根不会把它放进DOM中(就像是js中if块中的花括号).
+        和ng-template有两点区别:
+        - 不带判断条件时ng-container包裹的内容默认会被渲染,而ng-template不会
+        - 它的带星号写法和ng-template的不带星号写法类似,所以ng-container的微语法比ng-template更加直观,比如`<ng-container *ngIf="isShow">xxx</ng-container>`和`<ng-template [ngIf]="isShow">xxx</ng-template>`是一样的
+
+        最佳实践是:当两者都能用时,优先用ng-container,普通例子如下,
 
         ```html
         <select [(ngModel)]="hero">
@@ -763,8 +819,54 @@ Don't forget the parentheses,否则会导致一个难以诊断的错误
 1. 配置对象
     1. `host`:(待补充)
 
-#### @ViewChild
+#### @ViewChild和@ViewChildren 
+`@ViewChild`用来从模板视图中获取匹配的元素,`@ViewChildren`是获取匹配的多个元素，返回的结果是一个 QueryList 集合。视图check在ngAfterViewInit钩子函数调用前完成，因此在ngAfterViewIni 钩子函数中，才能正确获取查询的元素.
+每次DOM结构变化都会重新查询`@ViewChild`(?)
+主要有两种使用方法:
 
+##### 使用模板变量名
+比如有:`<p #greet>Hello {{ name }}</p>`,ts中可以这样写
+```JavaScript
+ @ViewChild('greet')
+greetDiv: ElementRef;
+
+ngAfterViewInit() {
+    console.dir(this.greetDiv);
+}
+```
+
+还可以通过read设置查询条件,上面这个获取到的就是ElementRef,如果加上类型的read,就可以获取不同的的类型(本人还是不太懂这个read的作用...),比如ViewContainerRef,
+```JavaScript
+@ViewChild('tpl')
+tplRef: TemplateRef<any>;
+
+@ViewChild('tpl', { read: ViewContainerRef })
+tplVcRef: ViewContainerRef;
+```
+
+##### 使用类型
+假如有个ChildComponent的selector:是exe-child,那么可以
+```JavaScript
+@ViewChild(ChildComponent)
+  childCmp: ChildComponent;
+
+  ngAfterViewInit() {
+    console.dir(this.childCmp);
+  }
+```
+
+如果有多个ChildComponent,可以
+```JavaScript
+@ViewChildren(ChildComponent)
+  childCmps: QueryList<ChildComponent>;
+```
+
+#### @ContentChild 和 @ContentChildren
+在ngAfterContentInit中更新组件的属性会立即出发,无需担心单向数据流规则.
+
+##### 与@ViewChild以及@ViewChildren的不同
+1. `@ContentChild和...`用于从通过 Content Projection 方式 (ng-content) 设置的视图中获取匹配的元素,而`@ViewChild和...`是从模板视图中获取匹配的元素
+2. 前者从ngAfterContentInit获取查询的元素,而后者是ngAfterViewInit.
 
 ## 四 高级知识
 
@@ -960,7 +1062,7 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 当我在input中输入的时候,`span`中的值并没有立刻改变,只有我每次回车或是提交的时候才会改变.所以我猜测input元素**默认情况**下是只有确认输入的时候才会去调用input()事件,正在输入的时候没有去调用,当然,注册了该事件或是双绑后就不一样了.
 
 #### 1.2 `Binding expression cannot contain chained expression`
-绑定表达式不能包含链式表达式。在`<ng-template>`上使用`[ngIf]`的时候报的这个错,好像不能使用在`<ng-template>`上,目前还没找到解决办法.(待研究)
+绑定表达式不能包含链式表达式。在`<ng-template>`上使用带链式的`[ngIf]`的时候报的这个错,好像不能使用在`<ng-template>`上,目前还没找到解决办法.(待研究)
 
 #### 1.3 怎样理解Angular2中的ViewContainerRef，ViewRef和TemplateRef？
 参考(知乎):[https://www.zhihu.com/question/54554874](https://www.zhihu.com/question/54554874)
@@ -1013,6 +1115,7 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 31. 教程:[http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/](http://cw.hubwiz.com/card/c/5599d367a164dd0d75929c76/1/4/1/)
 32. 掌握angular的依赖注入:[掌握Angular2的依赖注入](https://segmentfault.com/a/1190000006672079)
 33. angular的viewref的作用
+
 ## 七 待整理
 1. 大多数应用只有一个组件树，它们引导单一根组件
 
@@ -1041,3 +1144,8 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 13. `ng new  项目名称  ---style=scss`修改css预处理器
 
 14. `ng-show`,`ng-cloak`
+
+15. 测试将项目中的td用ng-content的方式注入,是否会提高性能?
+
+    会不会变成一块一块的加载?
+    1. 在项目中如何使用管道?

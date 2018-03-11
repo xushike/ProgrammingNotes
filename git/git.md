@@ -384,3 +384,5 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 Gist 代码的渲染展示提供了方便。
 
 使用方法：https://rawgit.com/ 或 https://raw.githack.com/
+
+5. 保存了ssh之后不要了怎么清除?

@@ -45,6 +45,9 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 - 深蓝色的Firefox([Firefox Nightly](https://www.mozilla.org/en-US/firefox/nightly/all/))
 - 改头换面的IE([Microsoft Edge](https://www.microsoft.com/en-us/windows/microsoft-edge))
 
+#### 3.3 UI库和CSS框架
+感觉可以把这两个概念当做同一个概念俩看待,UI库也是对html和css的封装
+
 ### 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 
