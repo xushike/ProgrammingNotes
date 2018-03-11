@@ -1039,3 +1039,5 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 12. 两种视图的比较:[What is the difference between a view, a host view and an embedded view](https://stackoverflow.com/questions/40423772/what-is-the-difference-between-a-view-a-host-view-and-an-embedded-view#)
 
 13. `ng new  项目名称  ---style=scss`修改css预处理器
+
+14. `ng-show`,`ng-cloak`
