@@ -21,3 +21,5 @@
 2. 经典排序算法总结：冒泡、快读、插入、希尔、归并、选择
 3. serrch 编程中的算法
 4. [Codewalk: 生成任意文本：一个go实现的马尔可夫链算法](https://go-zh.org/doc/codewalk/markov/)
+
+5. 排序的维基百科:[https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95#.E7.A9.A9.E5.AE.9A.E6.80.A7](https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95#.E7.A9.A9.E5.AE.9A.E6.80.A7)
