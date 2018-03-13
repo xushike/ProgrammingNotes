@@ -8,6 +8,7 @@
 ### 1 windows
 ### 2 linux
 1. 推荐使用n或nvm安装，但是n模块似乎不支持重定向，也就是不能换源，亲测用n安装在2至8分钟
+
 ## 三. 基础
 ### 1 全局对象global
 十分类似js中的window
@@ -19,11 +20,7 @@
 ## 四 高级
 ### 1. 关于n模块
 n模块是专门用来管理node的
-1. 安装前最好清除一下npm cache，否则可能报错:
-
-    ```bash
-    sudo npm cache clean -f 
-    ```
+1. 安装前最好清除一下npm cache:`sudo npm cache clean -f`,否则可能报错,但是该命令也很危险.
 2. 安装n模块，估计安装3分钟不到：
 
     ```bash

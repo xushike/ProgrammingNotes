@@ -18,7 +18,7 @@ npm是世界上最大的js包管理工具。
 
 ### 2 linux
 #### 2.1 ubuntu
-1. sudo apt install npm
+1. `sudo apt install npm`
 2. 配置源，虽然仓库没有被qiang，但是速度较慢：
     1. 临时使用
     2. 使用cnpm(本质是安装)
@@ -26,6 +26,7 @@ npm是世界上最大的js包管理工具。
     ```bash
     registry =https://registry.npm.taobao.org
     ```
+3. 更新npm:`sudo npm i -g npm`
 
 ### 3 mac
 1. mac下home目录默认没有`.npmrc`文件,使用`npm config set registry https://registry.npm.taobao.org`命令会生成并配置好`.npmrc`,一步到位.
@@ -57,6 +58,7 @@ npm是世界上最大的js包管理工具。
     1. 常用参数
         - `-depth Infinity`:npm@2.6.1k开始，update命令默认只升级最顶层的依赖，即直接的依赖，加上该命令则升级所有依赖
         - `--save`:升级同时将升级的版本号记录到package.json
+
 4. 清除未用到的模块`npm prune`
 
 ### 2 查看命令
@@ -193,9 +195,18 @@ npm的错误报告
 
     当时我的npm版本是3.10.10，升级之后(5.6.0)问题解决
 
-2. "Unexpected end of JSON input while parsing near"
+2. `Unexpected end of JSON input while parsing near`
 
     `npm cache clean --force`
+
+3. ubuntu中使用`sudo npm`命令时提示找不到命令
+
+    因为安全原因,ubuntu执行sudo命令会改变PATH.应该有几种解决办法:
+    1. 方法一:`sudo apt install npm`重新安装npm
+
+4. 如果提示创建xxx文件夹权限被拒绝
+
+    stackoverflow网友说:可能是因为npm有多个实例,可以强行指定用某个实例来运行`sudo /usr/bin/npm install xxx`
     
 ### 2 未解决
 1. 淘宝镜像
@@ -205,3 +216,5 @@ npm的错误报告
 4. 深入 Node 模块的安装和发布；[https://segmentfault.com/a/1190000004221514](https://segmentfault.com/a/1190000004221514)
 5. npm link是什么东西,和angular的ng如何配置使用?
     [CLI tool for Angular](https://github.com/angular/angular-cli)
+
+6. 更新时以.json文件为准还是以更新的 版本为准?
