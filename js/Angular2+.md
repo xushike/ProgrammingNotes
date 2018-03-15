@@ -1074,6 +1074,8 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
     其实例的`createEmbeddedView()`方法会创建一个`ViewRef`(也叫视图,不知道和)的实例`ViewRef_`,ViewRef_的 rootNodes 属性包含了 `<template>`模板中的内容.
 
 ### 2 未解决
+#### 2.1 angular报错:found version 4, expected 3
+#### 2.2 明明安装了相应的包,还是提示:can not find moudle xxxx
 1. 表单验证
 2. 声明周期
 3. npm run start \ maven install \ng server \node xxx等命令的场景和用法？
@@ -1149,3 +1151,6 @@ prerequisites:node and npm.安装命令:`npm install -g @angular/cli`
 
     会不会变成一块一块的加载?
     1. 在项目中如何使用管道?
+16. 相关的库 的版本应该一致才行, 即要么都高要么都低..
+
+    版本匹配怎么弄

@@ -19,7 +19,6 @@
 #### 1.3 改
 #### 1.4 查
 `select * from  xxx`
-
 #### 1.5 group by分组
 在`group by`子句的字段可以不在`select`后面,但是对于在`select`后面的非组函数字段,则必须在`group by`子句中
 1. 按日期分组:`group by char(t.xxx,'yyyy-mm-dd')`
@@ -27,17 +26,14 @@
     上面是按日分组.如果是按周分组是`group by char(t.xxx,'yyyy-IW')`,按月分组则是`group by char(t.xxx,'yyyy-mm')`,按季度是`group by char(t.xxx,'yyyy-Q`,按年是`group by char(t.xxx,'yyyy')`
 
 2. 按时间段分组:``
-
 #### 1.6 having过滤分组后的结果
 放在group by后面
 1. 和where的异同
 
     where子句中不能使用组函数,但是having可以;其他情况可以通用,从sql优化角度看,尽量使用where,因为having是先分组再过滤,而where是先过滤再分组
     
-
 #### 1.7 order by排序
 有个快捷写法:用select后面字段的序号代替字段,比如`select deptno,avg(sal) from emp group by deptno order by 2`,那么里面的2就代表了avg(sal)
-
 
 ### 2 函数
 #### 2.1 分组函数(组函数)
@@ -88,10 +84,16 @@ group by deptno
 #### 3.4 /:执行上一条语句
 #### 3.5 a(--append) [xxx]:增加命令,一定要和[xxx]空两个空格以上
 
-
 ### 4 注释
 1. 单行注释:`--`
 2. 多行注释:`/**/`
+
+### 5 变量
+#### 5.1 
+##### rownum
+(未整理)只用于排序和分页?
+
+## 四 高级
 
 ## 五 经验
 ### 1 总结

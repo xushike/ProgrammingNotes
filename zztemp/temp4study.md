@@ -743,3 +743,14 @@ for (let [i, item] of arr.entries()) {
     https://github.com/angular/material2/issues/4853
 
 398. bootstrap的日期控件,可只选月份:https://eonasdan.github.io/bootstrap-datetimepicker/Installing/
+    1. angular2 可选:https://github.com/atais/ng2-eonasdan-datetimepicker/issues
+    2. https://www.npmjs.com/package/ngx-eonasdan-datetimepicker
+    3. (当前使用的):[https://github.com/vlio20/angular-datepicker](https://github.com/vlio20/angular-datepicker)
+    4. 待研究:[https://musthaan.com/2017/08/28/month-picker-in-angular-2/](https://musthaan.com/2017/08/28/month-picker-in-angular-2/)
+    5. 未看:[http://www.liuchungui.com/2016/10/22/bootstrap-datetimepicker%E9%9B%86%E6%88%90%E5%88%B0angular%E4%BD%BF%E7%94%A8/](http://www.liuchungui.com/2016/10/22/bootstrap-datetimepicker%E9%9B%86%E6%88%90%E5%88%B0angular%E4%BD%BF%E7%94%A8/)
+    6. 未看:[http://blog.csdn.net/bluefish_flying/article/details/75244620](http://blog.csdn.net/bluefish_flying/article/details/75244620)
+399. github gist
+400. flex布局
+    1. 似乎可以很好的跟`ng-content`配合
+401. 数据库的知识要好好补一补
+    1. 三表查询
