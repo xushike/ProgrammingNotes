@@ -1,9 +1,14 @@
 # ReactJS
 ## 一 概述
 ### 1 简介
-#### 较明显的优点
+#### 1.1 较明显的优点
 dead-simple functional component model.
 ### 2 历史
+
+#### 2.1 解决了什么问题
+参考知乎网友的回答,讲得不错:[前端新人的迷茫？](https://www.zhihu.com/question/54440732/answer/139850050).
+大意就是,如何在应用数据变化的时候自动更新用户界面？一般可以通过 MVVM 模式来解决,但是react用的是Virtual DOM,那么区别是什么呢?Virtual DOM是数据变化时重新渲染整个视图,而MVVM是通过数据绑定,本质上是通过事件来解决这个问题.
+
 ### 3 常识
 ### 4 文档
 1. 从1.8万篇文章中脱颖而出45个最棒的 React.js 学习指南（2018版）:[https://zhuanlan.zhihu.com/p/33207643](https://zhuanlan.zhihu.com/p/33207643)
@@ -21,6 +26,7 @@ dead-simple functional component model.
 1. what is one-way data flow?
 2. Flux
 3. [[翻译]在 React 中抛弃 .bind(this)](https://codesky.me/archives/loosing-bind-this-in-react.wind?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)
-## 七 学习
+
+## 七 未整理
 1. [https://www.zhihu.com/question/39825457?sort=created](https://www.zhihu.com/question/39825457?sort=created)
 2. [https://yq.aliyun.com/articles/72028](https://yq.aliyun.com/articles/72028)

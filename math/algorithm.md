@@ -9,6 +9,14 @@
 
 ## 三 基础
 
+## 五 经验
+### 1 LeetCode
+1. [如何正确高效地使用LeetCode？](https://www.zhihu.com/question/26580300)
+1. [LeetCode题解，151道题完整版](https://github.com/soulmachine/leetcode)
+2. [算法珠玑——一个最精简的题库](https://www.gitbook.com/book/soulmachine/algorithm-essentials/details)
+4. [https://github.com/pezy/LeetCode/tree/master/074.%20Sort%20Colors](https://github.com/pezy/LeetCode/tree/master/074.%20Sort%20Colors)
+5. [https://leetcode.com/problems/sort-colors/description/](https://leetcode.com/problems/sort-colors/description/)
+6. [https://www.nowcoder.com/practice/4345e55fdb03498a89a97ec18e62b3ab?tpId=46&tqId=29103&tPage=1&rp=1&ru=/ta/leetcode&qru=/ta/leetcode/question-ranking](https://www.nowcoder.com/practice/4345e55fdb03498a89a97ec18e62b3ab?tpId=46&tqId=29103&tPage=1&rp=1&ru=/ta/leetcode&qru=/ta/leetcode/question-ranking)
 
 ## 六 问题
 1. 傅里叶变换

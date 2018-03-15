@@ -106,19 +106,23 @@ Bulma
 ## 五 经验
 ### 1 前端提速
 
-### 1 前端趋势
+### 2 前端趋势
 [2018 年最值得关注的 JavaScript 趋势](http://36kr.com/p/5110763.html)
 
-#### WebAssembly
+#### 2.1 WebAssembly
 知乎:[如何评论浏览器最新的 WebAssembly 字节码技术？](https://www.zhihu.com/question/31415286)
 
-#### server-side rendering
+#### 2.2 server-side rendering
 服务端渲染
 1. 网友的评价
     1. This allowed for single page applications to be search engine friendly.
 
-### 2 跨站点脚本（XSS）
+### 3 跨站点脚本（XSS）
 除了`<script>`标签,还有其他dom元素和属性允许执行代码,比如`<img onerror="...">`和`<a href="javascript:...">`
+
+### 4 种子库seed
+有一种核心种子库,其他项目都根据这个种子库来创建衍生库.只要种子库保持更新，其他库可以同步保持更新.
+种子库没有业务逻辑的代码,主要是平时开发时所需要的所有脚本，以及npm的一些基本依赖。另外一些共用组件，共用逻辑代码（例如登录验证等等）
 
 ## 六 问题
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
