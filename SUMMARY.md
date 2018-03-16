@@ -112,7 +112,7 @@
     * [3.RegularExpression正则表达式](scriptingLanguage/3.RegularExpression.md)
 * [server服务器相关](server/server.md)
     * [nginx](server/nginx.md)
-* [softwaretest软件测试](softwaretest/README.md)
+* [softwaretest软件测试](softwaretest/softwaretest.md)
     * [JUnit](softwaretest/JUnit.md)
 * [softwareEngineering软件工程](se/se.md)
     * [1.RESTful](se/1.RESTful.md)

@@ -52,3 +52,4 @@ mac地址负责局域网通信，ip地址负责外网通信
 12. [https://my.oschina.net/u/3490860/blog/1613093](https://my.oschina.net/u/3490860/blog/1613093)
 
 13. 内网穿透
+14. EJB和RMI可以不过问网络细节是什么意思？难道不用TCP或者socket了?

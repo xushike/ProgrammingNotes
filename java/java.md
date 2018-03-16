@@ -749,6 +749,7 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 
 ## 七 待整理
 1. 标签就是用来替换java脚本的
+2. jnlp和jar
 
 ### 2 网友的面试
 #### 问题汇总
