@@ -11,7 +11,7 @@
 #### 2 npm
 #### 3 typescript
 #### 4 npm
-#### 5 angular
+#### 5 Angular2+
 #### 6 react
 ##### react
 ##### react-native
@@ -37,5 +37,10 @@
 #### 19 Bootstrap
 #### 20 ionic
 最火的的跨平台混合式app开发框架之一
+
+#### 21 momentjs
+#### 22 material2
+#### 23 HammerJS
+似乎是用于手势支持的
 
 ## 五 问题

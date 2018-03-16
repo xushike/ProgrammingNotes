@@ -754,3 +754,10 @@ for (let [i, item] of arr.entries()) {
     1. 似乎可以很好的跟`ng-content`配合
 401. 数据库的知识要好好补一补
     1. 三表查询
+
+402. 用来展示demo的网站:stackblitz.com/
+403. 普通的sql中可以声明变量吗
+404. yarn 和 angular的关系
+405. angularUI库的研究:[https://segmentfault.com/q/1010000009405513]
+406. 什么样的查询会使表锁住
+407. windows ng serve & npm start

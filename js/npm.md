@@ -1,9 +1,10 @@
 # npm
 [TOC]
 ## 一 概述
-npm是世界上最大的js包管理工具。
-### 1 历史
-### 2 常识 
+npm是世界上最大的js包管理工具。当然还有其他的管理工具,比如yarn.除此之外还可以通过cdn引入包,比如google的:[Google Hosted Libraries](https://developers.google.com/speed/libraries/)
+
+### 2 历史
+### 3 常识 
 1. 相关网址
     - npm被依赖榜单:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
     - npm getting-started:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
