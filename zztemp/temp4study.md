@@ -763,3 +763,15 @@ for (let [i, item] of arr.entries()) {
 407. windows ng serve & npm start
 408. 析构函数
 409. 三大运营商是怎么算短信长度的,中英文一样吗?一条短信最大长度是多少?
+410. qq消息是自动同步的吗?还是不同电脑上有不同的记录?
+411. span和p标签,换行的时候用哪个
+    1. `word-break:break-word;`
+    2. `white-space: normal`
+    3. 换行之后如何适配不同分辨率
+
+412. plsql 的rowid和rownum区别
+    1. 在sqldeveloper中,只有查出rowid才能修改
+
+413. 现在不写存储过程了?
+    1. 存储过程和sql的比较
+    2. 存储过程的原理,如果有很多判断什么的,效率会低吗?
