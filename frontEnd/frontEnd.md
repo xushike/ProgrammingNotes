@@ -62,6 +62,8 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 #### 6.3 设计
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
 
+#### 6.4 其他
+1. [稳定、快速、免费的前端开源项目 CDN 加速服务](http://www.bootcdn.cn/)
 
 ## 三 基础
 ### 1 热更新

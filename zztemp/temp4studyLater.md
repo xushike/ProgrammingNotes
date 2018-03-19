@@ -1,4 +1,9 @@
 # temp4studyLater以后再学的
+## 三 基础
+### 1 已整理
+#### 1.1 学习网站
+1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
+### 2 未整理
 1. NAS
 1. google浏览器的火焰图:[http://www.ruanyifeng.com/blog/2017/09/flame-graph.html](http://www.ruanyifeng.com/blog/2017/09/flame-graph.html)
 2. websocket
