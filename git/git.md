@@ -228,6 +228,16 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 同时操作本地和远程的分支:...
 
 #### 6.4 分支合并
+#### 6.5 分支命名
+大概围绕以下几种来命名
+
+![](../picture/git/git-branch-name.jpg)
+
+- master:主分支
+- hotfix:热修复
+- release:发布分支
+- develop:开发
+- feature:功能分支
 
 ### 7 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
@@ -402,3 +412,4 @@ RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 
 5. 保存了ssh之后不要了怎么清除?
 6. 如何查看其他人提交的更新
 7. gitlab的clone需要权限吗
+8. feature分支和普通分支的区别是啥?
