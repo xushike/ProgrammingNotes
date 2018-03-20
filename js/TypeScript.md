@@ -29,11 +29,14 @@ Works with all the popular frameworks.
 ### 1 npm安装(推荐)
 1. `npm install typescript -g`
 2. 用`tsc -v`查看是否正确安装了typescript
+
 ### 2 配置
 1. 大型项目中使用`tsconfig.json`来配置,很方便.
+
 ### 3 常用命令
 1. 编译成js文件:`tsc xxx.ts...`,默认覆盖已有的
     1. 参数`--watch`:每次保存时会自动用增量编译(incremental compilation)的方式编译ts文件
+
 ## 三 基础知识
 ### 1 数据类型
 #### 1.1 基础类型(和js几乎相同，除了是静态)
@@ -113,6 +116,8 @@ Works with all the popular frameworks.
 #### 1.2 高级类型
 
 ### 2 变量
+注意:
+ts中声明一个变量(不管什么类型),默认值是undefined
 
 ### 3 interfaces接口
 - Interfaces describe the shape of your JS objects.

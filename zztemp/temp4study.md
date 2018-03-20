@@ -1,5 +1,4 @@
 # temp4study
-1. http的笔记
 1. tty -s
 2. 2009-11-10 23:00:00 UTC
 3. studyGO放go的一些实用程序,比如反转字符
@@ -15,16 +14,8 @@ const (
 
 7. Go playground 中的时间总是从 2009-11-10 23:00:00 UTC 开始， 如何校验这个值作为一个练习留给读者完成
 8. 事件冒泡
-9. go的blank identifier
-10. angular@ViewChild
-11. querySelector的用法终于搞懂了，但是似乎并没有什么用
-12. element和node的区别
-13. 必须在两天内激活windows才能继续使用？
+
 14. git如何查看远程的提交记录？
-15. 发文字被转码怎么办
-16. 我们项目中用到了jquery了吗
-17. developers.google.com
-18. querySelector笔记
 19. 获取事件的几种方法：
     1. 原生的js似乎只能遍历所有属性来判断
         1. http://blog.csdn.net/theforever/article/details/6029382
@@ -61,11 +52,9 @@ const (
 44. libreoffice显示目录
 45. 代码生成器和项目命名规范
 46. not all go tools are avaliable on the $GOPATH
-47. oracle的两条竖线
 48. 递归查询和插入
 49. oracle的价格
 50. 项目中的*号和go的星号和angular的星号
-51. 如果有两个db怎么办，框架里db的逻辑是怎么样的
 52. oracle函数：
 	CREATE OR REPLACE FUNCTION wlwk_f_split(p_str       IN VARCHAR2,
                                        p_delimiter IN VARCHAR2 default (',') --分隔符，默认逗号
@@ -104,20 +93,17 @@ BEGIN
 END;
 
 55. http状态码
-57. 如何在有程序运行的情况下清shell屏
 58. 各种字符串和反斜杠的处理
 59. ele["contend"]和ele.content和ele.()等
 60. 试试在外面xshell可不可以连接到里面
-61. 内置的内置的make函数
 62. 复制打包等命令
 63.         let params = Object.assign({}, args || this.oldParams);
 64. 为什么虚拟机关ubuntu经常停在黑屏
 65. oracle里我之前写那个，如果把agent_id写到里面和写到外面有什么区别？效率上来讲？先筛选再连接是不是更快?
-66. 四川500个机场的新闻
 67. js遍历对象和遍历数组等
 
 68. 我们项目中，getFirstRow和scala和getrows等的区别，以及获取回来的值的获取方法？
-69. analys tool missing
+
 70. 远程如何连到局域网内的机子？
 71. source 就是. ?
   [http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral](http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral)
@@ -125,7 +111,6 @@ END;
 72. go get显示copy状态
 73. linux文件安装在什么位置比较好
 74. 同时执行多条命令怎么搞，连接多个命令用什么
-75. 公司项目中组件名字用`-`不要用`.`？
 76. go里的 interface{}
     1. recover()和匿名函数
     1. goinaction说的类型的状态是什么意思
@@ -189,18 +174,14 @@ END;
 101. ts
     1. number太大了变成e+的怎么办
         目前代码中似乎是用字符，然后正则表达式验证，而不用number类型
-101. ngfor的顺序是什么样的
+
 102. angular
     1. 组件自身可以通过`[组件名].value`来获取绑定的值，为什么其他组件不能这样获取
-    2. #showSaleDiscountBlock的笔记
     3. ngmoudle和value的关系
-    4. 双向绑定的select，修改value值，会自动选中吗？如果修改为""呢？
-    5. name和`#`的关系是什么
     6. 设置某个组件只能看不能改
 
 103. 银行卡钱不够了会怎么样
 104. `||`和`&&`的多个连接是什么算的
-105. vscode翻页
 106. linux任何管理器和强制关闭某程序，以及温柔关机
 107. linux`clear`可以清空命令行,而ctrl+L不行
 108. liux如何命令行中打开图片，以及像mac那样命令行和文件夹互相打开
@@ -231,19 +212,14 @@ END;
     5. js临时环境搭建
 
 133. `don't use underscores in Go names; var card_num should be cardNum`
-144. vscode移到行首行位快捷键
 145. axure
 146. 图片后缀名的大写和小写会影响显示？比如代码里是jpg，但是图片实际是JPG，这样本地显示出来了，但是线上显示不出来。
 147. es5的`export class StringUtility...`和`export function format`
 148. linux的install.log
-149. 网页当页内跳转如何回到前一个位置
 150. linux多个root登录会怎么样？
 151. windows中按时间排序,批量修改和复制移动等等.
 152. 生产者消费者和订阅的区别
-153. oracle外面的join后可以不跟条件吗
 154. oracle多个and和or
-156. angular的Input()和ViewChild()
-157. constructor和ngoninit、ngAfterViewInit\FormControl
 158. TSlint
 159. x7f-xff中的￥
 160. js string默认取值是什么
@@ -764,10 +740,6 @@ for (let [i, item] of arr.entries()) {
 408. 析构函数
 409. 三大运营商是怎么算短信长度的,中英文一样吗?一条短信最大长度是多少?
 410. qq消息是自动同步的吗?还是不同电脑上有不同的记录?
-411. span和p标签,换行的时候用哪个
-    1. `word-break:break-word;`
-    2. `white-space: normal`
-    3. 换行之后如何适配不同分辨率
 
 412. plsql 的rowid和rownum区别
     1. 在sqldeveloper中,只有查出rowid才能修改

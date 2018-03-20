@@ -18,20 +18,14 @@
         提供控制台标准输出,向stdout和stderrs输出字符.大部分用法和js的console一样.
 
 ## 四 高级
-### 1. 关于n模块
-n模块是专门用来管理node的
-1. 安装前最好清除一下npm cache:`sudo npm cache clean -f`,否则可能报错,但是该命令也很危险.
-2. 安装n模块，估计安装3分钟不到：
+### 1 关于n模块
+n模块是专门用来管理node的,不过不支持win系统
+1. 安装前最好清除一下npm cache:`sudo npm cache clean -f`,否则可能报错,但是该命令也很危险(慎用).
+2. 安装n模块，估计安装3分钟不到：`sudo npm install -g n`
+3. 用n升级node的版本：
+    - `sudo n x.x.xx`:升级到制定版本
+    - `sudo n stable`:升级到最新稳定版
 
-    ```bash
-    sudo npm install -g n
-    ```
-3. 用n升级node到制定版本：
-
-    ```bash
-    sudo n x.x.xx   #升级到制定版本
-    sudo n stable   #升级到最新稳定版
-    ```
 ## 六 问题
 1. 网友:node8之后性能飙升.
 2. [Node.JS读取中文TXT编码文件显示乱码问题解决方案](http://ourjs.com/detail/5a195f8f3506837194998b76)
