@@ -775,3 +775,10 @@ for (let [i, item] of arr.entries()) {
 413. 现在不写存储过程了?
     1. 存储过程和sql的比较
     2. 存储过程的原理,如果有很多判断什么的,效率会低吗?
+414. update可以left join吗
+    1. query的时候,如果字段没有获取到会报错吗,还是返回null?
+
+415. golang input,interface和map,slice,json,int等的转换
+    
+416. res的值是啥,如果操作了条返回啥
+    1. 数据交换时的数据类型
