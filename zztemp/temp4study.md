@@ -754,3 +754,68 @@ for (let [i, item] of arr.entries()) {
     
 416. res的值是啥,如果操作了条返回啥
     1. 数据交换时的数据类型
+
+417. js中有go的那种格式化打印方法吗
+418. golang
+    1. map[string]interface{}{}中取值只能写成`input["xxxx"]`而不能写成`input.xxx`?其他获取方法呢?
+    2. go判断数据类型
+    3. interface类型如何和其他类型比较?go 有类型声明吗?
+    4. 项目中待研究代码
+        
+        ```go
+        //Convert2Int 转换为int类型
+        func Convert2Int(i interface{}) (int, error) {
+            switch i.(type) {
+            case int:
+                return i.(int), nil
+            case string:
+                return strconv.Atoi(i.(string))
+            default:
+                return strconv.Atoi(fmt.Sprint(i))
+            }
+        }
+        ```
+    5. `def ...int`是什么意思
+    6. 判断数据类型的方法
+    7. go install的细节(比如再main同级目录还是上一层执行该命令,执行了之后默认会覆盖安装吗);可以多个src打包吗?
+
+419. git各种版本回退的笔记,这样以后可以快速查笔记来操作
+    1. git checkout会丢弃工作区的更改?
+    2. 工作区等的概念
+
+420. 项目中版权所有的那个页面怎么做的
+    1. 项目中css字体等cdn的笔记,如
+
+        ```css
+        @font-face {font-family: "iconfont";
+
+            src: url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.eot?t=1511252675294'); /* IE9*/
+
+            src: url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.eot?t=1511252675294#iefix') format('embedded-opentype'), /* IE6-IE8 */
+
+            url('data:application/x-font-woff;charset=utf-8;base64,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') format('woff'),
+
+            url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.ttf?t=1511252675294') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+
+            url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.svg?t=1511252675294#iconfont') format('svg'); /* iOS 4.1- */
+
+        }
+        ```
+
+421. 网页怎么截长屏
+423. 如何自定义项目中的错误,还是说msg返回:
+
+    ```go
+    err = fmt.Errorf("ICCID长度不对,iccid:%+v", iccid)
+    msg = err.Error()
+    return
+    ```
+
+424. 如何切图,给图片换颜色大小啊之类的
+425. 如何系统学习css
+    1. mdn的css
+    2. vscode上的css插件
+
+426. 为什么需要框架
+    1. angular的特性
+    2. 渐进式应用

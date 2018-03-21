@@ -906,14 +906,17 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 
 ## 六 问题
 ### 1 已解决
-1. 关于go中的自增自减
+#### 1.1 关于go中的自增自减
+自增语句i++给i加1；这和i += 1以及i = i + 1都是等价的。对应的还有i--给i减1。它们是语句，而不像C系的其它语言那样是表达式。所以j = i++非法，而且++和--都只能放在变量名后面，因此--i也非法。
 
-    自增语句i++给i加1；这和i += 1以及i = i + 1都是等价的。对应的还有i--给i减1。它们是语句，而不像C系的其它语言那样是表达式。所以j = i++非法，而且++和--都只能放在变量名后面，因此--i也非法。
-2. 如何查看内建函数的源代码
-    参考[Built-In source code location](https://stackoverflow.com/questions/18512781/built-in-source-code-location).大意就是运行时会根据类型等来调用不同的函数(在"cmd/compile/internal/gc/typecheck.go"),内建函数可以看做是多个函数的组合,想看代码的话就只有分析可能调用的方法慢慢找.
+#### 1.2 如何查看内建函数的源代码
+参考[Built-In source code location](https://stackoverflow.com/questions/18512781/built-in-source-code-location).大意就是运行时会根据类型等来调用不同的函数(在"cmd/compile/internal/gc/typecheck.go"),内建函数可以看做是多个函数的组合,想看代码的话就只有分析可能调用的方法慢慢找.
 
-3. 判断变量的类型
-    1. `reflect.TypeOf()`
+#### 1.3 判断变量的类型
+1. `reflect.TypeOf()`
+
+#### 1.4 常见错误:err is shadowed during return
+作用域问题,在if等语句内部声明的err覆盖了外面的err,当内部执行完毕之后外部的err并没有变.
 
 ### 2 未解决
 1. 因式分解
