@@ -217,17 +217,36 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
 
 ### 6 分支管理
-分支可以说是git最核心的内容了
+分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
+#### 6.0 未整理
+1. 工作区的修改和分支不绑定?意思我当前分支有10个修改,创建新分支并push之后,再切回来这10个修改就没了,
+2. git add是暂存吗
+3. git log是显示所有分支的记录?
+4. git add和stash的区别
 #### 6.1 创建分支
-1. 新建分支`git branch -b [branch_name]`
+查看分支:`git branch`,当前分支钱会有一个星号
+新建分支:`git branch xxx`,`git branch -b [branch_name]`
+创建并切换分支:`git checkout -b dev`,等于`git branch xxx`加`git checkout xxx`
+
 
 #### 6.2 切换分支
+切换分支:`git checkout xxx`
+
+#### 6.3 缓存修改
+当某个分支改到一半需要切换到另一个分支时,有两种解决方法:commit和stash,如果没改完,更推荐使用stash的方式.
+创建缓存:`git stash`会将上一个commit之后的所有内容缓存起来并生成一个hash版本值,或者使用`git stash save “修改的信息"`缓存版本,其中"修改的信息"就是版本值.
+查看缓存:使用`git stash list`可以查看缓存版本信息.
+恢复缓存:然后使用`git stash pop`可以从最新的缓存版本恢复,有多个缓存版本时使用`git stash apply stash@{0}`指定版本中恢复.注意缓存是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是缓存时带上当前分支的信息.
+
 #### 6.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
+删除分支:`git branch -d dev`
 只删除远程的分支:....
 同时操作本地和远程的分支:...
 
 #### 6.4 分支合并
+合并到当前分支:`git merge xxx`命令用于合并xxx分支到当前分支,默认是快进模式(Fast-forward)
+
 #### 6.5 分支命名
 大概围绕以下几种来命名
 
@@ -420,3 +439,5 @@ RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 
 6. 如何查看其他人提交的更新
 7. gitlab的clone需要权限吗
 8. feature分支和普通分支的区别是啥?
+
+9. [廖雪峰的git](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840202368c74be33fbd884e71b570f2cc3c0d1dcf000),有空整理完

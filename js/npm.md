@@ -10,6 +10,8 @@ npm是世界上最大的js包管理工具。当然还有其他的管理工具,�
     - npm getting-started:[https://www.npmjs.com/browse/depended](https://www.npmjs.com/browse/depended)
 
 ## 二 安装配置
+换源之后,想把源换回去用:`npm config set registry http://registry.npmjs.org`
+
 ### 1 win
 1. 直接安装nodeJS，里面带有npm
 2. 配置

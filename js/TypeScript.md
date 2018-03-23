@@ -144,38 +144,39 @@ ts中声明一个变量(不管什么类型),默认值是undefined
     speak(ice_cream);
     ```
 ### 4 类
-和Java,C#中的类非常相似，包括了继承，抽象类，接口实现，setters/getters 方法等
-1. 类,如下
+#### 4.1 类
+和Java,C#中的类非常相似，包括了继承，抽象类，接口实现，setters/getters 方法等,如下
+```typescript
+class Menu {
+    items: Array<string>;  
+    pages: number;       
 
-    ```typescript
-    class Menu {
-        items: Array<string>;  
-        pages: number;       
+    constructor(item_list: Array<string>, total_pages: number) {
+    this.items = item_list;    
+    this.pages = total_pages;
+    }
 
-        constructor(item_list: Array<string>, total_pages: number) {
-        this.items = item_list;    
-        this.pages = total_pages;
-        }
-    
-        // Methods
-        list(): void {
-        console.log("Our menu for today:");
-        for(var i=0; i<this.items.length; i++) {
-            console.log(this.items[i]);
-        }
-        }
-    
-    } 
-    
-    var sundayMenu = new Menu(["pancakes","waffles","orange juice"], 1);
-    
-    sundayMenu.list();
-    ```
-2. 继承
+    // Methods
+    list(): void {
+    console.log("Our menu for today:");
+    for(var i=0; i<this.items.length; i++) {
+        console.log(this.items[i]);
+    }
+    }
 
-3. 类中的静态属性和普通属性的区别
+} 
 
-    通过转换后的ES5代码可知,类中的静态变量是属于构造函数的，而成员属性是属于实例.
+var sundayMenu = new Menu(["pancakes","waffles","orange juice"], 1);
+
+sundayMenu.list();
+```
+##### 继承
+##### 类中的静态属性和普通属性的区别
+通过转换后的ES5代码可知,类中的静态变量是属于构造函数的，而成员属性是属于实例.
+
+#### 4.2 参数
+##### 修饰符
+- readonly修饰符:将属性设置为只读的。 只读属性必须在声明时或构造函数里被初始化。
     
 ### 5 函数
 ### 6 泛型
@@ -236,3 +237,5 @@ console.log(typeof arrayFromString[0]);
 
 ## 七 学习
 1. [http://web.jobbole.com/87535/](http://web.jobbole.com/87535/)
+
+### 1 可选参数必须放到必须参数的后面

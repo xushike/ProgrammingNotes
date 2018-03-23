@@ -819,3 +819,35 @@ for (let [i, item] of arr.entries()) {
 426. 为什么需要框架
     1. angular的特性
     2. 渐进式应用
+427. 自连接用于什么样的查询?
+    1. 里面的表名可以和外面一样吗
+    2. 如果id是在自增的,那么按id排序和按时间排序效果是一样的,而且比较数字的话更快?
+
+428. 项目中用户表那几个做下笔记
+429. 熟练使用分支
+    不然多个切换时很麻烦
+    1. 本地未add,未commit,未push的在新建和切换branch下的表现
+
+430. java isletter我源码中的`<<` 的用法
+    1. go 中呢
+
+431. 为什么要使用angular 框架
+432. 把config写成一个公共的,然后其他都是引用?
+433. js和angualr的import是复制吗
+    1. 把项目中的commonConfig中写上`min:this.query.startTime`会怎么样?和js函数的那啥有没有关系
+
+434. `xxx.d.ts`是什么
+
+435.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
+`Your local changes to the following files would be overwritten by checkout`
+    `Please, commit your changes or stash them before you can switch branches. Aborting`
+436. ll
+437. git stash之后变成九十多为啥
+438. 每层目录都可以有.git
+439. 测试普通的类可以注册为服务然后依赖注入吗
+
+440.  insert select
+441. [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
+442. 为angular和相关的笔记单独建一个文件夹
+443. angular和js多出来的import会影响代码的执行吗
+444. 
