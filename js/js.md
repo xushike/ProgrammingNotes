@@ -313,3 +313,10 @@ var 一切=undefined；
 12. 网友: js 引入了 async 和 await ，层层回调的写法，马上就要成为过去式了。
 
 ## 七 未整理
+1. js模块化
+    1. [https://www.zhihu.com/question/34460535](https://www.zhihu.com/question/34460535)
+    2. 解决方案
+        1. webpack
+        2. CommonJS
+        3. ES6
+        4. AMD / CMD
