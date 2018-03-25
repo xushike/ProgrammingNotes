@@ -69,6 +69,7 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 ### 1 热更新
 
 ## 四 高级
+### 1 已整理
 1. 知乎张克军
 
     参考链接:[https://www.w3ctech.com/topic/983](https://www.w3ctech.com/topic/983)
@@ -80,29 +81,18 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 
     Angular 约束多，擅长复杂中后台场景和多人协作。Vue 灵活，适用于简单业务快速迭代（当然也有 Vue 做中后台的）。React 组件化设计的好，可以实现比较好的组件生态进行复用。对于这些框架，你只需要基于现有的业务体系和开发者经验，做好最佳的技术方案选型即可。在某些场景下甚至 jQuery 反而是更好的技术选型。
 
-### 1 前端UI框架
-#### angular
-ng-bootstrap、OnsenUI 和 material2 等
-
-#### vue
-bootstrap-vue、vue-material、Element UI、Mint UI 等
-
-#### 中立UI框架
-Bulma
-
 ### 2 前端的常见概念
-
-#### 前端工程化体系
-#### 前端组件化
-#### 异步加载
-#### 样式预处理器
-#### 代码自动review工具
-#### 热更新
+#### 2.1 前端工程化体系
+#### 2.2 前端组件化
+#### 2.3 异步加载
+#### 2.4 样式预处理器
+#### 2.5 代码自动review工具
+#### 2.6 热更新
 给BS架构的页面加载提速的终极方案就是CDN,而CS架构不存在加载压力,但是更新不灵活,所以需要前端热更新
 
-#### 懒加载
+#### 2.7 懒加载(Lazy loading)
 
-#### 面包屑导航
+#### 2.8 面包屑导航
 来自于一个故事(略).面包屑导航的作用是告诉访问者他们目前在网站中的位置以及如何返回.在许多关于网站用户使用体验的调查报告中也得出，如果超过3次点击，访客还没有找到需要的信息，那么有大约80%的访客会离开网站。
 
 ## 五 经验
@@ -126,7 +116,18 @@ Bulma
 有一种核心种子库,其他项目都根据这个种子库来创建衍生库.只要种子库保持更新，其他库可以同步保持更新.
 种子库没有业务逻辑的代码,主要是平时开发时所需要的所有脚本，以及npm的一些基本依赖。另外一些共用组件，共用逻辑代码（例如登录验证等等）
 
+
+### 4 性能测量(待实践)
+[Chrome 开发工具的网络性能页](https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing)是开始学习度量性能的好地方。
+
+[WebPageTest工具](https://www.webpagetest.org/)是另一个不错的选择，它能帮你验证你的部署是否成功了。
+
 ## 六 问题
+### 1 已解决
+#### 1.1 浏览器未响应
+原因可能有很多,但是最先应该考虑的是js代码:在浏览器环境中，一些代价高昂的计算会导致糟糕的用户体验，因为一个页面的用户界面无响应多数是由于在运行js代码.
+
+### 2 未解决
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)
 3. 异步事件,哪些事件是异步的

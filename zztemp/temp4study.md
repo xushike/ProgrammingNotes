@@ -414,7 +414,6 @@ let val = input.card_id
 
 246. 什么样的产品可以放放同一个池子？
 247. js 的any类型可以这样赋值`a.xxx=xx`，但是对象只能这样赋值`a["xxx"]=xx`？
-248. gitkeep
 249. 项目中的前端代码生成了新的之后发布到线下服务器不用强制刷新页面就能获取吗?我当时先启动的后端,然后生成 的前端,结果没用生效,强制刷新也没有用;然后先复制好前端再启动后端似乎就行了.(待测试)
 250. ts中这样写为什么报错
 ```typescript
@@ -707,7 +706,6 @@ for (let [i, item] of arr.entries()) {
 389. sum over() 不能和group by一起用?
 390. ubuntu `whereis`
 391. package-lock.json作用
-392. .gitkeep
 393. 源文本中存在无法识别的标记
 
     @angualr/cli
@@ -849,4 +847,5 @@ for (let [i, item] of arr.entries()) {
 440.  insert select
 441. [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
 442. 为angular和相关的笔记单独建一个文件夹
-443. angular和js多出来的import会影响代码的执行吗
+
+

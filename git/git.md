@@ -225,23 +225,30 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 4. git add和stash的区别
 #### 6.1 创建分支
 查看分支:`git branch`,当前分支钱会有一个星号
-新建分支:`git branch xxx`,`git branch -b [branch_name]`
-创建并切换分支:`git checkout -b dev`,等于`git branch xxx`加`git checkout xxx`
 
+新建分支:`git branch xxx`,`git branch -b [branch_name]`
+
+创建并切换分支:`git checkout -b dev`,等于`git branch xxx`加`git checkout xxx`
 
 #### 6.2 切换分支
 切换分支:`git checkout xxx`
 
 #### 6.3 缓存修改
 当某个分支改到一半需要切换到另一个分支时,有两种解决方法:commit和stash,如果没改完,更推荐使用stash的方式.
+
 创建缓存:`git stash`会将上一个commit之后的所有内容缓存起来并生成一个hash版本值,或者使用`git stash save “修改的信息"`缓存版本,其中"修改的信息"就是版本值.
+
 查看缓存:使用`git stash list`可以查看缓存版本信息.
+
 恢复缓存:然后使用`git stash pop`可以从最新的缓存版本恢复,有多个缓存版本时使用`git stash apply stash@{0}`指定版本中恢复.注意缓存是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是缓存时带上当前分支的信息.
 
 #### 6.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
+
 删除分支:`git branch -d dev`
+
 只删除远程的分支:....
+
 同时操作本地和远程的分支:...
 
 #### 6.4 分支合并
@@ -319,8 +326,11 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 ### 2 本地和远程的关联
 #### 2.1 本地和远程仓库的关联
 如果本地和远程都建好了仓库,则可以:`git remote add origin https://github.com:xushike/xxx.git`来关联,其中的origin是远程默认的名字，也可以换成其他名字.
+
 查看关联仓库的详细信息(包括分支的关联):`git remote show xxx`
+
 取消关联:`git remote remove origin`
+
 注意:每次remove origin再重新关联远程仓库之后,都需要重新推送并关联分支.
 
 #### 2.2 分支关联
@@ -371,6 +381,11 @@ git merge upstream/master
 2. 然后pull(如果没有commit就pull，当pull和本地修改的文件冲突时会提示“和本地文件有冲突，需要先commit”，此时先commit然后pull),
 3. 如果pull后文件冲突，需要解决冲突
 4. 然后push
+
+### 3 .gitkeep
+它不是官方git的一部分,而是大家约定成俗的一种习惯.因为linus最开始把git的快照设计成只由文件组成,导致git不跟踪空文件夹(算是设计失误吧),然后想到我们能用假文件来占位,所以就没有改它.
+
+后来大家想跟踪空文件夹,就在里面放一个`.gitkeep`文件,会被解析成占位符.当然,放其他文件(`.nofile`等随意文件)也可以,或者放`.gitignore`文件也可以
 
 ## 六 问题
 ### 1 已解决

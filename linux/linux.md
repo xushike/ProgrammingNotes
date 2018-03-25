@@ -33,6 +33,7 @@ shift+insert:粘贴
 1. 查询linux命令：[http://man.linuxde.net/](http://man.linuxde.net/)
 2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
 3. 鸟哥的linux私房菜(推荐)：[http://linux.vbird.org/linux_basic/0320bash.php#bash](http://linux.vbird.org/linux_basic/0320bash.php#bash)
+
 #### 1.4 网友推荐的linux书籍(按学习顺序排列)
 1. 某个博客
     1. 《鸟哥的Linux私房菜：基础学习篇》
@@ -157,6 +158,9 @@ pbcopy < myFile.txt
 #### 1.13 关于linux的普通文件(regular file)
 #### 1.14 关于linux的元键
 现在键盘上,一般alt代表元键,如果是在终端中,则`esc`也可当做`alt`来用
+
+#### 1.15 终端，Shell，“tty”和控制台（console）有什么区别
+参考知乎网友的回答:[终端，Shell，“tty”和控制台（console）有什么区别？](https://www.zhihu.com/question/21711307)
 
 ## 二. 安装配置
 
@@ -670,3 +674,5 @@ dpkg -L package #列出与该包关联的文件
 21. linux cheat
 22. [命令行的艺术:linux bash命令大全详解](http://ourjs.com/detail/5923d49cf1239006149616a6)
 23. `init.d`
+
+24. linux tty是啥
