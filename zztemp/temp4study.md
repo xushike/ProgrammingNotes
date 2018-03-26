@@ -839,18 +839,13 @@ for (let [i, item] of arr.entries()) {
 435.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
 `Your local changes to the following files would be overwritten by checkout`
     `Please, commit your changes or stash them before you can switch branches. Aborting`
-436. ll
 437. git stash之后变成九十多为啥
 438. 每层目录都可以有.git
 439. 测试普通的类可以注册为服务然后依赖注入吗
 
 440.  insert select
 441. [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
-442. 为angular和相关的笔记单独建一个文件夹
-443. excel最多多少条
+442. html 语义化标签,比如nav
 
-444. vscode Angular language plugin
 
-    提示做得还可以,还会提示类中不存在属性的错误
 
-445. 看下大项目的分支是怎么命名的?
