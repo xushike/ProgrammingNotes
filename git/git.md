@@ -223,10 +223,13 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 2. git add是暂存吗
 3. git log是显示所有分支的记录?
 4. git add和stash的区别
+5. git stash不会缓存新建的文件或二进制文件?
 #### 6.1 创建分支
 查看分支:`git branch`,当前分支钱会有一个星号
 
-新建分支:`git branch xxx`,`git branch -b [branch_name]`
+新建分支:
+- `git branch xxx`:复制当前分支的所有commit,工作区的文件不变
+- `git branch -b [branch_name]`
 
 创建并切换分支:`git checkout -b dev`,等于`git branch xxx`加`git checkout xxx`
 

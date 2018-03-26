@@ -847,5 +847,10 @@ for (let [i, item] of arr.entries()) {
 440.  insert select
 441. [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
 442. 为angular和相关的笔记单独建一个文件夹
+443. excel最多多少条
 
+444. vscode Angular language plugin
 
+    提示做得还可以,还会提示类中不存在属性的错误
+
+445. 看下大项目的分支是怎么命名的?
