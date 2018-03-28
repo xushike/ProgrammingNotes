@@ -847,5 +847,13 @@ for (let [i, item] of arr.entries()) {
 441. [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
 442. html 语义化标签,比如nav
 
+    语义化标签有自带样式吗
 
+443. sql的in适用于任何数据类型吗(似乎是)
 
+    sql的""和num可以直接比较吗
+444. 本地分支和远程分支的关联,新建之后怎么关联远程分支?
+
+    新建分支push会怎么样?
+445. in这种查询,可不可以传参数去表示呢
+446. js中字符串是final吗?
