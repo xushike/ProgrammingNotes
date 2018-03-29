@@ -4,6 +4,9 @@
 该笔记主要记录es6新特性,以后可能会和js笔记合并
 ### 2 历史
 ### 3 常识
+#### 3.1 ECMAScript 2015,ES6和JS6的区别
+一般来讲,可以把这三个看成一个东西.
+
 ### 4 文档
 ### 5 网站
 1. 阮一峰es6:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)
