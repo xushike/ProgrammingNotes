@@ -58,7 +58,12 @@ group by deptno
 #### 2.3 日期函数
 ##### ADD_MONTHS(date,number_months):增减月份
 
+#### 2.4 字符串相关函数
+##### lengthb()和length()
+- lengthb():计算string所占的字节长度
+- length():计算string所占的字符长度
 
+对于单字节字符,上面两个的结果是一样的;一个汉字在Oracle数据库里占多少字节跟数据库的字符集有关，UTF8时，长度为三;可以用`length(‘string’)=lengthb(‘string’)`判断字符串是否含有中文.
 
 #### 2.1 decode
 流程控制,效果类似于`if else`

@@ -95,6 +95,9 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 #### 2.8 面包屑导航
 来自于一个故事(略).面包屑导航的作用是告诉访问者他们目前在网站中的位置以及如何返回.在许多关于网站用户使用体验的调查报告中也得出，如果超过3次点击，访客还没有找到需要的信息，那么有大约80%的访客会离开网站。
 
+### 3 浏览器开发者工具
+
+
 ## 五 经验
 ### 1 前端提速
 
@@ -156,8 +159,6 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
         - Quicktime (Mac 10.x)
         - Jing (Windows/Mac)
 
-15. 锚文本和超链接的区别?
-
 16. 伪类不能放进内联样式表?
 17. 也可换行?
 
@@ -167,3 +168,5 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
     display : table;
     }
     ```
+
+18. https://www.moocbaba.com/product-tag/99
