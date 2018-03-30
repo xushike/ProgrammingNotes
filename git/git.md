@@ -15,10 +15,10 @@ git开源免费的分布式版本控制系统。除了版本,最核心的操作�
 #### 3.2 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)
 
-#### 3.3 git的ssh和https
+#### 3.3 git支持多种协议:https,git和ssh
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 
-##### 3.4 凭证助手credential helper(待测试)
+#### 3.4 凭证助手credential helper(待测试)
 用于存储git的凭证,Git现在默认包含如下几个helper:
 - Cache
     
@@ -56,101 +56,189 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 作者是linus,他说过他是个自负的混蛋,所有项目都以他的名字命名,先有linux,现在是git.
 
 ### 4 文档
+
 ### 5 网站
-1. git的官方中文book,但是有些内容并不生效:[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
+1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
 
 ## 二 安装配置
 ### 1 win
+#### 1.1 安装
 1. 下载git for windows
 2. 安装过程大同小异，注意设置git环境的时候选择第二项"use git from the windows command prompt"，如果选第一项就不能在cmd中使用git，要自己去配置path。自己配置的时候添git安装目录下的bin目录或者cmd目录都可以
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
 
     ```bash
     #注意没配置的话会报错:unable to auto-detect email address
-    #查看git user.name和email
+    #查看git的user.name和email
     git config user.name
     git config user.email
     #配置用户级的git user.name和email
-    git config --global user.name "xxx"
-    git config --global user.email "xxx"
+    git config --global user.name "<用户名>"
+    git config --global user.email "<邮箱>"
     ```
     为每个项目单独配置:(待补充)
 
-4. 配置ssh Key(可选)
+#### 1.2 配置ssh Key(可选)
+主要用于ssh方式的秘密吗登录.    
+1. 查看目录下是否有公钥
+    
+    SSH 公钥默认储存在账户的主目录下的 `~/.ssh` 目录,进入该目录查看是否有`xxx`和 `xxx.pub` 来命名的一对文件，这个 `xxx`通常就是`id_dsa`或`id_rsa`.有`.pub`后缀的文件就是公钥，另一个文件则是密钥。
 
-    主要用于ssh方式的秘密吗登录.    
-    1. 查看目录下是否有公钥
+2. 没有则交互式创建:`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`,会在`~/.ssh`下生成公钥和密钥.或者直接输入`ssh-keygen`也行,但是选项有点多.
+
+    会要求输入密码,应该是用于ssh登录服务器命令行界面的(待确认),所以只是使用git的话可以不用输入.
+
+3. 添加到ssh-agent(多账户时才用)
+
+    比如上面新建了个人的key,如果我还需要再创建一个公司的key,可以:
+    1. 创建ssh key:`ssh-keygen -t rsa -b 4096 -f $home/.ssh/company -C "wdwangtw@gmail.com"`
+    2. 开启ssh-agent:`eval  "ssh-agent -s"`
+    3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`,如果报错"could not open a connection to your authentication agent",则输入`ssh-agent bash`,再输入`ssh-add ~/.ssh/conpany/xxx`
+    4. 创建或修改ssh-agent的配置文件(默认是在`~/.ssh`目录下的`config`文件)
+
+        ```
+        Host myhost personal 
+        User xushike
+        HostName github.com
+        IdentityFile ~/.ssh/id_rsa
+
+        Host myhost company
+        User wdwangtw
+        HostName github.com
+        IdentityFile ~/.ssh/company
+        ```
+
+        其格式为:
+
+        ```
+        Host myhost USER_HOST     ;USER_HOST为自定义host名字，如上面的personal和company
+        User USER_NAME                 ;USER_NAME为自定义名称
+        HostName SERVER_HOST   ;SERVER_HOST为实际服务器host，此时为GitHub
+        IdentityFile PRIVATE_KEY      ;PRIVATE_KEY为本地key
+        ```
+
+        当再次clone一个新Repos时，如果其ssh地址为git@github.com:wdwangtw/xxx.git，使用git clone git@company:wdwangtw/TestUserwd.git即可clone到本地（注意github.com换成了自定义的company），并且push时也不用输入任何验证。
+    5. 告诉ssh 允许 ssh-agent 转发(可选)
+
+        加入我有a和b两个服务器的钥匙,此时在a服务器上想不输入密码的连到b服务器,就需要配置转发功能.添加`ForwardAgent yes`到`config`文件中.然后每个服务器都需要这样设置.
         
-        SSH 公钥默认储存在账户的主目录下的 `~/.ssh` 目录,进入该目录查看是否有`xxx`和 `xxx.pub` 来命名的一对文件，这个 `xxx`通常就是`id_dsa`或`id_rsa`.有`.pub`后缀的文件就是公钥，另一个文件则是密钥。
+4. 将公钥添加到github或者gitlab等服务器的账户里
+    
+    Copies the contents of the id_rsa.pub file to your clipboard,然后粘贴到服务器需要你填入的地方.
+    1. 如果换电脑,可以把本地的key拷过去,也可以重新生成key.
 
-    2. 没有则交互式创建:`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`,会在`~/.ssh`下生成公钥和密钥.或者直接输入`ssh-keygen`也行,但是选项有点多.
+5. 如果之前用的https协议,此时需要remote origin,然后重新设置origin:`git remote add origin git@github.com:xushike/study.git`
+6. 对于github,可以测试是否成功设置ssh key:`ssh -T git@github.com`
 
-        会要求输入密码,应该是用于ssh登录服务器命令行界面的(待确认),所以只是使用git的话可以不用输入.
-
-    3. 添加到ssh-agent(多账户时才用)
-
-        比如上面新建了个人的key,如果我还需要再创建一个公司的key,可以:
-        1. 创建ssh key:`ssh-keygen -t rsa -b 4096 -f $home/.ssh/company -C "wdwangtw@gmail.com"`
-        2. 开启ssh-agent:`eval  "ssh-agent -s"`
-        3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`,如果报错"could not open a connection to your authentication agent",则输入`ssh-agent bash`,再输入`ssh-add ~/.ssh/conpany/xxx`
-        4. 创建或修改ssh-agent的配置文件(默认是在`~/.ssh`目录下的`config`文件)
-
-            ```
-            Host myhost personal 
-            User xushike
-            HostName github.com
-            IdentityFile ~/.ssh/id_rsa
-
-            Host myhost company
-            User wdwangtw
-            HostName github.com
-            IdentityFile ~/.ssh/company
-            ```
-
-            其格式为:
-
-            ```
-            Host myhost USER_HOST     ;USER_HOST为自定义host名字，如上面的personal和company
-            User USER_NAME                 ;USER_NAME为自定义名称
-            HostName SERVER_HOST   ;SERVER_HOST为实际服务器host，此时为GitHub
-            IdentityFile PRIVATE_KEY      ;PRIVATE_KEY为本地key
-            ```
-
-            当再次clone一个新Repos时，如果其ssh地址为git@github.com:wdwangtw/xxx.git，使用git clone git@company:wdwangtw/TestUserwd.git即可clone到本地（注意github.com换成了自定义的company），并且push时也不用输入任何验证。
-        5. 告诉ssh 允许 ssh-agent 转发(可选)
-
-            加入我有a和b两个服务器的钥匙,此时在a服务器上想不输入密码的连到b服务器,就需要配置转发功能.添加`ForwardAgent yes`到`config`文件中.然后每个服务器都需要这样设置.
-            
-    4. 将公钥添加到github或者gitlab等服务器的账户里
-        
-        Copies the contents of the id_rsa.pub file to your clipboard,然后粘贴到服务器需要你填入的地方.
-        1. 如果换电脑,可以把本地的key拷过去,也可以重新生成key.
-
-    5. 如果之前用的https协议,此时需要remote origin,然后重新设置origin:`git remote add origin git@github.com:xushike/study.git`
-    6. 对于github,可以测试是否成功设置ssh key:`ssh -T git@github.com`
-5. 关于git自身的更新：
+#### 1.3 git自身的更新(待补充)
 
 ### 2 mac
-#### 方式一(最简单):用Xcode的Command Line Tools
-#### 方式二:Homebrew安装
-#### 方式三:在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
+#### 2.1 方式一(最简单):用Xcode的Command Line Tools
+#### 2.2 方式二:Homebrew安装
+#### 2.3 方式三:在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
 
 ### 3 linux
-1. 未整理
-    1. linux下ssh-agent的全局配置文件是`/etc/ssh/ssh_config`?
-    2. linux下启动命令是:eval `ssh-agent`?
+#### 3.1 未整理
+1. linux下ssh-agent的全局配置文件是`/etc/ssh/ssh_config`?
+2. linux下启动命令是:eval `ssh-agent`?
 
 ## 三 基础
-### 1 初始化仓库
-1. 如果在Windows系统，请确保目录名（包括父目录）不包含中文  
-2. 注意初始化之后本地是没有分支的，这个时候`git branch`为空，只有第一次commit之后才会有分支，而且只有有分支之后才能和远程仓库关联。
+### 1 开始
+#### 1.1 `git init`:初始化仓库
+如果在Windows系统，请确保目录名（包括父目录）不包含中文  
 
-### 2 添加跟踪(放入暂存区)和修改  
-`git add [被跟踪的文件名]`:用于把文件放入暂存区(放入暂存区的文件会被关联)，如果文件暂存后又被修改了，需要再次暂存然后提交。参数说明：
-1. `-u`:暂存所有已关联的文件(新建的文件不受影响)
-2. `-f`:如果想暂存的文件被ignore了，加上该命令可以强制暂存
+注意初始化之后本地是没有分支的，这个时候`git branch`为空，只有第一次commit之后才会有分支，而且只有有分支之后才能和远程仓库关联。
+
+#### 1.2 `git clone`:克隆仓库
+克隆后默认只有master分支,此时需要执行拉取命令,获取远程仓库的所有最新分支
+
+`git clone <远程仓库地址> [本地仓库名称]`:克隆同时放到新建的`[本地仓库名称]`文件夹中.
+
+#### 1.3 `git remote`:远程仓库相关
+查看远程仓库:
+- `git remote -v`:查看所有关联的远程仓库的名称和地址(拉取和推送)
+- `git remote show <远程仓库名>`:查看远程仓库详细信息,包括:
+    * 哪些远程分支没有同步到本地
+    * 哪些已同步到本地的远端分支在远端服务器上已被删除
+    * 拉取和推送关联的分支
+
+添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`
+
+可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,如`git pull <远程仓库名> <分支名>`
+
+重命名远程仓库:`git remote rename <原名称> <新名称>`
+删除远程仓库:`git remote rm <远端别名>`
+
+### 2 查看
+#### 2.1 `git status`:检查更新和工作区状态
+
+
+#### 2.2 `git log`:查看提交日志
+查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
+
+参数说明:
+- `--oneline --graph --decorate --all`:查看所有的提交
+- `--pretty=oneline`:只看commit的`-m`信息
+
+#### 2.3 `git config --list`:查看配置文件
+- 查看项目的配置文件`git config --local --list`
+- 查看用户的配置文件`git config --global --list`
+- 查看系统的配置文件`git config --system --list`
+
+上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.(待补充)
+
+#### 2.5 `git diff`:查看变更(主要用于查看冲突)
+`git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改.
+
+`git diff HEAD`:对比workspace与最后一次commit
+`git diff <分支1> <分支2>`:对比差异
+
+### 3 拉取
+#### 3.1 `git fetch`:抓取远端
+只是抓取下来,需要自己手动去合并
+
+#### 3.1 `git pull`:等于执行`git fetch`和`git merge`
+快速合并(fast-forward)
+
+### 4 `git add`添加跟踪(stage,即暂存)
+`git add <被跟踪的文件名>`:用于把文件放入暂存区(放入暂存区的文件会被关联)，如果文件暂存后又被修改了，需要再次暂存然后提交。
+
+参数说明：
+- `-u`:暂存所有已关联的文件(新建的文件不受影响)
+- `-f`:如果想暂存的文件被ignore了，加上该命令可以强制暂存
+- `-i`:逐个确认
+
+### 5 `git commit`
+作动词时表示做一个版本,作名词表示版本.
+最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
+
+参数说明:
+- `--amend`:与上次commit合并
+
+#### 5.1 `git rebase`:压制
+将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
+也可以在压制前新建一个分支备份下.
+1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
+2. 交互式参数`p`(`pick`):使 commit 保持原样
+2. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
+3. 交互式参数`s`(`squash`):将此 commit 的更改结合到之前的 commit 中（列表中位于其上面的 commit ）
+3. 交互式参数`f`(`fixup`):将此 commit 的更改结合到前一个 commit 中，但删除提交说明
+3. 交互式参数`x`(`exec`):运行 shell 命令
+3. 交互式参数`d`(`drop`):删除 commit
+
+注意,多人合作的情况下,压制**不应包含已push的commit**,因为其他人可能已经pull了你准备压制的commit,如果你再压制,其他人可能需要做非常麻烦的修改才能同步.
+
+问题
+1. 暂停commit等的意义是什么
+2. 取消`git rebase`事务是用`git rebase –abort`?
+
+### 6 `git push`:推送
+如果在推送的同一时刻有其他人也在推,那么自己的推送就会被驳回,需要先合并别人的更新再推送
+
+参数说明:
+- `-f`:用于强制推送,比如本地进行过压制操作,可能导致远程服务器上有本地没有的commit此时普通的push会被拒绝,需要加上该参数.
     
-### 3 撤销更改
+### 7 撤销更改(难点)
 理解这几个命令之前最好先了解git的三棵树。
 1. `git reset [xxx1] [xxx2] [xxx3]`:
     [xxx1]参数说明:
@@ -162,81 +250,25 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
     [xxx3]参数说明:
 
-### 4 拉取和推送
-#### 4.1 拉取
-快速合并(fast-forward)
-
-#### 4.2 commit
-作动词时表示做一个版本,作名词表示版本.
-最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
-##### 压制
-将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
-也可以在压制前新建一个分支备份下.
-1. 压制`git rebase`:
-    1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
-    2. 交互式参数`p`(`pick`):使 commit 保持原样
-    2. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
-    3. 交互式参数`s`(`squash`):将此 commit 的更改结合到之前的 commit 中（列表中位于其上面的 commit ）
-    3. 交互式参数`f`(`fixup`):将此 commit 的更改结合到前一个 commit 中，但删除提交说明
-    3. 交互式参数`x`(`exec`):运行 shell 命令
-    3. 交互式参数`d`(`drop`):删除 commit
-2. 注意,多人合作的情况下,压制**不应包含已push的commit**,因为其他人可能已经pull了你准备压制的commit,如果你再压制,其他人可能需要做非常麻烦的修改才能同步.
-3. 问题
-    1. 暂停commit等的意义是什么
-    2. 取消`git rebase`事务是用`git rebase –abort`?
-
-#### 4.3 推送
-如果远程服务器上有本地没有的commit(比如本地进行过压制操作,就会出现这种情况),此时普通的push会被拒绝,需要加上`-f`参数
-
-### 5 查看
-1. 查看工作区状态`git status`
-2. 查看提交日志：`git log`
-    1. 查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
-    2. `git log`默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
-    3. 参数`--oneline --graph --decorate --all`:查看所有的提交
-    4. 参数`--pretty=oneline`:只看commit的`-m`信心
-
-3. 查看配置文件
-    - 查看项目的配置文件`git config --local --list`
-    - 查看用户的配置文件`git config --global --list`
-    - 查看系统的配置文件`git config --system --list`
-
-    上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.(待补充)
-
-4. 查看远程信息
-    - 查看关联的仓库`git remote -v`
-5. 查看变更:`git diff`
-
-    `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改
-
-### 5 远程仓库相关:git remote
-可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,比如`git pull upstream master`
-1. 查看路径信息:`git remote -v`
-2. 用于添加到新的远程仓库的连接:`git remote add`
-3. 重命名:`git remote rename [name] [new_name]`
-
-
-### 6 分支管理
-分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
-#### 6.0 未整理
+### 8 `git branch`:分支管理(重点)
+Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
+#### 8.0 未整理
 1. 工作区的修改和分支不绑定?意思我当前分支有10个修改,创建新分支并push之后,再切回来这10个修改就没了,
 2. git add是暂存吗
 3. git log是显示所有分支的记录?
 4. git add和stash的区别
 5. git stash不会缓存新建的文件或二进制文件?
-#### 6.1 创建分支
-查看分支:`git branch`,当前分支钱会有一个星号
+#### 8.1 创建分支
+查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号
 
-新建分支:
-- `git branch xxx`:复制当前分支的所有commit,工作区的文件不变
-- `git branch -b [branch_name]`
+新建分支:`git branch <分支名>`:通过复制当前分支的所有commit来生成一个新分支,不会复制工作区的文件
 
-创建并切换分支:`git checkout -b dev`,等于`git branch xxx`加`git checkout xxx`
+创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
 
-#### 6.2 切换分支
+#### 8.2 切换分支
 切换分支:`git checkout xxx`
 
-#### 6.3 缓存修改
+#### 8.3 缓存修改(常用)
 当某个分支改到一半需要切换到另一个分支时,有两种解决方法:commit和stash,如果没改完,更推荐使用stash的方式.
 
 创建缓存:`git stash`会将上一个commit之后的所有内容缓存起来并生成一个hash版本值,或者使用`git stash save “修改的信息"`缓存版本,其中"修改的信息"就是版本值.
@@ -245,19 +277,19 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
 恢复缓存:然后使用`git stash pop`可以从最新的缓存版本恢复,有多个缓存版本时使用`git stash apply stash@{0}`指定版本中恢复.注意缓存是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是缓存时带上当前分支的信息.
 
-#### 6.3 删除分支
+#### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
 
-删除分支:`git branch -d dev`
+删除分支:`git branch -d <分支名>`
 
 只删除远程的分支:....
 
 同时操作本地和远程的分支:...
 
-#### 6.4 分支合并
-合并到当前分支:`git merge xxx`命令用于合并xxx分支到当前分支,默认是快进模式(Fast-forward)
+#### 8.4 合并分支
+合并目标分支到当前分支:`git merge <分支名>`,默认是快进模式(Fast-forward)
 
-#### 6.5 分支命名
+#### 8.5 分支命名
 大概围绕以下几种来命名
 
 ![](../picture/git/git-branch-name.jpg)
@@ -268,7 +300,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 - develop:开发
 - feature:功能分支
 
-### 7 多人协作
+### 9 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
     1. 参数`--author="[user_name]"`:根据名字筛选
 2. 根据commit来筛选:
@@ -280,7 +312,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 4. pull request
 
 
-### 8 配置
+### 10 配置
 #### Git仓库的配制文件
 Git共有三个级别的config文件，分别是system、global和local:
 1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--local参数（或者省去）。
@@ -326,7 +358,7 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 创建项目时，有添加 LICENSE 选项；
 创建项目后，添加新文件，输入文件名 LICENSE 时右侧会出现 LICENSE 模板选项。
 
-### 2 本地和远程的关联
+### 2 本地和远程的关联(待整理)
 #### 2.1 本地和远程仓库的关联
 如果本地和远程都建好了仓库,则可以:`git remote add origin https://github.com:xushike/xxx.git`来关联,其中的origin是远程默认的名字，也可以换成其他名字.
 
@@ -363,8 +395,13 @@ git merge upstream/master
 
 ##### 参数`hard`
 
+### 4 git自带的图形界面
+#### 4.1 `gitk`
+主要用于查看查看历史
+#### 4.1 `git gui`
+主要用于制作提交
 
-### 4 `.gitignore`文件
+### 5 `.gitignore`文件
 该文件只要在主目录(?)下就会生效
 1. 规则
     - 以斜杠“/”开头表示目录；
@@ -380,7 +417,8 @@ git merge upstream/master
 
 ## 五 经验
 ### 1 已整理
-1. 虽然做了这么多笔记,但是最佳实践还是使用工具,比输命令可靠
+1. Git上手并不难，深入学习还是建议多实践
+2. 虽然做了这么多笔记,但是最佳实践还是使用工具,比输命令可靠
 
 ### 2 推送的正确做法
 1. 先commit
@@ -395,13 +433,14 @@ git merge upstream/master
 
 ## 六 问题
 ### 1 已解决
-1. git pull 时`cannot lock ref ...`
+#### 1.1 git pull 时`cannot lock ref ...`
+1. 第一种可能:就是我经常遇到的,网络或者什么不太重要原因,会出现这个,再git pull一下就好了.
 
-    1. 第一种可能:就是我经常遇到的,网络或者什么不太重要原因,会出现这个,再git pull一下就好了.
-    
+#### 1.2 `git log`未按时间顺序排序?
+默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
+
 
 ### 2 未解决
-1. git clone时用什么命令或软件可以显示进度？
 2. git 可以只clone分支而不是master吗？
 3. 写到一半，要切换到另外一个分支怎么弄？
 4. win7 64位旗舰版下使用git reset --hard HEAD^无法恢复到上个版本
