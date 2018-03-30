@@ -872,3 +872,57 @@ for (let [i, item] of arr.entries()) {
 456. 管理系统的api如何设计比较好
 
 457. https://www.cnblogs.com/wl0000-03/p/6050108.html
+
+458. (重中之重)git 回滚等的各种情况的掌握(多人协作回滚的最佳实践)
+    1. git branch只能看到本地的分支?
+    2. 已经push的回滚和恢复
+    3. git对比工具
+
+459. temp
+```
+ 95% emitting
+<--- Last few GCs --->
+
+[85140:0x34bdd50]   162509 ms: Mark-sweep 1513.3 (1850.0) -> 1250.6 (1531.5) MB, 909.2 / 0.0 ms  allocation failure GC in old space requested
+[85140:0x34bdd50]   163239 ms: Mark-sweep 1250.6 (1531.5) -> 1250.4 (1481.0) MB, 730.0 / 0.0 ms  last resort GC in old space requested
+[85140:0x34bdd50]   163992 ms: Mark-sweep 1250.4 (1481.0) -> 1250.4 (1462.0) MB, 752.1 / 0.0 ms  last resort GC in old space requested
+
+
+<--- JS stacktrace --->
+
+==== JS stack trace =========================================
+
+Security context: 0x6fbde525529 <JSObject>
+    1: DoJoin(aka DoJoin) [native array.js:~94] [pc=0x11055b3354cc](this=0x2411468022d1 <undefined>,o=0x3a1cf975e389 <JSArray[13]>,p=13,D=0x241146802371 <true>,z=0x1a618cf79961 <String[2]\: \n\n>,y=0x2411468023e1 <false>)
+    2: Join(aka Join) [native array.js:~119] [pc=0x11055c230ede](this=0x2411468022d1 <undefined>,o=0x3a1cf975e389 <JSArray[13]>,p=13,z=0x1a618cf79961 <String[2]\: \n\n>,y=0x2411...
+
+FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+ 1: node::Abort() [@angular/cli]
+ 2: 0x8cea7c [@angular/cli]
+ 3: v8::Utils::ReportOOMFailure(char const*, bool) [@angular/cli]
+ 4: v8::internal::V8::FatalProcessOutOfMemory(char const*, bool) [@angular/cli]
+ 5: v8::internal::Factory::NewRawTwoByteString(int, v8::internal::PretenureFlag) [@angular/cli]
+ 6: v8::internal::Runtime_StringBuilderJoin(int, v8::internal::Object**, v8::internal::Isolate*) [@angular/cli]
+ 7: 0x11055af842fd
+已放弃 (核心已转储)
+```
+
+node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-extract-license
+
+460. 依赖注入和import的区别是啥,为什么项目中的登录弹框用的import而不是依赖注入
+    1. 以及angular的路由
+
+        window.location.href = "/";
+
+461. 临渊羡鱼不如退而织网
+462. 0.0.0.0 代表什么
+463. 编译hydra的命令:go install hydra
+
+464. 变量前面加上`_`一般代表着什么
+
+465. 如何在一个hover的时候修改其他css 的样式
+    css 的hover是不是比onmouseover快?那篇加载顺序的文章
+
+466. 项目中的`<i>`被`<a>`包围是什么意思
+467. 项目中可以继续写(onclick)吗,还是只能angular的clikc?
+    使用方法有什么不同

@@ -354,10 +354,13 @@ git merge upstream/master
 #### 3.1 未整理
 所有没有 commit 的本地改动，都会随着 reset --hard 丢掉，无法恢复。不带`--hard`参数就没事.(?)
 参考[廖雪峰的版本回退](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013744142037508cf42e51debf49668810645e02887691000)
+
 #### 3.2 取消本地未push的commit
 有三个重要的参数,不同参数影响...,操作后重置后取消暂存的变更
+
 ##### 默认参数`mixed`
 取消,同时工作区的代码恢复到commit之前的状态，可以直接通过git commit 重新提交对本地代码的修改.形如`git reset [commit_id]`或`git reset HEAD~n`.比如`git reset HEAD`会..
+
 ##### 参数`hard`
 
 
