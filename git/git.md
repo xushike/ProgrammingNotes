@@ -48,7 +48,6 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 #### 3.5 ssh-agent
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
 
-#### 3.6 git pull = git fetch +merge
 #### 3.7 关于HEAD的指向(重点,易错点)
 **`HEAD`表示当前版本,即最新的那个commit**,`HEAD~1`(或者`HEAD^`)是上个版本(前一个commit),是当前所在commit的前一个或父commit.以此类推,上上个版本是`HEAD~2`(或`HEAD^^`)...
 
@@ -142,6 +141,32 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 1. linux下ssh-agent的全局配置文件是`/etc/ssh/ssh_config`?
 2. linux下启动命令是:eval `ssh-agent`?
 
+### 4 配置
+#### 4.1 Git仓库的配制文件
+Git共有三个级别的config文件，分别是system、global和local:
+1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--local参数（或者省去）。
+2. ~/.gitconfig：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用--global参数。
+3. /etc/gitconfig：系统级别仓库配置（适用于所有仓库），获取或设置时使用--system参数。
+
+覆写关系为：自上到下，作用范围越大;小范围优先级高于大范围。
+
+打开一个配置文件,大概长这个样子:
+```
+[user] 
+name = John Smith
+email = john@example.com
+[alias]
+st = status
+co = checkout
+br = branch
+up = rebase
+ci = commit
+[core]
+editor = vim
+```
+
+修改配置的命令形如:`git config --global alias.st status`
+
 ## 三 基础
 ### 1 开始
 #### 1.1 `git init`:初始化仓库
@@ -172,7 +197,6 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 ### 2 查看
 #### 2.1 `git status`:检查更新和工作区状态
 
-
 #### 2.2 `git log`:查看提交日志
 查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
 
@@ -193,9 +217,11 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 `git diff HEAD`:对比workspace与最后一次commit
 `git diff <分支1> <分支2>`:对比差异
 
+#### 2.6 `git show`:查看提交的内容
+
 ### 3 拉取
 #### 3.1 `git fetch`:抓取远端
-只是抓取下来,需要自己手动去合并
+会将远程仓库的所有分支都抓取下来,但是需要自己手动去合并
 
 #### 3.1 `git pull`:等于执行`git fetch`和`git merge`
 快速合并(fast-forward)
@@ -238,7 +264,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 参数说明:
 - `-f`:用于强制推送,比如本地进行过压制操作,可能导致远程服务器上有本地没有的commit此时普通的push会被拒绝,需要加上该参数.
     
-### 7 撤销更改(难点)
+### 7 `git reset`:撤销更改(难点)
 理解这几个命令之前最好先了解git的三棵树。
 1. `git reset [xxx1] [xxx2] [xxx3]`:
     [xxx1]参数说明:
@@ -264,6 +290,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 新建分支:`git branch <分支名>`:通过复制当前分支的所有commit来生成一个新分支,不会复制工作区的文件
 
 创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
+
+更新远程
 
 #### 8.2 切换分支
 切换分支:`git checkout xxx`
@@ -312,17 +340,9 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 4. pull request
 
 
-### 10 配置
-#### Git仓库的配制文件
-Git共有三个级别的config文件，分别是system、global和local:
-1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--local参数（或者省去）。
-2. ~/.gitconfig：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用--global参数。
-3. /etc/gitconfig：系统级别仓库配置（适用于所有仓库），获取或设置时使用--system参数。
 
-覆写关系为：小范围覆盖大范围属性；自上到下，作用范围越大。
 
-### 8 其他
-#### 8.1 不常用命令
+### 10 不常用命令
 1. `fsck`:文件系统检测
 
 
@@ -398,6 +418,9 @@ git merge upstream/master
 ### 4 git自带的图形界面
 #### 4.1 `gitk`
 主要用于查看查看历史
+
+如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
+
 #### 4.1 `git gui`
 主要用于制作提交
 
