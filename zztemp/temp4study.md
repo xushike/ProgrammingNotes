@@ -930,3 +930,6 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 
 469. 如何处理项目中的大数据和小数据?
 467. commit的跳转
+468. 用好腾讯的服务器
+    1. 自己搭建一个小项目,五脏俱全的那种
+469. merge出错后如何回滚?

@@ -15,6 +15,8 @@ git开源免费的分布式版本控制系统。除了版本,最核心的操作�
 #### 3.2 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)
 
+从git的官方中文book来看,三棵树是:工作区(Working Directory,似乎对应我们说的工作区work space),暂存区(Index)和HEAD(当前分支所在的commit).感觉这三个的名字跟我之前理解的不太一样,暂时还是以官网的为准吧.
+
 #### 3.3 git支持多种协议:https,git和ssh
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 
@@ -53,6 +55,9 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 
 #### 3.8 git名字来源
 作者是linus,他说过他是个自负的混蛋,所有项目都以他的名字命名,先有linux,现在是git.
+
+#### 3.9 git命令弹出的shell
+似乎跟系统的shell有关,本人用vim的使用方式去使用暂时没发现什么问题(待补充).
 
 ### 4 文档
 
@@ -175,9 +180,9 @@ editor = vim
 注意初始化之后本地是没有分支的，这个时候`git branch`为空，只有第一次commit之后才会有分支，而且只有有分支之后才能和远程仓库关联。
 
 #### 1.2 `git clone`:克隆仓库
-克隆后默认只有master分支,此时需要执行拉取命令,获取远程仓库的所有最新分支
+克隆仓库的所有内容,克隆后当前在默认分支(一般是master分支).
 
-`git clone <远程仓库地址> [本地仓库名称]`:克隆同时放到新建的`[本地仓库名称]`文件夹中.
+使用:`git clone <远程仓库地址> [本地仓库名称]`:克隆,并将库放到`[本地仓库名称]`文件夹中.例子如`git clone https://github.com/xushike/study.git studyNote`
 
 #### 1.3 `git remote`:远程仓库相关
 查看远程仓库:
@@ -187,12 +192,13 @@ editor = vim
     * 哪些已同步到本地的远端分支在远端服务器上已被删除
     * 拉取和推送关联的分支
 
-添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`
+添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库或核心库.
 
 可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,如`git pull <远程仓库名> <分支名>`
 
 重命名远程仓库:`git remote rename <原名称> <新名称>`
-删除远程仓库:`git remote rm <远端别名>`
+
+取消远程仓库:`git remote rm <远程仓库名>`,注意每次取消再重新关联远程仓库之后,都需要重新推送并关联分支.
 
 ### 2 查看
 #### 2.1 `git status`:检查更新和工作区状态
@@ -219,12 +225,16 @@ editor = vim
 
 #### 2.6 `git show`:查看提交的内容
 
+#### 2.7 `git <命令名> --help`:查看某个命令的用法,比如`git fetch --help`
+
 ### 3 拉取
 #### 3.1 `git fetch`:抓取远端
-会将远程仓库的所有分支都抓取下来,但是需要自己手动去合并
+会将指定分支的更新都抓取下来,但是需要自己手动去合并
 
 #### 3.1 `git pull`:等于执行`git fetch`和`git merge`
 快速合并(fast-forward)
+
+拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
 
 ### 4 `git add`添加跟踪(stage,即暂存)
 `git add <被跟踪的文件名>`:用于把文件放入暂存区(放入暂存区的文件会被关联)，如果文件暂存后又被修改了，需要再次暂存然后提交。
@@ -239,7 +249,7 @@ editor = vim
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
 
 参数说明:
-- `--amend`:与上次commit合并
+- `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用)
 
 #### 5.1 `git rebase`:压制
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
@@ -259,12 +269,25 @@ editor = vim
 2. 取消`git rebase`事务是用`git rebase –abort`?
 
 ### 6 `git push`:推送
-如果在推送的同一时刻有其他人也在推,那么自己的推送就会被驳回,需要先合并别人的更新再推送
+默认是推送当前所在的分支.注意如果在推送的同一时刻有其他人也在推,那么自己的推送就会被驳回,需要先合并别人的更新再推送.
 
 参数说明:
 - `-f`:用于强制推送,比如本地进行过压制操作,可能导致远程服务器上有本地没有的commit此时普通的push会被拒绝,需要加上该参数.
     
-### 7 `git reset`:撤销更改(难点)
+推送到远程的某个分支(不关联):`git push <远程仓库名> <远程分支名>`,如果远程没有该分支会自动创建.
+
+**关联**:关联了之后拉取和推送可以简化为`git pull`和`git push`,会自动拉取或推送到关联的分支,很方便.
+- 分支关联:`git branch --track <本地分支名> <远程仓库名>/<远程分支名>`.
+- 关联并推送:`git push -u/--track/--set-upstream-to <远程仓库名> <远程分支名>`.
+
+### 7 撤销和回滚(难点)
+#### 7.1 `git reset`:重置
+参数说明:
+- `--mixed`(不带参数时的默认参数):注意执行该命令后会创建一个新的commit.
+    - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD指向某个commit,同时工作区的代码恢复到commit之前的状态，可以直接通过`git commit`重新提交对本地代码的修改.
+- `--hard`:
+- `--soft`
+
 理解这几个命令之前最好先了解git的三棵树。
 1. `git reset [xxx1] [xxx2] [xxx3]`:
     [xxx1]参数说明:
@@ -276,6 +299,17 @@ editor = vim
 
     [xxx3]参数说明:
 
+<!--  -->
+### 3 撤销和回滚(难点)
+
+#### 3.1 未整理
+所有没有 commit 的本地改动，都会随着 reset --hard 丢掉，无法恢复。不带`--hard`参数就没事.(?)
+参考[廖雪峰的版本回退](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013744142037508cf42e51debf49668810645e02887691000)
+
+#### 3.2 取消本地未push的commit
+有三个重要的参数,不同参数影响...,操作后重置后取消暂存的变更
+<!--  -->
+
 ### 8 `git branch`:分支管理(重点)
 Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
 #### 8.0 未整理
@@ -285,13 +319,16 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 4. git add和stash的区别
 5. git stash不会缓存新建的文件或二进制文件?
 #### 8.1 创建分支
-查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号
+查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号.注意才clone完之后只会显示默认分支,实际上其他分支还是存在的.
+
+参数说明:
+- `-a`:列出包含远程的所有分支
 
 新建分支:`git branch <分支名>`:通过复制当前分支的所有commit来生成一个新分支,不会复制工作区的文件
 
 创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
 
-更新远程
+更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
 
 #### 8.2 切换分支
 切换分支:`git checkout xxx`
@@ -339,9 +376,6 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
     最后，如果你添加的任何代码更改会使项目发生极大的变化，则应更新 README 文件以向其他人说明此更改。
 4. pull request
 
-
-
-
 ### 10 不常用命令
 1. `fsck`:文件系统检测
 
@@ -378,42 +412,6 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 创建项目时，有添加 LICENSE 选项；
 创建项目后，添加新文件，输入文件名 LICENSE 时右侧会出现 LICENSE 模板选项。
 
-### 2 本地和远程的关联(待整理)
-#### 2.1 本地和远程仓库的关联
-如果本地和远程都建好了仓库,则可以:`git remote add origin https://github.com:xushike/xxx.git`来关联,其中的origin是远程默认的名字，也可以换成其他名字.
-
-查看关联仓库的详细信息(包括分支的关联):`git remote show xxx`
-
-取消关联:`git remote remove origin`
-
-注意:每次remove origin再重新关联远程仓库之后,都需要重新推送并关联分支.
-
-#### 2.2 分支关联
-用了上面的命令只是仓库关联上，还需要把分支关联(tracking)上，这样以后push的时候就可以只输`git push`：
-1.  关联并且推送(--set-upstream已经不推荐使用了，推荐的是--set-upstream-to和--track,-u也可以?):`git push -u origin master` 或者 `git push --track origin master`
-2. 如果只想关联，可以使用:`git branch --track local_branch_name origin/remote_branch_name`
-
-#### 2.3 多远程库的关联
-常用语种子库或核心库,一般是
-```git
-git remote add upstream https://github.com/mgechev/angular-seed.git 
-git fetch upstream
-git merge upstream/master
-```
-
-### 3 撤销和回滚(难点)
-
-#### 3.1 未整理
-所有没有 commit 的本地改动，都会随着 reset --hard 丢掉，无法恢复。不带`--hard`参数就没事.(?)
-参考[廖雪峰的版本回退](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013744142037508cf42e51debf49668810645e02887691000)
-
-#### 3.2 取消本地未push的commit
-有三个重要的参数,不同参数影响...,操作后重置后取消暂存的变更
-
-##### 默认参数`mixed`
-取消,同时工作区的代码恢复到commit之前的状态，可以直接通过git commit 重新提交对本地代码的修改.形如`git reset [commit_id]`或`git reset HEAD~n`.比如`git reset HEAD`会..
-
-##### 参数`hard`
 
 ### 4 git自带的图形界面
 #### 4.1 `gitk`
@@ -442,6 +440,7 @@ git merge upstream/master
 ### 1 已整理
 1. Git上手并不难，深入学习还是建议多实践
 2. 虽然做了这么多笔记,但是最佳实践还是使用工具,比输命令可靠
+3. 记住，在 Git 中任何 已提交的 东西几乎总是可以恢复的。--git官方book
 
 ### 2 推送的正确做法
 1. 先commit
@@ -450,9 +449,9 @@ git merge upstream/master
 4. 然后push
 
 ### 3 .gitkeep
-它不是官方git的一部分,而是大家约定成俗的一种习惯.因为linus最开始把git的快照设计成只由文件组成,导致git不跟踪空文件夹(算是设计失误吧),然后想到我们能用假文件来占位,所以就没有改它.
+它不是官方git的一部分,而是大家约定成俗的一种习惯.因为linus最开始把git的快照设计成只由文件组成,导致git不跟踪空文件夹(算是设计失误吧),然后想到反正我们能用假文件来占位,所以最后也没改它.
 
-后来大家想跟踪空文件夹,就在里面放一个`.gitkeep`文件,会被解析成占位符.当然,放其他文件(`.nofile`等随意文件)也可以,或者放`.gitignore`文件也可以
+后来大家想跟踪空文件夹,就在空文件夹里面放一个`.gitkeep`文件,会被解析成占位符.当然,放其他文件(`.nofile`等随意文件)也可以,或者放`.gitignore`文件也可以
 
 ## 六 问题
 ### 1 已解决
@@ -462,6 +461,10 @@ git merge upstream/master
 #### 1.2 `git log`未按时间顺序排序?
 默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
 
+#### 1.3 You have not concluded your merge (MERGE_HEAD exists)
+原因可能有多种.我当时大概是先push了一次,然后使用修改了一些文件然后使用`git commit --amend`并且修改了commit信息,然后push,然后pull下来有冲突,然后我合并并且解决了冲突,但这个时候就出问题了,我把解决完的那个文件加入暂存区,结果暂存区里没有那个文件,然后不管执行pull还是push都提示这个错误.重新试了一次还是这样,估计不是冲突的原因,而是`git commit --amend`相关操作出错了.
+
+因为我本地的修改是最新的,可以舍弃远程的,所以先`git push -f`强制推送,然后`git pull`还是报错,于是再执行`git reset HEAD`就好了.
 
 ### 2 未解决
 2. git 可以只clone分支而不是master吗？
