@@ -15,7 +15,7 @@ git开源免费的分布式版本控制系统。除了版本,最核心的操作�
 #### 3.2 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)
 
-从git的官方中文book来看,三棵树是:工作区(Working Directory,似乎对应我们说的工作区work space),暂存区(Index)和HEAD(当前分支所在的commit).感觉这三个的名字跟我之前理解的不太一样,暂时还是以官网的为准吧.
+从git的官方中文book来看,三棵树是:工作目录(Working Directory,似乎对应我们说的工作区work space),暂存区(Index)和HEAD(当前分支所在的commit).感觉这三个的名字跟我之前理解的不太一样,暂时还是以官网的为准吧.
 
 #### 3.3 git支持多种协议:https,git和ssh
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
@@ -51,7 +51,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
 
 #### 3.7 关于HEAD的指向(重点,易错点)
-**`HEAD`表示当前版本,即最新的那个commit**,`HEAD~1`(或者`HEAD^`)是上个版本(前一个commit),是当前所在commit的前一个或父commit.以此类推,上上个版本是`HEAD~2`(或`HEAD^^`)...
+**HEAD表示当前版本,即最新的那个commit**,`HEAD~1`(或者`HEAD^`)是上个版本(前一个commit),是当前所在commit的前一个或父commit.以此类推,上上个版本是`HEAD~2`(或`HEAD^^`)...
 
 #### 3.8 git名字来源
 作者是linus,他说过他是个自负的混蛋,所有项目都以他的名字命名,先有linux,现在是git.
@@ -175,9 +175,9 @@ editor = vim
 ## 三 基础
 ### 1 开始
 #### 1.1 `git init`:初始化仓库
-如果在Windows系统，请确保目录名（包括父目录）不包含中文  
+官网说的初始化命令默认会创建master分支,但实践发现,在第一次commit之前很多命令都报错(比如`git branch`,`git checkout`,远程仓库的命令等),所以最佳实践是第一次commit之后再去操作分支和远程仓库。
 
-注意初始化之后本地是没有分支的，这个时候`git branch`为空，只有第一次commit之后才会有分支，而且只有有分支之后才能和远程仓库关联。
+注意:如果在Windows系统，请确保目录名（包括父目录）不包含中文
 
 #### 1.2 `git clone`:克隆仓库
 克隆仓库的所有内容,克隆后当前在默认分支(一般是master分支).
@@ -227,6 +227,8 @@ editor = vim
 
 #### 2.7 `git <命令名> --help`:查看某个命令的用法,比如`git fetch --help`
 
+#### 2.8 `git reflog`:查看关键命令(commit,pull,checkout)的记录
+
 ### 3 拉取
 #### 3.1 `git fetch`:抓取远端
 会将指定分支的更新都抓取下来,但是需要自己手动去合并
@@ -236,8 +238,12 @@ editor = vim
 
 拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
 
-### 4 `git add`添加跟踪(stage,即暂存)
-`git add <被跟踪的文件名>`:用于把文件放入暂存区(放入暂存区的文件会被关联)，如果文件暂存后又被修改了，需要再次暂存然后提交。
+### 4 `git add`:暂存(stage)
+工作目录的文件只有两种状态:已跟踪(tracked)和未跟踪(untracked),加入过暂存的都是已跟踪文件,初次clone后的所有文件都是已跟踪的.
+
+`git add <被跟踪的文件名>`:用于把文件放入暂存区,放入过暂存区的文件会被跟踪(tracked),这个跟踪表示会被git管理,而且会被commit以及其他一些命令影响到.
+
+如果文件暂存后又被修改了，需要再次暂存然后提交。
 
 参数说明：
 - `-u`:暂存所有已关联的文件(新建的文件不受影响)
@@ -283,32 +289,20 @@ editor = vim
 ### 7 撤销和回滚(难点)
 #### 7.1 `git reset`:重置
 参数说明:
-- `--mixed`(不带参数时的默认参数):注意执行该命令后会创建一个新的commit.
-    - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD指向某个commit,同时工作区的代码恢复到commit之前的状态，可以直接通过`git commit`重新提交对本地代码的修改.
-- `--hard`:
-- `--soft`
+- `--mixed`(不带参数时的默认参数):
+    - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD从当前commit指向某个commit,**仅仅重置暂存区**,即丢弃当前暂存区,然后将当前commit到某个commit之间的所有修改移动到暂存区,工作区的内容保持不变
+    <!-- 也意味着可以直接`git commit`重新提交对本地代码的修改. -->
+    - 也可以作用于单个文件(待测试)
+- `--soft`:保留暂存区和工作区,同时将当前commit到某个commit之间的所有修改移动到暂存区
 
-理解这几个命令之前最好先了解git的三棵树。
-1. `git reset [xxx1] [xxx2] [xxx3]`:
-    [xxx1]参数说明:
-    1. 
-    4. `--patch`：一块块的选择自己要撤销的内容
+- `--hard`:重置暂存区、工作区及版本库,也就是说工作区和暂存区以及某个commit之后的所有修改都会丢失,慎用!
 
-    [xxx2]参数说明:
-    1. `[path]` or `-- [path]`：这里的path是要撤销的目录或者文件名，如果有该参数(在[xxx1]是`--mixed`或空 的情况下)，则会跳过移动HEAD指针这个操作，直接复制到index，比如`git reset [path]`；如果没有该参数，则不会跳过移动HEAD指针这个操作
+注意成功执行`git reset`并push后会创建一个新的commit.
 
-    [xxx3]参数说明:
+`git reset`似乎可以作用于单个文件,如果是作用域单个文件,则HEAD不会移动,其他和上面一样.(待验证)
 
-<!--  -->
-### 3 撤销和回滚(难点)
-
-#### 3.1 未整理
-所有没有 commit 的本地改动，都会随着 reset --hard 丢掉，无法恢复。不带`--hard`参数就没事.(?)
-参考[廖雪峰的版本回退](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013744142037508cf42e51debf49668810645e02887691000)
-
-#### 3.2 取消本地未push的commit
-有三个重要的参数,不同参数影响...,操作后重置后取消暂存的变更
-<!--  -->
+#### 7.2 丢弃(discard)工作区的修改:`git checkout -- <文件名>`
+会将文件工作区的修改全部丢弃(不影响暂存区),慎用!
 
 ### 8 `git branch`:分支管理(重点)
 Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
@@ -331,16 +325,22 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
 
 #### 8.2 切换分支
-切换分支:`git checkout xxx`
+切换分支:`git checkout xxx`,工作目录会恢复到该分支最后一次提交时的样子,如果Git不能干净利落地完成这个任务，它将禁止切换分支。
 
-#### 8.3 缓存修改(常用)
-当某个分支改到一半需要切换到另一个分支时,有两种解决方法:commit和stash,如果没改完,更推荐使用stash的方式.
+#### 8.3 `git stash`:储藏修改(常用)
+当某个分支改到一半需要切换到另一个分支时,有两种解决方法:commit和stash,使用stash最好.
 
-创建缓存:`git stash`会将上一个commit之后的所有内容缓存起来并生成一个hash版本值,或者使用`git stash save “修改的信息"`缓存版本,其中"修改的信息"就是版本值.
+创建储藏:`git stash`会将上一个commit之后的所有已跟踪的内容储藏起来并生成一个hash版本值,或者使用`git stash save <"修改的信息">`储藏版本,其中"修改的信息"就是版本值.
 
-查看缓存:使用`git stash list`可以查看缓存版本信息.
+查看储藏:使用`git stash list`可以查看储藏版本信息.
 
-恢复缓存:然后使用`git stash pop`可以从最新的缓存版本恢复,有多个缓存版本时使用`git stash apply stash@{0}`指定版本中恢复.注意缓存是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是缓存时带上当前分支的信息.
+恢复储藏:然后使用`git stash pop`可以从最新的储藏版本恢复,有多个储藏版本时使用`git stash apply stash@{0}`指定版本中恢复.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.
+
+删除暂存:`git stash drop <储藏的名字>`,比如`git stash drop stash@{0}`
+
+几个有用的变种储藏:
+- `git stash --keep-index`:不储藏暂存区的内容
+- `git stash -u`:也会储藏创建的未跟踪文件
 
 #### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
@@ -377,7 +377,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 4. pull request
 
 ### 10 不常用命令
-1. `fsck`:文件系统检测
+#### 10.1 `git fsck`:文件系统检测
+`git fsck --lost-found`:找回git add过但是已经不存在文件中的内容(待测试)
 
 
 ## 四. 高级
@@ -441,6 +442,9 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 1. Git上手并不难，深入学习还是建议多实践
 2. 虽然做了这么多笔记,但是最佳实践还是使用工具,比输命令可靠
 3. 记住，在 Git 中任何 已提交的 东西几乎总是可以恢复的。--git官方book
+4. stackoverflow大牛说的多人合作注意事项:
+    - 不要用强制推送
+    - 不要破坏commit history和别人的pull
 
 ### 2 推送的正确做法
 1. 先commit
@@ -464,7 +468,7 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 #### 1.3 You have not concluded your merge (MERGE_HEAD exists)
 原因可能有多种.我当时大概是先push了一次,然后使用修改了一些文件然后使用`git commit --amend`并且修改了commit信息,然后push,然后pull下来有冲突,然后我合并并且解决了冲突,但这个时候就出问题了,我把解决完的那个文件加入暂存区,结果暂存区里没有那个文件,然后不管执行pull还是push都提示这个错误.重新试了一次还是这样,估计不是冲突的原因,而是`git commit --amend`相关操作出错了.
 
-因为我本地的修改是最新的,可以舍弃远程的,所以先`git push -f`强制推送,然后`git pull`还是报错,于是再执行`git reset HEAD`就好了.
+因为我本地的修改是最新的,可以舍弃远程的,所以先`git push -f`强制推送,然后`git pull`还是报错,于是再执行`git reset HEAD`,就不会再报错了.但是注意此时不能再用`git commit --amend`命令,如果想用的话必须另外push一个新的commit然后再用.
 
 ### 2 未解决
 2. git 可以只clone分支而不是master吗？
@@ -527,3 +531,4 @@ RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 
 8. feature分支和普通分支的区别是啥?
 
 9. [廖雪峰的git](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840202368c74be33fbd884e71b570f2cc3c0d1dcf000),有空整理完
+10. 网友的一些总结,感觉写的不错:[http://classfoo.com/ccby/article/j4HZbSN](http://classfoo.com/ccby/article/j4HZbSN)
