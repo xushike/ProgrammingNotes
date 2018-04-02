@@ -934,3 +934,32 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
     1. 自己搭建一个小项目,五脏俱全的那种
 
 468. 分支管理与缓存
+469. github可以给master分支设置权限吗，就是操作master需要验证的那种
+470. 网友;一切异步都是流，只要是流就可以订阅？
+
+471. qq远程 的时候不能输入字,快捷键也无效,什么情况
+472. 摇号过程:https://v.youku.com/v_show/id_XMzM4MzA0ODMwOA==.html
+
+473. angular从表单获取的默认是字符串吗
+
+474. curl是啥命令
+
+475. 项目中`ng build --prod --no-extract-license`和`ng build --prod`的区别?似乎后者不能检测出严格的错误?
+    直接`ng build`能检测出错误吗?用那个language插件会不会更好?
+476. git查看某个文件的历史
+477. 明知道是一场重伤害
+
+478. `javascript;`的写法会导致标签能被拖动
+
+479. js对象的值和对象在值传递中的不同
+480. 表单值的bug,下面两个写法都不行
+    ```
+    			let std = query.standard;
+			query.standard = (std * 1024).toString()
+    ```
+
+    ```
+query.standard = (query.standard * 1024).toString()
+    ``
+
+481. plsql中的冒号表示什么
