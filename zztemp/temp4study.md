@@ -947,19 +947,5 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 475. 项目中`ng build --prod --no-extract-license`和`ng build --prod`的区别?似乎后者不能检测出严格的错误?
     直接`ng build`能检测出错误吗?用那个language插件会不会更好?
 476. git查看某个文件的历史
-477. 明知道是一场重伤害
-
-478. `javascript;`的写法会导致标签能被拖动
-
-479. js对象的值和对象在值传递中的不同
-480. 表单值的bug,下面两个写法都不行
-    ```
-    			let std = query.standard;
-			query.standard = (std * 1024).toString()
-    ```
-
-    ```
-query.standard = (query.standard * 1024).toString()
-    ``
 
 481. plsql中的冒号表示什么
