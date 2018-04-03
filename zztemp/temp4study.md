@@ -15,7 +15,6 @@ const (
 7. Go playground 中的时间总是从 2009-11-10 23:00:00 UTC 开始， 如何校验这个值作为一个练习留给读者完成
 8. 事件冒泡
 
-14. git如何查看远程的提交记录？
 19. 获取事件的几种方法：
     1. 原生的js似乎只能遍历所有属性来判断
         1. http://blog.csdn.net/theforever/article/details/6029382
@@ -40,16 +39,15 @@ const (
 35. https://material.angularjs.org/latest/demo/virtualRepeat
 36. 软件设计的一些理念规则：比如开闭原则。。。
 25. js事件详解:https://segmentfault.com/a/1190000005016813
-37. 成都市城乡房屋管理局
+
 38. 异步查询，动态显示搜索结果
-39. git fetch
+
 40. 可记为博客
 	1. http://www.nowamagic.net/
 
-41. linux新建文件以及文件类型，创建时的后缀可以变为类型吗
-42. htmlelement->htmlinputelement
 43. restful
 44. libreoffice显示目录
+
 45. 代码生成器和项目命名规范
 46. not all go tools are avaliable on the $GOPATH
 48. 递归查询和插入
@@ -838,9 +836,9 @@ for (let [i, item] of arr.entries()) {
 
 435.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
 `Your local changes to the following files would be overwritten by checkout`
-    `Please, commit your changes or stash them before you can switch branches. Aborting`
+    `Please, commit your changes or stash them before you can switch branches. Aborting
 437. git stash之后变成九十多为啥
-438. 每层目录都可以有.git
+
 439. 测试普通的类可以注册为服务然后依赖注入吗
 
 440.  insert select
@@ -852,13 +850,15 @@ for (let [i, item] of arr.entries()) {
 443. sql的in适用于任何数据类型吗(似乎是)
 
     sql的""和num可以直接比较吗
-444. 本地分支和远程分支的关联,新建之后怎么关联远程分支?
 
-    新建分支push会怎么样?
 445. in这种查询,可不可以传参数去表示呢
+
 447. sftp
+
 448. 行内css如何添加多个
+
 449. angular的安全导航符能用到属性里吗,还是只能用到{{}}中
+
 451. angular select中option的disabled怎么使用?
     angualr中有几种disabled
 
@@ -866,17 +866,11 @@ for (let [i, item] of arr.entries()) {
 
 452. 后端 错误码 相关的代码
 
-453. `* [新分支]          develop2-show -> origin/develop2-show`
-
 454. 如何让组件带上版本的命名?
 456. 管理系统的api如何设计比较好
 
 457. https://www.cnblogs.com/wl0000-03/p/6050108.html
 
-458. (重中之重)git 回滚等的各种情况的掌握(多人协作回滚的最佳实践)
-    1. git branch只能看到本地的分支?
-    2. 已经push的回滚和恢复
-    3. git对比工具
 
 459. temp
 ```
@@ -914,8 +908,8 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 
         window.location.href = "/";
 
-461. 临渊羡鱼不如退而织网
 462. 0.0.0.0 代表什么
+
 463. 编译hydra的命令:go install hydra
 
 464. 变量前面加上`_`一般代表着什么
@@ -926,41 +920,15 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 466. 项目中的`<i>`被`<a>`包围是什么意思
 467. 项目中可以继续写(onclick)吗,还是只能angular的clikc?
     使用方法有什么不同
+
 468. angular的优秀项目
 
 469. 如何处理项目中的大数据和小数据?
-467. commit的跳转
 468. 用好腾讯的服务器
     1. 自己搭建一个小项目,五脏俱全的那种
 
-468. 分支管理与缓存
 469. github可以给master分支设置权限吗，就是操作master需要验证的那种
 470. 网友;一切异步都是流，只要是流就可以订阅？
 
-471. qq远程 的时候不能输入字,快捷键也无效,什么情况
-472. 摇号过程:https://v.youku.com/v_show/id_XMzM4MzA0ODMwOA==.html
-
 473. angular从表单获取的默认是字符串吗
-
-474. curl是啥命令
-
-475. 项目中`ng build --prod --no-extract-license`和`ng build --prod`的区别?似乎后者不能检测出严格的错误?
-    直接`ng build`能检测出错误吗?用那个language插件会不会更好?
-476. git查看某个文件的历史
-
-481. plsql中的冒号表示什么
-482. dom 事件  大多数是冒泡的还是非冒泡的 
-
-483. `this.upproductInfo = this.productInfo || {};`
-    js中的||和&& 的详细笔记
-
-484. 输入法自动插入空格
-485. 如何表现select的联动呢?
-486. 他们测试的那个工具挺牛逼的
-487. 明明有配置有ignore,为什么拉下来代码还是有很多跟踪的变动
-
-488. 不同环境下多css的写法
-
-489. 项目里一格分成多格的写法
-
-490.         修改session时间?:`"expireAt":100000,`
+475. xshell 中win和linux文件互传的命令
