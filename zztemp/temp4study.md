@@ -949,3 +949,18 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 476. git查看某个文件的历史
 
 481. plsql中的冒号表示什么
+482. dom 事件  大多数是冒泡的还是非冒泡的 
+
+483. `this.upproductInfo = this.productInfo || {};`
+    js中的||和&& 的详细笔记
+
+484. 输入法自动插入空格
+485. 如何表现select的联动呢?
+486. 他们测试的那个工具挺牛逼的
+487. 明明有配置有ignore,为什么拉下来代码还是有很多跟踪的变动
+
+488. 不同环境下多css的写法
+
+489. 项目里一格分成多格的写法
+
+490.         修改session时间?:`"expireAt":100000,`
