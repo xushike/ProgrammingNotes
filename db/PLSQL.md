@@ -114,3 +114,4 @@ group by deptno
 6. lengthb(),substrb()
 
 7. 项目中不支持卡号模糊查询,是因为索引的问题?
+8. plsql中的冒号表示什么

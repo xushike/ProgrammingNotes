@@ -204,7 +204,11 @@ editor = vim
 #### 2.1 `git status`:检查更新和工作区状态
 
 #### 2.2 `git log`:查看提交日志
-查看远程的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
+直接使用是查看当前分支的本地提交日志.
+
+查看远程分支的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
+
+查看具体某个文件的提交日志:`git log -- <文件名>`
 
 参数说明:
 - `--oneline --graph --decorate --all`:查看所有的提交
@@ -224,6 +228,11 @@ editor = vim
 `git diff <分支1> <分支2>`:对比差异
 
 #### 2.6 `git show`:查看提交的内容
+直接使用是查看当前commit的内容
+
+查看某次commit的内容:`git show <commit id>`
+
+查看某次commit中某个文件的变化:`git show <commit id> <文件名>`
 
 #### 2.7 `git <命令名> --help`:查看某个命令的用法,比如`git fetch --help`
 
@@ -420,10 +429,12 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 
 
 ### 4 git自带的图形界面工具
-#### 4.1 `gitk`
+#### 4.1 `gitk`(常用)
 主要用于查看查看历史
 
 如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
+
+以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
 
 #### 4.1 `git gui`
 主要用于制作提交
