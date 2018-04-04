@@ -964,3 +964,9 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 489. 项目里一格分成多格的写法
 
 490.         修改session时间?:`"expireAt":100000,`
+
+491. angular表单验证的几种方式和最佳实践
+
+492. git文件被跟踪后再修改忽略文件,怎么才能是忽略文件立即生效呢?
+    1. 如何保留文件修改而不跟踪?
+    2. 本地有已跟踪但不想跟踪的,此时从远程拉下来最新的gitignore会生效吗
