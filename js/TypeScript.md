@@ -18,7 +18,7 @@ Works with all the popular frameworks.
 - Netflix:网页播放器是用typescript写的. 
 ### 2 历史
 ### 3 常识
-#### 编译错了依然会生成文件?
+#### 3.1 编译错了依然会生成文件?
 ### 4 文档
 1. [TypeScript Handbook](http://dreamapple.leanapp.cn/gitbook/typescript/index.html)
 
@@ -37,7 +37,7 @@ Works with all the popular frameworks.
 1. 编译成js文件:`tsc xxx.ts...`,默认覆盖已有的
     1. 参数`--watch`:每次保存时会自动用增量编译(incremental compilation)的方式编译ts文件
 
-## 三 基础知识
+## 三 基础
 ### 1 数据类型
 #### 1.1 基础类型(和js几乎相同，除了是静态)
 1. 数字：number
@@ -220,11 +220,13 @@ console.log(typeof arrayFromString[0]);
 
 ## 六 问题
 ### 1 已解决
-5. "Cannot read property 'xxx' of undefined"
+#### 1.1 "Cannot read property 'xxx' of undefined"
+这个错经常报.可能原因有两个:
+- 运行时xxx上确实没有xxx方法
+- xxx可能为null或undefined,需要先判断
 
-    这个错经常报.可能原因有两个:
-    1. 运行时xxx上确实没有xxx方法
-    2. xxx可能为null或undefined,需要先判断
+#### 1.2 关于ele对象的`ele.xxx`和`ele["xxx"]`
+想访问ele中的xxx属性,如果已经知道ele中有xxx属性,那么可以用`ele.xxx`,不然就只能用ele["xxx"]或声明ele为any类型
 
 ### 2 未解决
 1. 和typings的关系  

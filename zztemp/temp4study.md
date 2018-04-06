@@ -42,9 +42,6 @@ const (
 
 38. 异步查询，动态显示搜索结果
 
-40. 可记为博客
-	1. http://www.nowamagic.net/
-
 43. restful
 44. libreoffice显示目录
 
@@ -90,25 +87,14 @@ BEGIN
   RETURN my_split;
 END;
 
-55. http状态码
-58. 各种字符串和反斜杠的处理
-59. ele["contend"]和ele.content和ele.()等
-60. 试试在外面xshell可不可以连接到里面
-62. 复制打包等命令
-63.         let params = Object.assign({}, args || this.oldParams);
-64. 为什么虚拟机关ubuntu经常停在黑屏
 65. oracle里我之前写那个，如果把agent_id写到里面和写到外面有什么区别？效率上来讲？先筛选再连接是不是更快?
 67. js遍历对象和遍历数组等
 
 68. 我们项目中，getFirstRow和scala和getrows等的区别，以及获取回来的值的获取方法？
 
-70. 远程如何连到局域网内的机子？
-71. source 就是. ?
-  [http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral](http://blog.csdn.net/codeur/article/details/54783288?utm_source=itdadao&utm_medium=referral)
-
 72. go get显示copy状态
 73. linux文件安装在什么位置比较好
-74. 同时执行多条命令怎么搞，连接多个命令用什么
+
 76. go里的 interface{}
     1. recover()和匿名函数
     1. goinaction说的类型的状态是什么意思
@@ -123,17 +109,10 @@ END;
         3. 表单的各种类型
 77. go不能调存储过程
 78. plsql修改函数要这样：`CREATE OR REPLACE FUNCTION`?
-79. go中的变量带下划线会有警告
-80. vacode跳到上一次的位置
-81. 合并之后如何取消，big mistake
-82. git两个人同一行下插入不同的内容的识别问题，似乎会有冲突？
-83. 查看是谁修改的插件？
+
 84. oracle查询中如何停止
 85. angular各种组件的封装
 86. oracle中''和null一样？而且可以赋值给各种类型？
-87. git
-    1. 合并之后出错的合理回滚方式？合作时别人出问题了也可以快速的恢复
-    2. 如何查看远程详细的改动
 
 87. oracle 
     1. 项目里Scalar等各用于什么情况
@@ -155,14 +134,13 @@ END;
 
 89. linux如何查看某个软件的版本和所有支持的命令
 90. linux蓝色的目录是什么gui
-91. git推送的时候不输入密码怎么做到的
+
 92. js的date可以直接加减而自动判断出月份?
-93. ts中某人变量默认就是any?`
+    项目中js date的封装
+
 94. angular中组件绑定中不能使用下划线?比如`start_time`和`startTime`
 95. 切片数组的合理创建方法
-96. 一生何求
-97. ts的`?:`是什么写法
-99. linux打包命令
+
 100. js
     1. 中的`||`和`&&`,在判断空和true、false时的用法一样吗？多个连接的时候如何判断？
     2. ""和null
@@ -226,9 +204,8 @@ END;
 163. 在各种语言（js等）的map()等lambda表达式中return的话只会退出lambda？
 164. 没有primarykey,可以插入重复数据吗
 165. go有序列化吗
-166. 冷热启动
+
 167. js的map和foreach
-168. ubuntu永久了变卡是什么gui
 
 169. 
 ```
@@ -252,7 +229,7 @@ END;
     }
 ```
 并没有真正return,每次这三层都会打印,如何在return时真正退出方法?其他语言的情况?
-170. js中return、continue、break
+
 171. angular和react中没被渲染(比如隐藏、ngif为false)的组件能被获取到吗，能修改值吗
 172. angular不推荐通过dom的方式修改htmml的值?那如何修改其他ngmodel的值（不用数据绑定）
 173. typescript的as感觉很有用，转换成原生js后是什么
@@ -280,7 +257,7 @@ END;
 ```
 175. 感觉我的mac写ts还需要一些插件,明明没问题却总是报错
 176. package.json的学习
-177. jquery现状如何,感觉不需要也可以写好项目
+
 178. http2.0和js模块化
 
     [https://zhuanlan.zhihu.com/p/26118022](https://zhuanlan.zhihu.com/p/26118022)
@@ -309,10 +286,6 @@ END;
 196. 为什么要用框架
 197. md可以写流程图吗
 198. 如果调用angular特有的onModuleChange()，那么在组件初始化的时候会触发该方法吗？
-199. powershell的使用
-200. win7中命令行中打开文件，前端开发，修改html，vscode相关好用插件
-201. 百度商桥的原理
-202. less等批量修改文本的内容
 
 203. 这个闭包的意义是什么,不写闭包好像也可以直接执行
 
@@ -327,14 +300,14 @@ END;
             s.parentNode.insertBefore(hm, s); })();
         </script>        
     ``` 
+
 206. 手机和电脑如何截长屏
-207. 英语中有顿号吗，否则用什么来表示顿号？
 208. 研究下项目中subscribe的写法
 209. 后端go中各种fmt和返回输出，错误等的写法
-210. plsql如何记住尺寸
+
 211. 如何判断子组件的状态
 212. 阿里云等网站是怎么做的,学习
-213. htm
+
 214. 幂等的:Idempotence
 215. js等的实例演示gif生成
 216. [http://www.01happy.com/golang-err-is-shadowed-during-return/](http://www.01happy.com/golang-err-is-shadowed-during-return/)
@@ -365,12 +338,12 @@ let val = input.card_id
 222. angular textarea的cols没有生效的原因
 223. oracle一直显示正在执行
 
-226. 突然断电的话，vm会保存吗
+
 227. js引入的模块没用的话会占用性能吗/
 228. ngmodule单独写的作用是什么， 
 229. [https://valor-software.com/ng2-file-upload/](https://valor-software.com/ng2-file-upload/)
 230. 将项目表单的验证写成服务
-231. 咨询李春牙医是否可报
+231. 咨询公司lc牙医是否可报
 234. angular在表单组件上双绑某个值和事件，那么值会先变化然后触发事件？
 235. ngModel和ngvalue,以及[ngModel]几者的区别，以及name
 236. app.module的和page.module的区别
@@ -420,21 +393,18 @@ for (let [i, item] of arr.entries()) {
     console.log("item:", item)
 }
 ```
-251. stackoverflow for loop性能的文章
-    1. foreach的return是不是没有用
+
 252. 局域网能访问localhost启动的服务吗
     在虚拟机里，如果开启了虚拟机的防火墙呢
+
 253. 没有登录能访问api吗
 
 255. 查看linux内存占用状态
-256. if else 和case switch的直观比较
-257. go的{}中一定要用逗号结尾？
 
 260. angular表单提示，可以做成侧边那种吗
 
         有没有经典的现成例子
-261. md 的todo list;mac设置默认输入法
-262. 腾讯百度等为啥自称厂
+
 263. angular2渐进式编程.
 264. 自定义指令和系统指令一样的话，默认用哪个
 265. markdown流程图
@@ -443,7 +413,7 @@ for (let [i, item] of arr.entries()) {
 
     结论似乎不准确,还有一点就是for of entries()方法效率似乎比较低,总之最好别用
 268. 我们项目的ts编译后是es5还是什么
-269. js引用传递的坑和优点.
+
 270. js到ts:[https://segmentfault.com/a/1190000010774159](https://segmentfault.com/a/1190000010774159)
 271. 深入js的for of:[http://www.jb51.net/article/70106.htm](http://www.jb51.net/article/70106.htm)
 272. linux删除后的撤销
@@ -464,15 +434,8 @@ for (let [i, item] of arr.entries()) {
 281. ts中只定义未赋值的值是undefined,js中也是吗
 283. 带_的私有变量是那个语言的语法
 284. console.log多参数的写法
-285. 工单回填时的运营商池编号是干嘛的
-286. shell中如何大段落的复制
-
-288. 研究git 的flow,如何临时新建一个分支,开发部分代码然后再合并回去
-289. 项目中上游渠道1000表示什么,在那儿设置的
 290. 一键部署和发布(线下)
 
-291. vscode返回光标上一次所在的位置
-292. 聚合发货系统是谁写的,应该用的响应式表单
 293. 管道多参数的写法
 294. oracle nvl 以及项目中的&写法,以及oracle的空不等于空的问题如何解决
     1. `u.down_order_no = nvl(@down_order_no, u.down_order_no)`和`@order_no is null or o.order_no = @order_no`
@@ -932,8 +895,6 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 
 473. angular从表单获取的默认是字符串吗
 
-474. curl是啥命令
-
 475. 项目中`ng build --prod --no-extract-license`和`ng build --prod`的区别?似乎后者不能检测出严格的错误?
     直接`ng build`能检测出错误吗?用那个language插件会不会更好?
 476. git查看某个文件的历史
@@ -952,8 +913,6 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 488. 不同环境下多css的写法
 
 489. 项目里一格分成多格的写法
-
-490.         修改session时间?:`"expireAt":100000,`
 
 491. angular表单验证的几种方式和最佳实践
 
