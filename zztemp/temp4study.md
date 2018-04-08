@@ -920,3 +920,13 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
     1. 如何保留文件修改而不跟踪?
     2. 本地有已跟踪但不想跟踪的,此时从远程拉下来最新的gitignore会生效吗
 475. xshell 中win和linux文件互传的命令
+
+476. count(0)和count(1)等的区别
+477. plsql的占位符和通配符和标准sql中一样吗
+478. google调试如何判断两个元素有没有对齐
+479. 原生class的多css写法
+480. margin的几种写法
+
+481. 放弃已跟踪文件的修改
+482. 商户系统npm安装的时候一直报那个miss 什么的错,一直装不上,然后 复制别人的node_modules就好了, 一定要抽空搞清楚
+483. .gitignore的排除写法
