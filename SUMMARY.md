@@ -45,6 +45,7 @@
     * [vue](js/vue.md)
     * [jQuery](js/jQuery.md)
     * [19.Bootstrap](js/19.Bootstrap.md)
+    * [25.ECharts](js/25.ECharts.md)
 * [git](git/git.md)
     * [1.gitbook](git/gitbook.md)
     * [2.svn](git/svn.md)

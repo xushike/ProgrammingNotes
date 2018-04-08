@@ -930,3 +930,5 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 481. 放弃已跟踪文件的修改
 482. 商户系统npm安装的时候一直报那个miss 什么的错,一直装不上,然后 复制别人的node_modules就好了, 一定要抽空搞清楚
 483. .gitignore的排除写法
+
+484. 几种css选择器的详解
