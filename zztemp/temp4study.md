@@ -937,4 +937,5 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
 
 486. js数组操作
 487. 数组push的问题
+    声明的数组和赋值的数组好像不一样.
 488. css选择器和圆角
