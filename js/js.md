@@ -245,40 +245,53 @@ js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么
 
 ### 4 js中常用对象
 #### 4.1 Array对象
-1. 三种定义方法:略
+js数组中的元素可以不是同一类型.
 
-    1. js数组中的元素可以不是同一类型.
-    2. 其实还有第四种定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`,非常不推荐使用.
-2. 数组常用方法
-    1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
+三种定义方法:略
 
-        ```JavaScript
-        obj = {divisor: 10}
-        remainder = function (value) {
-            return value % this.divisor;
-        }
-        numbers = [6, 12, 25, 30];
-        result = numbers.map(remainder, obj);
-        console.log(result);
-        ```
+其实还有第四种定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`,非常不推荐使用.
 
-        如果把方法写在map的callback()里面,
+array常用方法:
+1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
 
-        ```
-        result = numbers.map((ele)=>{
-            return ele % this.divisor;    
-        }, obj);
-        ```
-        则`this`会变成`{}`,目前还不清楚为啥.
-        参考:"回调中所用的 ES2015 箭头函数 比等价的函数表达式更加简洁，能优雅的处理 this 指针。"
-    
-    2. `splice()`
+    ```JavaScript
+    obj = {divisor: 10}
+    remainder = function (value) {
+        return value % this.divisor;
+    }
+    numbers = [6, 12, 25, 30];
+    result = numbers.map(remainder, obj);
+    console.log(result);
+    ```
 
-        从数组中添加/删除项目，然后返回被删除的项目.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
-        1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。在头部添加元素可以用:`arr.splice(0,0,xxx)`
-        2. `pop()`:删除并返回数组的最后一个元素,那么删除头部的元素呢?使用`arr.splice(0,1)`.
+    如果把方法写在map的callback()里面,
 
-#### RegExp对象
+    ```JavaScript
+    result = numbers.map((ele)=>{
+        return ele % this.divisor;    
+    }, obj);
+    ```
+    则`this`会变成`{}`,目前还不清楚为啥.
+    参考:"回调中所用的 ES2015 箭头函数 比等价的函数表达式更加简洁，能优雅的处理 this 指针。"
+
+2. `splice()`
+
+    从数组中添加/删除项目，然后返回被删除的项目.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
+    1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。在头部添加元素可以用:`arr.splice(0,0,xxx)`
+    2. `pop()`:删除并返回数组的最后一个元素,那么删除头部的元素呢?使用`arr.splice(0,1)`.
+3. `filter(callback[, thisArg])`:返回过滤后的新数组,不会改变原数组.简单使用如下
+
+    ```javascript
+    let arr = [xxx].filter((ele)=>{
+        return ele > 10;
+    })
+
+    ```
+
+array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
+
+
+#### 4.2 RegExp对象
 字符模式对象,用于正则表达式
 1. 两种语法如下,其中pattern表示模式,modifiers(修饰符) 用于指定全局匹配、区分大小写的匹配和多行匹配:
 
@@ -295,7 +308,7 @@ js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么
 2. 常用方法
     1. `test()`:搜索字符串指定的值，根据结果返回真或假
     2. `exec()`返回字符串中检索到的指定值,没有则返回null
-#### Promise对象(es6规范)
+#### 4.3 Promise对象(es6)
 简单说就是一个容器,里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果.
 1. Promise对象的两个特点
     1. 对象的状态不受外界影响
