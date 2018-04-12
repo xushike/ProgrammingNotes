@@ -981,3 +981,4 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 508. 跳过登录的测试
 509. angular引用第三方组件的方法,ydj的话
+510. ajax和jquery
