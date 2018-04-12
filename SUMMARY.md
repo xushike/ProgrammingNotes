@@ -35,6 +35,7 @@
         * [3.1.AngularCLI](js/3.Angular/3.1.AngularCLI.md)
         * [3.2.AngularMaterial2](js/3.Angular/3.2.AngularMaterial2.md)
     * [ECMAScript](js/ECMAScript.md)
+    * [6.webpack](js/6.webpack.md)
     * [js](js/js.md)
     * [js6](js/js6.md)
     * [NativeScript](js/NativeScript.md)

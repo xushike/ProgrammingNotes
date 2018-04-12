@@ -430,7 +430,7 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 
 ### 4 git自带的图形界面工具
 #### 4.1 `gitk`(常用)
-主要用于查看查看历史
+主要用于查看查看历史,该工具可能需要自己安装
 
 如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
 

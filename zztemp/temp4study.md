@@ -952,3 +952,32 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 494. go报错:typechecking loop involving DeviceGroupAllListQuery
 
 495. angular三等号和两等号
+
+495. typescript中funtion(){xxx}和()=>{xxx}写法的不同,前者似乎不能访问全局变量,后者可以访问
+    因为this指针的问题?
+
+496. 项目后台如何返回json
+
+497. ngOnChanges
+498. map可以被for循环吗
+
+499. news about ECharts
+    可视化
+
+500. 研究material日期组件的月份写法
+
+501. angular先渲染父组件还是子组件,html,w3c的标准呢?
+    写一个实际的demo来记录下
+502. 时间戳
+
+503. angular input接受多个参数的时候,如果几个参数传的时间不一样,那么是触发几次ng changes和ng init?总结下规律
+
+504. NgZone.runOutsideAngular
+505. for of 遍历map的笔记
+
+506. window.innerWidth
+
+507. setTimeout是在页面渲染完之后执行吗?
+
+508. 跳过登录的测试
+509. angular引用第三方组件的方法,ydj的话

@@ -12,7 +12,7 @@
 1. 阮一峰es6:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)
 ## 三 基础
 ### 1 对象
-#### 不定参数和展开运算符
+#### 1.1 不定参数和展开运算符
 1. 不定参数
 
     语法是在参数前加三个点
@@ -22,11 +22,20 @@
     // [2, 3, 4]
     ```
 
-#### 对象解构(Object destructuring)
+#### 1.2 对象解构(Object destructuring)
 ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代码量的同时，增加了代码的可读性和表现力。代码和python越来越像了.
 参考:[https://segmentfault.com/a/1190000002920859](https://segmentfault.com/a/1190000002920859)
 参考:[http://www.infoq.com/cn/articles/es6-in-depth-destructuring/](http://www.infoq.com/cn/articles/es6-in-depth-destructuring/)
 
+### 2 流程控制和迭代器
+#### 2.2 迭代器
+##### for ... in
+遍历目标的键(所以返回的似乎是字符串),可以用于任何数据类型,但本职工作是用于遍历对象,如果遍历数组和集合,则可能出问题(待补充).
+
+写法是`for (<修饰符> <变量名> in <要操作的对象>){...}`,比如有对象`obj = { a: [], b: [1, 2] }`,则`for (let x in obj){...}`,其中x返回的是对象的属性名,而且是字符串,那么要访问对象的属性值,则可以`obj[x]`
+
+##### for ... of
+用于遍历数组和集合等,不能用遍历普通对象
 
 ## 四 高级
 ### 1 import
