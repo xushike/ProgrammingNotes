@@ -27,3 +27,6 @@
 ### 2018 
 #### head
 1. [2018 年开发者技能报告](https://research.hackerrank.com/developer-skills/2018/)
+#### 201804
+1. 百度正式开源其 Raft 一致性算法实现 braft,[项目地址](https://github.com/brpc/braft)
+2. 百度开源项目 ECharts 首进 Apache 孵化器.这是百度第一个进入国际顶级开源社区的项目，也标志着百度开源正式进入开源发展的快车道。

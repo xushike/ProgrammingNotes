@@ -982,3 +982,13 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 508. 跳过登录的测试
 509. angular引用第三方组件的方法,ydj的话
 510. ajax和jquery
+
+511. encodeURIComponent
+
+512. setTimeout(xxx,0)
+513. js中fn和fn()
+514. Typed Array
+515. 单等号和双等号的区别
+
+516. 目前主流的几种js引擎是?
+517. js instanceof  和typeof
