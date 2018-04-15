@@ -491,6 +491,12 @@ GitHub 仓库开通 GitHub Pages 后，其中的 HTML 文件就可以被浏览�
 因为我本地的修改是最新的,可以舍弃远程的,所以先`git push -f`强制推送,然后`git pull`还是报错,于是再执行`git reset HEAD`,就不会再报错了.但是注意此时不能再用`git commit --amend`命令,如果想用的话必须另外push一个新的commit然后再用.
 
 ### 2 未解决
+#### 2.1 Permission denied (publickey)...
+这个问题应该有些复杂(待补充)
+
+临时解决方法是,将git协议换成https协议
+
+#### 2.N 其他
 2. git 可以只clone分支而不是master吗？
 3. 写到一半，要切换到另外一个分支怎么弄？
 4. win7 64位旗舰版下使用git reset --hard HEAD^无法恢复到上个版本
