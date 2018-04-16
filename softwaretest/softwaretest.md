@@ -20,3 +20,5 @@
 1. 黑盒，白盒，压力测试
 2. 推荐一本书《Windows 程序调试》《Debugging Windows Programs》 
 里面写了一些关于调试心理学的东东。
+
+3. 集成测试,单元测试

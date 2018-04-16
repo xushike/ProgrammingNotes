@@ -19,6 +19,10 @@
 #### 1.3 改
 #### 1.4 查
 `select * from  xxx`
+
+#### 1.5 模糊查询like
+`%`表示多个字符,`_`表示一个字符,对于特殊符号可以使用ESCAPE标识符来查找,如`select * from emp where ename like '%*_%' escape '*'`,escape表示*后面的那个符号不当成特殊字符处理，就是查找普通的_符号
+
 #### 1.5 group by分组
 在`group by`子句的字段可以不在`select`后面,但是对于在`select`后面的非组函数字段,则必须在`group by`子句中
 1. 按日期分组:`group by char(t.xxx,'yyyy-mm-dd')`
@@ -64,6 +68,12 @@ group by deptno
 - length():计算string所占的字符长度
 
 对于单字节字符,上面两个的结果是一样的;一个汉字在Oracle数据库里占多少字节跟数据库的字符集有关，UTF8时，长度为三;可以用`length(‘string’)=lengthb(‘string’)`判断字符串是否含有中文.
+##### Upper(),Lower(),Initcap(),Concat(),Substr(),Replace(),Instr(),Lpad(),Rpad(),Trim()
+Lpad():左侧填充
+
+Rpad():右侧填充
+
+Trim():去除首尾空格
 
 #### 2.1 decode
 流程控制,效果类似于`if else`

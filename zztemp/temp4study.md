@@ -1026,9 +1026,3 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 529. 项目中execute和scalar
     1. types.toint等
-
-530. 公摊,容积率等
-
-531. 右键关闭弹窗的原理
-
-532. md-input-container
