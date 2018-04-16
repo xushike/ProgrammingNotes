@@ -105,6 +105,10 @@ group by deptno
 1. 在oracle中,很多的问题都是通过子查询解决的
 
 ## 六 问题
+### 1 已解决
+#### 1.1 invalid SQL statement
+
+### 2 未解决
 1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
 2. Oracle调优经验
 3. 变量的声明

@@ -986,9 +986,49 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 511. encodeURIComponent
 
 512. setTimeout(xxx,0)
+    这个是在dom渲染完成之后才触发的吗,还是?
 513. js中fn和fn()
 514. Typed Array
 515. 单等号和双等号的区别
 
 516. 目前主流的几种js引擎是?
 517. js instanceof  和typeof
+
+518. 仅更新前端的 话需要重启服务吗
+519. 后面要用的layui框架如何
+520. git中二进制文件的历史能恢复吗
+
+521. vscdoe无法检测大型工作区的文件变化,请访问说明..
+    说明链接:https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+
+522. 如何取消input两边的空格
+523. angular input中change,ngModelChange,input等事件的关系,onchange
+
+524. formControlName和两种表单的关系
+    form表单的valueChanges订阅事件
+
+525. 禁用工作区和禁用
+
+526. angular待笔记
+    1. angular事件里可以使用$event
+    2. 通过$event.target.value修改input的值是修改的DOM上面的值,但是通过表单里的实际值还是没变?(待研究)
+
+
+527. angularhtml的事件里可以直接写js吗
+
+528. 深入理解oracle的分页rownum等
+    1. 以及最基本的增删改查
+    2. 只操作一个表的创建语句需要事务吗
+    3. 序列 nextval
+        1. 后面的from跟什么表都可以?
+        2. 在insert语句中的话可以直接`序列.nextval`,查询的话...
+    4. dual
+
+529. 项目中execute和scalar
+    1. types.toint等
+
+530. 公摊,容积率等
+
+531. 右键关闭弹窗的原理
+
+532. md-input-container
