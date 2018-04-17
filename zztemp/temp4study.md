@@ -1026,3 +1026,16 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 529. 项目中execute和scalar
     1. types.toint等
+
+530. 如果有新建文件 stash似乎就不合适了?
+
+531. oracle exists
+
+532. 出现无法监视的时候好像代码变动的识别也会出问题
+
+533. 查看远程分支的命令,删除本地分支后还能看到远程分支吗,还是说要提交后远程才会同步,新建的时候也是吗?
+
+534. update会锁住数据库,锁住之后其他人只能等待,那么其他人能查询吗
+535. 为什么sql查出来的金额需要FM那个转换
+    1. 第一种方式getString()然后strconv..
+    2. 

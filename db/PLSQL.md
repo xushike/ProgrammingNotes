@@ -16,7 +16,9 @@
 ### 1 语法和子句
 #### 1.1 增
 #### 1.2 删
+delete from xxx 
 #### 1.3 改
+update xxx set xxx = xxx,xxx= xxx
 #### 1.4 查
 `select * from  xxx`
 
