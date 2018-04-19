@@ -1000,6 +1000,7 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 521. vscdoe无法检测大型工作区的文件变化,请访问说明..
     说明链接:https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+    1. node_modules中的文件也会算在内吗,.gitignore会生效吗?
 
 522. 如何取消input两边的空格
 523. angular input中change,ngModelChange,input等事件的关系,onchange
@@ -1039,3 +1040,24 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 535. 为什么sql查出来的金额需要FM那个转换
     1. 第一种方式getString()然后strconv..
     2. 
+    3. float(xxx)
+
+536. js模板字符串打印对象的时候,只显示object,不能显示里面的内容?
+537. golang 几种类型转换方式的区别
+
+538. 下拉框中数据很多怎么办,会导致卡顿吗
+    1. angular安全导航符第一个对象为undefined会生效吗
+    2. angular [htmlfor]
+
+539. input抱在label中
+540. angular 扩展的比如ng... = 后面要带引号,原生html的有些后面不带?
+
+541. 项目中应该有拷贝之类的方法把,而不是用JSON.parse(JSON.stringify(
+
+542. select如何适应文字长度
+
+543. oracle查出来的0.9,返回前端的时候会变成.9,那么在go中是怎么样的呢
+
+544. trunc
+
+545. angular 单选框默认选中的研究
