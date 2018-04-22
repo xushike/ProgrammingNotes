@@ -55,6 +55,10 @@ bootstrap-vue、vue-material、Element UI、Mint UI 等
 中立UI框架
 
 ### 25 ECharts
-百度开源的纯js图标库,现在已经很不错了
+百度开源的纯js图标库,现在已经很不错了,进入了Apache孵化项目
+
+### 26 CSS in JS
+#### 26.1 polishedJS
+阮一峰推荐的:它将一些常用的 CSS 属性封装成函数，用起来非常方便，充分体现使用 JavaScript 语言写 CSS 的优势。
 
 ## 五 问题
