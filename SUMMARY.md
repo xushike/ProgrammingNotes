@@ -37,6 +37,7 @@
     * [ECMAScript](js/ECMAScript.md)
     * [6.webpack](js/6.webpack.md)
     * [5.VUE](js/5.VUE/5.VUE.md)
+        * [5.1.VUE-CLI](js/5.VUE/5.1.VUE-CLI.md)
     * [js](js/js.md)
     * [js6](js/js6.md)
     * [NativeScript](js/NativeScript.md)

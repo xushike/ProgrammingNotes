@@ -89,6 +89,9 @@ Trim():去除首尾空格
 2. date转char:`to_char(sysdate,'yyyy-mm-dd')`,会被转换成`2018-03-06`
 
 #### 2.4 like,instr和substr
+
+`substr(<string>, <start_position> [,length])`:截取字符,注意plsql中所有字符串的第一个位置的index是从1开始,而不是从0开始
+
 `like`用于模糊查询,`instr`用于判断是否包含某字符串,`substr`用于截取字符串;因为like的效率比较低,所以能用后面的情况下尽量用后面的
 
 #### 2.5 distinct去重

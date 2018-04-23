@@ -1074,3 +1074,7 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 552. 创建已有商户时 的 904错误
 
 553. git pull是拉取所有分支信息,还是仅当前分支
+
+554. created a lockfile as package-lock.json. You should commit this file.
+
+555. Unsupported platform for fsevents@1.2.0: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
