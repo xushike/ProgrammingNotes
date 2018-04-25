@@ -1081,3 +1081,23 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 556. css studying :https://segmentfault.com/q/1010000000193129
 557. 感觉input list值得了解一下
+
+558. 浏览器打断点
+559. jquery的使用
+560. var _this = this;
+561. js类的写法
+562. vue每次刷新的时候是只刷新页面?
+
+563. parseFloat的精度问题
+
+564. chrome标签很多时的内存优化方法
+566. 深入研究js func的prototype
+
+567. git pull和git push是只影响当前分支吗?如果是影响多分支怎么办?
+568. 浏览器调试js怎么弄,console.log太恼火
+569. mqtt协议
+
+16. websocket主题和队列名字???
+
+17. 如何查看网页哪部分重新渲染了?
+18. 微信的文件可以撤回吗

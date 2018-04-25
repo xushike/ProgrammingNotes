@@ -49,6 +49,8 @@
     * [jQuery](js/jQuery.md)
     * [19.Bootstrap](js/19.Bootstrap.md)
     * [25.ECharts](js/25.ECharts.md)
+    * [27.map地图](js/27.map/27.map.md)
+        * [27.1.百度地图](js/27.map/27.1.baidu-map.md)
 * [git](git/git.md)
     * [1.gitbook](git/gitbook.md)
     * [2.svn](git/svn.md)

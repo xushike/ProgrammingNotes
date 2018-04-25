@@ -973,3 +973,7 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 13. go的socket.
 
 14. [用go写一个windows外挂](http://www.ituring.com.cn/article/468550)
+
+15. golang的升级(笔记)
+
+

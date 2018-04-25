@@ -30,3 +30,5 @@ dead-simple functional component model.
 ## 七 未整理
 1. [https://www.zhihu.com/question/39825457?sort=created](https://www.zhihu.com/question/39825457?sort=created)
 2. [https://yq.aliyun.com/articles/72028](https://yq.aliyun.com/articles/72028)
+### 1 用到再整理的
+1. https://segmentfault.com/q/1010000008150301
