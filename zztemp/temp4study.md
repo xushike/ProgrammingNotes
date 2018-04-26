@@ -1114,6 +1114,7 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 22. js中0和其他的比较会怎么样
 23. 防止重复点击
-24. chrome如何动态修改代码
+24. chrome如何动态修改代码,调试代码等
+    1. firebug?
 25. 事件派发的作用dispatch,例子参考百度测距工具
 26. js精度问题
