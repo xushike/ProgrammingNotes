@@ -1101,3 +1101,19 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 17. 如何查看网页哪部分重新渲染了?
 18. 微信的文件可以撤回吗
+19. npm的教程
+20. js
+    1. js引擎有垃圾回收吗
+    2. js func在什么情况下会变成一个类?
+    3. promise,ajax,rxjs,callback等的区别
+    4. 如何判断一个方法是不是异步的
+
+
+21. Unsupported platform for fsevents@1.2.0
+    1. darwin和linux和win,在npm中分别叫什么
+
+22. js中0和其他的比较会怎么样
+23. 防止重复点击
+24. chrome如何动态修改代码
+25. 事件派发的作用dispatch,例子参考百度测距工具
+26. js精度问题

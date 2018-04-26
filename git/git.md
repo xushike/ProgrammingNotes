@@ -47,6 +47,9 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
     安装了GitGUI，自动会在system级别中设置credential.helper为manager
 - wincred
 
+取消设置凭证助手命令形如:`git config --<级别,如system> --unset credential.helper`
+
+
 #### 3.5 ssh-agent
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
 
@@ -219,7 +222,7 @@ editor = vim
 - 查看用户的配置文件`git config --global --list`
 - 查看系统的配置文件`git config --system --list`
 
-上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.(待补充)
+上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.它会显示包括上面三个配置在内的所有配置(如果有的话)
 
 #### 2.5 `git diff`:查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改.
@@ -515,6 +518,11 @@ git commit -m 'update .gitignore'
 如果还是不行的话,在先将想要取消追踪的文件移到项目目录外)，并提交，然后提交后再将刚刚移出的文件再移入项目中即可
 
 (该解决办法为测试,但感觉比较靠谱)
+
+#### 1.5 unable to get credential storage lock: File exists
+我当时出现这个问题可能是因为我配置了凭证助手,但github的账号密码和gitlab的账号密码不一样,所以`git pull`后提示我输入gitlab的密码,我输入之后就出现这个错误.
+
+最后我取消了凭证助手就好了.
 
 ### 2 未解决
 #### 2.1 Permission denied (publickey)...
