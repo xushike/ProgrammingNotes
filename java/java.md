@@ -36,31 +36,24 @@ javac -d . xxx.java
 那么class文件的目录会变成src/demo/demo/xxx.class，这样就有问题 ，所以最好把-d的参数设置为src目录
 #### 1.4.3 java
 
-## 二. 安装配置
-### 2.1 windows下的安装配置
-1. 下载jdk并安装，路径中不能有中文，最好不要有空格
-2. 配置JAVA_HOME、PATH、CLASSPATH（ClASSPATH在1.5之后可以不用配置）
-    1. JAVA_HOME一般是:`C:\Program Files\Java\jdk_version`，不包括bin目录
-    1. PATH的目的是将`%JAVA_HOME%/bin`目录添加到执行路径中，
-    2. CLASSPATH的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置CLASSPATH环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
-3. 安装库源文件和文档
-    1. 库源文件在是jdk目录中src.zip
-    2. 文档去官网下载，一般是jdk-version-docs-all.zip
+## 二 安装配置
+### 1 windows
+1. 下载jdk并安装.路径中不能有中文，最好不要有空格
+
+2. 配置JAVA_HOME、PATH和CLASSPATH（ClASSPATH在1.5之后可以不用配置）
+- JAVA_HOME一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
+- PATH的目的是将`%JAVA_HOME%/bin`目录添加到执行路径中，
+- CLASSPATH的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置CLASSPATH环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
+
+3. 安装库源文件和文档:库源文件在是jdk目录中src.zip;文档去官网下载，一般是jdk-version-docs-all.zip
+
 4. 命令行下的简单运行
 ```
 javac xxx.java  //编译
 java xxx        //运行
 ```
-5. 如果上面都配置正确了，结果运行的时候发现java或者javac其中某个不能正确运行（比如错误：找不到或无法加载主类），那么可能是
-    1. java能运行但javac不行（似乎跟C:\Windows\System32里的三个java执行程序有关，待补充）
-    2. javac能运行但java不行：
-    我当时出现这个情况是因为我的java文件是在eclipse下写的，文件头声明了自己建的包，此时有两种解决办法，一种是去掉声明的包运行，第二种是不去掉包的声明直接去包所在的目录运行java文件，比如我的包名是study，那么我应该去study所在的目录执行
-    ```
-    javac study/XXX.java    //注：此处study后的斜杠可以用反斜杠或斜杠；javac命令在study目录下可以运行：javac XXX.java
-    java study/XXX          //注：此处study后的斜杠必须用斜杠
-    ```
 
-### 2.2 mac下的安装配置
+### 2 mac
 1. 安装后的路径查看：mac上安装之后查看java路径：
 ```
 /usr/libexec/java_home
@@ -68,10 +61,10 @@ java xxx        //运行
 一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
 2. 将`jdk/bin`目录添加到执行路径中——执行路径是操作系统查找可执行文件时所遍历的目录列表
 （此处待补充）
-### 2.3 linux下的安装配置
+### 3 linux
 1. 如果是prm文件安装，则检查是否在`/usr/java/jdk1.8_version`下；但是推荐下载.tar.gz格式的文件安装，可以直接解压到任何地方
 
-## 三. 基础
+## 三 基础
 ### 1 面向对象
 #### 1.1 类、对象、构造器、方法
 ##### 1.1.1  类和对象
@@ -741,7 +734,24 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 ### 11 输入/输出
 ### 12 JDBC
 1. 可以认为JDBC模仿了ODBC，前者安全性更高、更易部署，后者更复杂。
+
 ## 六 问题
+### 1 已解决
+#### 1.1 运行的时候发现java或者javac其中某个不能正确运行（错误提示如：找不到或无法加载主类）
+如果java的配置都正确,那么可能是
+1. java能运行但javac不行（似乎跟C:\Windows\System32里的三个java执行程序有关，待补充）
+
+2. javac能运行但java不行：
+我当时出现这个情况是因为我的java文件是在eclipse下写的，文件头声明了自己建的包，此时有两种解决办法，一种是去掉声明的包运行，第二种是不去掉包的声明直接去包所在的目录运行java文件，比如我的包名是study，那么我应该去study所在的目录执行
+```
+javac study/XXX.java    //注：此处study后的斜杠可以用反斜杠或斜杠；javac命令在study目录下可以运行：javac XXX.java
+java study/XXX          //注：此处study后的斜杠必须用斜杠
+```
+
+#### 1.2 main写成Main
+把main方法写成Main时，编译不会出现问题，但是运行会报错
+
+### 2 未解决
 1. 公有和私有jre的区别，什么时候用到？
 2. 如果继承树里的某一个类需要被初始化，则系统会同时初始化该类的所有父类。
 3. hashset和数组的效率比较
@@ -751,8 +761,20 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 1. 标签就是用来替换java脚本的
 2. jnlp和jar
 
+3. 笔记：关于垃圾回收;一般都是system.gc()和system.runFinalization()一起使用才有效(待测试)
+4. javac命令详解 -X等
+5. instanceof的正确用法，书中5.7节内容
+6. rpc
+java nio
+Launch4j
+
+异常链
+
+install4j
+
+7. 缓冲区不要使用int，而是使用byte
+
 ### 2 网友的面试
-#### 问题汇总
 1. 如何用aop是想对接口性能实现监控
 2. 数据库有10个字段均作为频繁查询条件，如何设计索引
 3. 10个不同线程，分别操作10个不同数据，且保证其中1个线程超时1分钟停止，如何设计？并取得结果？
