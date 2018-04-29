@@ -123,6 +123,7 @@
     * [1.python](scriptingLanguage/1.python.md)
     * [2.lua](scriptingLanguage/2.lua.md)
     * [3.RegularExpression正则表达式](scriptingLanguage/3.RegularExpression.md)
+    * [4.PHP](scriptingLanguage/4.PHP.md)
 * [server服务器相关](server/server.md)
     * [nginx](server/nginx.md)
 * [softwaretest软件测试](softwaretest/softwaretest.md)

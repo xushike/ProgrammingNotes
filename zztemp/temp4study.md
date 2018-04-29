@@ -1151,3 +1151,21 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 36. 什么样的情况下回出现滚动条
     1. height为100%的时候会出现滚动条
+
+37. 项目中的Page里面的 mosq 为什么不能访问到,还有Observle对象和普通对象有什么 区别.
+38. js里变量前面没有声明语句的话是默认是什么?
+    1. 在方法中呢?
+    2. 假如在类中有个var 声明的变量,会变成当前类的静态变量吗
+
+39. w3c规范和mdn的关系
+    1. 如何学习w3c规范
+
+40. 自己搭建服务器,比如nginx然后发布--主要是熟悉
+41. css的学习
+    1. 百度地图的position: relative;
+
+42. json和xml的优劣
+43. 跨域
+    1. https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001434499861493e7c35be5e0864769a2c06afb4754acc6000
+
+44. 事件委托减少DOM事件注册的数量

@@ -13,18 +13,23 @@
 ## 三 基础
 ### 1 对象
 #### 1.1 不定参数和展开运算符
-1. 不定参数
-
-    语法是在参数前加三个点
-    ```javascript
-    var [head, ...tail] = [1, 2, 3, 4];
-    console.log(tail);
-    // [2, 3, 4]
-    ```
+不定参数:语法是在参数前加三个点,如
+```javascript
+var [head, ...tail] = [1, 2, 3, 4];
+console.log(tail);
+// [2, 3, 4]
+```
 
 #### 1.2 对象解构(Object destructuring)
-ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代码量的同时，增加了代码的可读性和表现力。代码和python越来越像了.
+ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代码量的同时，增加了代码的可读性和表现力。(题外话:代码和python越来越像了.)
+
+##### 解构赋值(Destructuring Assignment)
+例子如`const { store, form, loading, errors, entity:contact } = this.props`,其中`entity`是`this.props`的属性,`contact`是新的属性名,访问的时候就可以通过新的属性名访问了.
+
+注意:解构赋值类似Object.assign(),只是第一层深复制.(待验证)
+
 参考:[https://segmentfault.com/a/1190000002920859](https://segmentfault.com/a/1190000002920859)
+
 参考:[http://www.infoq.com/cn/articles/es6-in-depth-destructuring/](http://www.infoq.com/cn/articles/es6-in-depth-destructuring/)
 
 ### 2 流程控制和迭代器
