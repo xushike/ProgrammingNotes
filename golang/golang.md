@@ -129,11 +129,9 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 3. 该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
 
 ## 二 安装配置
-- GOROOT用于指定Go的安装目录,还有它自带的标准库包的位置
+GOROOT:用于指定Go的安装目录,还有它自带的标准库包的位置.比如存放fmt包的源代码对应目录应该为$GOROOT/src/fmt。用户一般不需要设置GOROOT，默认情况下Go语言安装工具会将其设置为安装的目录路径。
 
-    比如存放fmt包的源代码对应目录应该为$GOROOT/src/fmt。用户一般不需要设置GOROOT，默认情况下Go语言安装工具会将其设置为安装的目录路径。
-
-- GOPATH对应的工作区目录,有三个子目录
+GOPATH:对应的工作区目录,有三个子目录,bin,src和pkg
 
 ### 1 windows
 1. 下载安装
@@ -159,7 +157,7 @@ tar -ztvf xxx.tar.gz
 sudo tar -zxvf xxx.tar.gz -C /usr/local 
 ```
 
-2. 环境变量设置：需要设置GOROOT和GOPATH,GOROOT是go的安装目录,GOPATH是放bin,src,pkg的目录
+2. 环境变量设置：需要设置GOROOT和GOPATH.
     - 设置GOROOT:
         1. 设置方式类似于JAVA_HOME，如`export GOROOT=$HOME/xxx`
         2. 把`$GOROOT/bin`加入PATH：`export PATH=$PATH:$GOROOT/bin`
