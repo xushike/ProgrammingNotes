@@ -131,19 +131,22 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 
 - GOPATH对应的工作区目录,有三个子目录
 
-### 1 windows下的安装
-1. ...
+### 1 windows
+1. 下载安装
+
 3. 配置GOROOT(C:\Go)和PATH(添加%GOROOT%\bin)，这样就可以在任意地方运行go开头的命令了
+
 4. 配置GOPATH:系统默认的gopath是GOROOT，`fmt`等包在GOROOT中，所以可以直接`import`；当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中
 >设置GOPATH的时候只需要写src前面的目录，会自动去src下找；设置了GOPATH之后，`import`时就只会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下
 
-5.配置gobin(需不需要看情况)
-### 2 mac下的安装
-#### 二进制发行版安装
-#### 第三方工具安装(homebrew等)
+5. 配置gobin(需不需要看情况)
 
-### 3 linux下的安装
-#### 安装包（二进制发行版）安装(**推荐**)
+### 2 mac
+#### 2.1 二进制发行版安装
+#### 2.2 第三方工具安装(homebrew等)
+
+### 3 linux
+#### 3.1 安装包（二进制发行版）安装(**推荐**)
 1. 下载xxx.tar.gz，安装到`/usr/local`下:
 ```bash
 #查看压缩文件内容
@@ -151,12 +154,13 @@ tar -ztvf xxx.tar.gz
 #解压到目录下
 sudo tar -zxvf xxx.tar.gz -C /usr/local 
 ```
-2. 环境变量设置：
-    1. 设置GOROOT:
+
+2. 环境变量设置：需要设置GOROOT和GOPATH,GOROOT是go的安装目录,GOPATH是放bin,src,pkg的目录
+    - 设置GOROOT:
         1. 设置方式类似于JAVA_HOME，如`export GOROOT=$HOME/xxx`
         2. 把`$GOROOT/bin`加入PATH：`export PATH=$PATH:$GOROOT/bin`
         
-    1. 设置GOPATH：这个目录用来存放Go源码(src)，Go的可运行文件(bin)，以及相应的编译之后的包文件(pkg)
+    - 设置GOPATH：这个目录用来存放Go源码(src)，Go的可运行文件(bin)，以及相应的编译之后的包文件(pkg)
         >在go1.1到1.7，该变量必须设置，且不能和go安装目录一样;从1.8开始有默认值，在Unix上默认为`$HOME/go`,在Windows上默认为`%USERPROFILE%/go`
 
         1. 设置GOPATH(**最好不要和go安装目录相同**)
@@ -166,8 +170,8 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 将`$GOPATH/bin`加入PATH中，这样可以方便的运行`go install`好的二进制程序。然而，当存在GOPATH中存在多个路径时，这种写法只会将最后一个路径跟上bin。在mac或linux下可以通过这种方式解决：
 `${GOPATH//://bin:}/bin`
 
-#### 源码安装
-#### 第三方工具安装（apt、wget等）
+#### 3.2 源码安装
+#### 3.3 第三方工具安装（apt、wget等）
 
 ## 三 基础
 ### 1 程序结构
@@ -752,8 +756,8 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 1. Go语言提供的工具都通过一个单独的命令go调用
 2. 关于go工具的输出：只有在错误的时候才会输出，这点跟unix的哲学一样
 
-#### run
-#### install
+#### 1.1 run
+#### 1.2 install
 1. 首先说一下一般的go项目在GOPATH下的目录结构：
 ```bash
 -- GOPATH  #GOPATH目录
@@ -764,45 +768,49 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 2. 命令会安装go包所依赖的任何东西
 3. 只需要有src目录，bin和pkg会自动生成；install后是跟main.go的父级目录名，生成的可执行文件也是父级目录名；
 
-#### build
+#### 1.3 build
 保存编译结果(可执行二进制文件)以备将来之用,形如`go build hello.go`
 
-#### clean
+#### 1.4 clean
 清理生成的可执行文件，如`go clean hello.go`
 
-#### run
+#### 1.5 run
 编译且运行
 
-#### get
-通过源码控制工具(比如git)递归获取代码包及其依赖,已有的不会再去获取,如`go get github.com/xushike/studyGo`
-1. go get命令获取的代码是真实的本地存储仓库，而不仅仅只是复制源文件，因此你依然可以使用版本管理工具比较本地代码的变更或者切换到其它的版本。
-2. 注意的是导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供
-1. 参数`-u`:强制更新已有的代码包及其依赖
-2. 参数`-v`:打印出被构建的代码包的名字
+#### 1.6 get
+通过源码控制工具(比如git)递归获取代码包及其依赖,已有的不会再去获取.
 
-#### vet
+简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
+
+参数说明:
+- `-u`:强制更新已有的代码包及其依赖
+- `-v`:打印出被构建的代码包的名字(待测试)
+
+注意:导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供
+
+#### 1.7 vet
 可以捕获一些常见的错误，如格式化字符串等
 
-#### fmt
+#### 1.8 fmt
 代码格式化，开发工具中一般都集成了保存的时候自动格式化.以法令方式规定标准的代码格式可以避免无尽的无意义的琐碎争执,更重要的是，这样可以做多种自动源码转换，如果放任Go语言代码格式，这些转换就不大可能了。
 
 指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
 
-#### doc和godoc
+#### 1.9 doc和godoc
 ##### go doc
 查看文档,挺方便的.如`go doc http.ListenAndServe`可以看到该函数的说明(显示的是函数上被注释的声明),`go doc http`可以直接看到包的说明,`go doc builtin.make`查看内建函数的说明.
 
 ##### godoc
 
-#### 其他与go有关的工具
+### 2 其他与go有关的工具
 ##### Cgo
 编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
 
 ##### gb
 社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
 
-### 2 源码分析
-#### 2.1 待整理
+### 3 源码分析
+#### 3.1 待整理
 编译器源码目录下，src/cmd/compile/internal
 
 ## 五 经验

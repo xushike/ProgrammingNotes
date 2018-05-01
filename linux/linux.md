@@ -686,3 +686,4 @@ dpkg -L package #列出与该包关联的文件
 24. linux tty是啥
 25. curl
 26. 远程如何连到局域网内的机子？就是如何把linux弄成可以外网访问的?
+27. tty -s

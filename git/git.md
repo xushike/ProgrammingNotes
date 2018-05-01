@@ -492,6 +492,9 @@ git commit -m 'update .gitignore'
 
 最后我取消了凭证助手就好了.
 
+#### 1.6 Your configuration specifies to merge with the ref 'refs/heads/master' from the remote, but no such ref was fetched.
+我当时出现这种情况是github上新建了一个空的项目,然后clone,然后pull就会报这个错
+
 ### 2 未解决
 #### 2.1 Permission denied (publickey)...
 这个问题应该有些复杂(待补充)
