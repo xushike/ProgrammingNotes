@@ -420,6 +420,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
 
+注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
 #### 4.1 `git gui`
 主要用于制作提交
 

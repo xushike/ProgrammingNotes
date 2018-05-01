@@ -117,8 +117,12 @@ img.SetColorIndex(
 #### 3.10 方法接收者(Receiver)
 Receiver 的名称应该缩写，一般使用一个或者两个字符作为Receiver的名称，如`func (f foo) method() {...}`;如果方法中没有使用receiver,还可以省略receiver name,这样更清晰的表明方法中没有使用它:`func (foo) method() {...}`
 
+#### 3.11 2009-11-10 23:00:00 UTC
+该日期是go的开源日期,可以看做是go的生日(?).
+
 ### 4 文档
-1. _Effective Go_(中文名《搞笑Go编程》)
+1. _Effective Go_(中文名《高效Go编程》)
+
 ### 5 网址
 1. 网友写的Go web编程gitbook，比较详细，应该很值得读：[https://astaxie.gitbooks.io/build-web-application-with-golang/zh/](https://astaxie.gitbooks.io/build-web-application-with-golang/zh/)
 2. go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
