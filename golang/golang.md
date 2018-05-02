@@ -926,6 +926,9 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 #### 1.4 常见错误:err is shadowed during return
 作用域问题,在if等语句内部声明的err覆盖了外面的err,当内部执行完毕之后外部的err并没有变.
 
+#### 1.5 debug.gcstackbarrieroff undefined ...
+我当时是覆盖安装新版本go后使用`go build`命令出现的这个问题,网上搜了下,答案是删除``
+
 ### 2 未解决
 1. 因式分解
 3. 编程范式

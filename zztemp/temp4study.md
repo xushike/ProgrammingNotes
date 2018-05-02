@@ -1191,3 +1191,30 @@ worker.cancel();
 
 60. postman的使用,现在大家都用什么?
 61. go编译后的后缀名是什么,在linux和mac中?
+62. js arraybuffer和java ByteBuffer
+    1. 参考:
+        1. https://developer.mozilla.org/en-US/docs/Web/API/ArrayBufferView
+        2. https://www.cnblogs.com/copperhaze/p/6149041.html
+    2. arraybuffer可以存放object吗?
+    3. js 堆栈 内存的笔记,arraybuffer开辟的内存是从哪儿开辟的
+    4. arraybuffer和buffer的区别
+    5. buffer和缓冲区
+
+63. curl 和wget
+    1. curl后面的命令跟括号还有大于小于什么意思
+
+64. go 已经哈希操作 /usr/local/go/bin/go
+    1. type的三种类型
+
+65. zookeeper发音
+66. inline-block等的深入理解和使用
+
+67. git push dev分支的时候,说master分支本地落后了,然后master分支的推送被拒绝了
+
+    意思是git push会推送所有分支?那么git pull呢
+68. 二进制文件删了可以复原吗, 修改不能对吧?
+
+69. 如何搜索某个文件的历史记录
+70. 纸短情长为什么火了,钢琴谱,梦想三国
+71. angular5 强大的响应式表单
+72. 数据库索引
