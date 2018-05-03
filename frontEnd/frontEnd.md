@@ -187,3 +187,6 @@ PWA带来的影响:
 # 七 待整理
 1. (不是那么重要):https://lzw.me/a/fed-file-download.html
     1. https://lzw.me/a/pwa-service-worker.html
+
+2. mozilla工程师Lin Clark的文章:https://hacks.mozilla.org/author/lclarkmozilla-com/
+3. https://medium.com/@moz2000tw/2017%E5%B9%B4%E5%9B%9E%E9%A1%A7-%E7%82%BA%E4%BA%86%E9%96%8B%E7%99%BC%E8%80%85-mozilla-%E6%8A%8A-web-%E8%AE%8A%E5%BE%97%E6%9B%B4%E5%A5%BD%E4%BA%86-a735d4914775
