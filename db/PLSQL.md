@@ -23,7 +23,7 @@ update xxx set xxx = xxx,xxx= xxx
 `select * from  xxx`
 
 #### 1.5 模糊查询like
-`%`表示多个字符,`_`表示一个字符,对于特殊符号可以使用ESCAPE标识符来查找,如`select * from emp where ename like '%*_%' escape '*'`,escape表示*后面的那个符号不当成特殊字符处理，就是查找普通的_符号
+`%`表示一个或多个字符,`_`表示一个字符,对于特殊符号可以使用ESCAPE标识符来查找,如`select * from emp where ename like '%*_%' escape '*'`,escape表示*后面的那个符号不当成特殊字符处理，就是查找普通的_符号(待补充)
 
 #### 1.5 group by分组
 在`group by`子句的字段可以不在`select`后面,但是对于在`select`后面的非组函数字段,则必须在`group by`子句中

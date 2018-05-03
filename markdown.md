@@ -131,3 +131,6 @@ markdown原生不支持,但支持html的table标签.gfm支持该表格写法,注
 官方参考:[https://github.github.com/gfm/](https://github.github.com/gfm/),Github用的GFM，风格很漂亮，简洁美观大方。 GFM对标准Markdown做了少量修改,所以我写这个笔记的时候也会尽量考虑兼容两者.
 
 ## 六 问题
+### 1 已解决
+#### 1.1 `1.`,`-`和直接写文字的优先级?
+文字的优先级最高,然后有序和无序平级

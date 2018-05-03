@@ -1199,6 +1199,7 @@ worker.cancel();
     3. js 堆栈 内存的笔记,arraybuffer开辟的内存是从哪儿开辟的
     4. arraybuffer和buffer的区别
     5. buffer和缓冲区
+    6. typed array
 
 63. curl 和wget
     1. curl后面的命令跟括号还有大于小于什么意思
@@ -1218,3 +1219,16 @@ worker.cancel();
 70. 纸短情长为什么火了,钢琴谱,梦想三国
 71. angular5 强大的响应式表单
 72. 数据库索引
+
+73. go的参数传递是不是引用传递?
+74. oracle的substr 会导致不能用到索引?
+    1. 效率问题
+
+75. sql有短路原则
+76. markdown的todo list
+77. 项目go框架
+    1. interface转int用:types.toInt()
+
+78. sql中<>和!=的区别
+
+79. subscrib的处理是怎么样的:有三个:res,err,和不管成功失败都进行的处理?
