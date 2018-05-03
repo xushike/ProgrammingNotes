@@ -1,8 +1,8 @@
 # frontEnd前端
-## 一 概述
-### 2 历史
-### 3 常识
-#### 3.1 HTML attribute 与 DOM property 的对比(待整理)
+# 一 概述
+## 2 历史
+## 3 常识
+### 3.1 HTML attribute 与 DOM property 的对比(待整理)
 ```
 attribute 是由 HTML 定义的。property 是由 DOM (Document Object Model) 定义的。
 
@@ -39,41 +39,41 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 2. 本人简单测了下(待补充),普通的html对attribute和property两种写法都是支持的,比如`label`标签的`for`和`htmlFor`;而且chrome inspector shows both attributes and properties.
 3. 关于文中说的**property的值可以改变；attribute的值不能改变**,我简单测了下,其中好像只有`value`符合,而`href`,`for`和`htmlFor`都是attribute跟着property一起变化.(其他的测试待补充),所以文中的这个说法很可能只是针对angular的.
 
-#### 3.2 各浏览器的激进版
+### 3.2 各浏览器的激进版
 - 黄色的Chrome([Chrome Canary](https://www.google.com/chrome/browser/canary.html)):可与chrome同时运行.
 - 紫色的Safari([Safari Technology Preview](https://developer.apple.com/safari/technology-preview/))
 - 深蓝色的Firefox([Firefox Nightly](https://www.mozilla.org/en-US/firefox/nightly/all/))
 - 改头换面的IE([Microsoft Edge](https://www.microsoft.com/en-us/windows/microsoft-edge))
 
-#### 3.3 UI库和CSS框架
+### 3.3 UI库和CSS框架
 感觉可以把这两个概念当做同一个概念俩看待,UI库也是对html和css的封装
 
-### 4 文档
+## 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 
-### 6 网站
-#### 6.1 js工具网站
+## 6 网站
+### 6.1 js工具网站
 1. 10 款优秀的在线 JavaScript 工具推荐:[http://www.iteye.com/news/25351](http://www.iteye.com/news/25351)
 1. 在线编辑工具——由HTML编辑器、CSS编辑器、JavaScript编辑器和输出界面4个部分组成，你可以方便地进行代码测试:[jsfiddle.net](https://jsfiddle.net/)
 
-#### 6.2 图标网站
+### 6.2 图标网站
 1. 阿里:[http://www.iconfont.cn/](http://www.iconfont.cn/)
 
-#### 6.3 设计
+### 6.3 设计
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
 
-#### 6.4 其他
+### 6.4 其他
 1. [稳定、快速、免费的前端开源项目 CDN 加速服务](http://www.bootcdn.cn/)
 
-#### 6.5 网友博客
+### 6.5 网友博客
 1. [http://yunkus.com/](http://yunkus.com/)
 2. 张鑫旭:http://www.zhangxinxu.com/
 
-## 三 基础
-### 1 热更新
+# 三 基础
+## 1 热更新
 
-## 四 高级
-### 1 已整理
+# 四 高级
+## 1 已整理
 1. 知乎张克军
 
     参考链接:[https://www.w3ctech.com/topic/983](https://www.w3ctech.com/topic/983)
@@ -85,56 +85,65 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 
     Angular 约束多，擅长复杂中后台场景和多人协作。Vue 灵活，适用于简单业务快速迭代（当然也有 Vue 做中后台的）。React 组件化设计的好，可以实现比较好的组件生态进行复用。对于这些框架，你只需要基于现有的业务体系和开发者经验，做好最佳的技术方案选型即可。在某些场景下甚至 jQuery 反而是更好的技术选型。
 
-### 2 前端的常见概念
-#### 2.1 前端工程化体系
-#### 2.2 前端组件化
-#### 2.3 异步加载
-#### 2.4 样式预处理器
-#### 2.5 代码自动review工具
-#### 2.6 热更新
+## 2 前端的常见概念
+### 2.1 前端工程化体系
+### 2.2 前端组件化
+### 2.3 异步加载
+### 2.4 样式预处理器
+### 2.5 代码自动review工具
+### 2.6 热更新
 给BS架构的页面加载提速的终极方案就是CDN,而CS架构不存在加载压力,但是更新不灵活,所以需要前端热更新
 
-#### 2.7 懒加载(Lazy loading)
+### 2.7 懒加载(Lazy loading)
 
-#### 2.8 面包屑导航
+### 2.8 面包屑导航
 来自于一个故事(略).面包屑导航的作用是告诉访问者他们目前在网站中的位置以及如何返回.在许多关于网站用户使用体验的调查报告中也得出，如果超过3次点击，访客还没有找到需要的信息，那么有大约80%的访客会离开网站。
 
-### 3 浏览器开发者工具
+## 3 浏览器开发者工具
 
 
-## 五 经验
-### 1 前端提速
+# 五 经验
+## 1 前端提速
 
-### 2 前端趋势
+## 2 前端趋势
 [2018 年最值得关注的 JavaScript 趋势](http://36kr.com/p/5110763.html)
 
-#### 2.1 WebAssembly
+### 2.1 WebAssembly
 知乎:[如何评论浏览器最新的 WebAssembly 字节码技术？](https://www.zhihu.com/question/31415286)
 
-#### 2.2 server-side rendering
+### 2.2 server-side rendering
 服务端渲染
 1. 网友的评价
     1. This allowed for single page applications to be search engine friendly.
 
-### 3 跨站点脚本（XSS）
+### 2.3 PWA
+PWA的核心能力:
+1. Service Worker，独立的JS线程，与文档无关的生命周期，离线更新资源的能力。
+2. Reliable : SW Cache、Fetch、Push、Navigation Preload、Background Fetch、Background Synchronization、   CompositorWorker
+
+PWA带来的影响:
+1. 逐步给前端开放浏览器内核基础能力，甚至是操作系统能力，比如缓存、推送、添加桌面图标、下载、图片解码、渲染等等
+2. 前端正变得无所不能，很多事情都可在Web实现，比如SW、WebGL、WebRTC、WebAR/VR等等
+
+## 3 跨站点脚本（XSS）
 除了`<script>`标签,还有其他dom元素和属性允许执行代码,比如`<img onerror="...">`和`<a href="javascript:...">`
 
-### 4 种子库seed
+## 4 种子库seed
 有一种核心种子库,其他项目都根据这个种子库来创建衍生库.只要种子库保持更新，其他库可以同步保持更新.
 种子库没有业务逻辑的代码,主要是平时开发时所需要的所有脚本，以及npm的一些基本依赖。另外一些共用组件，共用逻辑代码（例如登录验证等等）
 
 
-### 4 性能测量(待实践)
+## 5 性能测量(待实践)
 [Chrome 开发工具的网络性能页](https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing)是开始学习度量性能的好地方。
 
 [WebPageTest工具](https://www.webpagetest.org/)是另一个不错的选择，它能帮你验证你的部署是否成功了。
 
-## 六 问题
-### 1 已解决
-#### 1.1 浏览器未响应
+# 六 问题
+## 1 已解决
+### 1.1 浏览器未响应
 原因可能有很多,但是最先应该考虑的是js代码:在浏览器环境中，一些代价高昂的计算会导致糟糕的用户体验，因为一个页面的用户界面无响应多数是由于在运行js代码.
 
-### 2 未解决
+## 2 未解决
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)
 3. 异步事件,哪些事件是异步的
@@ -174,3 +183,7 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
     ```
 
 18. https://www.moocbaba.com/product-tag/99
+
+# 七 待整理
+1. (不是那么重要):https://lzw.me/a/fed-file-download.html
+    1. https://lzw.me/a/pwa-service-worker.html

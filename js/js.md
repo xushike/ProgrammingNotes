@@ -110,6 +110,8 @@ let和const是es5为了弥补var的不足而设计出来的。
 #### 3.7 部分最佳实践or技巧
 十进制指数:比如1000可以写成`1e3`,10000可以写成`1e4`,以此类推.(`1e0`为1)
 
+#### 3.8 The fps that JavaScript can detect doesn't always relate to number of frames displayed
+
 ### 4 文档
 ### 5 相关网址
 1. 廖雪峰的js标准参考教程:[http://javascript.ruanyifeng.com/](http://javascript.ruanyifeng.com/)
