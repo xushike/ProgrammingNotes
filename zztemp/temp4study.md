@@ -1,4 +1,21 @@
 # temp4study
+1. virtual DOM和angular渲染的区别,如何自己实现
+
+1. golang各种类型的转换,一定要弄明白
+    1. golang类型断言
+1. golang 声明了返回string,但是没有给值,会有个默认值?
+1. go 双重for循环中内层的break是退出内层还是所有层
+1. go如何获取map中的值
+1. go interface{}和interface{}{}
+1. js json相关的 研究
+1. map等可以中断吗,详细研究研究
+1. angular template占用什么资源?
+1. color 和background-color,前者都是指的文字颜色?
+1. js:如果把对象中的引用传过来并修改了,会影响对象吗
+1. ajax
+1. bootstrap vue
+1. web worker
+1. 研究下项目中Util的写法并用到vue中
 1. viewport;html和css渲染;华尔街golang
 1. 基于nodejs、Vue实现服务端渲染
 4. go编写闭包
@@ -1235,3 +1252,5 @@ worker.cancel();
 
 79. subscrib的处理是怎么样的:有三个:res,err,和不管成功失败都进行的处理?
 80. https和http2
+81. 长连接和websocket
+    1. 网友:长连接比WebSocket更耗服务器的资源，而且长连接也是基于HTTP的，不能全双工通信，其实对于客户端来说还是要轮询，只是不需要每次请求都要先握手
