@@ -125,6 +125,12 @@ Trim():去除首尾空格
 #### 1.2 date format picture ends before converting entire input string
 `to_date()`格式化日期必须必须必须保证传入的字符串和要转换的格式精确匹配.前面若含有时分秒格式化的时候也必须含有。比如`to_date(‘2015-12-12 12:12:12’,'yyyy/mm/dd hh24:mi:ss')`
 
+#### 1.3 invalid user.table.column, table.column, or column specification
+一般是列名不对
+
+#### 1.4 identifier is too long
+标识符太长,超过了oracle限制的30个字符
+
 ### 2 未解决
 1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
 2. Oracle调优经验

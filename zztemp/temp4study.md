@@ -1,4 +1,25 @@
 # temp4study
+1. css怎么知道该选哪个颜色这些?
+1. https://tieba.baidu.com/p/5165634082?red_tag=2983262444
+1. js断电调试方法
+2. c++等的析构函数
+1. js的class和func的原型链 的关系
+    1. `export new Api()`;
+1. typescript static
+1. js Date的处理:比如获取月初,月末等
+1. package-lock.json
+1. vue ,main.js,index.html和app.vue的关系
+1. HTTP请求方法:GET，POST，HEAD等的区别
+    1. w3c规范:https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+
+2. HTTP访问控制(CORS):https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS
+
+2. js线程,主线程,ajax线程,alert,Service Worker
+2. js的try catch
+
+1. ajax,promise,rxjs等的关系
+1. http,file,ftp等协议的使用场景
+1. golang的def是什么意思;有可选参数吗
 1. virtual DOM和angular渲染的区别,如何自己实现
 
 1. golang各种类型的转换,一定要弄明白

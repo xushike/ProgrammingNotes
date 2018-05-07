@@ -109,6 +109,7 @@
     * [1.jwt](network/1.jwt.md)
     * [2.ss](network/2.ss.md)
     * [3.http](network/3.http.md)
+    * [4.ajax](network/4.ajax.md)
 * [popularizationOfScience科普](popularizationOfScience/popularizationOfScience.md)
 * [readingNotes读书笔记](readingNotes/readingNotes.md)
     * [1.profession专业笔记](readingNotes/1.profession.md)

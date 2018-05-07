@@ -128,6 +128,9 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 #### 3.11 2009-11-10 23:00:00 UTC
 该日期是go的开源日期,可以看做是go的生日(?).
 
+#### 3.12 interface{}类型(待整理)
+1. interface{}和其他类型比较的时候,是比较interface{}的实际类型.
+
 ### 4 文档
 1. _Effective Go_(中文名《高效Go编程》)
 
@@ -971,18 +974,20 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 参考[Built-In source code location](https://stackoverflow.com/questions/18512781/built-in-source-code-location).大意就是运行时会根据类型等来调用不同的函数(在"cmd/compile/internal/gc/typecheck.go"),内建函数可以看做是多个函数的组合,想看代码的话就只有分析可能调用的方法慢慢找.
 
 #### 1.3 获取参数的类型的几种方法
-都可以获取interface{}的实际类型
-
 1. `fmt.Sprintf("%T",xxx)`:通过fmt包获取,其实也是通过反射获取的
 2. `reflect.TypeOf(xxx)`:通过反射获取
 3. `xxx.(<类型>)`:类型断言
 
+注意:注意上面的方法都可以获取interface{}的实际类型
 
 #### 1.4 常见错误:err is shadowed during return
 作用域问题,在if等语句内部声明的err覆盖了外面的err,当内部执行完毕之后外部的err并没有变.
 
 #### 1.5 debug.gcstackbarrieroff undefined ...
-我当时是覆盖安装新版本go后使用`go build`命令出现的这个问题,网上搜了下,答案是删除``
+我当时是覆盖安装新版本go后使用`go build`命令出现的这个问题,网上搜了下,答案是删除``(待补充)
+
+#### 1.6 cannot use card.CardLib literal (type *card.CardLib) as type card.ICardLib in field value: *card.CardLib does not implement card.ICardLib (missing SwitchCardGPRS method)
+一般都是方法所有者不对
 
 ### 2 未解决
 1. 因式分解
