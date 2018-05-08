@@ -247,7 +247,7 @@ Go语言主要有四种类型的声明语句：var、const、type和func，分�
     5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
     6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
 
-4. 类型转换
+4. 类型转换(难点)
 
     不同类型之间转换需要显式转换
     1. int=>float64:`var f float64 = float64(i)`或者`f := float64(i)`
@@ -1046,5 +1046,5 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 14. [用go写一个windows外挂](http://www.ituring.com.cn/article/468550)
 
 15. golang的升级(笔记)
-
-
+16. 大量使用 type assertion 代码是非常丑陋的。所以一定要尽量避免使用这个类型
+    1.  golang wiki 上面对这个问题的解释 https://github.com/golang/go/wiki/InterfaceSlice golang wiki 是个好东西，有时间建议把内容都过一遍，可以让你少踩好多坑

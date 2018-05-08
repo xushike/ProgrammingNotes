@@ -48,7 +48,6 @@
     * [ReactNative](js/ReactNative.md)
     * [TypeScript](js/TypeScript.md)
     * [rxjs](js/rxjs.md)
-    * [vue](js/vue.md)
     * [jQuery](js/jQuery.md)
     * [19.Bootstrap](js/19.Bootstrap.md)
     * [25.ECharts](js/25.ECharts.md)

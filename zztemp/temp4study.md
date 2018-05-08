@@ -1,4 +1,6 @@
 # temp4study
+1. lang="post"什么意思
+1. 拦截器
 1. 轮子哥:一定要把group by、partition和index的各种神奇用法搞明白
 1. css怎么知道该选哪个颜色这些?
 1. https://tieba.baidu.com/p/5165634082?red_tag=2983262444
@@ -1276,3 +1278,6 @@ worker.cancel();
 80. https和http2
 81. 长连接和websocket
     1. 网友:长连接比WebSocket更耗服务器的资源，而且长连接也是基于HTTP的，不能全双工通信，其实对于客户端来说还是要轮询，只是不需要每次请求都要先握手
+
+82. 动态路由
+83. Web前端单元测试、自动化测试和压力测试程序的开发 

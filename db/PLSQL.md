@@ -131,6 +131,9 @@ Trim():去除首尾空格
 #### 1.4 identifier is too long
 标识符太长,超过了oracle限制的30个字符
 
+#### 1.5 column not allowed here
+传入的值不符合要求,比如值的名字写错了,值的类型不对等.
+
 ### 2 未解决
 1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)
 2. Oracle调优经验
