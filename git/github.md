@@ -4,6 +4,9 @@
 ### 3.1 clone的时候加不加`.git` suffix
 不加也能识别出来
 
+### 3.2 Pinned repositories
+"Pinned repositories"可以理解为 "自定义需要固定的仓库" ，就是将你想展示在profile首页的repo展示出来，不像默认情况那样通过热度来排行repo，以至于有些你认为重要的repo再profile首页显示不出来。
+
 # 三 基础
 ## 1 多人合作
 ### 1.1 项目操作

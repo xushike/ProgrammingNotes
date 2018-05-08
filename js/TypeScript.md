@@ -249,9 +249,11 @@ console.log(typeof arrayFromString[0]);
 - xxx可能为null或undefined,需要先判断
 
 #### 1.2 关于ele对象的`ele.xxx`,`ele["xxx"]`和`ele[xxx]`
-想访问ele中的xxx属性,有一下几种情况:
+想访问ele中的xxx属性,有以下几种情况:
 - 如果已经知道ele中有xxx属性或者声明ele为any类型,那么可以用`ele.xxx`(如果xxx不是字符串的话)
 - 如果不知道,可以用`ele["xxx"]`(xxx是字符串的话则是`ele[xxx]`)
+
+意味着用`ele["xxx"]`(或`ele[xxx]`)可编写可重用的代码.
 
 ### 2 未解决
 1. 和typings的关系  

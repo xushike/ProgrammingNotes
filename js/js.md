@@ -111,6 +111,41 @@ let和const是es5为了弥补var的不足而设计出来的。
 十进制指数:比如1000可以写成`1e3`,10000可以写成`1e4`,以此类推.(`1e0`为1)
 
 #### 3.8 The fps that JavaScript can detect doesn't always relate to number of frames displayed
+(待验证)
+#### 3.9 Spread Operator和rest操作符
+rest操作符:主要用于获得传递给函数的参数列表.如,
+
+```javascript
+function countArguments(...args) {  
+　　return args.length;
+}
+countArguments('welcome', 'to', 'Earth'); // 3  
+```
+
+有两个作用:
+1. 语法糖
+2. 表示箭头函数中的arguments.具体参考:https://segmentfault.com/q/1010000008720963?_ea=1724154
+
+spread操作符:主要用于数组构造和解构，在调用时将数组填入函数参数.如
+
+```javascript
+//数组构造
+const odd = [1, 3, 5 ];
+const nums = [2, ...odd, 4 , 6]; // [2,1,3,5,4,6]
+//解构数组
+[a,...otherArr] = nums; // otherArr的值是[1,3,5,4,6]
+```
+有几个作用:
+1. JS的函数只能返回一个值，如果返回多个值就需要用到数组或对象。展开运算符提供了一种处理这种返回值的有效方法
+2. 替换push方法.push方法的参数不能是数组，所以只好通过apply方法变通使用push方法。有了展开运算符，就可以像下面直接将数组传入push方法,
+    
+    ```javascript
+    var arr1 = [0, 1, 2], arr2 = [3, 4, 5];
+    //Array.prototype.push.apply(arr1, arr2);
+    arr1.push(...arr2);
+    ```
+
+注意:任何实现了Iterator接口的对象，都可以用展开运算符转为真正的数组.其他的似乎不行.
 
 ### 4 文档
 ### 5 相关网址
@@ -271,9 +306,9 @@ js中的if判断的是变量或表达式的布尔值而不是值,关于js的布�
 #### 4.1 Array对象
 js数组中的元素可以不是同一类型.
 
-三种定义方法:略
+三种定义方法:略.
 
-其实还有第四种定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`,非常不推荐使用.
+其实还有第四种定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
 
 array常用方法:
 1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
@@ -303,6 +338,7 @@ array常用方法:
     从数组中添加/删除项目，然后返回被删除的项目.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
     1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。在头部添加元素可以用:`arr.splice(0,0,xxx)`
     2. `pop()`:删除并返回数组的最后一个元素,那么删除头部的元素呢?使用`arr.splice(0,1)`.
+
 3. `filter(callback[, thisArg])`:返回过滤后的新数组,不会改变原数组.简单使用如下
 
     ```javascript
@@ -311,6 +347,7 @@ array常用方法:
     })
 
     ```
+4. `find()`
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
 
@@ -391,7 +428,16 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 
 ## 四 高级
 ### 1 闭包(closure)(难点)
+### 2 按位操作符(Bitwise Operator)
+#### 2.2 双位操作符(Double Bitwise NOT)
+可以用来替代`Math.floor()`,快得多.例如
+```javascript
+Math.floor(4.9) === 4  //true
+~~4.9 === 4  //true
+```
 
+### 3 ArrayBuffers和SharedArrayBuffers
+为什么我们需要这两个:
 
 ## 五 经验
 ### 1 已整理
