@@ -1,4 +1,8 @@
 # temp4study
+1. 各种export,class和module等
+1. promise并发
+1. js回调地狱
+1. js中实现异步编程的四种方式
 1. 拦截器
 1. 轮子哥:一定要把group by、partition和index的各种神奇用法搞明白
 1. css怎么知道该选哪个颜色这些?
