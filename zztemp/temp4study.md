@@ -1,5 +1,4 @@
 # temp4study
-1. lang="post"什么意思
 1. 拦截器
 1. 轮子哥:一定要把group by、partition和index的各种神奇用法搞明白
 1. css怎么知道该选哪个颜色这些?
