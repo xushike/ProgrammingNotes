@@ -46,6 +46,61 @@ ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代
 ### 3.1 箭头函数
 我的理解是:直接声明function,则function中的this指的外层对象;而用箭头函数则this指的全局对象(如果是在组件中,则是指向组件)
 
+### 3.2 更简短定义方法的语法
+这是一种把方法名直接赋给函数的简写方式,例子如下
+```JavaScript
+var obj = {
+  foo: function() {
+    /* code */
+  },
+  bar: function() {
+    /* code */
+  }
+};
+```
+
+可以简写为:
+```JavaScript
+var obj = {
+  foo() {
+    /* code */
+  },
+  bar() {
+    /* code */
+  }
+};
+```
+
+### 3.3 setter和getter
+#### getter
+基本使用如
+```JavaScript
+var obj = {
+  log: ['example','test'],
+  get latest() {
+    if (this.log.length == 0) return undefined;
+    return this.log[this.log.length - 1];
+  }
+}
+```
+
+注意:getter是lazy getter,每次调用的时候才回去计算值.可以使用delete操作符删除 getter
+
+#### setter
+基本使用如
+```JavaScript
+var language = {
+  set current(name) {
+    this.log.push(name);
+  },
+  log: []
+}
+language.current = 'EN';
+console.log(language.log); // ['EN']
+```
+
+也可以用 delete 操作符移除一个 setter
+
 ## 4 js6常用对象
 ### 4.1 Promise对象
 Promise 对象是 JavaScript 的异步操作解决方案，为异步操作提供统一接口。它起到代理作用（proxy），充当异步操作与回调函数之间的中介，使得异步操作具备同步操作的接口。Promise 可以让异步操作写起来，就像在写同步操作的流程，而不必一层层地嵌套回调函数。
@@ -122,7 +177,64 @@ Promise常用方法:
     p5.then();//obj 里面的then()方法
     ```
 
+## 5 类
+ES2015的类,实质上是 JavaScript 现有的基于原型的继承的语法糖,也就是说本质仍然是基于原型.
 
+类声明:使用class关键字,形如,
+```JavaScript
+class xxx{
+    constructor(...){...}
+}
+```
+
+注意:js的类声明不存在提升,提前访问会抛出ReferenceError.
+
+类表达式:分为匿名类表达式和命令类表达式
+```JavaScript
+/* 匿名类 */ 
+let Rectangle = class {
+  constructor(...) {...}
+};
+
+/* 命名的类 */ 
+let A = class B {
+  constructor(...) {...}
+};
+```
+
+注意:没有必要专门去区分这两者,意义不大.
+
+构造函数:一个类只能有一个构造函数,其中可以使用 super 关键字来调用一个父类的构造函数
+
+静态方法:
+1. 使用`static`关键字创建静态方法。静态方法通常用于为一个应用程序创建工具函数。
+2. 在一个静态方法中调用另一个静态方法，你可以使用 this 关键字
+3. 一般通过类来调用.不能通过一个类的实例调用静态方法(区别于java),但是可以将其作为构造函数的属性来调用该方法,如
+
+    ```JavaScript
+    class A{
+        constructor(){
+            this.constructor.say()
+        }
+        static say(){}
+    }
+    a = new A()
+    a.constructor.say()
+    ```
+
+创建子类:使用`extends`关键字
+
+### 5.1 原型链
+参考:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
+
+遍历:
+1. 访问对象的某个属性时，先在对象自身上找,然后对象的原型，该对象的原型的原型，层层搜索，直到找到一个名字匹配的属性或到达原型链的末尾。
+2. 遍历对象的属性时，原型链上的每个可枚举属性都会被枚举出来。要检查对象自己定义的属性，而不是其原型链上的某个属性，必须使用所有对象从Object.prototype继承的`hasOwnProperty("xxx")`方法,该方法是js中唯一处理属性并且不会遍历原型链的方法.
+
+性能:
+1. 在原型链上查找属性比较耗时，对性能有副作用,而且试图访问不存在的属性时会遍历整个原型链。
+
+注意:永远不要扩展原生对象的原型，除非是为了兼容新的JavaScript特性。
 
 # 四 高级
 

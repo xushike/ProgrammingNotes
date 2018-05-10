@@ -282,7 +282,35 @@ age="hello";
 js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么变量的值和类型都是undefined
 
 ## 2 运算符
-1. `+`可以用于数字也可以用于字符串,甚至可以把字符串和数字拼接在一起(弱类型语言,所以允许这样),此时数字被自动转换为字符串
+### 2.1 运算符+
+可以用于数字也可以用于字符串,甚至可以把字符串和数字拼接在一起(弱类型语言,所以允许这样),此时数字被自动转换为字符串
+
+### 2.2 delete
+delete 操作符用于删除对象的某个属性.只能删除自身的属性(区别于原型链的属性);var, let以及const创建的不可设置的属性不能被delete操作删除;
+
+一般情况都会返回true(属性不存在也返回true),除非属性是自己不可设置的值,比如`Math.PI`
+
+删除数组元素:删除的元素不属于该数组,数组长度不受影响.两个例子如下
+```JavaScript
+var trees = ["redwood","bay","cedar","oak","maple"];
+delete trees[3];
+if (3 in trees) {
+   // 这里不会执行
+}
+console.log(trees) //["redwood","bay","cedar",,"maple"]
+console.log(trees.length)//5
+```
+
+```JavaScript
+var trees = ["redwood","bay","cedar","oak","maple"];
+trees[3] = undefined;
+if (3 in trees) {
+   // 这里会执行
+}
+console.log(trees) //["redwood","bay","cedar",,"maple"]
+console.log(trees.length)//5
+```
+
 
 ## 3 流程控制
 ### 3.1 `if else`:跟java的用法一样,除了一点:
