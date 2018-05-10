@@ -239,6 +239,8 @@ console.log(typeof arrayFromString[0]);
 - Decorators装饰器
 - Protected/Private
 - Union Types 
+
+
 ## 五 经验
 
 ## 六 问题
@@ -264,7 +266,8 @@ console.log(typeof arrayFromString[0]);
 4. 笔记:如果input组件被声明为number类型,那么在ts中,其value值也是number类型
 
 
-## 七 学习
+## 七 待整理
 1. [http://web.jobbole.com/87535/](http://web.jobbole.com/87535/)
 
 ### 1 可选参数必须放到必须参数的后面
+2. tsc --target ES6 demo2.ts

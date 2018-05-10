@@ -88,6 +88,7 @@
     * [windows10](windows/windows10.md)
     * [DOS](windows/DOS.md)
 * [mac](mac/mac.md)
+    * [unix](mac/unix.md)
 * [news重要新闻](news.md)
 * [markdown](markdown.md)
 * [software&tool软件和工具](software&tool/0.software&tool.md)

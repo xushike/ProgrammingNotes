@@ -125,19 +125,6 @@ Promise常用方法:
 
 
 # 四 高级
-## 1 js模块加载方案
-因为经常看到各种`require`,`import`等,感觉很混乱,所以做点笔记整理下.
-
-主流的几个是:JS6,NodeJS,webpack
-### 1.1 JS6
-引入模块的几种写法,其中`module-name`一般是模块js文件的路径,一般不包含`.js`扩展名,用单引号或双引号包裹:
-1. 导入整个模块:形如`import {export} from "module-name"`,也可以使用别名`import { export as alias } from "module-name"`
-2. 导入里面的多个子模块:形如`import {foo, bar} from "module-name"`:也可以使用别名`import { export1 , export2 as alias2 , ["module-name"] } from "module-name"`
-3. 导入成默认值:形如`import myDefault from "module-name"`:导入单个或多个时导出时,需要知道导出的名字,很不方便,所以js允许设置一个默认的导出,形如`export default xxx`,这样导入的时候就可以随意取一个名字,而且不用大括号包裹来表示默认的导出.
-4. 仅为副作用而导入一个模块:`import "module-name"`
-5. 导入某模块的所有导出:`import * as [name] from "module-name"`:可以用别名`[name]`来使用模块(如果模块里有多个导出,用了星号后能不能直接使用这些导出的名字呢?)
-
-### 1.2 NodeJS
 
 ## 2 导出
 

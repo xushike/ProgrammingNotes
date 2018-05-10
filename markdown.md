@@ -126,6 +126,9 @@ markdown原生不支持,但支持html的table标签.gfm支持该表格写法,注
         * `不断行的空白格&nbsp;或&#160;`
 
 ## 四 高级
+### 1 markdown解析器
+1. github高星,代码量少,适合个人开发研究:https://github.com/markedjs/marked
+
 ## 五 经验
 ### 1 GFM(Github Flavored Markdown)(待补充)
 官方参考:[https://github.github.com/gfm/](https://github.github.com/gfm/),Github用的GFM，风格很漂亮，简洁美观大方。 GFM对标准Markdown做了少量修改,所以我写这个笔记的时候也会尽量考虑兼容两者.

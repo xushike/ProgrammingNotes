@@ -1,4 +1,23 @@
 # temp4study
+1. SSR服务端渲染
+1. angular的脏检查是什么
+1. vue的响应式是什么
+1. 学习看代码和源码
+1. vue virtual dom
+    1. vue patch
+1. js == 和 ===
+1. 为什么文件夹叫assets
+1. web worker
+1. 参考该页面的样式:https://www.cnblogs.com/bndong/p/6743524.html
+1. encodeURIComponent和encodeURI,以及location.hash,URL中的#
+    1. 参考:https://www.cnblogs.com/season-huang/p/3439277.html
+    1. encodeURI方法不会对下列字符编码  ASCII字母、数字、~!@#$&*()=:/,;?+'
+
+        encodeURIComponent方法不会对下列字符编码 ASCII字母、数字、~!*()'
+
+1. url请求的 param 支持 哪些字符
+1. 地图引擎
+1. 高斯平面
 1. 各种export,class和module等
 1. promise并发
 1. js回调地狱
@@ -1284,3 +1303,4 @@ worker.cancel();
 
 82. 动态路由
 83. Web前端单元测试、自动化测试和压力测试程序的开发 
+84. 如何模拟网络状况
