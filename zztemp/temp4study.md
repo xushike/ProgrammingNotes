@@ -1,6 +1,12 @@
 # temp4study
+1. npm中文文档
+1. js去除掉空格
+1. js isnan
+1. jquery是基于js的吗
+1. vue看渲染时间的插件
+1. package-lock.json和npm锁定版本
 1. SSR服务端渲染
-1. angular的脏检查是什么
+
 1. vue的响应式是什么
 1. 学习看代码和源码
 1. vue virtual dom
@@ -1305,3 +1311,12 @@ worker.cancel();
 83. Web前端单元测试、自动化测试和压力测试程序的开发 
 84. 如何模拟网络状况
 85. async 和await
+86. angular的脏检查和zone
+87. vue lavas
+88. 路由策略:RouteReuseStrategy
+    1. 路由复用策略
+    2. 观察者更新
+    3. 几种脏值检测策略对比:https://alligator.io/angular/change-detection-strategy/ 
+    4. rxjs教程
+
+ 
