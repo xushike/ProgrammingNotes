@@ -143,6 +143,7 @@
     * [8.bigdata](se/8.bigdata.md)
     * [9.DeepLearning](se/9.DeepLearning.md)
     * [10.Blockchain区块链](se/10.Blockchain.md)
+    * [11.CharacterEncoding字符编码](se/11.CharacterEncoding.md)
 * [vr](vr/vr.md)
 * [accounting会计学](accounting.md)
 * [math](math/math.md)

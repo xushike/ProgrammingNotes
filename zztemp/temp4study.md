@@ -1,16 +1,5 @@
 # temp4study
-1. npm中文文档
-1. js去除掉空格
-1. js isnan
-1. jquery是基于js的吗
-1. vue看渲染时间的插件
-1. package-lock.json和npm锁定版本
-1. SSR服务端渲染
-
-1. vue的响应式是什么
 1. 学习看代码和源码
-1. vue virtual dom
-    1. vue patch
 1. js == 和 ===
 1. 为什么文件夹叫assets
 1. web worker
@@ -32,7 +21,7 @@
 1. 轮子哥:一定要把group by、partition和index的各种神奇用法搞明白
 1. css怎么知道该选哪个颜色这些?
 1. https://tieba.baidu.com/p/5165634082?red_tag=2983262444
-1. js断电调试方法
+1. js断点调试方法
 2. c++等的析构函数
 1. js的class和func的原型链 的关系
     1. `export new Api()`;
@@ -1319,4 +1308,4 @@ worker.cancel();
     3. 几种脏值检测策略对比:https://alligator.io/angular/change-detection-strategy/ 
     4. rxjs教程
 
- 
+ 1. SSR服务端渲染
