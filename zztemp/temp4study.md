@@ -1,7 +1,84 @@
 # temp4study
+1. sql
+    1. exist和count(0)
+    2. 如何防止几个人同时新增的并发
+    3. count(0)和exist
+    4. count(0)和count(1)
+    4. 数据库索引是什么东西
+    5. rownum和rowid
+    6. 换行符和空格会原样取出来吗
+    7. 框架自动转换?
+        ```golang
+        map[string]interface{}{
+            "count": r,
+            "list":  list,
+        }
+        ```
+    8. oracle的日期操作,比如月份的增加减少
+
+1. Object.assign的单双参数写法和顺序
+1. js普通=号是深copy还是浅copy
+
+1. to_char和to_date
+
+1. yyyyMM和yyyymm等
+
+1. 项目中
+    1. `DateUtility.toString`和`DateUtility.toUTCString`
+    2. 使用字符串类型的枚举为什么会报错
+    3. 为什么日期要转换这么多次
+
+1. ng-template和ng-if比会增加渲染效率吗
+
+1. overflow:auto
+    1. 以及和各种scroll的关系
+
+1. golang
+    1. interface型的0和0比较的结果是啥?int型的interface和0比较呢?
+
+1. 冷启动和热启动除了通不通电外还有什么不同, 比如卡的时候?
+
+1. 签名是什么
+1. 如何把axure弄成局域网可看的
 1. 学习看代码和源码
 1. js == 和 ===
 1. 为什么文件夹叫assets
+
+1. vue
+    1. https://www.cnblogs.com/itbainianmei/p/7826742.html
+    2. https://blog.csdn.net/sinat_17775997/article/details/75950356
+    3. https://blog.csdn.net/u012317188/article/details/74989692
+    4. https://segmentfault.com/a/1190000009192118
+
+2. 路由策略
+2. console.log多参数的 写法
+2. let's make more time
+2. 日期的协议和各语言的标准
+2. webpack的设置,比如打印出日期信息等
+2. if else和switch在语言底层的实现
+2. TMP.htm是什么
+2. 如何直接打出换行符.比如在git commit - m ""中使用换行符
+2. 笔记:模板字符串中对象内容不会显示,可以用JSON.stringify?
+3. 笔记:
+
+    //计算字符串长度(中文2，其他1)
+    getStringLenth(str: string) {
+        let len = 0;
+        for (let ch of str) {
+            if (ch.match(/[^\x00-\xff]/ig)) {
+                len += 2
+            } else {
+                len += 1;
+            }
+        }
+        return len;
+    }
+
+2. 路由策略
+3. <meta name="viewport" content="width=device-width, initial-scale=1">
+3. 富文本编辑器
+3. 渐进式和函数式
+
 1. web worker
 1. 参考该页面的样式:https://www.cnblogs.com/bndong/p/6743524.html
 1. encodeURIComponent和encodeURI,以及location.hash,URL中的#
@@ -1309,3 +1386,5 @@ worker.cancel();
     4. rxjs教程
 
  1. SSR服务端渲染
+89. 如何系统学习w3c规范
+90. service worker

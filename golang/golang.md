@@ -989,6 +989,9 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 #### 1.6 cannot use card.CardLib literal (type *card.CardLib) as type card.ICardLib in field value: *card.CardLib does not implement card.ICardLib (missing SwitchCardGPRS method)
 一般都是方法所有者不对
 
+#### 1.7 missing argument to conversion to ...
+本来是调用类的方法的,结果写成调用类了
+
 ### 2 未解决
 1. 因式分解
 3. 编程范式
