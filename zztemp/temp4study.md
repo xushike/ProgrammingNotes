@@ -1,11 +1,6 @@
 # temp4study
 1. sql
-    1. exist和count(0)
-    2. 如何防止几个人同时新增的并发
-    3. count(0)和exist
-    4. count(0)和count(1)
     4. 数据库索引是什么东西
-    5. rownum和rowid
     6. 换行符和空格会原样取出来吗
     7. 框架自动转换?
         ```golang
@@ -15,9 +10,6 @@
         }
         ```
     8. oracle的日期操作,比如月份的增加减少
-
-1. Object.assign的单双参数写法和顺序
-1. js普通=号是深copy还是浅copy
 
 1. to_char和to_date
 
@@ -36,9 +28,7 @@
 
 1. golang
     1. interface型的0和0比较的结果是啥?int型的interface和0比较呢?
-
-1. 冷启动和热启动除了通不通电外还有什么不同, 比如卡的时候?
-
+    
 1. 签名是什么
 1. 如何把axure弄成局域网可看的
 1. 学习看代码和源码
@@ -507,7 +497,6 @@ let val = input.card_id
 238. angualr的disabled
 239. 限制某些框输入的小数位数.
 240. ngValue，ngGroup
-241. Object.assign({}, this.info);的浅拷贝
 
 242. select 有绑定值时，想绑定一个空值用。。。没有绑定值时默认是第一个。。。
 243. 为什么声明了`#downCardType`还是不能在ngif中获取它的值呢？
@@ -1076,8 +1065,6 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
     1. 如何保留文件修改而不跟踪?
     2. 本地有已跟踪但不想跟踪的,此时从远程拉下来最新的gitignore会生效吗
 475. xshell 中win和linux文件互传的命令
-
-476. count(0)和count(1)等的区别
 477. plsql的占位符和通配符和标准sql中一样吗
 478. google调试如何判断两个元素有没有对齐
 479. 原生class的多css写法
@@ -1411,3 +1398,4 @@ worker.cancel();
  1. SSR服务端渲染
 89. 如何系统学习w3c规范
 90. service worker
+91. 数据库的锁

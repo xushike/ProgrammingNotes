@@ -80,6 +80,8 @@ from OP_Order where insDT>'2011-07-22'
 # 三 基础
 ## 1 语法和子句
 ### 1.1 增
+把查询结果插入:`insert into table value (xxx,xxx,xxx) select xxx,xxx,xxx from xxx`
+
 ### 1.2 删
 delete from xxx 
 ### 1.3 改
@@ -105,6 +107,9 @@ update xxx set xxx = xxx,xxx= xxx
     
 ### 1.7 order by排序
 有个快捷写法:用select后面字段的序号代替字段,比如`select deptno,avg(sal) from emp group by deptno order by 2`,那么里面的2就代表了avg(sal)
+
+### 1.8 EXISTS和NOT EXISTS
+Oracle EXISTS条件与子查询结合使用，并且如果子查询返回至少一行，则认为该条符合。它可以在SELECT，INSERT，UPDATE或DELETE语句中使用。
 
 ## 2 函数
 ### 2.1 分组函数(组函数)
