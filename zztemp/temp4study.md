@@ -22,6 +22,7 @@
 1. to_char和to_date
 
 1. yyyyMM和yyyymm等
+1. github博客系统
 
 1. 项目中
     1. `DateUtility.toString`和`DateUtility.toUTCString`
@@ -78,6 +79,28 @@
 3. <meta name="viewport" content="width=device-width, initial-scale=1">
 3. 富文本编辑器
 3. 渐进式和函数式
+2. linux 文件名带反斜杠的bug
+2. 防止重复点击
+
+1. css
+    1. 小型布局的灵活切换,比如让div变行内,让div中的元素右对齐...
+    2. 哪些属性对块级元素生效,哪些对行内元素生效
+    3. 宽高什么情况下是固定,什么情况下是变动的
+    4. 格式化css的插件
+    5. ...
+
+        ```
+        -webkit-margin-before: 0.83em;
+                -webkit-margin-after: 0.83em;
+                -webkit-margin-start: 0px;
+                -webkit-margin-end: 0px;
+        ```
+
+2. angular
+    1. `    providers: [
+        { provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'never' } }
+    ]`
+    2. https://blog.csdn.net/qq_24078843/article/details/78560556
 
 1. web worker
 1. 参考该页面的样式:https://www.cnblogs.com/bndong/p/6743524.html
