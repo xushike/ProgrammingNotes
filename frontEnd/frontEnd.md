@@ -50,6 +50,13 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 
 ### 3.4 收藏夹图标(Favicon)
 
+### 3.5 单页面应用(SinglePage Web Application，SPA）和多页面应用（MultiPage Application，MPA）
+SPA:只有一张Web页面的应用，是一种从Web服务器加载的富客户端，单页面跳转仅刷新局部资源 ，公共资源(js、css等)仅需加载一次，常用于PC端官网、购物等网站
+
+MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择性重新加载，常用于 app 或 客户端等
+
+参考:https://juejin.im/post/5a0ea4ec6fb9a0450407725c
+
 ## 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 

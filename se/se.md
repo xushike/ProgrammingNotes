@@ -69,11 +69,6 @@ SaaS(Software-as-a-Service):软件即服务
 #### 无服务器
 [http://www.oschina.net/news/93020/talk-about-severless](http://www.oschina.net/news/93020/talk-about-severless)
 
-### 2 JIT(Just in time compiling)
-#### V8中的JIT
-1. 缺点
-    1. JIT 基于运行期分析编译，而 Javascript 是一个没有类型的语言，于是， 大部分时间，JIT 编译器其实是在猜测 Javascript 中的类型
-#### AOT(Ahead of time)
 ### 3 DevOps
 ### 4 容器
 ### 5 微服务
