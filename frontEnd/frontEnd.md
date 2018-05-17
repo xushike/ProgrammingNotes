@@ -48,6 +48,8 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 ### 3.3 UI库和CSS框架
 感觉可以把这两个概念当做同一个概念俩看待,UI库也是对html和css的封装
 
+### 3.4 收藏夹图标(Favicon)
+
 ## 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 

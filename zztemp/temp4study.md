@@ -1,5 +1,7 @@
 # temp4study
 1. sql
+    1. varchar2和varchar
+    2. 如何查看长度单位
     4. 数据库索引是什么东西
     6. 换行符和空格会原样取出来吗
     7. 框架自动转换?
@@ -10,6 +12,11 @@
         }
         ```
     8. oracle的日期操作,比如月份的增加减少
+
+1. npm
+    1. 查看某个库的版本号
+    2. 错误和警告
+    3. darwin等
 
 1. to_char和to_date
 
@@ -64,6 +71,7 @@
         }
         return len;
     }
+    1. https://blog.csdn.net/fengziyun/article/details/7889262
 
 2. 路由策略
 3. <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -71,6 +79,7 @@
 3. 渐进式和函数式
 2. linux 文件名带反斜杠的bug
 2. 防止重复点击
+3. 复制粘贴会触发onkeyup等吗
 
 1. css
     1. 小型布局的灵活切换,比如让div变行内,让div中的元素右对齐...
@@ -87,6 +96,7 @@
         ```
 
 2. angular
+    1. http://lovepeng.gitee.io/angularbase/#/demo/index
     1. `    providers: [
         { provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'never' } }
     ]`
@@ -1399,3 +1409,5 @@ worker.cancel();
 89. 如何系统学习w3c规范
 90. service worker
 91. 数据库的锁
+92. 单双向数据流
+93. tree shaking    
