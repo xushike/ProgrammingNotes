@@ -1,4 +1,5 @@
 # temp4study
+1. http://www.wutianqi.com/?p=3686
 1. sql
     1. varchar2和varchar
     2. 如何查看长度单位
@@ -1230,8 +1231,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 554. created a lockfile as package-lock.json. You should commit this file.
 
-555. Unsupported platform for fsevents@1.2.0: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
-
 556. css studying :https://segmentfault.com/q/1010000000193129
 557. 感觉input list值得了解一下
 
@@ -1260,10 +1259,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
     2. js func在什么情况下会变成一个类?
     3. promise,ajax,rxjs,callback等的区别
     4. 如何判断一个方法是不是异步的
-
-
-21. Unsupported platform for fsevents@1.2.0
-    1. darwin和linux和win,在npm中分别叫什么
 
 22. js中0和其他的比较会怎么样
 23. 防止重复点击
