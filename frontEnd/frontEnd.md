@@ -60,21 +60,22 @@ MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择
 ## 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 
-## 6 网站
-### 6.1 js工具网站
+## 5 网站
+### 5.1 js工具网站
 1. 10 款优秀的在线 JavaScript 工具推荐:[http://www.iteye.com/news/25351](http://www.iteye.com/news/25351)
 1. 在线编辑工具——由HTML编辑器、CSS编辑器、JavaScript编辑器和输出界面4个部分组成，你可以方便地进行代码测试:[jsfiddle.net](https://jsfiddle.net/)
 
-### 6.2 图标网站
+### 5.2 图标网站
 1. 阿里:[http://www.iconfont.cn/](http://www.iconfont.cn/)
 
-### 6.3 设计
+### 5.3 设计
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
+2. codepen:一个展示html,css,js的在线社区
 
-### 6.4 其他
+### 5.4 其他
 1. [稳定、快速、免费的前端开源项目 CDN 加速服务](http://www.bootcdn.cn/)
 
-### 6.5 网友博客
+### 5.5 网友博客
 1. [http://yunkus.com/](http://yunkus.com/)
 2. 张鑫旭:http://www.zhangxinxu.com/
 

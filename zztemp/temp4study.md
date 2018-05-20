@@ -1,4 +1,79 @@
 # temp4study
+1. 序列化的本质是什么,js中的 序列化又是什么
+    1. 比如postMessage接受你放入它的任何对象，序列化它，将它发送给另一个web worker，
+2. js
+    1. 待整理:https://hacks.mozilla.org/author/lclarkmozilla-com/
+2. oracle
+    1. http://www.oraok.com/
+    2. http://www.manongjc.com/oracle/pl-sql-tutorial.html
+    3. https://my.oschina.net/u/587561/blog/96984
+    4. http://www.bianceng.cn/Oracle/
+2. vue
+    1. https://segmentfault.com/a/1190000007825106
+1. golang
+    var buffer bytes.Buffer
+	fileName := fmt.Sprintf("%s.xlsx", utility.GetGUID())
+	c.commonLib.BuildXlsxData(data, header, fileName)
+	f, err := os.Open(fileName)
+	if err != nil {
+		ctx.Errorf("打开文件失败:err:%+v", err)
+		return
+	}
+	defer func() {
+		f.Close()
+		ctx.Info("删除文件：", fileName)
+		os.Remove(fileName)
+	}()
+	buffer.ReadFrom(f)
+	response.Content = buffer.String()
+	response.SetHeader("Accept-Ranges", "bytes")
+	response.SetHeader("Content-Type", "application/vnd.ms-excel.numberformat:@")
+	response.SetHeader("Content-Disposition", "attachment;filename=卡片信息.xlsx")
+	response.SetHeader("Charset", "utf-8")
+	ctx.Info("返回结果")
+	response.Success()
+
+1. js判断是否是数值类型
+1. blob,dataview,webgl,轮询
+1. js有类型的概念吗
+    1. js引擎能区分不同的基本数据类型吗
+
+1. angular2-cookie@1.2.6 requires a peer of @angular/core@^2.0.0 but none is installed
+1. SKIPPING OPTIONAL DEPENDENCY: node-sass@4.9.0
+1. 从gitlab克隆的时候,如果是git协议就要输入密码(而且输入正确的密码后好像还是不对), 如果是http协议就不用,why?
+1. node_modules的文件vscode 会跟追吗
+1. guid的生成
+1. goalng中""是null吗
+1. vscode 中go怎么自动导包
+1. tslint
+    1. while statements must be braced (curly)
+2. google chrome helper是什么,导致mac发烫
+1. @next是什么版本
+2. package-lock.json对跨平台有影响吗
+2. npm install默认的规则是什么样的, 会默认覆盖吗还是?
+2. node-sass
+2. Unable to save binary /Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/vendor/darwin-x64-57 : { Error: EACCES:permission denied, mkdir '/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/vendor'
+    at Object.fs.mkdirSync (fs.js:885:18)
+    at sync (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/mkdirp/index.js:71:13)
+    at Function.sync (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/mkdirp/index.js:77:24)
+    at checkAndDownloadBinary (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/scripts/install.js:114:11)
+    at Object.<anonymous> (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/scripts/install.js:157:1)
+    at Module._compile (module.js:652:30)
+    at Object.Module._extensions..js (module.js:663:10)
+    at Module.load (module.js:565:32)
+    at tryModuleLoad (module.js:505:12)
+    at Function.Module._load (module.js:497:3)
+  errno: -13,
+  code: 'EACCES',
+  syscall: 'mkdir',
+  path: '/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/vendor' }
+
+
+2. gyp ERR! stack Error: EACCES: permission denied, mkdir '/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/build'
+
+
+
+
 1. http://www.wutianqi.com/?p=3686
 1. sql
     1. varchar2和varchar
@@ -57,7 +132,6 @@
 2. if else和switch在语言底层的实现
 2. TMP.htm是什么
 2. 如何直接打出换行符.比如在git commit - m ""中使用换行符
-2. 笔记:模板字符串中对象内容不会显示,可以用JSON.stringify?
 3. 笔记:
 
     //计算字符串长度(中文2，其他1)
@@ -1196,7 +1270,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
     2. 
     3. float(xxx)
 
-536. js模板字符串打印对象的时候,只显示object,不能显示里面的内容?
 537. golang 几种类型转换方式的区别
 
 538. 下拉框中数据很多怎么办,会导致卡顿吗
@@ -1409,3 +1482,6 @@ worker.cancel();
 94. RSS订阅
 95. viewport
 96. SharedArrayBuffer有线程问题吗
+97. 视频音频
+    1. 七牛的文件上传
+98. source-map

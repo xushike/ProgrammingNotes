@@ -1,11 +1,16 @@
 # JS
 [TOC]
+
 # 一 概述
+### 1 未整理
 1. js5是没有块级作用域的。函数是JavaScript中唯一拥有自身作用域的结构，也就是说js有函数作用域和一个全局的作用域；js6中有块级作用域
 2. js对大小写敏感
 3. 大多数浏览器在提及对 JavaScript 的支持情况 时，一般都以 ECMAScript 兼容性和对 DOM 的支持情况为准
 
 ## 1 简介
+### 1.2 缺点
+1. JavaScript支持异步，但本质是单线程环境,即使采用Ajax也只能局部更新，只是“看上去有了响应，但总体时间还是不变，甚至会变慢”.
+
 ## 2 历史
 ### js的历史
 js诞生于1995年,由Netscape发明,当时的主要目的是处理以前由服务器端语言(如Perl)负责的一些输入验证操作(在之前是发送到服务端验证,当时网速不好经常等很久才能验证输入是否正确).但现在js已经不仅是验证表单输入了,而是具备了与浏览器窗口及其所有内容**交互的能力**,是一门功能全面的编程语言.
@@ -251,7 +256,9 @@ age="hello";
 
 标签函数(es6):标签函数的语法是函数名后面直接带一个模板字符串，并从模板字符串中的插值表达式中获取参数.标签函数的第一个参数是被嵌入表达式分隔的文本的数组。第二个参数开始是嵌入表达式的内容。(感觉只是语法糖,了解就行)
 
-注意:js中直接声明的字符串和字符串对象值是一样的,但是类型是不同的(分别是string和Object)
+注意:
+1. js中直接声明的字符串和字符串对象值是一样的,但是类型是不同的(分别是string和Object)
+2. 打印模板字符串中的Object对象默认会输出成形如`[object Object]`,可以用`JSON.stringify(obj)`打印具体内容.
 
 js去除字符串中空格的几种方法(待补充):
 1. `replace(/\s/g, "")`
@@ -361,11 +368,18 @@ js中的if判断的是变量或表达式的布尔值而不是值,关于js的布�
 
 ## 4 js中常用对象
 ### 4.1 Array对象
-js数组中的元素可以不是同一类型.
+优点:存储的对象能动态增多和减少，并且可以存储任何类型的JavaScript值
 
-三种定义方法:略.
+定义方法:三种普通创建方法,以及通过函数(`split`,`match`等)创建
+1. `new Array(length)`
+    
+    创建指定长度的空数组
+    1. 注意是空数组,而不是值为undefined的数组,虽然打印其中的值时为undefined.
+    2. 如果想创建值为单个数字的数组呢?可用js6新增的`Array.of(element...)`,element可以是任意类型
+2. `new Array(element0, element1, ..., elementN)`
+3. `[element0, element1, ..., elementN]`
 
-其实还有第四种定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
+还有一种额外的但不推荐的定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
 
 array常用方法:
 1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
@@ -392,7 +406,7 @@ array常用方法:
 
 2. `splice()`
 
-    从数组中添加/删除项目，然后返回被删除的项目.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
+    从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
     1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。在头部添加元素可以用:`arr.splice(0,0,xxx)`
     2. `pop()`:删除并返回数组的最后一个元素,那么删除头部的元素呢?使用`arr.splice(0,1)`.
 
@@ -405,6 +419,7 @@ array常用方法:
 
     ```
 4. `find()`
+5. `array.slice(start?,end?)`:从数组中切割出新数组,该方法不会改变原数组.如果不带参数,则是整个复制.start和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
 
@@ -464,8 +479,63 @@ Math.floor(4.9) === 4  //true
 ~~4.9 === 4  //true
 ```
 
-## 3 ArrayBuffers和SharedArrayBuffers
-为什么我们需要这两个:
+## 3 ArrayBuffers,SharedArrayBuffers,ArrayBuffer视图
+### 3.1 ArrayBuffers
+为什么我们需要这两个:在js中创建一个变量的时候,引擎会去猜测变量的类型以及如何在内存中表示,会导致分配的内存是实际需要的2~8倍,可能会导致大量的内存浪费.ArrayBuffer用来表示通用的、固定长度的原始二进制数据缓冲区(基本上就像原始内存一样,它模仿了C语言中的直接内存访问),是值类型,不是引用类型.
+
+我们不能直接操作ArrayBuffer,而是通过类型数组对象(typed array objects)或者数据视图(DataView)对象来操作.那么为什么不让程序员直接访问内存,而是添加这个抽象层:直接访问内存会带来一些安全漏洞.
+
+使用场景:与普通数组相比,ArrayBuffer占用小,性能高,主要用于音频视频编辑，访问WebSockets,WebAudio,Ajax等,可以快速方便地通过类型化数组来操作原始的二进制数据,适合处理大数据和提高性能.
+
+构造:
+1. `new ArrayBuffer(num)`:num的单位为字节,该ArrayBuffer的内容被初始化为0
+
+静态属性和方法:
+1. `length`:构造函数的length属性,值为1.(意义是?)
+2. `[Symbol.species]`:返回构造器
+3. `ArrayBuffer.isView(arg)`:arg是否是ArrayBuffer的视图实例(例如 类型数组对象 或 DataView)
+
+属性和方法:
+1. `byteLength`:数组缓冲区的字节大小,不可变.
+2. `slice(beginIndex[,endIndex])`
+
+
+### 3.2 ArrayBuffer视图
+简单介绍:ArrayBuffer视图就是对ArrayBuffer增加了一层抽象,它可以是类型数组视图或者数据视图,通过它,我们可以读写ArrayBuffer中的内容.
+
+#### 类型数组视图(Typed array views)
+形如Int8Array，Uint32Array，Float64Array等以及特殊的Uint8ClampedArray.(其中Uint8ClampedArray很擅长Canvas数据处理)
+
+创建类型数组视图:
+1. 形如`new Int8Array(arg)`:arg可以是数字、array或者arraybuffer.如果是arraybuffer,则arraybuffer的字节数是BYTES_PER_ELEMENT的整数倍才会创建成功,所以接着要判断是否创建成功.同一个arraybuffer可以创建多个视图
+2. 形如`new Int8Array(arg,byteOffset?,byteLength?)`:byteLength是类型数组的字节大小.
+
+属性和方法:
+1. `BYTES_PER_ELEMENT`:每个元素所占的字节数,比如Int8Array是1.可以通过类型数组类名中的数字来记忆,8就是8位,对应1字节,以此类推.
+2. `byteLength`
+3. `byteOffset`:返回视图在它ArrayBuffer中占用内存区域的起点位置.(和index一样从0开始)
+3. `length`:元素个数
+4. `name`:构造器的名称,如"Int8Array"
+4. 转换为普通数组:`Array.from()`或者`Array.prototype.slice.call(typedArray)`
+
+#### 数据视图(DataView)
+和类型数组视图比,更加灵活,不用考虑平台字节序问题.
+
+那么什么是平台字节序:"Endian"(字节序) 和 "endianness"(字节顺序) (或者 "byte-order") 描述计算机如何组织字节生成对应数字的.主要有三种:
+1. little-endian(小字节序、低字节序):  如0x78 0x56 0x34 0x12,即低位字节排放在内存的低地址端，高位字节排放在内存的高地址端,在所有的英特尔处理器上使用.
+2. big-endian(大字节序、高字节序): 0x12 0x34 0x56 0x78,通常被叫做"网络字节顺序"("network byte order"),因为互联网标准通常要求数据使用big-endian存储, 从标准Unix套接字层开始一直到标准化网络的二进制数据结构
+3. mixed-endian (混合字节序,historic and very rare): 0x34 0x12 0x78 0x56
+
+创建:`new DataView(buffer [, byteOffset [, byteLength]])`
+
+使用:
+1. 赋值:形如`dataView.setInt8(12, 42)`
+2. 取值:形如`dataView.getInt8(12)`
+
+注意赋值和取值中的byteOffset(也就是例子中的12)是对于arraybuffer的,不是对于dataView的.
+
+### 3.3 SharedArrayBuffers
+与 ArrayBuffer 不同的是,SharedArrayBuffers不能被分离.但是因为安全漏洞,SharedArrayBuffers将会被禁用,所以简单了解就行了.
 
 ## 4 js模块化
 首先要弄清楚为什么js需要模块化:开发中,我们需要引入其他软件,新旧代码之间就会存在依赖关系,由于这些软件需要一起工作,因此它们之间不存在冲突是非常重要的.封装可以防止模块之间相互冲突,这也是C语言库中元素通常带有前缀的原因之一.
