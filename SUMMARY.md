@@ -64,6 +64,7 @@
     * [5.xhtml](frontEnd/5.xhtml.md)
     * [6.WebAssembly](frontEnd/6.WebAssembly.md)
     * [7.Ajax](frontEnd/7.Ajax.md)
+    * [8.fetch](frontEnd/8.fetch.md)
 * [git](git/git.md)
     * [1.gitbook](git/gitbook.md)
     * [2.svn](git/svn.md)

@@ -1,4 +1,8 @@
 # temp4study
+1. viewport做适配
+1. 从package.json中删除
+1. mac vscode占用内存很高
+1. npm 创建的目录,为什么没有删除权限
 1. 序列化的本质是什么,js中的 序列化又是什么
     1. 比如postMessage接受你放入它的任何对象，序列化它，将它发送给另一个web worker，
 2. js
@@ -10,6 +14,7 @@
     4. http://www.bianceng.cn/Oracle/
 2. vue
     1. https://segmentfault.com/a/1190000007825106
+    2. vue ele-ui的栅格做适配很方便?
 1. golang
     var buffer bytes.Buffer
 	fileName := fmt.Sprintf("%s.xlsx", utility.GetGUID())
