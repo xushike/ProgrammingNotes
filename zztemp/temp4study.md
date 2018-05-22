@@ -1,4 +1,11 @@
 # temp4study
+1. angular httpclient
+1. db
+    1. add和create
+    1. sql 的seq会回滚吗 
+1. bootstrap为什么依赖jquery?内部实现用到js了?
+1. goalng 类型转换:strconv.ParseFloat
+    1. goalng模板
 1. viewport做适配
 1. 从package.json中删除
 1. mac vscode占用内存很高

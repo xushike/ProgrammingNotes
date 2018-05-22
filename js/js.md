@@ -575,7 +575,7 @@ import和export指令的静态特性允许静态分析器在不运行代码的�
 2. 导入里面的多个子模块:形如`import {foo, bar} from "module-name"`:也可以使用别名`import { export1 , export2 as alias2 , ["module-name"] } from "module-name"`
 3. 导入成默认值:形如`import myDefault from "module-name"`:导入单个或多个时导出时,需要知道导出的名字,很不方便,所以js允许设置一个默认的导出,形如`export default xxx`,这样导入的时候就可以随意取一个名字,而且不用大括号包裹来表示默认的导出.
 4. 仅为副作用而导入一个模块:`import "module-name"`
-5. 导入某模块的所有导出:`import * as [name] from "module-name"`:可以用别名`[name]`来使用模块(如果模块里有多个导出,用了星号后能不能直接使用这些导出的名字呢?)
+5. 导入某模块的所有导出:`import * as xxx from "module-name"`:可以用别名`xxx`来使用模块.此时如果模块里有多个导出,就可以使用xxx.yyy来使用对应的导出.
 
 #### 导出export
 1. 命名导出:形如`export { myFunction }`(存在名为myFunction的方法)或者直接写在方法方法上`export function diag(xxx) {...}`,还可以导出成常量`export const foo = Math.sqrt(2)`
