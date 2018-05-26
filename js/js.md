@@ -349,8 +349,11 @@ console.log(trees.length)//5
 
 
 ## 3 流程控制
-### 3.1 `if else`:跟java的用法一样,除了一点:
-js中的if判断的是变量或表达式的布尔值而不是值,关于js的布尔值可参考[https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)
+### 3.1 if else
+跟java的用法一样,除了一点:js中的if判断的是变量或表达式的布尔值而不是值,关于js的布尔值可参考[https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)
+
+### 3.2 switch case default
+
 
 ### 3.3 比较操作符`==`和`===`
 `==`并不是严格相等,而且判断的是值是否相等,而不是布尔值是否相等.js中0、""、''、null、false、undefined、NaN的**布尔值**(可通过`Boolean(xxx)`查看)都是false，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.(具体的==比较待补充)
@@ -418,7 +421,8 @@ array常用方法:
     })
 
     ```
-4. `find()`
+
+4. `find()`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
 5. `array.slice(start?,end?)`:从数组中切割出新数组,该方法不会改变原数组.如果不带参数,则是整个复制.start和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`

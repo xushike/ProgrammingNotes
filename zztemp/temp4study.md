@@ -1,5 +1,46 @@
 # temp4study
+1. 地图比例尺
+1. mac xlplayer
+2. linux防火墙
+2. curl;nginx;secureCRT;secureFX;
+    1. 负载均衡:nginx后面的多个服务器
+    2. 万金油高可用技术:keepalived所在的多个nginx
+    3. 热备
+2. shell脚本(一定要学一下)
+    1. exit 0 和 1
+2. vim
+2. linux操作系统日志:var/log/messages
+2. 哨兵
+2. 各种协议
+3. 通过这种方式来学习源码:自己写一个简易的springmvc,mybatis,tomcat
+    1. tomcat时序图
+1. angualr摇树优化
+1. 各种遍历的顺序
+obj[xxx]和obj["xxx"]
+(change)和ngModelChange
+angular复选框的实践
+arraybuffer和字符串的转换
+字符串拼接效率
+ftp服务器和web服务器
+判断小数,正数,正整数等
+css 父子 优先级
+<td>中文字的换行
+colspan 在第一行不生效?
+页面权限
+获取月初月末等时间
+observeable转换为非observable
+angualr 表单中:#,name等的区别
+
+1. git回滚版本之后如何提交?强制提交吗,如果强制提交被拒绝呢?
+1. https://stackblitz.com 和 jsfiddle
+    1. 在线运行前端的例子
 1. angular httpclient
+    2. 使用 Angular Material 开发基于 Material Design 的应用:https://www.ibm.com/developerworks/cn/web/1506_chengfu_angularmaterial/index.html
+
+        包含了响应式布局等很多知识,有空需要研究研究
+    3. https://www.cnblogs.com/sghy/p/6951083.html
+2. npx
+    1. https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b
 1. db
     1. add和create
     1. sql 的seq会回滚吗 
@@ -1497,3 +1538,18 @@ worker.cancel();
 97. 视频音频
     1. 七牛的文件上传
 98. source-map
+99. 防御性编程
+100. 面试：页面加载海量数据:https://juejin.im/post/5ae17a386fb9a07abc299cdd
+101. PWA介绍及快速上手搭建一个PWA应用:https://juejin.im/post/5ae2f82f6fb9a07acd4d761e
+102. H5之地理位置必知必会:https://juejin.im/post/5ae34306f265da0ba60f89bb
+
+99. 从表单取出来的都是字符串吗?
+100. 笔记:项目常识
+    1. 前端传到后天的都是字符串类型?
+    2. oracle查询和插入的时候区分字符串和数字吗?
+    3. 如何去掉组件的记忆功能
+
+101. js在导出的组件中声明var变量, 会影响其他 组件吗
+102. for of不能遍历对象?
+103. 腾讯区块链
+104. web访问本地文件

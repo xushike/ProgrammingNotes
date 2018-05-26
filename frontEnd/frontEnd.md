@@ -72,12 +72,12 @@ MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择
 1. 追波网,有趣的设计交流平台,听说很出名:[http://dribbble.com/](http://dribbble.com/)
 2. codepen:一个展示html,css,js的在线社区
 
-### 5.4 其他
-1. [稳定、快速、免费的前端开源项目 CDN 加速服务](http://www.bootcdn.cn/)
-
-### 5.5 网友博客
+### 5.4 博客
 1. [http://yunkus.com/](http://yunkus.com/)
 2. 张鑫旭:http://www.zhangxinxu.com/
+
+### 5.5 其他
+1. [稳定、快速、免费的前端开源项目 CDN 加速服务](http://www.bootcdn.cn/)
 
 # 三 基础
 ## 1 热更新
