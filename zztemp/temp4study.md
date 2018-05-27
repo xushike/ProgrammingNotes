@@ -1,11 +1,6 @@
 # temp4study
-1. quora和stackoverflow
-1. http://jsbin.com/
-1. 真随机和伪随机
-1. 地图比例尺
-1. mac xlplayer
-2. linux防火墙
-2. curl;nginx;secureCRT;secureFX;
+1. 廖雪峰的零基础JavaScript全栈教程:https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000
+2. nginx;secureCRT;secureFX;
     1. 负载均衡:nginx后面的多个服务器
     2. 万金油高可用技术:keepalived所在的多个nginx
     3. 热备
@@ -18,9 +13,8 @@
 3. 通过这种方式来学习源码:自己写一个简易的springmvc,mybatis,tomcat
     1. tomcat时序图
 1. angualr摇树优化
-1. 各种遍历的顺序
-obj[xxx]和obj["xxx"]
 (change)和ngModelChange
+    1. 网友说的是`change`写在前面则是未变的值,写在后面则是变后的值?:https://weibo.com/1880809571/E0wZXqPG2?type=comment
 angular复选框的实践
 arraybuffer和字符串的转换
 字符串拼接效率
@@ -34,9 +28,7 @@ colspan 在第一行不生效?
 observeable转换为非observable
 angualr 表单中:#,name等的区别
 
-1. git回滚版本之后如何提交?强制提交吗,如果强制提交被拒绝呢?
-1. https://stackblitz.com 和 jsfiddle
-    1. 在线运行前端的例子
+2. 那几个网站在线运行前端的例子
 1. angular httpclient
     2. 使用 Angular Material 开发基于 Material Design 的应用:https://www.ibm.com/developerworks/cn/web/1506_chengfu_angularmaterial/index.html
 
@@ -53,6 +45,7 @@ angualr 表单中:#,name等的区别
 1. viewport做适配
 1. 从package.json中删除
 1. mac vscode占用内存很高
+2. npm 符号链接
 1. npm 创建的目录,为什么没有删除权限
 1. 序列化的本质是什么,js中的 序列化又是什么
     1. 比如postMessage接受你放入它的任何对象，序列化它，将它发送给另一个web worker，
@@ -1555,3 +1548,4 @@ worker.cancel();
 102. for of不能遍历对象?
 103. 腾讯区块链
 104. web访问本地文件
+105. pom.xml

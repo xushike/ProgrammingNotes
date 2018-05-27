@@ -2,12 +2,12 @@
 [TOC]
 
 # 一 概述
-### 1 未整理
+
+## 1 简介
+### 1.1 未整理
 1. js5是没有块级作用域的。函数是JavaScript中唯一拥有自身作用域的结构，也就是说js有函数作用域和一个全局的作用域；js6中有块级作用域
 2. js对大小写敏感
 3. 大多数浏览器在提及对 JavaScript 的支持情况 时，一般都以 ECMAScript 兼容性和对 DOM 的支持情况为准
-
-## 1 简介
 ### 1.2 缺点
 1. JavaScript支持异步，但本质是单线程环境,即使采用Ajax也只能局部更新，只是“看上去有了响应，但总体时间还是不变，甚至会变慢”.
 
@@ -317,7 +317,7 @@ js判断字符串是否全部为数字的几种方法(待补充):
 ### 1.5 变量的零值
 js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么变量的值和类型都是undefined
 
-## 2 运算符
+## 2 运算符,比较符,逻辑操作符
 ### 2.1 运算符+
 可以用于数字也可以用于字符串,甚至可以把字符串和数字拼接在一起(弱类型语言,所以允许这样),此时数字被自动转换为字符串
 
@@ -348,19 +348,12 @@ console.log(trees.length)//5
 ```
 
 
-## 3 流程控制
-### 3.1 if else
-跟java的用法一样,除了一点:js中的if判断的是变量或表达式的布尔值而不是值,关于js的布尔值可参考[https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)
-
-### 3.2 switch case default
-
-
-### 3.3 比较操作符`==`和`===`
+### 2.3 比较操作符`==`和`===`
 `==`并不是严格相等,而且判断的是值是否相等,而不是布尔值是否相等.js中0、""、''、null、false、undefined、NaN的**布尔值**(可通过`Boolean(xxx)`查看)都是false，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.(具体的==比较待补充)
 
 `===`严格相等.
 
-### 3.4 js的逻辑操作符`||`和`&&`(即短路求值,Short-circuit Evaluation)(难点)
+### 2.4 js的逻辑操作符`||`和`&&`(即短路求值,Short-circuit Evaluation)(难点)
 这两个逻辑操作符判断的是js的布尔值而不是值.
 
 短路原则:a && b中,如果a的布尔值为真,则b不会进行计算,即b被"短路";a || b中,如果a的布尔值为假,则b不会进行计算.
@@ -368,6 +361,30 @@ console.log(trees.length)//5
 赋值原则:对于value=a && b && c...,如果a的布尔值为真则判断b,否则返回a的值,以此类推,直到最后一个值时返回最后一个值;对于value=a || b || c...,如果a的布尔值为假,则判断b,否则返回a,以此类推,直到最后一个值时返回最后一个值.
 
 对于表达式(以及和浏览器控制台每句执行后的undefined的关系)
+
+## 3 流程控制和循环
+### 3.1 if else
+跟java的用法一样,除了一点:js中的if判断的是变量或表达式的布尔值而不是值,关于js的布尔值可参考[https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)
+
+### 3.2 switch case default
+
+### 3.3 while和do ... while
+
+### 3.4 for ... in
+可以遍历任何数据类型,但最适合的是遍历对象的属性,默认以字符串的形式遍历出对象的所有属性.
+
+如何遍历Array对象,循环的是数组的索引,而且也是字符串类型,不是数值.
+
+关于遍历的顺序:遍历顺序依赖于环境,所以该方法并不能保证顺序.但是约定成俗的顺序应该是:先遍历属性名是数值的(从0升序),然后属性名不是数值的则是按定义时的顺序遍历.
+
+属性和方法:
+1. `object.hasOwnProperty() boolean`:判断是否是对象自身的属性,如果是继承的属性则返回false.
+
+注意:
+1. 该方法遍历时最好不要动态修改属性,因为不能保证后面的遍历是否能访问到.
+
+### 3.5 forEach((ele,index,array)=>{...})
+对于array的遍历,一般情况下`forEach()`比`for ... of`更好用.
 
 ## 4 js中常用对象
 ### 4.1 Array对象

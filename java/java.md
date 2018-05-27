@@ -415,6 +415,7 @@ System.out.println(3+4+"hello");//7hello
 System.out.println("Hello"+'a'+7);//Helloa7
 System.out.println('a'+7+"Hello");//104Hello
 ```
+
 2. 表达式类型的自动提升，当一个算术表达式中包括多个基本类型的值时（不管这些基本类型是不是同一类型）：
     1. 所有byte、short、char都将提升到int,典例：
     ```java
@@ -837,10 +838,9 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 ### 1.1 运行的时候发现java或者javac其中某个不能正确运行（错误提示如：找不到或无法加载主类）
 如果java的配置都正确,那么可能是
 1. java能运行但javac不行（似乎跟C:\Windows\System32里的三个java执行程序有关，待补充）
-
 2. javac能运行但java不行：
 我当时出现这个情况是因为我的java文件是在eclipse下写的，文件头声明了自己建的包，此时有两种解决办法，一种是去掉声明的包运行，第二种是不去掉包的声明直接去包所在的目录运行java文件，比如我的包名是study，那么我应该去study所在的目录执行
-```
+```java
 javac study/XXX.java    //注：此处study后的斜杠可以用反斜杠或斜杠；javac命令在study目录下可以运行：javac XXX.java
 java study/XXX          //注：此处study后的斜杠必须用斜杠
 ```

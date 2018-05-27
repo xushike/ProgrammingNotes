@@ -52,12 +52,16 @@
 
 纯函数的意义:因为纯函数非常“靠谱”，执行一个纯函数你不用担心它会干什么坏事，它不会产生不可预料的行为，也不会对外部产生影响。不管何时何地，你给它什么它就会乖乖地吐出什么。如果你的应用程序大多数函数都是由纯函数组成，那么你的程序测试、调试起来会非常方便。
 
-#### 1.15 IaaS、SaaS 和 PaaS
+#### 1.15 IaaS,SaaS,PaaS,CaaS,FaaS和Serverless Architecture
 IaaS(Infrastructure-as-a-Service):基础设施即服务
 
 PaaS(Platform-as-a-Service):平台即服务
 
 SaaS(Software-as-a-Service):软件即服务
+
+Functions as a Service:功能即服务
+
+Serverless Architecture:无服务架构
 
 通俗点理解就是(可能不是非常准确):IaaS就是服务器和设备,PaaS就是操作系统和开发环境,SaaS就是软件
 
