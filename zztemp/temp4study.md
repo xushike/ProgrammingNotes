@@ -1,4 +1,7 @@
 # temp4study
+1. quora和stackoverflow
+1. http://jsbin.com/
+1. 真随机和伪随机
 1. 地图比例尺
 1. mac xlplayer
 2. linux防火墙
@@ -1449,7 +1452,6 @@ Worker<Void> worker = webEngine.getLoadWorker();
 worker.cancel();
 
 47. 地图协议
-48. 真随机和伪随机
 49. 消息队列
 50. 序列化和反序列化；生产者和消费者
 
