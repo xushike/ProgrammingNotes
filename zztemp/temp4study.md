@@ -1,4 +1,15 @@
 # temp4study
+1. 要导出的js文件中使用ver,const等有没有什么影响
+    1. 直接导出, 静态方法导出,实例方法导出的区别
+        1. 要实现静态代码块或初始化该怎么弄?
+1. 包头
+1. 存储过程的优缺点
+1. linux热启动
+1. api中有数字的话会有问题吗
+1. left join和inner join等还是要继续熟悉
+    1. left join两次连接同一个表但字段不同会怎么样
+        1. 要连一个表两次怎么弄?
+1. promise走到某一步的时候退出怎么弄?
 1. 廖雪峰的零基础JavaScript全栈教程:https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000
 2. nginx;secureCRT;secureFX;
     1. 负载均衡:nginx后面的多个服务器
