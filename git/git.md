@@ -364,7 +364,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 切换分支:`git checkout xxx`,工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。
 
 ### 8.3 `git stash`:储藏修改(常用)
-当某个分支改到一半需要切换到另一个分支时,有两种解决方法:commit和stash,使用stash最好.
+当某个分支改到一半需要切换到另一个分支时,有些文件只更改到一半,这个时候有两种解决方法:commit和stash,使用stash最好.注意新增的文件不受影响.
 
 创建储藏:`git stash`会将上一个commit之后的所有已跟踪的内容储藏起来并生成一个hash版本值,或者使用`git stash save <"修改的信息">`储藏版本,其中"修改的信息"就是版本值.
 
@@ -504,6 +504,9 @@ git commit -m 'update .gitignore'
 
 ### 1.6 Your configuration specifies to merge with the ref 'refs/heads/master' from the remote, but no such ref was fetched.
 我当时出现这种情况是github上新建了一个空的项目,然后clone,然后pull就会报这个错
+
+### 1.7 fatal: unable to access 'https://xxx': Empty reply from server
+我当时是重装系统后没有配置user.name和user.email出现的这个问题
 
 ## 2 未解决
 ### 2.1 Permission denied (publickey)...
