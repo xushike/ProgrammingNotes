@@ -1,8 +1,7 @@
 # temp4study
+1. docker的学习:https://steamcn.com/t392743-1-1
 1. 普通项目如何打包
 1. vim
-    1. mac上用什么编辑
-1. 不知道是不是因为缺少golint,打开项目中的go文件无法跳转
 1. hydra安装方法
 1. linux文件类型:比如d开头是目录,-是啥?
 1. 百度地图精确到小数点后多少位
