@@ -61,7 +61,4 @@ bootstrap-vue、vue-material、Element UI、Mint UI 等
 #### 26.1 polishedJS
 阮一峰推荐的:它将一些常用的 CSS 属性封装成函数，用起来非常方便，充分体现使用 JavaScript 语言写 CSS 的优势。
 
-### 27 地图
-#### 27.1 百度地图
-
 ## 五 问题

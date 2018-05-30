@@ -156,6 +156,12 @@ GOPATH:对应的工作区目录,有三个子目录,bin,src和pkg
 
 ### 2 mac
 #### 2.1 二进制发行版安装
+1. 下载安装
+2. 在~/.bash_profile中设置GOPATH等,然后`source ~/.bash_profile`.
+
+    这里我遇到一个问题,就是上面的设置在新开shell中没有生效.因为zsh加载的是 ~/.zshrc文件，而 ‘.zshrc’ 文件中并没有定义任务环境变量,所以需要在~/.zshrc文件最后，增加一行:source ~/.bash_profile
+3. 如果是vscode中开发go,可能还需要设置go.gopath,形如`"go.gopath": "/Users/xushike/work"`
+
 #### 2.2 第三方工具安装(homebrew等)
 
 ### 3 linux
