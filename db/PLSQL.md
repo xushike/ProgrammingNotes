@@ -101,9 +101,8 @@ update xxx set xxx = xxx,xxx= xxx
 2. 按时间段分组:``
 ### 1.6 having过滤分组后的结果
 放在group by后面
-1. 和where的异同
 
-    where子句中不能使用组函数,但是having可以;其他情况可以通用,从sql优化角度看,尽量使用where,因为having是先分组再过滤,而where是先过滤再分组
+和where的异同:where子句中不能使用组函数,但是having可以;其他情况可以通用,从sql优化角度看,尽量使用where,因为having是先分组再过滤,而where是先过滤再分组
     
 ### 1.7 order by排序
 有个快捷写法:用select后面字段的序号代替字段,比如`select deptno,avg(sal) from emp group by deptno order by 2`,那么里面的2就代表了avg(sal)
@@ -203,6 +202,9 @@ Trim():去除首尾空格
 
 ### 1.5 column not allowed here
 传入的值不符合要求,比如值的名字写错了,值的类型不对等.
+
+### 1.6 SQL command not properly ended
+一般都是写得不对,比如语法错误,格式错误
 
 ## 2 未解决
 1. 易百教程:[http://www.yiibai.com/plsql/](http://www.yiibai.com/plsql/)

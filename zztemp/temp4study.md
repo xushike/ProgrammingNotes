@@ -1,4 +1,85 @@
 # temp4study
+2. webpak热部署
+2. golang
+    1. 通过index访问长度为0的数组和切片会报错吗,用`[0:]`呢
+2. sqlite
+2. sso
+2. websocket
+    1. 有订阅成功失败的状态吗
+    2. 连接状态是返回一次还是连续不断返回?
+    3. 切换页面websocket会自动断开吗
+
+2. telnet
+2. 博客:腾讯web前端coverguo
+1. 自定义路书轨迹
+    1. 最简单的,就是不用动画,只需要setPosition和画线就行了
+    1. 参考:https://blog.csdn.net/projectno/article/details/78281689
+1. js this的问题, 在func中this表示啥, 如果使用`var self = this`,此时self又表示啥,func使用箭头函数的话this又表示啥
+1. 用什么数据表示三种状态比较好
+1. js不存在线程安全的问题
+1. js event loop
+    1. 本轮事件结束时和下轮事件开始时
+    1. 浏览器多线程和js单线程
+    2. 阻塞等
+        1. alert和同步xhr
+            1. alert会阻塞异步代码吗,promise呢?
+            1. xhr的原理
+            2. 如何主动结束异步,主动实现类似alert的效果
+    3. 外部js和当前js
+    4. 浏览器的event loop,每遍历一个就会渲染一次?
+    5. js同步和异步的优缺点和使用场景
+    6. js异步编程的几种方式
+        1. 哪些是可以阻塞的?哪些是可以主动停止的
+        2. 异步事件加入的时间顺序是?
+    7. setTimeout有最大等待时间吗;最小时间多少比较合理:30msor 50ms
+        1. setTimeout的深度使用
+        2. setTimeout中有多行代码的话需要再用setTimeout包裹吗,是顺序执行的吗
+    8. setTimeout和setInterval的嵌套
+
+    9. 异步的顺序不能保证?
+    10. 如何主动把某个事件弄成异步的?比如路书中的`_addMarker()`方法,弄成完成后回调的那种
+    11. 多个setTimeout之间的时间间隔是怎么算的?比如100ms,是前一个执行完后的一百毫秒还是跟前一个没关系?
+        已解决:跟前一个执行的时间有关.如果没超出,比如前一个执行了20ms,那么再过80ms后一个就开始执行;如果前一个超出了,比如执行了200ms,那么执行完后后一个立刻执行.
+
+1. 实现回调的几种方式
+    1. 如何把普通方法弄成可以回调的?
+    2. 如何修改event loop中事件的顺序?
+
+1. angular数据异步渲染的优缺点
+
+1. js如何一边遍历一边添加?
+1. typedarray和普通array在语法上的区别
+1. 网页动画的原理
+    1. https://www.zhihu.com/question/20453427
+    2. w3c关于动画的规范
+    3. 网页动画实现的方式(不管新老):
+        1. css animation
+1. https://developer.mozilla.org/zh-CN/docs/Games
+1. html的整个渲染流程:reflow等
+1. https://www.w3cplus.com/svg/bear-animation-width-svg.html
+1. 矢量图的数据比图片体积小
+1. 【链接】百度地图自定义图标动画
+https://blog.csdn.net/jifashihan/article/details/50460309
+1. js
+    1. var arr = new ArrayBuffer(16)
+var typed = new Float32Array(arr)
+var view = new DataView(arr)
+view.setFloat32(0, 12.55)
+view.setFloat32(4, 12)
+console.log(arr)
+console.log(typed[0])
+console.log(view)
+console.log(view.getFloat32(4))
+
+为什么这里type[0]和view.getFloat32(0)不一样
+
+1. js字符串转字符串数组,转arraybuffer
+1. angular的那些奇葩写法的笔记,比如colspan要写成`[colSpan]`
+1. angular mat和md
+1. 重新学习sql并且认真做笔记
+    1. 特别是典型的例子
+1. golang json
+1. ajax json
 1. docker的学习:https://steamcn.com/t392743-1-1
 1. 普通项目如何打包
 1. vim
@@ -1528,6 +1609,7 @@ worker.cancel();
 84. 如何模拟网络状况
 85. async 和await
 86. angular的脏检查和zone
+    1. angular通过脏检查实现MVVM
 87. vue lavas
 88. 路由策略:RouteReuseStrategy
     1. 路由复用策略
