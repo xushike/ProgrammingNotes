@@ -1,4 +1,8 @@
 # temp4study
+1. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
+2. js获取js文件中的数据?
+2. html document对象
+2. canvas画图:https://www.w3cplus.com/canvas/draw-dashed-and-dotted-lines.html
 1. 分辨率变化的时候矢量图会被重新渲染?
 1. js
     1. 方法的声明不能在调用之后?
