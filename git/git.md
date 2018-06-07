@@ -508,6 +508,9 @@ git commit -m 'update .gitignore'
 ### 1.7 fatal: unable to access 'https://xxx': Empty reply from server
 我当时是重装系统后没有配置user.name和user.email出现的这个问题
 
+### 1.8 文件内容没变,但是git显示文件的被修改
+因为文件的权限被修改了.可以设置忽略检查文件的权限:`git config core.filemode false`
+
 ## 2 未解决
 ### 2.1 Permission denied (publickey)...
 这个问题应该有些复杂(待补充)

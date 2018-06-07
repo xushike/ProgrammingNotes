@@ -150,6 +150,7 @@
     * [12.map](se/12.map/12.map.md)
         * [12.1.百度地图](se/12.map/12.1.baidu-map.md)
         * [12.2.QGIS](se/12.map/12.2.QGIS.md)
+        * [12.3.OpenLayers3](se/12.map/12.3.OpenLayers3.md)
 * [vr](vr/vr.md)
 * [accounting会计学](accounting.md)
 * [math](math/math.md)
