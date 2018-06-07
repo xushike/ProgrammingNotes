@@ -1,4 +1,6 @@
 # temp4study
+1. cpu和核心数,核心数和线程的关系
+1. dom渲染顺序
 1. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
 2. js获取js文件中的数据?
 2. html document对象
