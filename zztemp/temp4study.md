@@ -1,4 +1,11 @@
 # temp4study
+1. 事件派发
+2. OpenLayers 3 
+    1. 之 动态点扩散效果:https://www.2cto.com/kf/201511/450555.html
+    2. https://blog.csdn.net/qingyafan/article/details/45950125
+2. git commit内容非常多之后怎么办
+2. 区块链:
+    1. 交易记录非常多之后怎么办
 1. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
 2. js获取js文件中的数据?
 2. html document对象
@@ -1675,3 +1682,4 @@ worker.cancel();
 104. web访问本地文件
 105. pom.xml
 106. left join和inner join等笛卡尔积还是要继续熟悉
+107. 交叉编译
