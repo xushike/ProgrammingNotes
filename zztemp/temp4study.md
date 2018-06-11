@@ -1,4 +1,35 @@
 # temp4study
+1. 队列,task,queue,Metric
+2. 从gitlab clone需要权限吗?为什么有时候需要输入密码
+1. 存储过程,队列,任务调度,时间齿轮,activeMQ
+1. RESTful
+1. golang
+    1. 如何配置多个 gopath,配置后会怎么样?
+    2. 方法和函数的区别
+        1. 参考:https://studygolang.com/articles/9945
+    3. gopath和goroot的配置,参考:https://blog.csdn.net/u013256622/article/details/43703875
+        1. 项目中是配置在`/etc/profile`中的
+    4. golang切片和数组的区别,`...xxx`是接收的切片还是数组
+    5. type xxx func(* yyy)
+    6. *和&的区别
+2. html 
+    1. rotation
+
+1. oracle
+    1. sid是什么
+2. mdn
+    1. creatEvent
+    2. 事件触发器
+    3. 事件:https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Building_blocks/Events
+2. qq
+    1. 提取图片中的文字只有手机才有?
+
+2. linux
+    1. 执行source /etc/profile之后 用户名称由绿色变成白色了
+    2. 递归创建目录
+1. git删除远程分支后需要提交吗?其他人本地还有这个分支,操作会有什么影响?
+2. to和for
+1. ubuntu自带的"提取到此处"有问题?
 1. 事件派发
 2. OpenLayers 3 
     1. 之 动态点扩散效果:https://www.2cto.com/kf/201511/450555.html

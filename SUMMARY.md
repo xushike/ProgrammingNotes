@@ -85,7 +85,6 @@
     * [pl/sql](db/PLSQL.md)
     * [1.PostgreSQL](db/1.PostgreSQL.md)
     * [sql](db/sql.md)
-    * [sqlDeveloper](db/sqlDeveloper.md)
     * [sqlserver](db/sqlserver.md)
     * [redis](db/redis.md)
 * [windows](windows/windows.md)
