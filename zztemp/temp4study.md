@@ -6,6 +6,8 @@
 2. git commit内容非常多之后怎么办
 2. 区块链:
     1. 交易记录非常多之后怎么办
+1. cpu和核心数,核心数和线程的关系
+1. dom渲染顺序
 1. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
 2. js获取js文件中的数据?
 2. html document对象
