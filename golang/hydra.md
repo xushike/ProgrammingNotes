@@ -10,6 +10,15 @@
 
 生成的目录是针对当前gopath的,所以如果gopath配置了多个路径,就会出问题
 
+### 1.2 连接数据库
+#### 1.2.1 PostgreSQL
+
+host     = "localhost"
+    port     = 5432
+    user     = "postgres"
+    password = "wangshubo123"
+    dbname   = "test"
+
 # 六 问题
 ## 1 已解决
 ### 1.1 用新版gaea生成hydra项目的时候报错:panic: runtime error: slice bounds out of range [recovered]
