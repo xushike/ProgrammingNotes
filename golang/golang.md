@@ -834,14 +834,14 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 ### 1.5 run
 编译且运行
 
-### 1.6 get
-通过源码控制工具(比如git)递归获取代码包及其依赖,已有的不会再去获取.
+### 1.6 go get
+通过源码控制工具(比如git)递归获取代码包及其依赖,并进行编译和安装,已有的不会再去获取.
 
 简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
 
 参数说明:
 - `-u`:强制更新已有的代码包及其依赖
-- `-v`:打印出被构建的代码包的名字(待测试)
+- `-v`:打印出所有被构建的代码包的名字
 
 注意:导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供
 

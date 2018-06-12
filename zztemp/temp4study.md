@@ -1,4 +1,5 @@
 # temp4study
+1. `source xxx`只对当前窗口和新窗口生效,不对其他老窗口生效?
 1. 队列,task,queue,Metric
 2. 从gitlab clone需要权限吗?为什么有时候需要输入密码
 1. 存储过程,队列,任务调度,时间齿轮,activeMQ
@@ -7,11 +8,15 @@
     1. 如何配置多个 gopath,配置后会怎么样?
     2. 方法和函数的区别
         1. 参考:https://studygolang.com/articles/9945
-    3. gopath和goroot的配置,参考:https://blog.csdn.net/u013256622/article/details/43703875
-        1. 项目中是配置在`/etc/profile`中的
+    3. gopath和goroot的配置,立即生效参考:https://blog.csdn.net/u013256622/article/details/43703875
+        1. 项目中是配置在`/etc/profile`中的(全局是这儿设置的,但是每次重新打开shell的配置是?)
+            修改了/etc/profile的话,用source /etc/profile之后还是只对当前窗口生效,对新窗口不生效;似乎是因为打开新的shell调用的~/.bashrc(带验证)
+            1. 最新实测,修改了/etc/profile的话,用source /etc/profile之后,还是只对当前窗口生效,对vscode的新bash shell和ubuntu的新shell都没有生效
+        2. .bash_profile,.bashrc等的区别
     4. golang切片和数组的区别,`...xxx`是接收的切片还是数组
     5. type xxx func(* yyy)
     6. *和&的区别
+    7. go get默认会显示是否更新,是否成功吗?
 2. html 
     1. rotation
 
