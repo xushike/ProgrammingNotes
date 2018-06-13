@@ -1,4 +1,11 @@
 # temp4study
+1. chrome的投影
+1. git log是按时间顺序排吗, 如果不是怎么弄?
+1. db
+    1. 各sql的变量占位符是啥
+    2. 占位符防止sql注入
+    3. 各sql 中 @#$%& 的区别
+    4. 如何给数据库传数组等
 1. gitlab
     1. 使用ssh协议,不用输入密码,使用http就需要?
 2. vscode集成终端运行得很慢:https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered
@@ -8,6 +15,14 @@
 1. 存储过程,队列,任务调度,时间齿轮,activeMQ
 1. RESTful
 1. golang
+    1. golang有对象的概念吗,只有用结构体这些?
+    1. 数组的拼接等
+    1. go get时的(download)表示啥
+    1. fmt的v,V,+v区别
+    1. golang三个点的写法,前面三个点和后面三个点,好处是什么
+    1. go get作用于github时和git pull的区别
+    1. []interface{}和[]interface{}{}
+    1. golang 语句中传变量是用`$1`,`$2`...?
     1. 反射
     1. 带星号和不带星号的区别
     1. 结构体实例, 类实例等
