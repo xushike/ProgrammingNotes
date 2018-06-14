@@ -254,7 +254,7 @@ Go语言主要有四种类型的声明语句：var、const、type和func，分�
     5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
     6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
 
-4. 类型转换(难点)
+4. 类型转换(难点)(待补充)
 
     不同类型之间转换需要显式转换
     1. int=>float64:`var f float64 = float64(i)`或者`f := float64(i)`
@@ -964,6 +964,7 @@ func main() {
 ### 2.3 strconv
 该包用于string类型的各种转换
 2. `Atoi()`:string=>int
+3. `FormatFloat(f float64, fmt byte, prec, bitSize int) string`(待整理):float64=>string,`fmt`表示...;`prec`表示精度,负数的话就取最小的实际精度,正数的话是多少就取多少位;bitSize是64或者32
 
 ## 3 go的编译器
 ### 3.1 为何这么快(from圣经)

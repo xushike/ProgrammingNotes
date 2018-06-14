@@ -1,11 +1,21 @@
 # temp4study
+1. postman
 1. chrome的投影
 1. git log是按时间顺序排吗, 如果不是怎么弄?
+1. 取数组最大最小值的算法
 1. db
     1. 各sql的变量占位符是啥
+        1. note:postgresql是$
     2. 占位符防止sql注入
     3. 各sql 中 @#$%& 的区别
     4. 如何给数据库传数组等
+    5. BEGIN和end if这些是存储过程用到的?普通sql中能用吗
+    6. 变量和字符串拼接的结果是字符串还是?
+    7. sql字符串中有特殊符号
+    8. sql参数数量不确定怎么办
+    9. 动态sql
+    10. 临时表
+    11. sql and的原理:是先计算完所有的前一个还是一个的前一个之后执行下一个and
 1. gitlab
     1. 使用ssh协议,不用输入密码,使用http就需要?
 2. vscode集成终端运行得很慢:https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered
@@ -14,12 +24,16 @@
 2. 从gitlab clone需要权限吗?为什么有时候需要输入密码
 1. 存储过程,队列,任务调度,时间齿轮,activeMQ
 1. RESTful
+2. 元祖类型和set差不多?
 1. golang
+    1. 各种类型的转换
     1. golang有对象的概念吗,只有用结构体这些?
     1. 数组的拼接等
     1. go get时的(download)表示啥
     1. fmt的v,V,+v区别
     1. golang三个点的写法,前面三个点和后面三个点,好处是什么
+        1. 项目中分开写的时候,为什么没传点, 点的长度为1
+        2. note:可以用在接受单个元素的地方,比如`pois = append(pois, others...)`
     1. go get作用于github时和git pull的区别
     1. []interface{}和[]interface{}{}
     1. golang 语句中传变量是用`$1`,`$2`...?
