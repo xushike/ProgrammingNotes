@@ -54,7 +54,7 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
 
 ### 3.7 关于HEAD的指向(重点,易错点)
-**HEAD表示当前版本,即最新的那个commit**,`HEAD~1`(或者`HEAD^`)是上个版本(前一个commit),是当前所在commit的前一个或父commit.以此类推,上上个版本是`HEAD~2`(或`HEAD^^`)...
+**HEAD表示当前版本,即最近的那个commit**,`HEAD~1`(或者`HEAD^`)是上个版本(前一个commit),是当前所在commit的前一个或父commit.以此类推,上上个版本是`HEAD~2`(或`HEAD^^`)...
 
 ### 3.8 git名字来源
 作者是linus,他说过他是个自负的混蛋,所有项目都以他的名字命名,先有linux,现在是git.

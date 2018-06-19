@@ -1,4 +1,5 @@
 # temp4study
+1. 密钥:私钥,公钥
 1. postman
 1. chrome的投影
 1. git log是按时间顺序排吗, 如果不是怎么弄?
