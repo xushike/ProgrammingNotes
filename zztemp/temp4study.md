@@ -1,4 +1,6 @@
 # temp4study
+2. slack一款协作办公应用
+    2. qq协同excel
 1. https://mp.weixin.qq.com/s/mz2QuZrE6uMXpAq8HGJe3A
 1. godep那个tool的使用
 1. golang给包设置多个目录,下载的包需要在多个版本间切换怎么弄比较好
