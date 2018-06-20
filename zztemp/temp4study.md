@@ -1,6 +1,12 @@
 # temp4study
+1. 学习数据结构
+1. 音频流和视频流
+1. 数字钱包
+2. linux中的vscode和chrome等可以用apt-get来更新吗
+2. https://www.cnblogs.com/yaohong/p/6385228.html
 2. slack一款协作办公应用
     2. qq协同excel
+2. 编程之美
 1. https://mp.weixin.qq.com/s/mz2QuZrE6uMXpAq8HGJe3A
 1. godep那个tool的使用
 1. golang给包设置多个目录,下载的包需要在多个版本间切换怎么弄比较好
@@ -10,6 +16,7 @@
 1. git log是按时间顺序排吗, 如果不是怎么弄?
 1. 取数组最大最小值的算法
 1. db
+    1. sql中#和$的区别
     1. 各sql的变量占位符是啥
         1. note:postgresql是$
     2. 占位符防止sql注入
@@ -32,6 +39,9 @@
 1. RESTful
 2. 元祖类型和set差不多?
 1. golang
+    1. https://segmentfault.com/a/1190000006885571
+    1. note:格式转换:【链接】Go语言string，int，int64,float转换https://www.cnblogs.com/vdvvdd/p/7211122.html
+    1. go web编程:https://www.kancloud.cn/kancloud/web-application-with-golang#/comment
     1. 各种类型的转换
     1. golang有对象的概念吗,只有用结构体这些?
     1. 数组的拼接等

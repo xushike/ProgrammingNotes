@@ -208,9 +208,9 @@ const nums = [2, ...odd, 4 , 6]; // [2,1,3,5,4,6]
         使用b的话，则函数的值和调用函数都会报错`ReferenceError`
         3. 函数声明（Function Declaration）提升提升create、init、assign
 
-## 1 变量
+## 1 数据类型
 ### 1.1 变量的声明
-弱类型:js是弱类型(loosely typed)或者说动态(dynamic)语言,意味着可以不用提前声明(declare)变量的类型,在程序运行时会被自动确定,而且同一个变量可以保存不同类型的数据.如:
+弱类型(动态类型):js是弱类型(loosely typed)或者说动态(dynamic)语言,意味着可以不用提前声明(declare)变量的类型,在程序运行时会被自动确定,而且同一个变量可以保存不同类型的数据.如:
 ```javascript
 var age=3;
 age="hello";
@@ -228,10 +228,22 @@ age="hello";
 - 声明并赋值:`var age=1,mood="sad"`
 
 
-### 1.2 变量的类型
-最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,Null,Undefined,以及ES6的Symbol)和Object.
+### 1.2 数据的类型
+最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,Null,Undefined,以及ES6的Symbol)和Objects.
 
-#### 字符串
+Objects包含:
+1. 标准对象("Normal" objects)
+2. 函数(functions)
+3. 有续集(Indexed collections):Arrays和typed Arrays
+4. 键集(Keyed collections):Maps, Sets, WeakMaps, WeakSets
+5. 结构化数据(Structured data):JSON
+6. java标准库的内奸对象,如日期(Dates),字符串(String),Math等
+
+判断数据的类型`typeof`:
+1. 
+ 
+
+#### 1.2.1 字符串
 单双引号都可以,可以根据需要包含的字符来确定:如果字符含单引号则用双引号包,如果含双引号就用单引号来包,这样不容易引起歧义.否则就要用转义字符`\`,如`var mood = 'don\'t ask';`.但最佳实践是两种引号只选其一.
 
 使用索引可访问字符串中的字符,如`var character=carname[7];`
@@ -270,7 +282,7 @@ js去除字符串中空格的几种方法(待补充):
 js判断字符串是否全部为数字的几种方法(待补充):
 1. `isNaN(Number(xxx))`
 
-#### 数字number
+#### 1.2.2 数字number
 支持正负数和任意位的小数,如果带小数点则是浮点数.js中所有数字都是64位浮点型.
 (待补充:精确度的计算)
 1. 判断数值类型的常见方法是正则表达式(待补充)
@@ -306,13 +318,14 @@ js判断字符串是否全部为数字的几种方法(待补充):
     (x === y) // 为 false，因为 x 是一个数字，y 是一个对象
     ```
 8. 数字常用方法
-#### 布尔值
-#### 对象
-1. 对象的定义
-    1. 关键字创建:`var obj = Object()`
-    2. 花括号语法:如`{name:value,name:value}`
-2. 对象的使用
-    1. 访问元素:`obj.name`
+#### 1.2.3 布尔值
+#### 1.2.4 对象
+标准对象的定义:
+1. 关键字创建:`var obj = Object()`
+2. 花括号语法:如`{name:value,name:value}`
+
+对象的使用:
+1. 访问元素:`obj.name`
 
 ### 1.3 局部变量
 ### 1.4 全局变量
