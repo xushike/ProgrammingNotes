@@ -1,4 +1,7 @@
 # temp4study
+1. css:https://www.cnblogs.com/yaohong/p/6092440.html
+1. chrome及vscode等的调试
+1. 抓包
 1. 学习数据结构
 1. 音频流和视频流
 1. 数字钱包

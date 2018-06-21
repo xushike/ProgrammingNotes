@@ -237,11 +237,16 @@ Objects包含:
 3. 有续集(Indexed collections):Arrays和typed Arrays
 4. 键集(Keyed collections):Maps, Sets, WeakMaps, WeakSets
 5. 结构化数据(Structured data):JSON
-6. java标准库的内奸对象,如日期(Dates),字符串(String),Math等
+6. java标准库的內建对象,如日期(Dates),字符串(String),Math等
 
-判断数据的类型`typeof`:
-1. 
- 
+判断数据的类型`typeof xxx`or`typeof (xxx)`,返回字符串,内容是xxx的类型,一般有一下几种类型:
+1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol
+2. 对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,但是一直没有修复.参考:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof
+3. 对于函数是function
+4. 对于宿主对象（由JS环境提供）,是Implementation-dependent
+5. 对于任何其他对象是object
+
+注意:`typeof Number(1)`是number,但是`typeof new Number(1)`是object,这两种写法都不推荐使用,String,Boolean也一样.
 
 #### 1.2.1 字符串
 单双引号都可以,可以根据需要包含的字符来确定:如果字符含单引号则用双引号包,如果含双引号就用单引号来包,这样不容易引起歧义.否则就要用转义字符`\`,如`var mood = 'don\'t ask';`.但最佳实践是两种引号只选其一.
