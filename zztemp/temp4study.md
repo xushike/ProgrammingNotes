@@ -1,4 +1,6 @@
 # temp4study
+1. fiber and goruntine
+1. every day和everyday
 1. css:https://www.cnblogs.com/yaohong/p/6092440.html
 1. chrome及vscode等的调试
 1. 抓包
