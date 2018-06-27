@@ -72,7 +72,6 @@
 60. curl命令
 61. Gatsbyjs
 62. git remove origin之后再追踪vscode就没有pull的那个提示了,怎么弄出来?
-63. GraphQL
 64. 心跳检测
     什么情况下需要,如果实施.
 65. viewport
@@ -92,7 +91,6 @@
 78. windows的IOCP
 79. nginx
 80. Dashboards
-81. GraphQL
 82. 关注分离
 84. 防卫性编程
 85. 一些软件提供源码安装,如何操作,优缺点是什么
