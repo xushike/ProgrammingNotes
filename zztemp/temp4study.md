@@ -1,4 +1,38 @@
 # temp4study
+1. iframe
+    参考:https://www.zhihu.com/question/20653055
+    1. 会重新加载css?会有新的window对象?
+    2. 完全隔离的css 和 js , 但又可以使用 contentWindow和parent 来通信. 松耦合又不失灵活 
+    3. 适用环境:
+        HTML规范说：The iframe element represents a nested browsing context.所以如果你需要独立的浏览上下文，那么就用 iframe，否则就不用。历史上，iframe 常被用于复用部分界面，但是多数情况下并不合适。现在，应该使用 iframe 的例子如：
+            1. 沙箱隔离。2. 引用第三方内容。3. 独立的带有交互的内容，比如幻灯片。4. 需要保持独立焦点和历史管理的子窗口，如复杂的Web应用。
+
+    4. 比较典型的应用就是网易云音乐网页版:除了播放条,其他部分全是iframe
+    5. 单页面和iframe的关系
+1. 未设置onclick的空button有事件监听器吗,点击时会有方法执行吗
+    1. 当一个事件出现且有一个事件监听器被绑定时，消息会被随时添加。如果没有事件监听器，事件会丢失,不会被添加到队列
+    2. 一个 web worker 或者一个跨域的iframe都有自己的栈，堆和消息队列。两个不同的运行时只能通过 postMessage方法进行通信。如果后者侦听到message事件，则此方法会向其他运行时添加消息。
+1. requestAnimationFrame和settimeout
+    1. HTML5标准规定了setTimeout()的第二个参数的最小值（最短间隔），不得低于4毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为10毫秒。另外，对于那些DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。这时使用requestAnimationFrame()的效果要好于setTimeout()。
+
+1. 深复制对原型链有什么影响?
+1. 打印字符和控制字符
+1. js call和apply参考:https://www.jianshu.com/p/a9990162d698
+1. 页面重定向和window.location的关系
+1. 浏览器跨域,iframe,跨域加载js
+2. web work参考
+    1. https://www.cnblogs.com/giggle/p/5350288.html
+    2. https://segmentfault.com/a/1190000012528806
+2. console.log()参考:https://segmentfault.com/a/1190000012957199
+
+1. 按mdn的html元素参考重新整理html笔记:https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element
+1. window和document和element
+
+1. nodejs中如何操作dom,或者生成web页面?
+1. navigator.userAgent
+1. user_agent:https://developer.mozilla.org/zh-CN/docs/Glossary/User_agent
+1. js的错误处理throw， try/catch
+1. 时间复杂度和空间复杂度
 1. fiber and goruntine
 1. every day和everyday
 1. css:https://www.cnblogs.com/yaohong/p/6092440.html
@@ -155,7 +189,6 @@
 1. 用什么数据表示三种状态比较好
 1. js不存在线程安全的问题
 1. js event loop
-    1. 本轮事件结束时和下轮事件开始时
     1. 浏览器多线程和js单线程
     2. 阻塞等
         1. alert和同步xhr

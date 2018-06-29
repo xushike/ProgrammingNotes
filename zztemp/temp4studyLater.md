@@ -5,6 +5,8 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
+2. vpn和nat模式
+1. 交叉编译
 1. 大龄程序员肉翻记录【一】:https://www.cnblogs.com/javanerd/p/7508399.html
 1. 前端 slick
 1. 网友推荐:spring搞明白后再学习spring boot和spring cloud
@@ -34,7 +36,6 @@
 25. linux的挂载和/dev/sda
 26. html标签中,不能监听退格键触发的事件?
 27. 马赛克和恢复
-28. python and lua
 29. 云计算开源平台OpenStack
 30. Cookies 的跨域脚本攻击
 
@@ -105,7 +106,6 @@
 
 89. 贝叶斯算法
 90. java重现
-91. python2和3的选择
 92. socket和套接字
 93. search Workflow
 94. 深度学习:[faceswap ](http://www.oschina.net/p/faceswap)
