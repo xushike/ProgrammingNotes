@@ -5,6 +5,7 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
+2. 开发浏览器扩展:https://developer.mozilla.org/zh-CN/Add-ons/WebExtensions
 2. vpn和nat模式
 1. 交叉编译
 1. 大龄程序员肉翻记录【一】:https://www.cnblogs.com/javanerd/p/7508399.html

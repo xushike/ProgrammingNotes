@@ -1,4 +1,10 @@
 # temp4study
+1. angular中获取dom的比较好的做法是什么,使用querySelector呢?
+1. http协议
+
+1. 那些节点不允许子节点?
+
+1. properties 和 attributes
 1. iframe
     参考:https://www.zhihu.com/question/20653055
     1. 会重新加载css?会有新的window对象?
