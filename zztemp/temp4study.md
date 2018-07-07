@@ -1,7 +1,20 @@
 # temp4study
+1. nodeValue:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeValue
+1. innerHTML,innertext,textcontent的区别:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent
+1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/proto
+2. DOCTYPE
+2. CDATA是什么
+2. 可以连续的调用Object.getPrototypeOf，直到原型链尽头
+2. 扩展DOM对象的原型是非常危险的，尤其是在旧版本的Internet Explorer (6，7，8)中。:http://perfectionkills.com/whats-wrong-with-extending-the-dom/
+2. 文档流顺序
+2. node.parentnode和parentNOde接口有关系吗
+2. Node.baseURI和document.url,element的url的区别
+2. window.location.href和document的url的区别
+1. hasAttributes()有参数和无参数的区别
 1. angular中获取dom的比较好的做法是什么,使用querySelector呢?
 1. http协议
 
+2. html embeds是干嘛的
 1. 那些节点不允许子节点?
 
 1. properties 和 attributes
