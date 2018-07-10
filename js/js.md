@@ -258,14 +258,14 @@ Objects包含:
 
 使用索引可访问字符串中的字符,如`var character=carname[7];`
 
-常用属性:
+属性:
 1. `length`:返回字符串长度,实测中文英文都是算的一个单位的长度
 
-常用方法:
+方法:
 1. `indexOf()`:返回字符在字符串中首次出现的位置,没有则返回-1
 2. `match()`:里面的参数可为string或RegExp,前者用于返回包含指定字符串等信息的数组,没有则返回null;更常用的是后者,用于返回正则匹配的数组,没有则返回null.
 3. `replace()`字符替换
-4. `split(string)`:字符串转数组
+4. `split(string)`:字符串转数组,string参数可以是正则表达式
 5. `trim()`:去掉首尾空格,es6新增.
 6. `test()`(待补充)
 
@@ -743,3 +743,4 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 12. 网友: js 引入了 async 和 await ，层层回调的写法，马上就要成为过去式了。
 
 # 七 未整理
+1. this关键字:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this

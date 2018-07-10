@@ -1,4 +1,12 @@
 # temp4study
+2. 事件处理程序:学习如何编写处理程序函数也有一些微妙之处，因为这些代码异步工作，可能会重复运行，但情况略有不同。
+    1. 防止按钮重复点击
+
+2. cssText
+2. HTML templates（HTML模板）：<template> 和 <slot> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用
+2. 基于回流的页面渲染,页面渲染的w3c规范和那个女人的博客
+2. 事件设计模式
+2. 事件驱动编程为什么比
 1. nodeValue:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeValue
 1. innerHTML,innertext,textcontent的区别:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent
 1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/proto
