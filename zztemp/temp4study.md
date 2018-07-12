@@ -1,32 +1,37 @@
 # temp4study
-2. 事件处理程序:学习如何编写处理程序函数也有一些微妙之处，因为这些代码异步工作，可能会重复运行，但情况略有不同。
+2. git flow
+3. apply和call
+4. session和jwt
+5. utf16,unicode,base64
+6. JSON.stringify与JSON.parse
+7. 事件处理程序:学习如何编写处理程序函数也有一些微妙之处，因为这些代码异步工作，可能会重复运行，但情况略有不同。
     1. 防止按钮重复点击
 
-2. cssText
-2. HTML templates（HTML模板）：<template> 和 <slot> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用
-2. 基于回流的页面渲染,页面渲染的w3c规范和那个女人的博客
-2. 事件设计模式
-2. 事件驱动编程为什么比
-1. nodeValue:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeValue
-1. innerHTML,innertext,textcontent的区别:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent
-1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/proto
-2. DOCTYPE
-2. CDATA是什么
-2. 可以连续的调用Object.getPrototypeOf，直到原型链尽头
-2. 扩展DOM对象的原型是非常危险的，尤其是在旧版本的Internet Explorer (6，7，8)中。:http://perfectionkills.com/whats-wrong-with-extending-the-dom/
-2. 文档流顺序
-2. node.parentnode和parentNOde接口有关系吗
-2. Node.baseURI和document.url,element的url的区别
-2. window.location.href和document的url的区别
-1. hasAttributes()有参数和无参数的区别
-1. angular中获取dom的比较好的做法是什么,使用querySelector呢?
-1. http协议
+8. cssText
+9. HTML templates（HTML模板）：<template> 和 <slot> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用
+10. 基于回流的页面渲染,页面渲染的w3c规范和那个女人的博客
+11. 事件设计模式
+12. 事件驱动编程为什么比
+13. nodeValue:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeValue
+14. innerHTML,innertext,textcontent的区别:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent
+15. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/proto
+16. DOCTYPE
+17. CDATA是什么
+18. 可以连续的调用Object.getPrototypeOf，直到原型链尽头
+19. 扩展DOM对象的原型是非常危险的，尤其是在旧版本的Internet Explorer (6，7，8)中。:http://perfectionkills.com/whats-wrong-with-extending-the-dom/
+20. 文档流顺序
+21. node.parentnode和parentNOde接口有关系吗
+22. Node.baseURI和document.url,element的url的区别
+23. window.location.href和document的url的区别
+24. hasAttributes()有参数和无参数的区别
+25. angular中获取dom的比较好的做法是什么,使用querySelector呢?
+26. http协议
 
-2. html embeds是干嘛的
-1. 那些节点不允许子节点?
+27. html embeds是干嘛的
+28. 那些节点不允许子节点?
 
-1. properties 和 attributes
-1. iframe
+29. properties 和 attributes
+30. iframe
     参考:https://www.zhihu.com/question/20653055
     1. 会重新加载css?会有新的window对象?
     2. 完全隔离的css 和 js , 但又可以使用 contentWindow和parent 来通信. 松耦合又不失灵活 
@@ -36,192 +41,192 @@
 
     4. 比较典型的应用就是网易云音乐网页版:除了播放条,其他部分全是iframe
     5. 单页面和iframe的关系
-1. 未设置onclick的空button有事件监听器吗,点击时会有方法执行吗
+31. 未设置onclick的空button有事件监听器吗,点击时会有方法执行吗
     1. 当一个事件出现且有一个事件监听器被绑定时，消息会被随时添加。如果没有事件监听器，事件会丢失,不会被添加到队列
     2. 一个 web worker 或者一个跨域的iframe都有自己的栈，堆和消息队列。两个不同的运行时只能通过 postMessage方法进行通信。如果后者侦听到message事件，则此方法会向其他运行时添加消息。
-1. requestAnimationFrame和settimeout
+32. requestAnimationFrame和settimeout
     1. HTML5标准规定了setTimeout()的第二个参数的最小值（最短间隔），不得低于4毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为10毫秒。另外，对于那些DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。这时使用requestAnimationFrame()的效果要好于setTimeout()。
 
-1. 深复制对原型链有什么影响?
-1. 打印字符和控制字符
-1. js call和apply参考:https://www.jianshu.com/p/a9990162d698
-1. 页面重定向和window.location的关系
-1. 浏览器跨域,iframe,跨域加载js
-2. web work参考
+33. 深复制对原型链有什么影响?
+34. 打印字符和控制字符
+35. js call和apply参考:https://www.jianshu.com/p/a9990162d698
+36. 页面重定向和window.location的关系
+37. 浏览器跨域,iframe,跨域加载js
+38. web work参考
     1. https://www.cnblogs.com/giggle/p/5350288.html
     2. https://segmentfault.com/a/1190000012528806
-2. console.log()参考:https://segmentfault.com/a/1190000012957199
+39. console.log()参考:https://segmentfault.com/a/1190000012957199
 
-1. 按mdn的html元素参考重新整理html笔记:https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element
-1. window和document和element
+40. 按mdn的html元素参考重新整理html笔记:https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element
+41. window和document和element
 
-1. nodejs中如何操作dom,或者生成web页面?
-1. navigator.userAgent
-1. user_agent:https://developer.mozilla.org/zh-CN/docs/Glossary/User_agent
-1. js的错误处理throw， try/catch
-1. 时间复杂度和空间复杂度
-1. fiber and goruntine
-1. every day和everyday
-1. css:https://www.cnblogs.com/yaohong/p/6092440.html
-1. chrome及vscode等的调试
-1. 抓包
-1. 学习数据结构
-1. 音频流和视频流
-1. 数字钱包
-2. linux中的vscode和chrome等可以用apt-get来更新吗
-2. https://www.cnblogs.com/yaohong/p/6385228.html
-2. slack一款协作办公应用
-    2. qq协同excel
-2. 编程之美
-1. https://mp.weixin.qq.com/s/mz2QuZrE6uMXpAq8HGJe3A
-1. godep那个tool的使用
-1. golang给包设置多个目录,下载的包需要在多个版本间切换怎么弄比较好
-1. 密钥:私钥,公钥
-1. postman
-1. chrome的投影
-1. git log是按时间顺序排吗, 如果不是怎么弄?
-1. 取数组最大最小值的算法
-1. db
+42. nodejs中如何操作dom,或者生成web页面?
+43. navigator.userAgent
+44. user_agent:https://developer.mozilla.org/zh-CN/docs/Glossary/User_agent
+45. js的错误处理throw， try/catch
+46. 时间复杂度和空间复杂度
+47. fiber and goruntine
+48. every day和everyday
+49. css:https://www.cnblogs.com/yaohong/p/6092440.html
+50. chrome及vscode等的调试
+51. 抓包
+52. 学习数据结构
+53. 音频流和视频流
+54. 数字钱包
+55. linux中的vscode和chrome等可以用apt-get来更新吗
+56. https://www.cnblogs.com/yaohong/p/6385228.html
+57. slack一款协作办公应用
+    1. qq协同excel
+58. 编程之美
+59. https://mp.weixin.qq.com/s/mz2QuZrE6uMXpAq8HGJe3A
+60. godep那个tool的使用
+61. golang给包设置多个目录,下载的包需要在多个版本间切换怎么弄比较好
+62. 密钥:私钥,公钥
+63. postman
+64. chrome的投影
+65. git log是按时间顺序排吗, 如果不是怎么弄?
+66. 取数组最大最小值的算法
+67. db
     1. sql中#和$的区别
-    1. 各sql的变量占位符是啥
+    2. 各sql的变量占位符是啥
         1. note:postgresql是$
-    2. 占位符防止sql注入
-    3. 各sql 中 @#$%& 的区别
-    4. 如何给数据库传数组等
-    5. BEGIN和end if这些是存储过程用到的?普通sql中能用吗
-    6. 变量和字符串拼接的结果是字符串还是?
-    7. sql字符串中有特殊符号
-    8. sql参数数量不确定怎么办
-    9. 动态sql
-    10. 临时表
-    11. sql and的原理:是先计算完所有的前一个还是一个的前一个之后执行下一个and
-1. gitlab
+    3. 占位符防止sql注入
+    4. 各sql 中 @#$%& 的区别
+    5. 如何给数据库传数组等
+    6. BEGIN和end if这些是存储过程用到的?普通sql中能用吗
+    7. 变量和字符串拼接的结果是字符串还是?
+    8. sql字符串中有特殊符号
+    9. sql参数数量不确定怎么办
+    10. 动态sql
+    11. 临时表
+    12. sql and的原理:是先计算完所有的前一个还是一个的前一个之后执行下一个and
+68. gitlab
     1. 使用ssh协议,不用输入密码,使用http就需要?
-2. vscode集成终端运行得很慢:https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered
-1. `source xxx`只对当前窗口和新窗口生效,不对其他老窗口生效?
-1. 队列,task,queue,Metric
-2. 从gitlab clone需要权限吗?为什么有时候需要输入密码
-1. 存储过程,队列,任务调度,时间齿轮,activeMQ
-1. RESTful
-2. 元祖类型和set差不多?
-1. golang
+69. vscode集成终端运行得很慢:https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered
+70. `source xxx`只对当前窗口和新窗口生效,不对其他老窗口生效?
+71. 队列,task,queue,Metric
+72. 从gitlab clone需要权限吗?为什么有时候需要输入密码
+73. 存储过程,队列,任务调度,时间齿轮,activeMQ
+74. RESTful
+75. 元祖类型和set差不多?
+76. golang
     1. https://segmentfault.com/a/1190000006885571
-    1. note:格式转换:【链接】Go语言string，int，int64,float转换https://www.cnblogs.com/vdvvdd/p/7211122.html
-    1. go web编程:https://www.kancloud.cn/kancloud/web-application-with-golang#/comment
-    1. 各种类型的转换
-    1. golang有对象的概念吗,只有用结构体这些?
-    1. 数组的拼接等
-    1. go get时的(download)表示啥
-    1. fmt的v,V,+v区别
-    1. golang三个点的写法,前面三个点和后面三个点,好处是什么
+    2. note:格式转换:【链接】Go语言string，int，int64,float转换https://www.cnblogs.com/vdvvdd/p/7211122.html
+    3. go web编程:https://www.kancloud.cn/kancloud/web-application-with-golang#/comment
+    4. 各种类型的转换
+    5. golang有对象的概念吗,只有用结构体这些?
+    6. 数组的拼接等
+    7. go get时的(download)表示啥
+    8. fmt的v,V,+v区别
+    9. golang三个点的写法,前面三个点和后面三个点,好处是什么
         1. 项目中分开写的时候,为什么没传点, 点的长度为1
         2. note:可以用在接受单个元素的地方,比如`pois = append(pois, others...)`
-    1. go get作用于github时和git pull的区别
-    1. []interface{}和[]interface{}{}
-    1. golang 语句中传变量是用`$1`,`$2`...?
-    1. 反射
-    1. 带星号和不带星号的区别
-    1. 结构体实例, 类实例等
-    1. golang json的意义和作用
+    10. go get作用于github时和git pull的区别
+    11. []interface{}和[]interface{}{}
+    12. golang 语句中传变量是用`$1`,`$2`...?
+    13. 反射
+    14. 带星号和不带星号的区别
+    15. 结构体实例, 类实例等
+    16. golang json的意义和作用
         1. 在哪儿用别名,哪儿用本命
         2. 别名的作用是啥
-    1. 多种数据的组合怎么弄,比如切片类型和map类型
-    1. golang和区块链
-    1. 如何配置多个 gopath,配置后会怎么样?
-    2. 方法和函数的区别
+    17. 多种数据的组合怎么弄,比如切片类型和map类型
+    18. golang和区块链
+    19. 如何配置多个 gopath,配置后会怎么样?
+    20. 方法和函数的区别
         1. 参考:https://studygolang.com/articles/9945
-    3. gopath和goroot的配置,立即生效参考:https://blog.csdn.net/u013256622/article/details/43703875
+    21. gopath和goroot的配置,立即生效参考:https://blog.csdn.net/u013256622/article/details/43703875
         1. 项目中是配置在`/etc/profile`中的(全局是这儿设置的,但是每次重新打开shell的配置是?)
             修改了/etc/profile的话,用source /etc/profile之后还是只对当前窗口生效,对新窗口不生效;似乎是因为打开新的shell调用的~/.bashrc(带验证)
             1. 最新实测,修改了/etc/profile的话,用source /etc/profile之后,还是只对当前窗口生效,对vscode的新bash shell和ubuntu的新shell都没有生效,但是重启vscode之后就变成新的了
         2. .bash_profile,.bashrc等的区别
-    4. golang切片和数组的区别,`...xxx`是接收的切片还是数组
-    5. type xxx func(* yyy)
-    6. *和&的区别
-    7. go get默认会显示是否更新,是否成功吗?
-    8. exported type ICoordinate should have comment or be unexported
+    22. golang切片和数组的区别,`...xxx`是接收的切片还是数组
+    23. type xxx func(* yyy)
+    24. *和&的区别
+    25. go get默认会显示是否更新,是否成功吗?
+    26. exported type ICoordinate should have comment or be unexported
         1. 似乎是缺少某方法或数据
-2. html 
+77. html 
     1. rotation
 
-1. oracle
+78. oracle
     1. sid是什么
-2. mdn
+79. mdn
     1. creatEvent
     2. 事件触发器
     3. 事件:https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Building_blocks/Events
-2. qq
+80. qq
     1. 提取图片中的文字只有手机才有?
 
-2. linux
+81. linux
     1. 执行source /etc/profile之后 用户名称由绿色变成白色了
     2. 递归创建目录
-1. git删除远程分支后需要提交吗?其他人本地还有这个分支,操作会有什么影响?
-2. to和for
-1. ubuntu自带的"提取到此处"有问题?
-1. 事件派发
-2. OpenLayers 3 
+82. git删除远程分支后需要提交吗?其他人本地还有这个分支,操作会有什么影响?
+83. to和for
+84. ubuntu自带的"提取到此处"有问题?
+85. 事件派发
+86. OpenLayers 3 
     1. 之 动态点扩散效果:https://www.2cto.com/kf/201511/450555.html
     2. https://blog.csdn.net/qingyafan/article/details/45950125
-2. git commit内容非常多之后怎么办
-2. 区块链:
+87. git commit内容非常多之后怎么办
+88. 区块链:
     1. 交易记录非常多之后怎么办
-1. cpu和核心数,核心数和线程的关系
-1. dom渲染顺序
-1. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
-2. js获取js文件中的数据?
-2. html document对象
-2. canvas画图:https://www.w3cplus.com/canvas/draw-dashed-and-dotted-lines.html
-1. 分辨率变化的时候矢量图会被重新渲染?
-1. js
+89. cpu和核心数,核心数和线程的关系
+90. dom渲染顺序
+91. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
+92. js获取js文件中的数据?
+93. html document对象
+94. canvas画图:https://www.w3cplus.com/canvas/draw-dashed-and-dotted-lines.html
+95. 分辨率变化的时候矢量图会被重新渲染?
+96. js
     1. 方法的声明不能在调用之后?
         什么情况下可以违背这个规则
 
-1. 网页画图的几种方法,画矢量图用什么合适
-1. 事件的几种写法
+97. 网页画图的几种方法,画矢量图用什么合适
+98. 事件的几种写法
     1. 原生click和onclick的区别
-2. jsDoc规范
-1. 事件和观察者模式
-1. json的语法和js普通对象的语法有没有什么区别
-2. 什么是全拼和双拼
-2. 打开csdn blog后cpu占用很高,是什么原因, 重启浏览器后打开相同的网页还是这个情况
+99. jsDoc规范
+100. 事件和观察者模式
+101. json的语法和js普通对象的语法有没有什么区别
+102. 什么是全拼和双拼
+103. 打开csdn blog后cpu占用很高,是什么原因, 重启浏览器后打开相同的网页还是这个情况
     flash? 网页开太多了?设置了chrome的最新特性?
-2. .pyc和.tmp
-2. 苹果发布会的ar文件格式
+104. .pyc和.tmp
+105. 苹果发布会的ar文件格式
 
-1. git diff输出为空的问题
+106. git diff输出为空的问题
     note:默认没变应该是输出为空,如果权限变了会显示出来吗?(待测试),为什么看别人网上的可以显示出权限的变化,但是我的没看到权限的变化
 
-2. golang
+107. golang
     1. `GOROOT/src/builtin/builtin.go`,这个包是干嘛的
     2. errors.New("xxx")
         1. 用该方式生成的相同的error相等吗
-2. 坐标系的转换
-2. webpak热部署
-2. golang
+108. 坐标系的转换
+109. webpak热部署
+110. golang
     1. 通过index访问长度为0的数组和切片会报错吗,用`[0:]`呢
-2. sqlite
-2. sso
-2. websocket
+111. sqlite
+112. sso
+113. websocket
     1. 有订阅成功失败的状态吗
     2. 连接状态是返回一次还是连续不断返回?
     3. 切换页面websocket会自动断开吗
 
-2. telnet
-2. 博客:腾讯web前端coverguo
-1. 自定义路书轨迹
+114. telnet
+115. 博客:腾讯web前端coverguo
+116. 自定义路书轨迹
     1. 最简单的,就是不用动画,只需要setPosition和画线就行了
-    1. 参考:https://blog.csdn.net/projectno/article/details/78281689
-1. js this的问题, 在func中this表示啥, 如果使用`var self = this`,此时self又表示啥,func使用箭头函数的话this又表示啥
-1. 用什么数据表示三种状态比较好
-1. js不存在线程安全的问题
-1. js event loop
+    2. 参考:https://blog.csdn.net/projectno/article/details/78281689
+117. js this的问题, 在func中this表示啥, 如果使用`var self = this`,此时self又表示啥,func使用箭头函数的话this又表示啥
+118. 用什么数据表示三种状态比较好
+119. js不存在线程安全的问题
+120. js event loop
     1. 浏览器多线程和js单线程
     2. 阻塞等
         1. alert和同步xhr
             1. alert会阻塞异步代码吗,promise呢?
-            1. xhr的原理
-            2. 如何主动结束异步,主动实现类似alert的效果
+            2. xhr的原理
+            3. 如何主动结束异步,主动实现类似alert的效果
     3. 外部js和当前js
     4. 浏览器的event loop,每遍历一个就会渲染一次?
     5. js同步和异步的优缺点和使用场景
@@ -238,24 +243,24 @@
     11. 多个setTimeout之间的时间间隔是怎么算的?比如100ms,是前一个执行完后的一百毫秒还是跟前一个没关系?
         已解决:跟前一个执行的时间有关.如果没超出,比如前一个执行了20ms,那么再过80ms后一个就开始执行;如果前一个超出了,比如执行了200ms,那么执行完后后一个立刻执行.
 
-1. 实现回调的几种方式
+121. 实现回调的几种方式
     1. 如何把普通方法弄成可以回调的?
     2. 如何修改event loop中事件的顺序?
 
-1. angular数据异步渲染的优缺点
+122. angular数据异步渲染的优缺点
 
-1. js如何一边遍历一边添加?
-1. typedarray和普通array在语法上的区别
-1. 网页动画的原理
+123. js如何一边遍历一边添加?
+124. typedarray和普通array在语法上的区别
+125. 网页动画的原理
     1. https://www.zhihu.com/question/20453427
     2. w3c关于动画的规范
     3. 网页动画实现的方式(不管新老):
         1. css animation
-1. https://developer.mozilla.org/zh-CN/docs/Games
-1. html的整个渲染流程:reflow等
-1. https://www.w3cplus.com/svg/bear-animation-width-svg.html
-1. 矢量图的数据比图片体积小
-1. 【链接】百度地图自定义图标动画
+126. https://developer.mozilla.org/zh-CN/docs/Games
+127. html的整个渲染流程:reflow等
+128. https://www.w3cplus.com/svg/bear-animation-width-svg.html
+129. 矢量图的数据比图片体积小
+130. 【链接】百度地图自定义图标动画
 https://blog.csdn.net/jifashihan/article/details/50460309
 1. js
     1. var arr = new ArrayBuffer(16)
@@ -1551,8 +1556,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 508. 跳过登录的测试
 509. angular引用第三方组件的方法,ydj的话
 510. ajax和jquery
-
-511. encodeURIComponent
 
 512. setTimeout(xxx,0)
     这个是在dom渲染完成之后才触发的吗,还是?

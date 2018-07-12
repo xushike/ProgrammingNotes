@@ -41,8 +41,10 @@ ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代
 ### 3.1 箭头函数
 我的理解是:直接声明function,则function中的this指的外层对象;而用箭头函数则this指的全局对象(如果是在组件中,则是指向组件)
 
+匿名函数和箭头函数的`this`:两者绑定不同的this对象。匿名函数（和所有传统的Javascript函数）创建他们独有的this对象，而箭头函数则继承绑定他所在函数的this对象。这意味着在使用箭头函数时，原函数中可用的变量和常量在事件处理器中同样可用。
+
 ### 3.2 更简短定义方法的语法
-这是一种把方法名直接赋给函数的简写方式,例子如下
+对象中定义方法基本写法如下:
 ```JavaScript
 var obj = {
   foo: function() {
@@ -54,7 +56,7 @@ var obj = {
 };
 ```
 
-可以简写为:
+更简短定义函数的语法如下:
 ```JavaScript
 var obj = {
   foo() {
@@ -67,8 +69,12 @@ var obj = {
 ```
 
 ### 3.3 setter和getter
-#### getter
-基本使用如
+为什么需要setter和getter:虽然可以直接操作对象的属性,但有时我们还需要一些额外操作而不是直接获取或修改,此时可以用这两个方法.
+
+个人感觉这两个定义上像方法,但使用时像属性.
+
+#### 3.3.1 getter
+基本使用如下
 ```JavaScript
 var obj = {
   log: ['example','test'],
@@ -79,9 +85,9 @@ var obj = {
 }
 ```
 
-注意:getter是lazy getter,每次调用的时候才回去计算值.可以使用delete操作符删除 getter
+注意:getter是lazy getter,每次调用的时候才回去计算值.
 
-#### setter
+#### 3.3.2 setter
 基本使用如
 ```JavaScript
 var language = {
@@ -91,10 +97,10 @@ var language = {
   log: []
 }
 language.current = 'EN';
-console.log(language.log); // ['EN']
+language.current = 'FA';
+console.log(language.log); 
+// Array ["EN", "FA"]
 ```
-
-也可以用 delete 操作符移除一个 setter
 
 ## 4 js6常用对象
 ### 4.1 Promise对象

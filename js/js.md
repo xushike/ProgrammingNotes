@@ -349,31 +349,34 @@ js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么
 可以用于数字也可以用于字符串,甚至可以把字符串和数字拼接在一起(弱类型语言,所以允许这样),此时数字被自动转换为字符串
 
 ### 2.2 delete
-delete 操作符用于删除对象的某个属性.只能删除自身的属性(区别于原型链的属性);var, let以及const创建的不可设置的属性不能被delete操作删除;
+delete 操作符用于删除对象中不是继承而来的属性(区别于原型链的属性).var, let以及const创建的不可设置的属性不能被delete操作删除;
 
 一般情况都会返回true(属性不存在也返回true),除非属性是自己不可设置的值,比如`Math.PI`
 
-删除数组元素:删除的元素不属于该数组,数组长度不受影响.两个例子如下
-```JavaScript
-var trees = ["redwood","bay","cedar","oak","maple"];
-delete trees[3];
-if (3 in trees) {
-   // 这里不会执行
-}
-console.log(trees) //["redwood","bay","cedar",,"maple"]
-console.log(trees.length)//5
-```
+使用场景:
+1. 删除数组元素:删除的元素不属于该数组,数组长度不受影响.两个例子如下
 
-```JavaScript
-var trees = ["redwood","bay","cedar","oak","maple"];
-trees[3] = undefined;
-if (3 in trees) {
-   // 这里会执行
-}
-console.log(trees) //["redwood","bay","cedar",,"maple"]
-console.log(trees.length)//5
-```
+    ```JavaScript
+    var trees = ["redwood","bay","cedar","oak","maple"];
+    delete trees[3];
+    if (3 in trees) {
+    // 这里不会执行
+    }
+    console.log(trees) //["redwood","bay","cedar",,"maple"]
+    console.log(trees.length)//5
+    ```
 
+    ```JavaScript
+    var trees = ["redwood","bay","cedar","oak","maple"];
+    trees[3] = undefined;
+    if (3 in trees) {
+    // 这里会执行
+    }
+    console.log(trees) //["redwood","bay","cedar",,"maple"]
+    console.log(trees.length)//5
+    ```
+
+2. 删除`setter`和`getter`设置的属性
 
 ### 2.3 比较操作符`==`和`===`
 `==`并不是严格相等,而且判断的是值是否相等,而不是布尔值是否相等.js中0、""、''、null、false、undefined、NaN的**布尔值**(可通过`Boolean(xxx)`查看)都是false，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.(具体的==比较待补充)
@@ -413,8 +416,59 @@ console.log(trees.length)//5
 ### 3.5 forEach((ele,index,array)=>{...})
 对于array的遍历,一般情况下`forEach()`比`for ... of`更好用.
 
-## 4 js中常用对象
-### 4.1 Array对象
+## 4 JS标准库
+包含全局方法和常用对象
+
+### 4.1 常用全局方法
+#### 4.1.1 decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
+这几个方法都是用来编码和解码URI的.因为浏览器的地址栏有中文字符的话，可以会出现不可预期的错误，所以可以encodeURI把非英文字符转化为英文编码，decodeURI可以用来把字符还原回来.
+
+```JavaScript
+var uriStr = "http://www.baidu.com?name=张三&num=001 zs"; 
+var uriec = encodeURI(uriStr); 
+document.write("编码后的" + uriec); 
+// 编码后的http://www.baidu.com?name=%E5%BC%A0%E4%B8%89&num=001%20zs 
+var uridc = decodeURI(uriec); 
+document.write("解码后的" + uridc); 
+// 解码后的http://www.baidu.com?name=张三&num=001 zs
+```
+
+两者的区别:
+1. `encodeURI()`和`decodeURI()`:操作的是完整的 URI；这俩函数假定 URI 中的任何保留字符都有特殊意义，所有不会编码它们。
+2. `encodeURIComponent()`和`decodeURIComponent()`:操作的是组成 URI 的个别组件；这俩函数假定任何保留字符都代表普通文本，所以必须编码它们，所以它们（保留字符）出现在一个完整 URI 的组件里面时不会被解释成保留字符了。
+
+### 4.2 Object对象
+常用方法:
+1. `Object.assign()`:通过复制一个或多个对象来创建一个新的对象。
+2. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象.
+
+    例子1如下
+    ```JavaScript
+    // 这个例子展示使用getter和setter方法扩展 Date原型
+    Object.defineProperty(d, "year", {
+    get: function() { return this.getFullYear() },
+    set: function(y) { this.setFullYear(y) }
+    });
+    var now = new Date();
+    console.log(now.year); 
+    // 2000
+    now.year = 2001; 
+    // 987617605170
+    console.log(now);
+    // Wed Apr 18 11:13:25 GMT-0700 (Pacific Daylight Time) 2001
+    ```
+
+    例子2如下:
+    ```JavaScript
+    var o = { a:0 }
+
+    Object.defineProperties(o, {
+        "b": { get: function () { return this.a + 1; } },
+        "c": { set: function (x) { this.a = x / 2; } }
+    });
+    ```
+
+### 4.3 Array对象
 优点:存储的对象能动态增多和减少，并且可以存储任何类型的JavaScript值
 
 定义方法:三种普通创建方法,以及通过函数(`split`,`match`等)创建
@@ -428,7 +482,7 @@ console.log(trees.length)//5
 
 还有一种额外的但不推荐的定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
 
-array常用方法:
+常用方法:
 1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
 
     ```JavaScript
@@ -471,7 +525,7 @@ array常用方法:
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
 
-### 4.3 RegExp对象
+### 4.4 RegExp对象
 字符模式对象,用于正则表达式
 1. 两种语法如下,其中pattern表示模式,modifiers(修饰符) 用于指定全局匹配、区分大小写的匹配和多行匹配:
 
@@ -490,18 +544,135 @@ array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`ma
     2. `exec()`返回字符串中检索到的指定值,没有则返回null
 
 ## 5 函数
-函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼)
+函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
+
+注意:函数体`{}`内不使用var定义的变量是全局变量(待测试)
 
 ### 5.1 定义函数(三种方法)
-1. 函数声明
-    (待补充)
-2. 函数表达式
-    1. 典型的
-    2. 包含函数名称的，函数名称可以在函数内部使用，可以用来递归
-3. new Function构造函数
+1. 函数声明(function declaration),函数声明有提升.语法是以`function`开头,如
 
-### 常用方法
-1. `match()`方法：调用者必须是string（之前在angular表单中用number类型调用该方法会报错）
+    ```JavaScript
+    hoisted(); // "foo"
+
+    function hoisted() {
+        console.log("foo"); 
+    }
+    ```
+    1. 函数生成器声明 (function* 语句)和函数生成器表达式 (function*表达式):返回Generator对象(该对象主要用于迭代?),没遇到过,待补充
+2. 函数表达式(function expression),语法是不以`function`开头
+    1. 函数表达式没有提升,所以不能在定义之前调用,如
+
+        ```JavaScript
+        notHoisted(); // TypeError: notHoisted is not a function
+
+        var notHoisted = function() {
+        console.log("bar");
+        };
+        ```
+
+    2. 命名函数表达式:包含函数名称的，函数名称可以在函数内部使用.使用场景一般是你想在函数体内部引用当前函数(可以用来递归).而且也推荐使用函数名的方法在函数体内部调用当前函数.如
+
+        ```JavaScript
+        var math = {
+            'factorial': function factorial(n) {
+                if (n <= 1)
+                return 1;
+                return n * factorial(n - 1);
+            }
+        };
+        ```
+
+    3. 匿名函数（anonymous）:函数表达式省略函数名后就变成了匿名函数,匿名函数的的`this`指向调用它的对象(?).
+        1. 即时调用的函数表达式(IIFE,Immediately Invokable Function Expressions):当函数只使用一次时可以使用该语法.如
+
+            ```JavaScript
+            (function() {
+                statements
+            })();
+            ```
+
+            它有两个好处:
+            1. 不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域
+            2. IIFE中定义的任何变量和函数，都会在执行结束时被销毁。这种做法可以减少闭包占用的内存问题
+    4. 箭头函数(arrow functions)(重点):更适用于那些本来需要匿名函数的地方.引入箭头函数有两个方面的作用：更简短的函数并且不绑定this.
+        1. 需要返回对象字面量时,要写成这样:
+
+            ```JavaScript
+            参数=> ({foo: bar})
+            ```
+        2. 支持剩余参数和默认参数:如,
+
+            ```JavaScript
+            (参数1, 参数2, ...rest) => {函数声明}
+            (参数1 = 默认值1,参数2, …, 参数N = 默认值N) => {函数声明}
+            ```
+        3. 支持参数列表解构
+        4. 参数括号内定义的变量是局部变量;函数体{}内不使用var定义的变量是全局变量,用var定义的变量是局部变量
+        5. 不绑定this:在箭头函数出现之前，每个新定义的函数都有它自己的 this值（在构造函数的情况下是一个新对象，在严格模式的函数调用中为 undefined，如果该函数被称为“对象方法”则为基础对象等）.而箭头函数不会创建自己的this,它只会从自己的作用域链的上一层继承this.
+        6. 不绑定Arguments 对象:在大多数情况下，使用剩余参数是相较使用arguments对象的更好选择,如
+
+            ```JavaScript
+            function foo() { 
+            var f = (...args) => args[0]; 
+            return f(2); 
+            }
+
+            foo(1); 
+            // 2
+            ```
+    
+3. `new Function()`构造函数.使用Function构造器生成的Function对象是在函数创建时解析的,而上面几种方法是跟其他代码一起解析的,所以`new Function()`是调用效率最低的.
+
+    ```JavaScript
+    var sum = new Function('a', 'b', 'return a + b');
+
+    console.log(sum(2, 6));
+    // expected output: 8
+    ```
+
+### 5.2 函数的this(难点)
+MDN上说的似乎只针对浏览器环境,然后本人在NodeJS环境中测试的结果和浏览器环境差异很大,所以以下结论只针对浏览器环境.
+
+1. 对于非箭头函数,每个新定义的函数都有它自己的 this值,然后又分以下几种情况:
+    1. 如果函数属于类,则this是该类的对象
+    2. 如果函数是某个对象的属性,则this是该对象
+    3. 如果函数属于某个方法(函数的外层是某个方法),则this是全局对象(即Window)
+        1. 此时想使用外层方法的this,可以在外层将this赋值给一个变量,然后在函数中使用该变量,如
+
+            ```JavaScript
+            function Person() {
+                var that = this;
+                that.age = 0;
+
+                setInterval(function growUp() {
+                    //  回调引用的是that变量, 其值是预期的对象. 
+                    that.age++;
+                }, 1000);
+            }
+            ```
+    
+    可以看出,这个结论和"匿名函数的的`this`指向调用它的对象"似乎有点冲突.暂时以结论为准吧.
+2. 对于箭头函数:不会创建自己的this,只会从自己的作用域链的上一层继承this,如,
+
+    ```JavaScript
+    function Person(){
+        this.age = 0;
+
+        setInterval(() => {
+            this.age++; // this正确地指向person 对象
+        }, 1000);
+        }
+
+        var p = new Person();
+    ```
+
+### 5.3 默认参数
+### 5.4 arguments
+### 5.5 剩余参数(rest parameters)
+剩余参数和 arguments对象之间的区别主要有三个：
+1. 剩余参数只包含那些没有对应形参的实参，而 arguments 对象包含了传给函数的所有实参。
+2. arguments对象不是一个真正的数组，而剩余参数是真正的 Array实例，也就是说你能够在它上面直接使用所有的数组方法，比如 sort，map，forEach或pop。
+3. arguments对象还有一些附加的属性 （如callee属性）
 
 ## 6 事件
 ## 7 模块
@@ -553,7 +724,7 @@ Math.floor(4.9) === 4  //true
 ### 3.2 ArrayBuffer视图
 简单介绍:ArrayBuffer视图就是对ArrayBuffer增加了一层抽象,它可以是类型数组视图或者数据视图,通过它,我们可以读写ArrayBuffer中的内容.
 
-#### 类型数组视图(Typed array views)
+#### 3.2.1 类型数组视图(Typed array views)
 形如Int8Array，Uint32Array，Float64Array等以及特殊的Uint8ClampedArray.(其中Uint8ClampedArray很擅长Canvas数据处理)
 
 创建类型数组视图:
@@ -568,7 +739,7 @@ Math.floor(4.9) === 4  //true
 4. `name`:构造器的名称,如"Int8Array"
 4. 转换为普通数组:`Array.from()`或者`Array.prototype.slice.call(typedArray)`
 
-#### 数据视图(DataView)
+#### 3.2.2 数据视图(DataView)
 和类型数组视图比,更加灵活,不用考虑平台字节序问题.
 
 那么什么是平台字节序:"Endian"(字节序) 和 "endianness"(字节顺序) (或者 "byte-order") 描述计算机如何组织字节生成对应数字的.主要有三种:
@@ -619,7 +790,7 @@ import和export指令的静态特性允许静态分析器在不运行代码的�
 2. 语法简单。
 3. 支持静态分析工具。
 
-#### 导入import
+#### 4.3.1 导入import
 引入模块的几种写法,其中`module-name`一般是模块js文件的路径,一般不包含`.js`扩展名,用单引号或双引号包裹:
 1. 导入整个模块:形如`import {export} from "module-name"`,也可以使用别名`import { export as alias } from "module-name"`
 2. 导入里面的多个子模块:形如`import {foo, bar} from "module-name"`:也可以使用别名`import { export1 , export2 as alias2 , ["module-name"] } from "module-name"`
@@ -627,7 +798,7 @@ import和export指令的静态特性允许静态分析器在不运行代码的�
 4. 仅为副作用而导入一个模块:`import "module-name"`
 5. 导入某模块的所有导出:`import * as xxx from "module-name"`:可以用别名`xxx`来使用模块.此时如果模块里有多个导出,就可以使用xxx.yyy来使用对应的导出.
 
-#### 导出export
+#### 4.3.2 导出export
 1. 命名导出:形如`export { myFunction }`(存在名为myFunction的方法)或者直接写在方法方法上`export function diag(xxx) {...}`,还可以导出成常量`export const foo = Math.sqrt(2)`
 
     命名导出对导出多个值很有用。在导入时,必须使用相同名称。
