@@ -1,4 +1,7 @@
 # temp4study
+2. CRLF
+1. js date对象
+1. font-size的相对单位em
 2. git flow
 3. apply和call
 4. session和jwt

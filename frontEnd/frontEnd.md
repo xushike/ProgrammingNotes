@@ -57,6 +57,11 @@ MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择
 
 参考:https://juejin.im/post/5a0ea4ec6fb9a0450407725c
 
+### 3.6 怪异模式(Quirks Mode)
+现代浏览器通常会尝试根据W3C标准呈现HTML内容。 但是，为了提供与旧网页的兼容性，所有浏览器都支持另一种模式--怪异模式.怪异模式不是W3C标准,最好不要使用.
+
+当没有DOCTYPE声明或声明不正确时,会呈现怪异模式.
+
 ## 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 
