@@ -1,4 +1,5 @@
 # temp4study
+1. input只输入数字
 2. CRLF
 2. SQL注入
 2. 回归最优解
