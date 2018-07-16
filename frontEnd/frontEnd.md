@@ -215,3 +215,6 @@ PWA带来的影响:
 
 2. mozilla工程师Lin Clark的文章:https://hacks.mozilla.org/author/lclarkmozilla-com/
 3. https://medium.com/@moz2000tw/2017%E5%B9%B4%E5%9B%9E%E9%A1%A7-%E7%82%BA%E4%BA%86%E9%96%8B%E7%99%BC%E8%80%85-mozilla-%E6%8A%8A-web-%E8%AE%8A%E5%BE%97%E6%9B%B4%E5%A5%BD%E4%BA%86-a735d4914775
+
+4. https://developer.mozilla.org/zh-CN/docs/Web
+5. 浏览器的工作原理：新式网络浏览器幕后揭秘:https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/

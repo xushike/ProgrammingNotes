@@ -1,5 +1,7 @@
 # temp4study
 2. CRLF
+2. SQL注入
+2. 回归最优解
 1. js date对象
 1. font-size的相对单位em
 2. git flow
