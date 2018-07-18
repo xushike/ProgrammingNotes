@@ -220,3 +220,4 @@ PWA带来的影响:
 5. 浏览器的工作原理：新式网络浏览器幕后揭秘:https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/
 6. 四种防止表单重复提交的方法
 :http://www.aazzp.com/2017/10/30/%E5%9B%9B%E7%A7%8D%E9%98%B2%E6%AD%A2%E8%A1%A8%E5%8D%95%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E7%9A%84%E6%96%B9%E6%B3%95/
+7. 你不知道的 DOMContentLoaded:https://zhuanlan.zhihu.com/p/25876048

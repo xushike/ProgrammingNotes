@@ -247,8 +247,8 @@ Objects包含:
 6. java标准库的內建对象,如日期(Dates),字符串(String),Math等
 
 判断数据的类型用`typeof xxx`or`typeof (xxx)`,返回字符串,内容是xxx的类型,一般有一下几种类型:
-1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol
-2. 对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,但是一直没有修复.参考:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof
+1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol,除了null.
+    1. 对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,因为历史一直没有修复.参考:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof
 3. 对于函数是function
 4. 对于宿主对象（由JS环境提供）,是Implementation-dependent
 5. 对于任何其他对象是object
@@ -264,7 +264,9 @@ Objects包含:
 1. `length`:返回字符串长度,实测中文英文都是算的一个单位的长度
 
 方法:
-1. `indexOf()`:返回字符在字符串中首次出现的位置,没有则返回-1
+1. `charAt(idx)`:返回idx位置的字符.
+1. `indexOf(string[,fromIndex])`:返回字符在字符串中首次出现的位置,没有则返回-1
+    1. `fromIndex`:可选,表示字符串中开始查找的位置.
 2. `match()`:里面的参数可为string或RegExp,前者用于返回包含指定字符串等信息的数组,没有则返回null;更常用的是后者,用于返回正则匹配的数组,没有则返回null.
 3. `replace()`字符替换
 4. `split(string)`:字符串转数组,string参数可以是正则表达式
@@ -339,6 +341,52 @@ js判断字符串是否全部为数字的几种方法(待补充):
 
 对象的使用:
 1. 访问元素:`obj.name`
+
+#### 1.2.5 null和undefined
+参考:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/null
+
+最开始只有null,undefined是作为补充设计出来的.要理解两者的区别,最好理解两者语义上的不同.
+
+`null`表示一个值被定义了，定义为“空值”.出现场景:
+1. 作为函数的参数，表示该函数的参数不是对象。
+2. 作为对象原型链的终点。
+
+例子如下:
+```javascript
+Object.getPrototypeOf(Object.prototype)
+// null
+```
+
+`undefined`表示没有定义(就是此处应该有一个值，但是还没有定义).出现场景有:
+1. 变量被声明了，但没有赋值时，就等于undefined。
+2. 调用函数时，应该提供的参数没有提供，该参数等于undefined。
+3. 对象没有赋值的属性，该属性的值为undefined。
+4. 函数没有返回值时，默认返回undefined。
+
+例子如下:
+```javascript
+var i;
+i // undefined
+
+function f(x){console.log(x)}
+f() // undefined
+
+var  o = new Object();
+o.p // undefined
+
+var x = f();
+x // undefined
+```
+
+两者区别:
+1. 所以设置一个值为 null 是合理的，如`objA.valueA = null;`,但设置一个值为 undefined 是不合理的
+2. null是字面量,而undefined是全局对象的属性
+3. 其他
+
+    ```javascript
+    null === undefined // false
+    null  == undefined // true
+    ```
 
 ### 1.3 局部变量
 ### 1.4 全局变量
@@ -431,7 +479,7 @@ Math.floor(4.9) === 4  //true
 ### 3.3 while和do ... while
 
 ### 3.4 普通for循环
-MDN上推荐的较由写法:
+这里有个有趣的优化写法,很简练,但是注意只有确定数组中不包含“falsy”值(即`a[i]`的值不是falsy)时才可以使用,总之慎用吧:
 ```javascript
 for (var i = 0, item; item = a[i]; i++) {
     // Do something with item
@@ -570,7 +618,7 @@ document.write("解码后的" + uridc);
 
     ```
 
-4. `find()`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
+4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
 5. `array.slice(start?,end?)`:从数组中切割出新数组,该方法不会改变原数组.如果不带参数,则是整个复制.start和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
@@ -742,8 +790,7 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 # 四 高级
 ## 1 闭包(closure)(重点,难点)
 闭包，指的是词法表示包括不被计算的变量的函数，也就是说，嵌套的函数可以访问在其外部声明的变量,同时也意味着函数内的引用的外部变量,是在运行时才计算的.JS的闭包很有用,它主要有以下几个作用:
-1. 嵌套的函数可以访问在其外部声明的变量,意味着变量被引用着所以不会被回收，因此可以用来封装私有变量和方法,带来了许多与面向对象编程相关的好处.但这是优点也是缺点，不必要的闭包只会徒增内存消耗.
-2. 
+1. 嵌套的函数可以访问在其外部声明的变量,意味着变量被引用着所以不会被回收，因此可以用来封装私有变量和方法,带来了许多与面向对象编程相关的好处,比如我可以保存一个变量,函数运行完后该变量会被保存,待需要的时候调用.但这是优点也是缺点，不必要的闭包只会徒增内存消耗.
 
 参考:
 1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
@@ -944,7 +991,6 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 
 ### 2.n 其他
 1. js中alert输出的内容太长了怎么换行？我再dorado中输出的时候就遇到过这个问题。
-2. js null和undefined的区别，两个都占用内存空间吗，用什么方法去验证呢？
 3. 网友说的js的排序原理不固定,但是基本和`快速排序法`类似.
 4. js闭包问题:[https://segmentfault.com/a/1190000003818163](https://segmentfault.com/a/1190000003818163)
 5. 网友说:"javascript里最长的正整数长度为21位，再多就会用科学计数法进行计数"
