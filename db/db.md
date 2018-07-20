@@ -39,3 +39,4 @@ NoSQL(Not Only SQL,意即“不仅仅是SQL”)，泛指非关系型的数据库
 # 七 未整理
 1. MongoDB 
 2. 时序数据库,比如influxdb
+3. 数据库读写分离,主从数据库,数据库索引
