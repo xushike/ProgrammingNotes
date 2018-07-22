@@ -646,9 +646,11 @@ array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`ma
 ## 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
 
+个人感觉js的函数可以分为普通函数和生成器函数,一般讨论的都是普通函数.
+
 注意:函数体`{}`内不使用var定义的变量是全局变量(待测试)
 
-### 5.1 定义函数(三种方法)
+### 5.1 定义普通函数(三种方法)
 1. 函数声明(function declaration),函数声明有提升.语法是以`function`开头,如
 
     ```JavaScript
@@ -773,6 +775,48 @@ MDN上说的似乎只针对浏览器环境,然后本人在NodeJS环境中测试�
 1. 剩余参数只包含那些没有对应形参的实参，而 arguments 对象包含了传给函数的所有实参。
 2. arguments对象不是一个真正的数组，而剩余参数是真正的 Array实例，也就是说你能够在它上面直接使用所有的数组方法，比如 sort，map，forEach或pop。
 3. arguments对象还有一些附加的属性 （如callee属性）
+
+### 5.6 生成器函数(generator function)(js6)
+区别于普通函数,生成器函数返回一个Generator对象(符合可迭代协议和迭代器协议的对象,可以简单理解为iterator对象),它是js对协程的不完全实现,生成器函数在执行时能暂停，后面又能从暂停处继续执行.生成器函数不能当构造器使用.一般使用场景是状态机,流程控制.
+
+两种定义方法(第一种更常用):
+1. 在函数声明的`function`后面加上`*`,如
+    
+    ```JavaScript
+    function* gen(){
+        var index = arguments[0] || 0;
+        while(true)
+            yield index++;
+    }
+
+    ```
+
+2. 使用`GeneratorFunction`.注意`GeneratorFunction`是js内置对象,但不是全局对象,它可以通过`Object.getPrototypeOf(function*(){}).constructor`来获取.例子如,
+
+    ```JavaScript
+    var GeneratorFunction = Object.getPrototypeOf(function*(){}).constructor
+    var g = new GeneratorFunction("a", "yield a * 2");
+    var iterator = g(10);
+    console.log(iterator.next().value); // 20
+    ```
+
+生成器函数的执行流程:调用一个生成器函数并不会马上执行它里面的语句，而是返回它的迭代器 （iterator ）对象。当这个迭代器的 `next()`方法被首次调用时，其内的语句会执行到第一个出现`yield`的位置暂停,`yield`后紧跟迭代器要返回的值.如果用的是 `yield*`（多了个星号），则表示将执行权移交给另一个生成器函数（当前生成器暂停执行,当另一个生成器函数执行后才继续）.`next()`方法返回一个对象，这个对象包含两个属性：value 和 done，value 属性表示本次 yield 表达式的返回值，done为布尔类型，表示生成器后续是否还有 yield 语句，即生成器函数是否已经执行完毕并返回。继续调用`next()`则往下一个`yield`执行.在生成器函数中显式`return`时，会导致生成器立即变为完成状态，即调用 next() 方法返回的对象的 done 为 true。如果 return 后面跟了一个值，那么这个值会作为当前调用 next() 方法返回的 value 值。
+
+调用`next()`方法时，如果传入了参数，那么首先这个参数会作为生成器函数上一条执行语句的返回值,然后再执行当前执行语句.典例如下,
+```JavaScript
+function *gen(){
+    yield 10;
+    y=yield 'foo';
+    yield y;
+}
+
+var gen_obj=gen();
+console.log(gen_obj.next());// 执行 yield 10，返回 10
+console.log(gen_obj.next());// 执行 yield 'foo'，返回 'foo'
+console.log(gen_obj.next(10));// 将 10 赋给上一条 yield 'foo' 的左值，即执行 y=10，返回 10
+console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 true
+```
+
 
 ## 6 事件
 ## 7 模块

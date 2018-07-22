@@ -14,7 +14,6 @@
     1. btree
 1. 数学
     1. log(n)
-1. js Boolean(a=b)是怎么判断的
 1. 继承与原型链:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
 1. js 获取命令行输入怎么获取
 1. input只输入数字
