@@ -85,7 +85,10 @@ MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择
 1. [http://yunkus.com/](http://yunkus.com/)
 2. 张鑫旭:http://www.zhangxinxu.com/
 
-### 5.5 其他
+### 5.5 学习网站
+1. scriptoj,刷js题的网站:http://scriptoj.mangojuice.top/
+
+### 5.6 其他
 1. [稳定、快速、免费的前端开源项目 CDN 加速服务](http://www.bootcdn.cn/)
 
 # 三 基础
