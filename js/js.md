@@ -111,15 +111,12 @@ f1();
 alert(n); // 999
 ```
 
-
-
-
 #### 3.4.2 var let和const
 let和const是es5为了弥补var的不足而设计出来的。
 - 使用var声明的变量，其作用域为该语句所在的函数内(没在函数则是全局的)，且存在变量提升；
 - 使用let声明的变量，其作用域为该语句所在的代码块内，不存在变量提升；
 - 使用const声明的是常量，必须在声明时赋值,块级作用域,常量不能重新声明,也不能重新赋值。
-    1. 如果变量是引用类型的话,引用地址(指针)不能改变,但是引用对象是可以改变的,
+    1. 如果变量是引用类型的话,引用地址(指针)不能改变,但是引用对象是可以改变的.意味着const声明对象的话,对象的属性是可以改变的,这个时候需要用到`Object.freeze()`方法(或者ts里面的`readonly`).
 
 #### 3.4.3 变量提升(hoisting)
 函数声明和变量声明总是会被解释器悄悄地被"提升"到方法体的最顶部.但是为了代码更易理解,最佳实践是在每个作用域开始前声明这些变量.
@@ -236,7 +233,6 @@ age="hello";
 - 声明多个:`var age,mood`
 - 声明并赋值:`var age=1,mood="sad"`
 
-
 ### 1.2 数据的类型
 最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,Null,Undefined,以及ES6的Symbol)和Objects.
 
@@ -250,7 +246,7 @@ Objects包含:
 
 判断数据的类型用`typeof xxx`or`typeof (xxx)`,返回字符串,内容是xxx的类型,一般有一下几种类型:
 1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol,除了null.
-    1. 对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,因为历史一直没有修复.参考:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof
+    1. 对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,因为历史一直没有修复.参考[typeof MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof).所以判断变量是不是对象的时候一般会排除它为null的情况,如`typeof foo == 'object' && foo !== null`
 3. 对于函数是function
 4. 对于宿主对象（由JS环境提供）,是Implementation-dependent
 5. 对于任何其他对象是object
@@ -258,26 +254,30 @@ Objects包含:
 注意:`typeof Number(1)`是number,但是`typeof new Number(1)`是object,这两种写法都不推荐使用,String,Boolean也一样.
 
 #### 1.2.1 字符串
-单双引号都可以,可以根据需要包含的字符来确定:如果字符含单引号则用双引号包,如果含双引号就用单引号来包,这样不容易引起歧义.否则就要用转义字符`\`,如`var mood = 'don\'t ask';`.但最佳实践是两种引号只选其一.
+单双引号都可以,可以根据需要包含的字符来确定:如果字符含单引号则用双引号包,如果含双引号就用单引号来包,这样不容易引起歧义.否则就要用转义字符`\`,如`var mood = 'don\'t ask';`。最佳实践是两种引号只选其一
 
 使用索引可访问字符串中的字符,如`var character=carname[7];`
 
 属性:
-1. `length`:返回字符串长度,实测中文英文都是算的一个单位的长度
+1. 字符串长度：`length`，返回字符串长度,实测中文英文都是算的一个单位的长度
 
 方法:
-1. `charAt(idx)`:返回idx位置的字符.
-1. `indexOf(string[,fromIndex])`:返回字符在字符串中首次出现的位置,没有则返回-1
+1. 根据下标访问字符：`charAt(idx)`:返回idx位置的字符.
+1. 子字符串在字符串中首次出现的位置：`indexOf(string[,fromIndex])`，返回字符在字符串中首次出现的位置,没有则返回-1
     1. `fromIndex`:可选,表示字符串中开始查找的位置.
 2. `match()`:里面的参数可为string或RegExp,前者用于返回包含指定字符串等信息的数组,没有则返回null;更常用的是后者,用于返回正则匹配的数组,没有则返回null.
-3. `replace()`字符替换
+3. 截取字符串：`stirng.slice(fromIndex[,endIndex])`，左闭右开，不改变原字符串。
+3. 字符替换：`replace(regexp|substr, newSubStr|function)`，不改变原字符串。接收两个参数，第一个参数称为模式（pattern），表示所有将要被替换的字符串，可以字符串字面量或者正则表达式；第二个参数称为替换值（replacement），可以是字符串字面量或者函数。第二个参数还有更多细节，具体参考：[replace MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+    1. 如果第一个参数是字符串字面量，则仅仅是第一个匹配的会被替换。
+    2. 如果第二个参数是函数，则函数的返回值作为替换值，多个匹配值则函数执行多次。
+
 4. `split(string)`:字符串转数组,string参数可以是正则表达式
 5. `trim()`:去掉首尾空格,es6新增.
 6. `test()`(待补充)
-7. `toUpperCase()`
+7. 转换大小写：`toUpperCase()`和`toLowerCase()`
 
-模板字符串(es6):使用反引号包裹,里面的字符默认不会被转义(意味着**会原样输出**),想转义需要在前面加反斜杠`\`;可以包含特定语法`${expression}`的占位符.
-- 优点:更加优雅,不再需要考虑反斜杠来处理单引号和双引号,比如
+模板字符串(es6):使用反引号包裹,里面的字符默认不会被转义(意味着**会原样输出**),想转义需要在前面加反斜杠`\`.可以包含特定语法`${expression}`的占位符.
+1. 优点:更加优雅,不再需要考虑反斜杠来处理单引号和双引号。例子如
 
     ```JavaScript
     console.log("Fifteen is " + (a + b) + " and\nnot " + (2 * a + b) + ".");
@@ -287,7 +287,7 @@ Objects包含:
     console.log(`Fifteen is ${a + b} and\nnot ${2 * a + b}.`);
     ```
 
-标签函数(es6):标签函数的语法是函数名后面直接带一个模板字符串，并从模板字符串中的插值表达式中获取参数.标签函数的第一个参数是被嵌入表达式分隔的文本的数组。第二个参数开始是嵌入表达式的内容。(感觉只是语法糖,了解就行)
+标签函数(tag function,es6):标签函数的语法是函数名后面直接带一个模板字符串，并从模板字符串中的插值表达式中获取参数.标签函数的第一个参数是被嵌入表达式分隔的文本的数组。第二个参数开始是嵌入表达式的内容。（感觉没有广泛的使用场景，仅了解就行了）
 
 注意:
 1. js中直接声明的字符串和字符串对象值是一样的,但是类型是不同的(分别是string和Object)
@@ -455,8 +455,11 @@ delete 操作符用于删除对象中不是继承而来的属性(区别于原型
 
 `===`严格相等.
 
+`==`和`===`的区别（待补充）：
+1. `==`比较的时候会先转换成相同类型再比较，而`===`在类型不同时直接返回false
+
 ### 2.4 js的逻辑操作符`||`和`&&`(即短路求值,Short-circuit Evaluation)(难点)
-这两个逻辑操作符判断的是js的布尔值而不是值.
+这两个逻辑操作符判断的是布尔值而不是值.
 
 短路原则:a && b中,如果a的布尔值为真,则b不会进行计算,即b被"短路";a || b中,如果a的布尔值为假,则b不会进行计算.
 
@@ -474,21 +477,26 @@ Math.floor(4.9) === 4  //true
 
 ## 3 流程控制和循环
 ### 3.1 if else
-跟java的用法一样,除了一点:js中的if判断的是变量或表达式的布尔值而不是值,关于js的布尔值可参考[https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)
+跟java的用法基本一样,除了一点:js中的if判断的是变量或表达式的布尔值而不是值,关于js的布尔值可参考[https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy)
+
+
 
 ### 3.2 switch case default
 
 ### 3.3 while和do ... while
 
-### 3.4 普通for循环
-这里有个有趣的优化写法,很简练,但是注意只有确定数组中不包含“falsy”值(即`a[i]`的值不是falsy)时才可以使用,总之慎用吧:
+### 3.4 for循环
+可以使用`break`和`continue`，意思和java中一样
+
+#### 3.4.1 普通for循环
+这里有个MDN上的有趣的优化写法,很简练,但是注意只有确定数组中不包含“falsy”值(即`a[i]`的值不是falsy)时才可以使用,总之不用最好:
 ```javascript
 for (var i = 0, item; item = a[i]; i++) {
     // Do something with item
 }
 ```
 
-### 3.5 for ... in
+#### 3.4.2 for ... in
 可以遍历任何数据类型,但最适合的是遍历对象的属性,默认以字符串的形式遍历出对象的所有属性.
 
 如果遍历Array对象,循环的是数组的索引,而且也是字符串类型,不是数值.
@@ -501,8 +509,10 @@ for (var i = 0, item; item = a[i]; i++) {
 注意:
 1. 该方法遍历时最好不要动态修改属性,因为不能保证后面的遍历是否能访问到.
 
-### 3.6 forEach((ele,index,array)=>{...})
+#### 3.4.3 forEach((ele,index,array)=>{...})
 对于array的遍历,一般情况下`forEach()`比`for ... of`更好用.
+
+### 3.5 三目（三元）运算符
 
 ## 4 JS标准库
 包含全局方法和常用对象
@@ -540,7 +550,7 @@ document.write("解码后的" + uridc);
 ### 4.2 Object对象
 常用方法:
 1. `Object.assign()`:通过复制一个或多个对象来创建一个新的对象。
-2. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象.
+2. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象.该方法是数据双向绑定实现的基石.
 
     例子1如下
     ```JavaScript
@@ -567,14 +577,16 @@ document.write("解码后的" + uridc);
         "c": { set: function (x) { this.a = x / 2; } }
     });
     ```
+3. `Object.getOwnPropertyNames()`:返回对象自身属性组成的数组
+4. `Object.freeze()`:冻结对象，使其不能被修改。使用场景一般是const声明对象时会用到（还可以使用ts的readonly）。当然这里面有很多细节需要注意，具体参考：[Object.freeze() MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+    1. 该操作不可逆
+    2. 该方法只影响对象本身的属性,不影响原型属性
 
-### 4.3 Array对象
+### 4.3 数组Array
 优点:存储的对象能动态增多和减少，并且可以存储任何类型的JavaScript值
 
-定义方法:三种普通创建方法,以及通过函数(`split`,`match`等)创建
-1. `new Array(length)`
-    
-    创建指定长度的空数组
+定义方法。有三种普通创建方法,以及通过函数(`split`,`match`等)创建：
+1. `new Array(length)`：创建指定长度的空数组
     1. 注意是空数组,而不是值为undefined的数组,虽然打印其中的值时为undefined.
     2. 如果想创建值为单个数字的数组呢?可用js6新增的`Array.of(element...)`,element可以是任意类型
 2. `new Array(element0, element1, ..., elementN)`
@@ -582,7 +594,23 @@ document.write("解码后的" + uridc);
 
 还有一种额外的但不推荐的定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
 
-常用方法:
+属性：
+1. 长度`length`
+
+方法:
+1. 数组和字符串的转换
+    1. `string1.split(string2)`
+    2. `array.join(string)`
+
+
+2. `splice()`：从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
+    1. 在头部添加元素可以用:`arr.splice(0,0,xxx)`；删除头部的元素可以使用`arr.splice(0,1)`等等
+3. 在数组头/末尾添加或删除项目
+    1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。
+    2. `pop()`:删除并返回数组的最后一个元素。
+    3. `unshift()`
+    4. `shift()`
+
 1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
 
     ```JavaScript
@@ -605,12 +633,6 @@ document.write("解码后的" + uridc);
     则`this`会变成`{}`,目前还不清楚为啥.
     参考:"回调中所用的 ES2015 箭头函数 比等价的函数表达式更加简洁，能优雅的处理 this 指针。"
 
-2. `splice()`
-
-    从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
-    1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。在头部添加元素可以用:`arr.splice(0,0,xxx)`
-    2. `pop()`:删除并返回数组的最后一个元素,那么删除头部的元素呢?使用`arr.splice(0,1)`.
-
 3. `filter(callback[, thisArg])`:返回过滤后的新数组,不会改变原数组.简单使用如下
 
     ```javascript
@@ -625,7 +647,13 @@ document.write("解码后的" + uridc);
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
 
-### 4.4 RegExp对象
+### 4.4 Math
+方法：
+1. 取近似值
+    1. 四舍五入：`Math.round()`，返回一个数字四舍五入后最接近的整数。但是在对小数部分的0.5处理上该方法和其他语言不同，其他语言一般是舍入到远离0的方向，但是该方法是上舍入。比如`Math.round(3.5)`是4，但`Math.round(-3.5)`是-3.
+    2. 向下舍入：`Math.floor()`
+
+### 4.5 RegExp对象
 字符模式对象,用于正则表达式
 1. 两种语法如下,其中pattern表示模式,modifiers(修饰符) 用于指定全局匹配、区分大小写的匹配和多行匹配:
 
@@ -823,10 +851,16 @@ console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 tru
 js中，每个文件是一个模块，文件中定义的所有对象都从属于那个模块。 通过`export`关键字，模块可以把它的某些对象声明为公共的。 其它js模块可以使用`import`语句来访问这些公共对象。
 
 ## 8 注释
-有三种,前两种跟java一样
-1. `//`:用于单行
-2. `/**/`:用于多行
-3. `<!--`:用于单行,类似html的注释但是不需要用`-->`来收尾,在编辑器里可能会有错误提示,但实际使用没问题,最佳实践应该是不用该注释.
+有两种，跟java一样：
+1. `//`:单行注释
+2. `/**/`:多行注释，多行注释书写在字符串 `/*` 和 `*/` 之间，如，
+
+    ```javascript
+    /*
+        I am also
+        a comment
+    */
+    ```
 
 ## 9 定时器(难点)
 参考网友的文章:https://www.cnblogs.com/wangying731/p/5164780.html
@@ -1044,8 +1078,6 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 7. js字符,数字等的相互转换的最佳实践
     1. `parseInt()`
     2. string类型的2.3转成number是?
-8. const和let
-9. 在字符串中使用变量的方法
 10. 笔记
 
     1. [用JavaScript获取当月第一天和最后一天](http://ourjs.com/detail/593658adf1239006149616c1)

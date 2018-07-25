@@ -1,17 +1,18 @@
 # temp4study
-2. 前端代码性能调优，熟练使用 Firebug、YSlow、YUI compressor 等工具
+1. 置顶：除代码外，其他有中文的地方，用全角标点
+1. 置顶：HTML部分，把标签支持的方法也记录进去
+1. html value等的区别
 1. goalng
     1. 待笔记:数组（第 7 章）和结构（第 10 章）这些复合类型也是值类型
     2. 笔记:指针（第 4.9 节）属于引用类型，其它的引用类型还包括 slices（第 7 章），maps（第 8 章）和 channel（第 13 章）。被引用的变量会存储在堆中，以便进行垃圾回收，且比栈拥有更大的内存空间
     3. s := []int{1,2,3}到底是切片还是数组
-2. memory leak内存泄漏
-1. js
-    1. Object.freeze()
-        1. 会影响原型链吗
 2. JSON风格指南:https://github.com/darcyliu/google-styleguide/blob/master/JSONStyleGuide.md
     1. 设计更为规范的JSON（这个会森森影响到Mongo的存储，查询效率，React的性能）
-1. 数据库索引的方式
-    1. btree
+2. 网络安全
+1. 数据库
+    1. 索引的方式
+        1. btree
+    2. 数据库调优
 1. 数学
     1. log(n)
 1. 继承与原型链:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain

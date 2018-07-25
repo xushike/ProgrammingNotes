@@ -5,6 +5,18 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
+1. js进阶:
+    1. 原型链和普通类的区别
+    2. JSON相关操作
+    1. 逻辑运算符的使用,比如:`&`,两个非`!!`
+    4. 正则表达式.熟练这篇中的例子：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace
+        1. 比如使用`replace`交换两个单词的位置
+
+2. https证书
+1. 一般说的签名是什么
+1. golang
+    1. 配置文件热加载
+
 1. 种子工程的建设(angular,vue)
 2. 开发浏览器扩展:https://developer.mozilla.org/zh-CN/Add-ons/WebExtensions
 2. vpn和nat模式

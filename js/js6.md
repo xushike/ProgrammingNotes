@@ -7,6 +7,8 @@
 ### 3.1 ECMAScript 2015(ES2015),ES6和JS6的区别
 一般来讲,可以把这三个看成一个东西.
 
+2015年6月17日，ECMA国际组织发布了 ECMAScript 的第六版，该版本正式名称为 ECMAScript 2015，但通常被称为 ECMAScript 6 或者 ES6
+
 ## 4 文档
 ## 5 网站
 1. 阮一峰es6:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)
