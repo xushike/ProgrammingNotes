@@ -1,13 +1,15 @@
 # redis
 [TOC]
-## 一 概述
-### 1 简介
-#### 主要应用场景
+# 一 概述
+## 1 简介
+高性能键值对缓存数据库,单线程保证原子性操作，而且它的数据类型也比较多
+
+### 主要应用场景
 1. 提供缓存服务，存储访问频率高的热数据防止穿透到数据库
 2. 在分布式系统中可以作为实现分布式锁的一种实现方案
 
-### 3 常识
-#### NoSQL（not only sql）简介
+## 3 常识
+### NoSQL（not only sql）简介
 要想弄懂redis,先来了解下NoSQL
 1. c语言开发
 2. 主要的应用场景：
@@ -16,7 +18,7 @@
     - 网站统计、应用排行榜
     - 数据过期处理
 
-##### 为什么需要NoSQL？
+#### 为什么需要NoSQL？
 1. 用以解决传统关系型数据库难以解决的几个问题
     1. high performance：高并发读写
     2. huge storage：海量数据的高效存储和访问
@@ -26,7 +28,7 @@
     2. 灵活的数据结构
     3. 大数据量，高性能
     4. 高可用
-##### NoSQL的主要产品
+#### NoSQL的主要产品
 - couchdb
 - redis
 - neo4j
@@ -34,29 +36,82 @@
 - membase
 - riak
 
-##### NoSQL的四大分类
+#### NoSQL的四大分类
 1. key-value(优势：快速查询，劣势 ：缺少结构化)
 2. 列存储（功能局限）
-3. 文档数据库（典型的如mongodb）
+3. 文档数据库（典型的如早期的mongodb）：优点是数据结构要求不严格，缺点是查询性能较低
 4. 图形数据库
 
-### 4 文档
-### 5 网址
+## 4 文档
+## 5 网址
 1. 首选官网,上面还有在线联系:[redis官网](https://redis.io/)
 
-## 二 安装配置
-### 1 win
-### 2 linux
-#### 2.1 ubuntu
+# 二 安装配置
+## 1 win
+## 2 linux
+### 2.1 ubuntu
 1. 安装
     安装之后redis.conf文件在`/etc/redis`
 2. 启动服务端:`redis-server [可选的redis.conf绝对路径]`
 3. 启动客户端:`redis-cli`
 
 
-### 3 mac
-## 三 基础
-## 六 问题
+## 3 mac
+# 三 基础
+## 1 架构
+## 2 运行
+服务器启动：
+
+服务器关闭：
+
+客户端启动：
+
+判断连通：
+
+操作：
+1. 存取键值
+    1. set key value
+    2. get key
+2. 删除：del key
+3. 查看所有key：keys *
+4. 获取然后设置值：getset key value
+5. 数值增减
+    1. `incr key`:将key的value增加1，如果key不存在，则初始化其为0然后增加1；如果value不是integer类型，则返回错误。
+        1. `incrby key num`
+    2. `decr key`：类似上面...-1...
+        1. `decr key num`
+6. 字符串追加
+    1. `append key string`：追加字符串，返回追加后字符串的长度，如果没有该key，则创建一个空字符串然后追加
+
+## 3 数据类型
+包含：字符串string，哈希hash、字符串列表list、字符串集合set、有序字符串集合sorted set
+
+key定义注意点：
+1. key不能太长，不能超过1024字节，也不要太短，保证可读性。最好有统一命名的规范
+
+### 3.2 哈希
+哈希可以看成是string类型的kye和stirng类型的value组成的map容器
+
+操作：
+1. 存取：
+    1. 设置单个key value：`hset myHashName key value`
+    2. 设置多个key value：`hmset myHashName key1 value1 
+    3. 获取单个key的value：`hget myHashName key`
+    3. 获取多个key的value：`hget myHashName key1 key2`
+    5. 获取hash的所有key value：hgetall
+2. 删除
+    1. 删除单个或多个，返回被删除的个数，如果不存在则返回0：hdel
+    2. 删除整个hash：del
+3. 增加减少
+    1. hincrby
+4. 判断指定key是否存在，存在则返回1，否则0：hexists myHashName key
+5. 
+
+### 3.3 list
+它是按照插入顺序排序的链表。
+
+
+# 六 问题
 reids-server
 
 redis-cli

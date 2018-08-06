@@ -648,10 +648,11 @@ document.write("解码后的" + uridc);
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
 
 ### 4.4 Math
-方法：
+操作：
 1. 取近似值
     1. 四舍五入：`Math.round()`，返回一个数字四舍五入后最接近的整数。但是在对小数部分的0.5处理上该方法和其他语言不同，其他语言一般是舍入到远离0的方向，但是该方法是上舍入。比如`Math.round(3.5)`是4，但`Math.round(-3.5)`是-3.
     2. 向下舍入：`Math.floor()`
+    3. 向上取整：`Math.ceil()`
 
 ### 4.5 RegExp对象
 字符模式对象,用于正则表达式
@@ -719,6 +720,10 @@ array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`ma
             (function() {
                 statements
             })();
+
+            (function foo() {
+                statements
+            })()
             ```
 
             它有两个好处:
@@ -1091,3 +1096,4 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 2. https://developer.mozilla.org/zh-CN/docs/a_re-introduction_to_javascript?redirect=no
 3. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/JavaScript_technologies_overview
 4. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide
+5. es模块默认导入是静态的。这个静态是什么意思？

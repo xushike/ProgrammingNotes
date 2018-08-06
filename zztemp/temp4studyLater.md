@@ -5,12 +5,30 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
+1. 匿名函数
+
 1. js进阶:
     1. 原型链和普通类的区别
     2. JSON相关操作
     1. 逻辑运算符的使用,比如:`&`,两个非`!!`
     4. 正则表达式.熟练这篇中的例子：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace
         1. 比如使用`replace`交换两个单词的位置
+    5. 获取命令行输入
+
+1. go
+    1. 协程的几个例子的原因？
+    1. 处理器和核数的关系
+    1. 获取命令行输入和协程
+    2. 如何真正利用多处理器实现并发
+    4. 线程等的几种转换状态
+        1. `time.sleep()`暂时挂起？它可以暂停函数或协程的执行
+
+
+1. angular 
+    1. ionic
+
+1. protobuf
+1. 爬虫的学习
 
 2. https证书
 1. 一般说的签名是什么
