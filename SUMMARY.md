@@ -75,6 +75,7 @@
 * [gastrology烹饪学](gastrology/gastrology.md)
 * [golang](golang/golang.md)
     * [hydra](golang/hydra.md)
+    * [xiaomei](golang/xiaomei.md)
 * [ios](ios/ios.md)
 * [ssh&ssm](ssh/ssh.md)
     * [1.spring](ssh/spring.md)
