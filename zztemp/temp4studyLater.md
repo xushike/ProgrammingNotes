@@ -16,13 +16,13 @@
     5. 获取命令行输入
 
 1. go
+    1. 单元测试，覆盖率，代码质量
     1. 协程的几个例子的原因？
     1. 处理器和核数的关系
     1. 获取命令行输入和协程
     2. 如何真正利用多处理器实现并发
     4. 线程等的几种转换状态
         1. `time.sleep()`暂时挂起？它可以暂停函数或协程的执行
-
 
 1. angular 
     1. ionic
@@ -34,6 +34,8 @@
 1. 一般说的签名是什么
 1. golang
     1. 配置文件热加载
+
+1. kafka
 
 1. 种子工程的建设(angular,vue)
 2. 开发浏览器扩展:https://developer.mozilla.org/zh-CN/Add-ons/WebExtensions

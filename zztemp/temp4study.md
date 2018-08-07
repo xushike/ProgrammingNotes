@@ -20,6 +20,7 @@
     5. 互斥，同步，死锁
     6. 动态规划
 1. goalng
+    1. 注释谢单元测试只能做简单的
     1. golang中实现常见排序用什么数据结构
     1. type xxx struct{}和type xxx的区别
         1. type的语法是怎么样的，首字母必须大写？
@@ -38,6 +39,8 @@
             fmt.Println(reflect.TypeOf(arr))
         }
         ```
+
+1. mac上.dmg和.app的区别
 1. db
     1. 数据库调优
     2. 索引

@@ -107,7 +107,14 @@ img.SetColorIndex(
 3. Ken Thompson，不用多说了，技术圣殿的人物，创造了 C 语言和 Unix，获得了 1983 年图灵奖和 1988 国家技术奖
 
 ### 3.6 空标识符（blank identifier）
-即`_`（也就是下划线）,通常用于丢弃不需要使用的变量(任何类型都可以赋值给它，但任何赋给这个标识符的值都将被抛弃),被丢弃的值不能在后续的代码中使用，也不可以使用这个标识符作为变量对其它变量进行赋值或运算.注意`_`不可以单独和`:=`使用.
+即`_`（也就是下划线），它主要有两个作用：
+1. 用于丢弃不需要使用的变量(任何类型都可以赋值给它，但任何赋给这个标识符的值都将被抛弃),被丢弃的值不能在后续的代码中使用，也不可以使用这个标识符作为变量对其它变量进行赋值或运算.
+2. 导入包时，如果只想使用其中的`init()`而不希望把整个包导入，就可以用该符号
+
+注意：`_`不可以单独和`:=`使用.
+
+#### 3.6.1 点导入
+如果导入包为一个点，那么可以不用加包名前缀来调用包中的方法。
 
 ### 3.7 简单语句（simple statement）
 包括短变量声明、自增语句、赋值语句或函数调用
@@ -164,6 +171,7 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 ## 4 文档
 1. _Effective Go_(中文名《高效Go编程》)
 2. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
+3. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
 
 ## 5 网址
 1. 网友写的Go web编程gitbook，比较详细，应该很值得读：[https://astaxie.gitbooks.io/build-web-application-with-golang/zh/](https://astaxie.gitbooks.io/build-web-application-with-golang/zh/)
@@ -1185,15 +1193,19 @@ func enterOrbit() error {
 清理生成的可执行文件，如`go clean hello.go`
 
 ### 1.6 go get
-通过源码控制工具(比如git)递归获取代码包及其依赖,并进行编译和安装,已有的不会再去获取.
+通过源码控制工具(比如git)递归获取代码包及其依赖,并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于go build命令和go install命令的标记。
 
 简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
 
 参数说明:
 - `-u`:强制更新已有的代码包及其依赖
-- `-v`:打印出所有被构建的代码包的名字
+- `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
+- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
 
-注意:导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供
+注意:
+1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
+
+如果不能编译和安装，还会获取吗？
 
 ### 1.7 go vet
 可以捕获一些常见的错误，如格式化字符串等
@@ -1212,8 +1224,23 @@ func enterOrbit() error {
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
 
-### 1.11 go test
-轻量级的单元测试框架
+### 1.11 go test（重要）
+轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。
+
+对多个包进行测试(package tests)：以空格分割多个包的包名
+
+对单个或多个文件进行测试（file tests）：形如`go test -v a_test.go b_test.go ...`，命令程序会为指定的源码文件生成一个虚拟代码包“command-line-arguments”，此时如果源码文件调用了其他包中的函数而没有声明的话，而需要加入对应的源码文件。比如a_test.go中调用了a.go中的Foo()方法，则会出现`undefined：Foo`错误，此时应该把a.go也加入进去`o test -v a_test.go a.go`
+
+对单个或多个函数进行测试：加上`-test.run methodName`，形如`go test -v -test.run TestBar bar_test.go`，和上面一样会被指定虚拟包。
+
+参数:
+1. 打印辅助信息：`-v`,辅助信息大概如下，
+
+    ```bash
+    === RUN   Testxxx
+    ...
+    --- PASS: Testxxx (0.20s)
+    ```
 
 ## 2 其他与go有关的工具
 #### Cgo
