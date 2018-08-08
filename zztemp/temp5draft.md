@@ -1,7 +1,16 @@
-"http://192.168.7.186:9090/coordinate/get?points=104.08601609155276|30.405340444744738,104.08603552512625|30.404066629293453,104.08801772801064|30.40418395470178,104.08803715961959|30.405575092923925,104.08601609155276|30.405340444744738"
+Notify causes package signal to relay incoming signals to c.
+If no signals are provided, all incoming signals will be relayed to c.
+Otherwise, just the provided signals will.
 
-[[104.08601609155276,30.405340444744738],[104.08603552512625,30.404066629293453],[104.08801772801064,30.40418395470178],[104.08803715961959,30.405575092923925],[104.08601609155276,30.405340444744738]]
+Package signal will not block sending to c: the caller must ensure
+that c has sufficient buffer space to keep up with the expected
+signal rate. For a channel used for notification of just one signal value,
+a buffer of size 1 is sufficient.
 
+It is allowed to call Notify multiple times with the same channel:
+each call expands the set of signals sent to that channel.
+The only way to remove signals from the set is to call Stop.
 
-## 查询安全坐标
-"http://192.168.7.186:9090/coordinate/safe/get?record_id=355472,355091"
+It is allowed to call Notify multiple times with different channels
+and the same signals: each channel receives copies of incoming
+signals independently.

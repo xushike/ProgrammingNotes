@@ -168,10 +168,16 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 ### 3.14 new()和make()的区别
 `new()`用于创建值类型变量，返回的是该变量的指针；而`make()`用于创建引用类型变量，比如切片(好像不太对，待补充)
 
+### 3.15 三个点
+它是语法糖，有两种用法:
+1. 函数有多个不定参数
+2. slice可以被打散进行传递
+
 ## 4 文档
 1. _Effective Go_(中文名《高效Go编程》)
 2. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
 3. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
+4. 网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
 
 ## 5 网址
 1. 网友写的Go web编程gitbook，比较详细，应该很值得读：[https://astaxie.gitbooks.io/build-web-application-with-golang/zh/](https://astaxie.gitbooks.io/build-web-application-with-golang/zh/)
@@ -197,9 +203,9 @@ go的环境变量说明:
 3. `$GOARCH`:表示目标机器的处理器架构，它的值可以是 386、amd64 或 arm。
 4. `$GOBIN`:表示编译器和链接器的安装位置，默认是`$GOROOT/bin`.一般情况下你可以将它的值设置为空，Go 将会使用前面提到的默认值。
 
-
 那么多个GOPATH的最佳实践是什么(待补充)
 
+除了设置上面的几个环境变量，可能还需要将`$GOPATH/bin`添加到系统PATH里
 ## 1 windows
 1. 下载安装
 
@@ -762,8 +768,12 @@ var s T
 s.a = 5
 s.b = 8
 
-// 方法2：混合字面量语法
+// 方法2：基于new()实现
+a := new(struct1)
 ms := &struct1{10, 15.5, "Chris"} //底层仍然是调用 new ()实现的
+
+// 方法3：混合字面量语法
+a := struct1{}
 ms := struct1{10, 15.5, "Chris"}
 ```
 
@@ -1373,6 +1383,20 @@ func main() {
 2. Float64
 3. Strings
 
+### 2.8 reflect
+反射机制就是在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同，反射的原理：待补充
+
+反射回来的类型大概有：
+
+1. 
+
+### 2.9 os
+os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．
+
+os包可以操作目录、操作文件、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组信息、操作进程等
+
+### 2.10
+
 ## 3 go的编译器
 ### 3.1 为何这么快(from圣经)
 Go语言的闪电般的编译速度主要得益于三个语言特性:
@@ -1482,3 +1506,5 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
     2. 数组里查找元素
 
 20. 待笔记：关于go的参数传递，暂时只实测了数组，结论是和js一样
+21. go工具链，有空再研究吧：https://blog.csdn.net/phantom_111/article/details/79981579
+22. go的官方博客？：https://blog.golang.org/

@@ -1,6 +1,12 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 1. 置顶：HTML部分，把标签支持的方法也记录进去
+1. 静音的时候会有提醒吗？如何让pc静音但有弹出提醒
+1. 签名
+1. go环境变量
+1. 路由
+    1. 缓存
+    2. 复用
 1. 数据结构
     1. 堆排序,二分查找适宜用顺序表.
     1. 数据结构及其应用
@@ -19,7 +25,36 @@
     4. 对两个已排序数组合并后再排序
     5. 互斥，同步，死锁
     6. 动态规划
+1. linux
+    1. vim
+        1. 大块的复制粘贴
+    1. curl
+    2. rmdir
 1. goalng
+    1. http,server,os,runtime,path,net,context,signal，reflect,json,time(date)
+        1. net.Listener
+        2. reflect.valueof
+            1. https://studygolang.com/articles/12348?fr=sidebar
+        3. os.Getenv
+    1. 平滑停机
+    1. 传递切片和切片的引用有什么区别
+    1. 包那么多如何学习
+    1. request
+        1. FormValue
+    1. os.Getenv("debugTasks")
+    1. path包
+    2. ch := make(chan os.Signal)
+        <-ch
+    3. struct {
+			Data interface{}
+		}{data}
+
+    4. sync.RWMutex
+
+    1. go导入包，初始变量，初始函数，构造函数等的顺序
+    1. go test
+        1. https://blog.csdn.net/minghu9/article/details/53941665
+
     1. 注释谢单元测试只能做简单的
     1. golang中实现常见排序用什么数据结构
     1. type xxx struct{}和type xxx的区别
@@ -39,9 +74,13 @@
             fmt.Println(reflect.TypeOf(arr))
         }
         ```
+    2. 位操作
 
 1. mac上.dmg和.app的区别
 1. db
+    1. postgressql ssl
+    1. create table if not exists 。。。
+    1. 流程控制：case when then end
     1. 数据库调优
     2. 索引
 1. html value等的区别
