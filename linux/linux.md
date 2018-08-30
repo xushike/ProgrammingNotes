@@ -379,19 +379,21 @@ pbcopy < myFile.txt
     1. 查看变量名,比如`echo $USER`,如果输错变量名,展开仍会进行,不过是显示空字符串
     2. 查看有效变量列表`printenv | less`
 6. 命令替换
-    命令替换允许我们把一个命令的输出作为一个展开模式来使用,有两种写法:新版写法是`$(program)`,旧版是\`program\`(用倒引号来代替美元符号和括号)
+    命令替换允许我们把一个命令的输出作为一个展开模式来使用,有两种写法:新版写法是`$(program)`,旧版是`program`(用倒引号来代替美元符号和括号)
     1. 用法一如下:
-    ```bash
-    [me@linuxbox ~]$ echo $(ls)
-    Desktop Documents ls-output.txt Music Pictures Public Templates Videos
-    [me@linuxbox ~]$ file $(ls /usr/bin/* | grep zip)
-    ```
+
+        ```bash
+        [me@linuxbox ~]$ echo $(ls)
+        Desktop Documents ls-output.txt Music Pictures Public Templates Videos
+        [me@linuxbox ~]$ file $(ls /usr/bin/* | grep zip)
+        ```
     2. 用法二如下:
-    ```
-    #``中的内容会被当做命令执行,然后结果作为cd的参数
-    #所以最后的结果是仍停留在当前目录
-    cd `pwd`
-    ```
+    
+        ```
+        #``中的内容会被当做命令执行,然后结果作为cd的参数
+        #所以最后的结果是仍停留在当前目录
+        cd `pwd`
+        ```
 ## 5 引用
 用于控制展开.有几种类型:双引号
 1. 双引号
@@ -593,6 +595,13 @@ pbcopy < myFile.txt
     8. 实时监控进程状态`ps`和`watch`结合使用
         `top`虽然也可以,比`top`好的地方是可以自定义显示的字段.
 
+## 8 curl
+文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等
+参数：
+1. `-X`:指定协议，比如POST、GET、DELETE等
+2. `-H 'data'`:自定义头信息传递给服务器
+3. `-d 'data'`：HTTP POST方式传送数据
+4. `-F 'data'`:模拟http表单提交数据
 
 ## 10 其他
 1. 别名`alias`

@@ -1,7 +1,6 @@
 # golang
 [TOC]
 # 一 概述
-
 ## 1 简介
 ### 1.1 优点
 1. Go语言在语言层面解决软件工程问题的设计哲学
@@ -51,7 +50,7 @@ Pike说:
 1. 它至少在强度上比JavaScript高一级。Google自建Chrome浏览器，部分原因就是加速JavaScript和网页表现，而Google已经融合了本身的技术，如Native Client和Gears。
 2. 我不认为我们能取代任何东西。我们只是创造出这个领域的另一个角色。
 
-Go语言标准库难以置信的强大，值得你花时间阅读它的代码，学习它实现的模式。
+网友：Go语言标准库难以置信的强大，值得你花时间阅读它的代码，学习它实现的模式。
 
 云风博客:我发现我花了四年时间锤炼自己用 C 语言构建系统的能力，试图找到一个规范，可以更好的编写软件。结果发现只是对 Go 的模仿。缺乏语言层面的支持，只能是一个拙劣的模仿。
 
@@ -151,9 +150,6 @@ img.SetColorIndex(
     - 需要大量字符串处理的时候用[]byte，性能好很多。
 注意他们之间的比较用`bytes.Equal(s1, s2) == 0`而不是`bytes.Compare(s1, s2) == 0`
 
-### 3.10 方法接收者(Receiver)
-Receiver 的名称应该缩写，一般使用一个或者两个字符作为Receiver的名称，如`func (f foo) method() {...}`;如果方法中没有使用receiver,还可以省略receiver name,这样更清晰的表明方法中没有使用它:`func (foo) method() {...}`
-
 ### 3.11 2009-11-10 23:00:00 UTC
 该日期是go的开源日期,可以看做是go的生日(?).
 
@@ -165,13 +161,27 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 
 待补充
 
-### 3.14 new()和make()的区别
-`new()`用于创建值类型变量，返回的是该变量的指针；而`make()`用于创建引用类型变量，比如切片(好像不太对，待补充)
+### 3.14 var、new()和make()的区别（难点）
+`new()`和`make()`最大的区别：`new()`只分配内存而不初始化，`make()`不但分配内存还做初始化。比如:
+```golang
+p := new([]int) //p == nil; with len and cap 0
+v := make([]int, 10) // v is initialed with len 10, cap 50
+fmt.Println(*p)        //输出[] 
+fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]  
+```
+
+以下为详细区别：
+- `var`:没加等号的话就是初始化为对应类型的零值，即零值初始化
+- `new(type)`：为type类型变量分配内存，将该内存置零但不初始化该内存（和其他语言不同，有点难理解），返回指向该内存类型为type的指针。对于值类型，它似乎是零值初始化，和var一样；对于引用类型，它不是零值初始化，所以不等于nil。
+- `make(type,args)`：分配内存，将内存置零并初始化，只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
 
 ### 3.15 三个点
 它是语法糖，有两种用法:
 1. 函数有多个不定参数
 2. slice可以被打散进行传递
+
+### 3.16 go源码文件
+Go源码文件包括三种：命令源码文件、库源码文件和测试源码文件
 
 ## 4 文档
 1. _Effective Go_(中文名《高效Go编程》)
@@ -180,13 +190,18 @@ Receiver 的名称应该缩写，一般使用一个或者两个字符作为Recei
 4. 网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
 
 ## 5 网址
-1. 网友写的Go web编程gitbook，比较详细，应该很值得读：[https://astaxie.gitbooks.io/build-web-application-with-golang/zh/](https://astaxie.gitbooks.io/build-web-application-with-golang/zh/)
+1. 大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
 2. go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
 3. 该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
+4. go语言官方文档地址：https://golang.org/
+    1. 比如想看runtime包，可以访问：https://golang.org/pkg/runtime/
+
+## 6 相关工具
+1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb
 
 # 二 安装配置
 go的环境变量说明:
-1. `$GOROOT`:表示Go的安装目录。一般不需要设置GOROOT，默认情况下Go语言安装工具会将其设置为安装的目录路径,并且会自动将`$GOROOT/bin`加入系统PATH?。go自带的工具命令都在`$GOROOT/bin`里面,`fmt`等基础包也在GOROOT中，所以可以直接`import`.自带的标准库包的位置基于GOROOT,比如存放fmt包的源代码对应目录为`$GOROOT/src/fmt`.目录说明如下(仅了解就行):
+1. `$GOROOT`:表示Go的安装目录。一般不需要设置GOROOT，默认情况下Go语言安装工具会将其设置为安装的目录路径,并且会自动将`$GOROOT/bin`加入系统PATH?。go自带的工具命令都在`$GOROOT/bin`里面,`fmt`等基础包也在GOROOT中，所以可以直接`import`.自带的标准库包的位于`GOROOT/src`下,比如存放fmt包的源代码对应目录为`$GOROOT/src/fmt`.目录说明如下(仅了解就行):
     1. `/bin`：包含可执行文件，如：编译器，Go 工具
     1. `/doc`：包含示例程序，代码工具，本地文档等
     1. `/lib`：包含文档模版
@@ -223,7 +238,8 @@ go的环境变量说明:
     这里我遇到一个问题,就是上面的设置在新开shell中没有生效.因为zsh加载的是 ~/.zshrc文件，而 ‘.zshrc’ 文件中并没有定义任务环境变量,所以需要在~/.zshrc文件最后，增加一行:source ~/.bash_profile
 3. 如果是vscode中开发go,可能还需要设置go.gopath,形如`"go.gopath": "/Users/xushike/work"`
 
-### 2.2 第三方工具安装(homebrew等)
+### 2.2 homebrew（最推荐）
+先查看go的版本，然后安装
 
 ## 3 linux
 ### 3.1 安装包（二进制发行版）安装(**推荐**)
@@ -255,7 +271,7 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 
 # 三 基础
 ## 0 Go 程序的执行（程序启动）顺序
-如下：
+如下（感觉还不够详细，待补充）：
 1. 按顺序导入所有被 main 包引用的其它包，然后在每个包中执行如下流程：
 2. 如果该包又导入了其它的包，则从第一步开始递归执行，但是每个包只会被导入一次。
 3. 然后以相反的顺序在每个包中初始化常量和变量，如果该包含有 init 函数的话，则调用该函数。
@@ -459,8 +475,6 @@ fmt.Println(c == Celsius(f)) // "true"!
     - 可以提供书写方便,如果是复杂的类型将会简洁很多，比如结构体类型
     - 为该类型的值定义新的行为
 
-### 1.7 结构体
-
 ### 1.9 包
 一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.(?)
 
@@ -596,6 +610,9 @@ var ch byte = 'A'
 var ch byte = 65
 var ch byte = '\x41'
 ```
+
+注意：
+1. 直接整数
 
 #### 2.1.2 浮点数
 你应该尽可能地使用 float64，因为 math 包中所有有关数学运算的函数都会要求接收这个类型。
@@ -735,8 +752,8 @@ slice := []stirng{}
 5. 在函数间传递切片:传递的是切片本身(64位上24字节)，本人实测传递规则和JS数组一样，因为切片是引用类型，所以传递的是引用的拷贝。
 6. 切片的长度和容量:`len()`:返回切片的长度，`cap()`:返回切片的容量
 
-#### 2.2.3 映射map
-map是存储无序键值对的集合,map强大的地方在于可以根据键快速检索到值(对集合元素，提供常数时间的存、取或测试操作).go里面map的键可以是任意类型,只要其值可以用"=="比较,最常用的字符串;值则可以是任意类型.从功能和实现上说，Go的map类似于Java语言中的HashMap，Python语言中的dict，Lua语言中的table，他们通常使用hash实现。go的map是线程不安全的
+#### 2.2.3 映射/字典map
+map是存储无序键值对的集合,map强大的地方在于可以根据键快速检索到值(对集合元素，提供常数时间的存、取或测试操作).go里面map的键可以是任意类型,只要其值可以用"=="比较,最常用的字符串;值则可以是任意类型.从功能和实现上说，Go的map类似于Java语言中的HashMap，Python语言中的dict，Lua语言中的table，他们通常使用hash实现。go的map是线程不安全的，虽然在很多语言里map也是不安全的，但是开协程这么容易的go居然不提供线程安全的map，这点值得吐槽。
 
 声明方法:
 1. 普通声明:`var map1 map[keytype]valuetype`
@@ -746,23 +763,52 @@ map是存储无序键值对的集合,map强大的地方在于可以根据键快�
 1. 判断某个key是否存在:`_, ok := map1[key1]` // 如果key1存在则ok == true，否则ok为false
 2. 从 map中删除key:`delete(map1, key1)`,如果 key1 不存在，该操作不会产生错误。
 
-
 #### 2.2.4 结构体
-为什么需要结构体：当需要定义一个类型，它由一系列属性组成，每个属性都有自己的类型和值的时候，就应该使用结构体，它把数据聚集在一起。然后可以访问这些数据，就好像它是一个独立实体的一部分。结构体是复合类型（composite types）也是值类型，因此可以通过 `new()` 函数来创建.
+为什么需要结构体：当需要定义一个类型，它由一系列属性组成，每个属性都有自己的类型和值的时候，就应该使用结构体，它把数据聚集在一起。然后可以访问这些数据，就好像它是一个独立实体的一部分。结构体是复合类型（composite types）也是值类型，因此可以通过 `new()` 函数来创建.组成结构体类型的数据称为 字段（fields），每个字段都有一个类型（可以是任意类型，甚至是结构体类型）和一个名字；在一个结构体中，字段名字必须是唯一的。使用`var`和`new()`零值初始化结构体时，结构体内各字段会被初始化为对应类型的零值。。结构体是自定义类型里比较特殊的类型。
 
-组成结构体类型的数据称为 字段（fields），每个字段都有一个类型（可以是任意类型，甚至是结构体类型）和一个名字；在一个结构体中，字段名字必须是唯一的。使用`var`和`new()`零值初始化结构体时，结构体内各字段会被初始化为对应类型的零值。(其他语言中也有类似结构体的存在，在 C 家族的编程语言中名字也是 struct，在面向对象的编程语言中，跟一个无方法的轻量级类一样。不过因为 Go 语言中没有类的概念，因此在 Go 中结构体有着更为重要的地位)
+带接收者的函数：go的结构体跟面向对象的编程语言中一个无方法的轻量级类一样，它在go里有着重要的地位，但Go中没有类的概念，要实现类的方法的功能需要使用带接收者的函数。
 
-数组可以看作是一种结构体类型，不过它使用下标而不是具名的字段。
+继承：包含这个匿名字段的struct能调用匿名字段的函数和字段
 
-结构体定义方法：
+重载：比如下面的Student和Human都有phone字段，那么访问Student中的phone用`student.phone`,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
+
+注：
+1. 数组也可以看作是一种结构体类型，不过它使用下标而不是具名的字段。
+2. 在 C 家族的编程语言中名字也是 struct
+
+结构体声明方法：
 ```golang
-// 定义结构体
-type identifier struct {
-    field1 type1
-    field2 type2
-    ...
+// 方法1：普通定义
+type Human struct {
+    name string
+    age int
+    weight int
+    phone string
 }
-// 声明和赋值有两种方法
+
+// 方法2：匿名字段/嵌入字段：只提类型，而不写字段名，此时新的结构体隐式引入了该类型的所有字段和函数(如果有的话)，这里的类型包括所有自定义类型和内置类型
+type Student struct {
+    Human  // 匿名字段，那么默认Student就包含了Human的所有字段和函数
+    speciality string
+    phone string
+}
+
+// 方法3：匿名结构体:只创建结构体变量而没有定义新的结构体类型，因为没有类型，所以对它的赋值似乎只能使用选择器的方法
+emp3 := struct {
+    firstName, lastName string
+    age, salary         int
+}{
+    firstName: "Andreah",
+    lastName:  "Nikola",
+    age:       31,
+    salary:    5000,
+}
+
+fmt.Println("Employee 3", emp3)// 输出:Employee 3 {Andreah Nikola 31 5000}
+```
+
+赋值的几种方法:
+```golang
 // 方法1：选择器
 var s T 
 s.a = 5
@@ -775,9 +821,10 @@ ms := &struct1{10, 15.5, "Chris"} //底层仍然是调用 new ()实现的
 // 方法3：混合字面量语法
 a := struct1{}
 ms := struct1{10, 15.5, "Chris"}
+human := Human{name:"tom"}
 ```
 
-选择器（selector）：无论变量是一个结构体类型还是一个结构体类型指针，都使用同样的选择器符（selector-notation） 来引用结构体的字段。语法是一个点，形如`structname.fieldname = value`。（没有像 C++ 中那样需要使用 -> 操作符，因为Go 会自动做这样的转换）
+选择器（selector）：无论变量是一个结构体类型还是一个结构体类型指针，都使用同样的选择器符（selector-notation） 来引用结构体的字段。语法形如`structname.fieldname = value`。好处是不用像 C++ 中那样需要使用 -> 操作符，因为Go 会自动做了这样的转换。
 
 结构体的内存布局：Go 语言中，结构体和它所包含的数据在内存中是以连续块的形式存在的，即使结构体中嵌套有其他的结构体，这在性能上带来了很大的优势。不像 Java 中的引用类型，一个对象和它里面包含的对象可能会在不同的内存空间中，这点和 Go 语言中的指针很像
 
@@ -785,8 +832,22 @@ ms := struct1{10, 15.5, "Chris"}
 
 结构体转换：Go 中的类型转换遵循严格的规则。当为结构体定义了一个 alias 类型时，此结构体类型和它的 alias 类型都有相同的底层类型，它们可以互相转换，同时需要注意其中非法赋值或转换引起的编译错误。（待补充）
 
+##### 2.2.4.1 带接收者的函数
+方法/函数接收者(Receiver)：Receiver 的名称应该缩写，一般使用一个或者两个字符作为Receiver的名称，如`func (f foo) method() {...}`;如果方法中没有使用receiver,还可以省略receiver name,这样更清晰的表明方法中没有使用它:`func (foo) method() {...}`。如果函数的接收者不一样，name方法就不一样。
+
+函数接收者的类型：函数接收者可以是值类型也可以是指针类型，可以把函数接收者看作函数的第一个参数，所以值类型时操作的是副本，指针类型操作的是实例对象。用Rob Pike的话来说就是："A method is a function with an implicit first argument, called a receiver."。
+
 ### 2.3 用户自定义类型
-有两种声明方法,一种是结构体,一种是基于已有的类型
+自定义类型：使用`type`关键字基于已有的类型来声明新的类型，实际上只是定义了一个别名。struct是自定义类型的一个特殊类型。
+
+声明：比如
+```golang
+type ages int
+
+type money float32
+
+type months map[string]int
+```
 
 #### 2.3.2 基于已有的类型
 如`type doration int64`,此时int64是doration的基础类型,但是go并不认为doration和int64是同一个类型
@@ -800,7 +861,9 @@ go的三个流程控制语句后都可以紧跟一个简短的变量声明，一
 go的三个流程控制语句后的条件都不需要加`()`
 
 ### 3.1 for(go中唯一的循环)
-一般用法如下,其中initalization可选,如果有,则必须为简单语句;condition也是可选的,是一个布尔表达式，其值在每次循环迭代开始时计算,如果为true则执行循环体语句;post语句也是可选的,在循环体执行结束后执行,之后再次对conditon求值,condition值为false时，循环结束.
+go的for循环主要有两种：普通for循环和for range。
+
+普通for循环：用法如下,其中initalization可选,如果有,则必须为简单语句;condition也是可选的,是一个布尔表达式，其值在每次循环迭代开始时计算,如果为true则执行循环体语句;post语句也是可选的,在循环体执行结束后执行,之后再次对conditon求值,condition值为false时，循环结束.
 
 ```go
 for initialization; condition; post {
@@ -808,7 +871,7 @@ for initialization; condition; post {
 }
 ```
 
-更常用的是遍历数组,切片,字符串等时和`range`配合使用,如下
+for range：主要是遍历数组,切片,字符串等，注意其中的ele是xxx里元素的副本，如下
 
 ```go
 for index,ele := range xxx {
@@ -1176,12 +1239,16 @@ func enterOrbit() error {
 了解就行
 
 # 四 高级
-## 1 go的工具(命令行)
-1. Go语言提供的工具都通过一个单独的命令go调用
-2. 关于go工具的输出：只有在错误的时候才会输出，这点跟unix的哲学一样
+## 1 go自带的工具（go tool套件）
+Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
 
 ### 1.1 go run
-编译且运行
+`go run ...`编译且运行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成：
+```
+go run main.go a.go
+#或者
+go run *.go
+```
 
 ### 1.2 go install
 安装自身包和依赖包.
@@ -1211,6 +1278,7 @@ func enterOrbit() error {
 - `-u`:强制更新已有的代码包及其依赖
 - `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
 - `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
+- `...`：在后面加上三个点表示。。。
 
 注意:
 1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
@@ -1218,7 +1286,7 @@ func enterOrbit() error {
 如果不能编译和安装，还会获取吗？
 
 ### 1.7 go vet
-可以捕获一些常见的错误，如格式化字符串等
+作用是检查Go语言源代码并且报告可疑的代码编写问题,可以捕获一些常见的错误，如格式化字符串等。
 
 ### 1.8 go fmt
 代码格式化.开发工具中一般都集成了保存的时候自动格式化.以法令方式规定标准的代码格式可以避免无尽的无意义的琐碎争执,更重要的是，这样可以做多种自动源码转换，如果放任Go语言代码格式，这些转换就不大可能了。
@@ -1252,11 +1320,15 @@ func enterOrbit() error {
     --- PASS: Testxxx (0.20s)
     ```
 
+`t *testing.T`的方法:
+1. `Fatal(err)`
+2. `Log()`
+
 ## 2 其他与go有关的工具
-#### Cgo
+### 2.1 Cgo
 编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
 
-#### gb
+### 2.2 gb
 社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
 
 ## 3 go runtime运行时
@@ -1266,8 +1338,86 @@ func enterOrbit() error {
 ### 3.1 待整理
 编译器源码目录下，src/cmd/compile/internal
 
-## 4 golang JSON
+## 4 golang json处理
+例子1:
 
+```golang
+// 结构体
+type Product struct {
+	Name      string `json:"name"`
+	ProductId int64 `json:"productId,string"`
+	Number    int
+	Price     float64
+	IsOnSale  bool
+	VehBrand  string `sql:"varchar(100) default ''" json:"vehBrand" comment:"车辆品牌"`
+}
+
+// 设置值
+p := &Product{}
+p.Name = "Xiao mi 6"
+p.IsOnSale = true
+p.Number = 10000
+p.Price = 2499.00
+p.ProductId = 1
+p.VehBrand = "大众"
+```
+
+Go类型和JSON类型的对应关系如下：
+- bool 代表 JSON booleans,
+- float64 代表 JSON numbers,
+- string 代表 JSON strings,
+- nil 代表 JSON null.
+- interface{} 按照内部的实际类型进行转换
+
+标签tag：就是上面的结构体每个字段后面反引号包裹的内容.
+1. 如果tag设置为`json:"-"`，那么这个字段不会输出到JSON
+2. tag中带有自定义名称，那么这个自定义名称会出现在JSON的字段名中，例如上面的vehBrand
+3. tag中如果带有"omitempty"选项，那么如果该字段值为空，就不会输出到JSON串中
+4. 如果字段类型是bool, string, int, int64等，而tag中带有",string"选项，那么这个字段在输出到JSON的时候会把该字段对应的值转换成JSON字符串
+
+解析JSON`func Unmarshal(data []byte, v interface{}) error`:
+1. 解析到结构体(已知被解析的JSON数据结构)
+    1. 例如JSON的key是Foo，那么怎么找对应的字段呢？
+        1. 首先查找tag含有Foo的可导出的struct字段(首字母大写)
+        2. 其次查找字段名是Foo的导出字段
+        3. 最后查找类似FOO或者FoO这样的除了首字母之外其他大小写不敏感的导出字段
+    2. 能够被赋值的字段必须是可导出字段(即首字母大写）。同时JSON解析的时候只会解析能找得到的字段，找不到的字段会被忽略，这样的一个好处是：当你接收到一个很大的JSON数据结构而你却只想获取其中的部分数据的时候，你只需将你想要的数据对应的字段名大写，即可轻松解决这个问题。
+2. 解析到interface{}(未知)：例子如下，
+
+    ```golang
+    b := []byte(`{"Name":"Wednesday","Age":6,"Parents":["Gomez","Morticia"]}`)
+    var f interface{}
+    err := json.Unmarshal(b, &f)
+    // 这个时候f里面存储了一个map类型，他们的key是string，值存储在空的interface{}里.我们可以通过断言的方式来访问这些数据
+    m := f.(map[string]interface{})
+
+    f = map[string]interface{}{
+        "Name": "Wednesday",
+        "Age":  6,
+        "Parents": []interface{}{
+            "Gomez",
+            "Morticia",
+        },
+    }
+
+    ```
+
+生成JSON`func Marshal(v interface{}) ([]byte, error)`：
+1. 默认输出字段名的首字母都是大写的，如果你想用小写的首字母怎么办呢？首先想到的是把结构体的字段名改成首字母小写的，但是JSON输出的时候，只有导出的字段才会被输出，如果如果修改字段名首字母小写，那么就会发现什么都不会输出，所以必须通过struct tag定义来实现。
+
+生成json需要注意的：
+1. JSON对象只支持string作为key，所以要编码一个map，那么必须是map[string]T这种类型(T是Go语言中任意的类型)
+2. Channel, complex和function是不能被编码成JSON的，会返回UnsupportedTypeError
+3. 嵌套的数据是不能编码的，不然会让JSON编码进入死循环
+4. 指针在编码的时候会输出指针指向的内容，而空指针会输出null(待补充)
+5. 多个相同名字的字段：假设结构体a里嵌套有b、c两个结构体，然后b和c有相同的字段Name，如果两个Name都没有tag或者两个Name的tag所声明的json名称一样，那么生成json的时候两个Name都不会被编码；如果b和c中有Name字段，a里有Name字段（不在b或c中），那么以a中的Name字段会覆盖掉（不是替换）b和c中的。这些特性可实现以下技巧：
+    1. 临时忽略某些字段：
+
+## 5 go连接其他数据库
+postgresql：
+1. https://godoc.org/github.com/lib/pq
+
+## 6 正则
 
 
 # 五 经验
@@ -1393,9 +1543,32 @@ func main() {
 ### 2.9 os
 os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．
 
-os包可以操作目录、操作文件、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组信息、操作进程等
+os包可以操作目录、操作文件、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组/环境信息、操作进程等
 
-### 2.10
+### 2.10 runtime
+runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
+1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（绝对路径）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 runtime.Caller 的调用者。由于历史原因, 该参数和runtime.Callers 中的 skip 含义并不相同。
+    1. 网友实测, Go的普通程序的启动顺序如下:
+        1. runtime.goexit 为真正的函数入口(并不是main.main)
+        2. 然后 runtime.goexit 调用 runtime.main 函数
+        3. 最终 runtime.main 调用用户编写的 main.main 函数
+2. `runtime.Callers()`
+3. `runtime.FuncForPC(pc uintptr)`:返回包含给定 pc 地址的函数, 如果是无效 pc 则返回 nil。可以用来获取函数名。
+
+基于上面几个方法，可以做一个获取调用者的函数名/文件名/行号等用户友好的信息的简单函数：
+```golang
+func CallerName(skip int) (name, file string, line int, ok bool) {
+	var pc uintptr
+	if pc, file, line, ok = runtime.Caller(skip + 1); !ok {
+		return
+	}
+	name = runtime.FuncForPC(pc).Name()
+	return
+}
+```
+
+### 2.11 encoding/json
+参考json部分
 
 ## 3 go的编译器
 ### 3.1 为何这么快(from圣经)
@@ -1427,15 +1600,20 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 
 ### 1.4 常见错误:err is shadowed during return
 作用域问题,在if等语句内部声明的err覆盖了外面的err,当内部执行完毕之后外部的err并没有变.
-
+`
 ### 1.5 debug.gcstackbarrieroff undefined ...
 我当时是覆盖安装新版本go后使用`go build`命令出现的这个问题,网上搜了下,答案是删除``(待补充)
 
-### 1.6 cannot use card.CardLib literal (type *card.CardLib) as type card.ICardLib in field value: *card.CardLib does not implement card.ICardLib (missing SwitchCardGPRS method)
+### 1.6 cannot use card.CardLib literal (type *card.CardLib) as ty`pe card.ICardLib in field value: *card.CardLib does not implement card.ICardLib (missing SwitchCardGPRS method)
 一般都是方法所有者不对
 
 ### 1.7 missing argument to conversion to ...
 本来是调用类的方法的,结果写成调用类了
+
+### 1.8 import cycle not allowed
+golang不允许循环引用，比如a引用b，b引用c，c再引用a这种在golang里也算循环引用。解决方法有两种：
+1. 最简单的就是给头或尾建立子包
+2. 去掉头或尾的引用
 
 ## 2 未解决
 1. 因式分解
@@ -1444,23 +1622,13 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 5. go支持Erlang语言为代表的面向消息编程思想
 6. 不清楚go的稳定性，所以目前很多公司还不太敢用
 7. 从源码安装软件怎么操作？二进制发行版和安装版的区别？
-8. return的几种用法
-9. go省略返回值形参，只有形参类型的写法
 10. protobuf的获得和使用
 11. go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？
-12. go的闭包
 13. go generate 生成代码
 14. go type的几种写法
 15. why golang don't support Stored Procedure or Generic?
 16. 一些文章
     1. [http://blog.csdn.net/libaineu2004/article/details/49722651](http://blog.csdn.net/libaineu2004/article/details/49722651)
-
-17. go声明字符串和多行字符串可用``(加入笔记)
-18. go new 对象
-19. 协程是什么
-20. 可做笔记
-    1. [Golang json用法详解（一）](https://www.cnblogs.com/yangshiyu/p/6942414.html)
-
 21. 网友:string []byte 的转换是会拷贝的?
 
 # 七 待整理
@@ -1508,3 +1676,14 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 20. 待笔记：关于go的参数传递，暂时只实测了数组，结论是和js一样
 21. go工具链，有空再研究吧：https://blog.csdn.net/phantom_111/article/details/79981579
 22. go的官方博客？：https://blog.golang.org/
+23. 在 Golang 中，如果字符串中出现中文字符不能直接调用 len 函数来统计字符串字符长度，这是因为在 Go 中，字符串是以 UTF-8 为格式进行存储的，在字符串上调用 len 函数，取得的是字符串包含的 byte 的个数。
+24. 获取字符串长度的几种方法：https://blog.csdn.net/skh2015java/article/details/53258249
+25. 加密解密：
+    encoding/pem
+    crypto/x509
+    crypto/rsa
+    crypto/sha256
+
+26. 关于golang的ID和id，参考：https://github.com/golang/go/wiki/CodeReviewComments#initialisms；大意就是说golint认为ID才是正确的并且暂时不会改变这个规则，所以只有自己维护一个golint版本来忽略该提示。
+    1. 还有网友推荐了这个东西：https://github.com/alecthomas/gometalinter
+        1. allows you to configure which warnings are displayed (including those from golint).

@@ -1,6 +1,4 @@
 # mac
-
-# mac
 [TOC]
 # 一. 概述
 ## 3 常识
@@ -44,29 +42,35 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
 
 3. 文本转语音（TTS）的工具:`say`
 
-# 四 高级
-## 1 mac上好用的工具
-### 1.1 spotlight
-mac上的搜索神器,快捷键`cmd+space`,ios上也有
+## 2 mac上好用的软件
+### 2.1 spotlight
+mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
 
-### 1.2 Bootcamp
+操作：
+1. 查看文件位置：`cmd`
+2. 查看文件信息：`cmd+i`
+2. 打开文件所在文件夹：`cmd+r`or`cmd+return`
+3. 使用浏览器联网搜索：`cmd+b`
+4. 搜索结果中按分类跳转：`cmd+up/down arrow`
+
+### 2.2 Bootcamp
 用于在mac上安装windows系统,简单方便.安装之后,还会将win的按键映射到mac键盘上,具体参考苹果支持
 
-### 1.3 白噪音
+### 2.3 白噪音
 让工作效率更高,[https://zhuanlan.zhihu.com/p/20508353](https://zhuanlan.zhihu.com/p/20508353)
 
-### 1.4 解压缩
-1. The Unarchiver:免费好用
+### 2.4 解压缩
+2. The Unarchiver:免费好用
 2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
-### 1.5 snap
+### 2.5 snap
 快捷键打开dock.默认的cmd键和浏览器有冲突，所以我改成option键了。
 
 注意:windows和ubuntu上不需要按插件，直接就可以win键快捷打开dock
 
-### 1.6 视频播放
+### 2.6 视频播放
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
-### 1.7 Homebrew
+### 2.7 Homebrew
 mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器),相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件都被约束在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
 
 安装:官网脚本进行安装,我安装时卡在`HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
@@ -74,8 +78,6 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器),�
 配置代理(可选):如果网速较慢,可考虑使用代理.brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
 
 常用的三个命令:搜索(search)、更新(install)、卸载(remove),使用形如`brew search <软件名>`
-
-### 1.8 搜狗输入法
 
 # 四 高级
 ## 1 FSEvents

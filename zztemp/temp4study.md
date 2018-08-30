@@ -1,6 +1,156 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
-1. 置顶：HTML部分，把标签支持的方法也记录进去
+2. 置顶：英语的学习：发音和词汇
+1. go   
+    1. 参数传递：引用类型和js是一样吗，通过*操作呢，也是一样吗  
+        1. https://stackoverflow.com/questions/45122496/why-does-json-unmarshal-need-a-pointer-to-a-map-if-a-map-is-a-reference-type
+    2. json转换时，直接传入已经是指针类型的结构体可以吗，非空的结构体可以吗？
+        1. https://stackoverflow.com/questions/20478577/why-does-json-unmarshal-work-with-reference-but-not-pointer
+2. git自动补全分支名的设置
+2. group by和where的顺序，以及having
+1. sign加密解密
+1. git pull和fetch，merge的区别
+    1. git rebase 的笔记
+        1. git rebase -i后merge不会显示出来？别人的提交不会显示出来？
+        1. 假如我的分支合并了master并修改了a文件，然后zhangsan合并master
+    2. 熟悉git分支的线图
+2. http router
+1. 费曼学习方法：https://weibo.com/tv/v/GwHyao1TY?fid=1034:4277936765738533
+2. study later : 日志
+1. json化的时候有顺序吗
+    1. 遍历结构体的时候有顺序吗
+1. db：pg命令行输出如何设置为一行显式
+    1. sql语句的增删改查是按什么顺序？
+1. go
+    1. os.getenv()获取的是基于哪个文件？setenv似乎没有生效
+    1. os.exit()中0和1的区别，和return的区别
+    1. studylater：信号处理
+    1. log
+        1. https://www.cnblogs.com/Goden/p/4620136.html
+        2. https://studygolang.com/articles/9184
+    5. path
+    6. 主线程和goroutine的区别
+    7. 正则
+    8. go的变量类型转换，比如int转int64
+    9. http://wiki.jikexueyuan.com/project/the-way-to-go/02.7.html
+2. 长轮训和socket
+1. new和make的区别 
+    1. 为什么var声明map不能赋值,但是make可以
+        1. 双层map要make两次?
+        3. 不带ok返回bool的false的技巧
+    2. var声明的引用类型等于nil,但make声明的不等于nil
+    2. 为什么slice用var声明后可以append来增加
+1. router的group
+2. linux
+    1. chdir,chmod,chown，chtimes
+1. go 
+    1. https://medium.com/golangspec/selectors-in-go-c53a016702cf
+1. go,使用`go get -u github.com/cweill/gotests/...`时提示
+    git pull --ff-only
+There is no tracking information for the current branch.
+Please specify which branch you want to merge with.
+See git-pull(1) for details.
+
+    git pull <remote> <branch>
+
+If you wish to set tracking informati this branch you can do so with:
+
+    git branch --set-upstream-to=origin/<branch> master
+
+package github.com/cweill/gotests/...: exit status 1
+
+2. go fmt %+v出来的东西是连在一起的，如何格式化成类似jaon一样的东西，自己写？
+1. localstorage
+2. java中int8和int16等后面数字就表示占用的字节大小？在不同操作系统上是一样的？其他语言呢？
+1. go run如何运行不含main的文件？还是只能声明包为main，这算是一个技巧吗
+    1. a包里面把包声明为b，引用a包的时候用a还是b？
+    1. 一个包下只能有一个main方法？那想运行其他方法的话怎么办
+2. db
+    1. \conninfo显式的是socket连接，难道使用psql命令的时候是通过socket连接的？
+    2. 输出格式对齐和不对齐的区别，切换方法
+    3. pg update连表的写法：http://qifeifei.iteye.com/blog/2211115
+    4. pg学习：https://www.cnblogs.com/kungfupanda/p/4478917.html
+1. cookie和session
+2. golang import cycle not allowed
+    1. 怎么找啊
+2. don't use an underscore in package name
+    1. 不允许空文件夹吗
+2. 命令行翻墙
+1. golang 
+    1. sync add wait group，WaitGroup，Done等
+        1. 简单应用，实现通知？
+    2. 结构体大写小写开头的区别
+    3. json化时，任意类型的空会变成什么，不加omitemty的话呢
+    1. gin框架
+    4. router的group
+2. 数据结构和算法
+    1. 前缀树比hash更快？
+2. 时间戳
+    1. 有毫秒形式？
+    1. 小数处理
+1. http协议
+    1. 什么数据需要用body传，什么需要用header传，有严格要求吗，都在body里传有什么好处坏处？
+    2. git fetch和pull的实战区别
+    3. pull的时候，其他分支会被快速合并吗（如果有快速合并的话）
+    4. post，get的使用场景和区别，什么时候可以不区分
+1. go的枚举和const
+1. go的 协程和通知
+1. go的面向接口编程
+    1. 面向http接口呢？
+    1. 接口编程的意义？
+    1. go的带方法接收者的方法和普通方法的区别，
+    2. 方法和interface的关系
+    3. 参考：https://blog.csdn.net/sevensevensevenday/article/details/72403998
+1. golang json的用法，不用结构体而用map的使用
+    1. 把一个多的结构体赋值给少的结构体会发生什么？
+    2. golang序列化和反序列化
+    3. 返回结构体的方法，不能return nil?
+1. golang
+    1. 定义了三个参数，但是只使用其中两个参数，有没有什么问题
+    2. 大量使用指针会不会有什么问题
+2. golang later study
+    1. 如何格式化golang v,+v,#v等格式的输出？自己写一个？
+2. 回调接口
+2. 待学习：https://colobu.com/2017/06/21/json-tricks-in-Go/
+2. mac上.profile和.bashrc
+    1. 到底是用哪一个
+2. git自己对某个文件修改了，但是其他人删除了文件
+1. http协议
+2. golang的锁，死锁，互斥锁，读写锁
+1. db
+    1. 把条件写到on和where的区别
+    1. 被连接的表的筛选条件放到on后面还是where后面好？
+    2. 待笔记：）、not、and、or这四个 的优先级从左到右递减
+    3. 怎么建索引
+    5. 线程，协程
+        1. 一个线程里可以并行执行两个方法吗
+1. postgresql
+    1. case when else
+    2. 函数的作用，什么情况下才用函数
+        1. 待笔记： 能用go解决的函数
+1. 待研究：vscode 还有一项很强大的功能就是断点调试,结合 delve 可以很好的进行 Go 代码调试
+1. git fetch
+1. 测试覆盖率
+2. 签名和证书
+    1. https签名和其他签名
+1. 测试用例，单元测试，集成测试
+2. 接口设计
+1. golang
+    1. router里args和body
+    1. golangJSON：https://blog.csdn.net/qdx411324962/article/details/48216103
+    1. 取两个结构体并合并其部分
+        1. 可以将一个struct放到另一个struct里
+    2. []byte等的相互转换
+    4. https://blog.csdn.net/liukuan73/article/details/78863731
+1. 熟悉processon的使用，将笔记本上的流程图画出来
+1. https协议，post，get，contentType，application/json; charset=UTF-8，请求头，请求体，返回体
+    1. 如何配置ssh登录，好处和缺点
+    2. http和消息队列
+    3. 一个完整的url是怎么样的，#和？的位置等
+        1. 数组的话参数是什么格式
+    4. post和get在获取参数的方式上有什么区别
+        1. req.URL.Query()
+        2. req.FormValue
 1. 静音的时候会有提醒吗？如何让pc静音但有弹出提醒
 1. 签名
 1. go环境变量
@@ -30,12 +180,33 @@
         1. 大块的复制粘贴
     1. curl
     2. rmdir
+    3. linux如何树状列出目录和文件
+        1. 如何递归搜索
 1. goalng
-    1. http,server,os,runtime,path,net,context,signal，reflect,json,time(date)
+    1. golang如何比较切片，map等
+        1. []int{}这种简单的可以用反射比较，但是复杂点的就不行？
+    1. 空切片和nil的关系，在转json的时候不都是[]?
+    1. http,server,os,runtime,path,net,context,signal，reflect,json,time(date),url，json,ioutil，sync，mutex，StructField
         1. net.Listener
         2. reflect.valueof
+            1. go的反射掌握
             1. https://studygolang.com/articles/12348?fr=sidebar
+            2. value.Kind(),IsValid
+            3. reflect.Slice等
+            4. 
+                ```
+                	if typ.Kind() == reflect.Ptr {
+                        typ = typ.Elem()
+                    }
+                ```
+            5. kind()
+            6. typeof()
+            7. reflect.Ptr是指针类型？
         3. os.Getenv
+        4. context.Background()
+        5. json,buffer,[]byte等的转换
+        6. StructField
+            1. PkgPath
     1. 平滑停机
     1. 传递切片和切片的引用有什么区别
     1. 包那么多如何学习
@@ -78,11 +249,18 @@
 
 1. mac上.dmg和.app的区别
 1. db
+    1. pgsql自动排版SQL的工具
+        1. navicat
+    1. 增加表字段对原有数据有什么影响
+    2. 触发器
     1. postgressql ssl
     1. create table if not exists 。。。
     1. 流程控制：case when then end
     1. 数据库调优
     2. 索引
+    2. 缓存到go里面和缓存到redis里面的比较
+    1. 定时任务
+    2. 自己实现一个psql格式化的工具
 1. html value等的区别
 1. goalng
     1. 哪种数据类型适合频繁存取
@@ -1950,3 +2128,4 @@ worker.cancel();
 105. pom.xml
 106. left join和inner join等笛卡尔积还是要继续熟悉
 107. 交叉编译
+108. study later:elasticsearch

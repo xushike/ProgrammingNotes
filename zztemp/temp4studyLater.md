@@ -5,8 +5,12 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
-1. 匿名函数
+1. go
+    1. go generate：https://blog.csdn.net/deus_ex_machina/article/details/54931938
+2. 持续集成，持续交付，持续部署
 
+1. 匿名函数
+1. golang 写爬虫
 1. js进阶:
     1. 原型链和普通类的区别
     2. JSON相关操作
@@ -124,7 +128,6 @@
 73. js实现的报表
 74. Apache Phoenix
 75. asset意味着什么?
-76. flutter(听说还未成熟?)
 77. youtobe的自动翻译为何这么牛
 78. windows的IOCP
 79. nginx
@@ -200,3 +203,8 @@
 36. 后端
     1. 服务降级
     2. 服务发现、传输协议
+
+
+### 3 项目
+1. go crawler项目的编写
+    1. pholcus

@@ -504,8 +504,10 @@ switch的控制表达式的数据类型只能是byte、short、int、char四种�
 1. 在循环体中加上continue的时候，和上面两个while循环的处理是不一样的：上面两个循环会直接停掉；而for循环因为迭代语句不在循环体中，所以只是会停止本次循环体的剩余部分，然后继续下一次的迭代。
 2. 建议不要在循环体内修改循环变量（也叫循环计数器）
 3. 选择循环变量时，习惯上用i、j、k
+
 ### 3.3 控制循环结构
 java提供了continue、break来控制循环结构，还有return可以结束整个方法。
+
 #### 3.3.1 break
 1. 直接使用，可以完全结束其所在的循环
 2. 后面跟标签的时候，可以结束标签所在的外层循环
@@ -549,6 +551,7 @@ int[] intArr = new Int[10];      //动态初始化，指定长度，不给出里
 ### 4.2 foreach循环
 jdk5之后又了foreach循环。使用foreach循环无需获取数组长度和索引，迭代的时候将每次访问的数组元素的值赋给临时变量，改变这个临时变量并不能改变数组元素的值。
 1. 关于foreach循环时的顺序：对于数组，foreach按顺序从数组的第一个元素遍历到最后一个元素；对于Iterable容器，则依照迭代器的遍历顺序。
+
 2. 关于foreach的性能，网上很多说的是比for差（待补充）
 ### 4.3 java8增强工具类：Arrays
 java.util.Arrays里包含了一些static方法，可以直接操作数组（待补充）:
@@ -718,10 +721,12 @@ List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
 2. 把Map的所有value放在一起来看，又非常类似于一个LIst；如果需要从Map中取出元素，则需要提供该元素key的索引，所以Map也被称为字典，或关联数组。
 3. 所有Map实现类都重写了toString()方法
 4. key和value之间是单向一对一关系，key不允许重复，key和valiue都可以是任何引用类型数据。
+
 #### 7.6.1 Hashtable和java8改进的HashMap
 1. 前者jdk1.0开始就已经存在了，连名字中的T都没大写，此时java还没提供Map接口，线程安全，不能使用null作为key或者value(否则出现NullPointException)，性能比后者低一点，总之不推荐再使用了；后者可以最多有一个key为null和无数个value为null。
 2. 类似于HashSet，这两个判断key相等也是要equals和HashCode；但判断value相等只需要equals。
 3. HashMap底层也是用的数组来存储key-value对
+
 ##### 7.6.1.1 Properties
 是Hashtable的子类，在处理属性文件时特别方便(比如windows的ini)，由于属性名和值都是字符串，所以Properties的key和value都是字符串类型。也可以操作xml文件。
 主要方法有：
@@ -729,11 +734,15 @@ List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
 2. setProperty()
 3. load(InputStream inStream)：从属性文件(以输入流表示)中加载key-value对，追加到Properties里。
 4. store(OutputStream out,String comments)：将Properties的key-value对输出到指定的属性文件中(以输出流表示),comments相当于顶部注释的文字
+
 #### 7.6.2 LinkedHashMap
+
 类似LinkedHashSet
 #### 7.6.3 SortedMap接口和TreeMap实现类
+
 #### 7.6.4 WeakHashMap
 和HashMap用法基本类似，区别在于HashMap的key保留了强引用，但WeakHashMap保留的是弱引用。
+
 #### 7.6.5 IdentityHashMap
 与HashMap基本类似，区别在于处理key的相等：当且仅当两个key严格相等时，key才相等。在这一点上它有意违反了Map的通常规范。
 #### 7.6.6 EnumMap
