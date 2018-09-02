@@ -5,6 +5,7 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
+1. 简书，关于go env能看到新的gopath，但是运行时却找不到.go文件：https://www.jianshu.com/p/4e699ff478a5#comment-27768847
 1. go
     1. go generate：https://blog.csdn.net/deus_ex_machina/article/details/54931938
 2. 持续集成，持续交付，持续部署
@@ -208,3 +209,5 @@
 ### 3 项目
 1. go crawler项目的编写
     1. pholcus
+2. 打开任意文件的
+    1. mac上的open any files
