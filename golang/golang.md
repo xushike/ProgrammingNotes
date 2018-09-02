@@ -1364,7 +1364,7 @@ p.VehBrand = "大众"
 
 Go类型和JSON类型的对应关系如下：
 - bool 代表 JSON booleans,
-- float64 代表 JSON numbers,
+- float64 代表 JSON numbers（如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64）
 - string 代表 JSON strings,
 - nil 代表 JSON null.
 - interface{} 按照内部的实际类型进行转换
@@ -1375,7 +1375,7 @@ Go类型和JSON类型的对应关系如下：
 3. tag中如果带有"omitempty"选项，那么如果该字段值为空，就不会输出到JSON串中
 4. 如果字段类型是bool, string, int, int64等，而tag中带有",string"选项，那么这个字段在输出到JSON的时候会把该字段对应的值转换成JSON字符串
 
-解析JSON`func Unmarshal(data []byte, v interface{}) error`:
+解析JSON`func Unmarshal(data []byte, v interface{}) error`:注意这儿v必须是指针
 1. 解析到结构体(已知被解析的JSON数据结构)
     1. 例如JSON的key是Foo，那么怎么找对应的字段呢？
         1. 首先查找tag含有Foo的可导出的struct字段(首字母大写)
@@ -1446,7 +1446,11 @@ postgresql：
     ```
 
 ## 2 常用包和方法
-### 2.1 fmt
+
+### rand
+该包实现了伪随机数的生成
+
+### fmt
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法跟`%v`差不多的方式格式化参数，并在最后添加一个换行符。
 
 许多类型都会定义一个String方法，因为当使用fmt包的打印方法时，将会优先使用该类型对应的String方法返回的结果打印.
@@ -1498,7 +1502,7 @@ func main() {
 2. `fmt.Errorf`函数使用`fmt.Sprintf`处理错误信息
 6. `Fprintf()`:依据指定的格式向第一个参数内写入字符串，第一参数必须实现了 io.Writer 接口。Fprintf() 能够写入任何类型，只要其实现了 Write 方法，包括 os.Stdout,文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入。适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入。
 
-### 2.2 strings
+### strings
 1. `TrimSpace()`:去除字符串左右两边的空格,包括回车符等,但是不会去除字符串里面的空格
 
     有空研究一下里面的实现原理
@@ -1509,43 +1513,46 @@ func main() {
 最佳实践:
 1. 使用`strings.TrimPrefix／strings.TrimSuffix`掐头去尾,而不是自己去判断
 
-### 2.3 strconv
+### strconv
 该包用于string类型的各种转换
 2. `Atoi()`:string=>int
 3. `FormatFloat(f float64, fmt byte, prec, bitSize int) string`(待整理):float64=>string,`fmt`表示...;`prec`表示精度,负数的话就取最小的实际精度,正数的话是多少就取多少位;bitSize是64或者32
 
-### 2.4 rand
-该包实现了伪随机数的生成
+### time
+时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 
-### 2.5 unicode
+10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
+1. `Unix()`:时间戳（秒）
+
+### unicode
 包含了一些针对测试字符的非常有用的函数.
 
 1. 判断是否为字母：`unicode.IsLetter(ch)`
 2. 判断是否为数字：`unicode.IsDigit(ch)`
 3. 判断是否为空白符号：`unicode.IsSpace(ch)`
 
-### 2.6 utf8
+### utf8
 与 rune 相关的函数
 
-### 2.7 sort
+### sort
 排序相关算法,原理待补充：
 1. 对整数切片排序`sort.Ints(slice []int)`
 2. Float64
 3. Strings
 
-### 2.8 reflect
+### reflect
 反射机制就是在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同，反射的原理：待补充
 
 反射回来的类型大概有：
 
-1. 
-
-### 2.9 os
+### os
 os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．
 
 os包可以操作目录、操作文件、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组/环境信息、操作进程等
 
-### 2.10 runtime
+1. `Args[xxx]`：返回命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
+
+### runtime
 runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
 1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（绝对路径）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 runtime.Caller 的调用者。由于历史原因, 该参数和runtime.Callers 中的 skip 含义并不相同。
     1. 网友实测, Go的普通程序的启动顺序如下:
@@ -1567,7 +1574,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 }
 ```
 
-### 2.11 encoding/json
+### encoding/json
 参考json部分
 
 ## 3 go的编译器

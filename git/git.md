@@ -171,9 +171,10 @@ ssh 秘钥公钥的原理
 ## 4 配置
 ### 4.1 Git仓库的配制文件
 Git共有三个级别的config文件，分别是system、global和local:
-1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用--local参数（或者省去）。
-2. ~/.gitconfig：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用--global参数。
-3. /etc/gitconfig：系统级别仓库配置（适用于所有仓库），获取或设置时使用--system参数。
+1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用`--local`参数（或者省去）。
+2. ~/.gitconfig：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用`--global`参数。
+    1. 当然该配置不是一定有的，比如公司的mac air上就没有改配置文件
+3. /etc/gitconfig：系统级别仓库配置（适用于所有仓库），获取或设置时使用`--system`参数。
 
 覆写关系为：自上到下，作用范围越大;小范围优先级高于大范围。
 
@@ -192,7 +193,11 @@ ci = commit
 editor = vim
 ```
 
-修改配置的命令形如:`git config --global alias.st status`
+### 4.2 获取和设置配置
+不带级别的话默认是`--local`,比如`git config color.ui true`，默认是设置到当前git仓库的config文件中，如果没有该文件，会提示出来且不会自动创建该文件。如果在设置时加上了`--global`和`--system`，会在没有对应config文件的情况下自动创建对应的config文件。
+
+常用设置：
+1. 为命令设置别名:比如`git config --global alias.st status`，设置后就可以用`st`代替`status`
 
 # 三 基础
 ## 1 开始
@@ -236,35 +241,38 @@ editor = vim
 - `--oneline --graph --decorate --all`:查看所有的提交
 - `--pretty=oneline`:只看commit的`-m`信息
 
-### 2.3 `git config --list`:查看配置文件
+### 2.3 git config --list:查看配置文件
 - 查看项目的配置文件`git config --local --list`
 - 查看用户的配置文件`git config --global --list`
 - 查看系统的配置文件`git config --system --list`
 
 上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.它会显示包括上面三个配置在内的所有配置(如果有的话)
 
-### 2.5 `git diff`:查看变更(主要用于查看冲突)
+### 2.5 git diff:查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改.
 
 `git diff HEAD`:对比workspace与最后一次commit
 `git diff <分支1> <分支2>`:对比差异
 
-### 2.6 `git show`:查看提交的内容
+### 2.6 git show:查看提交的内容
 直接使用是查看当前commit的内容
 
 查看某次commit的内容:`git show <commit id>`
 
 查看某次commit中某个文件的变化:`git show <commit id> <文件名>`
 
-### 2.7 `git <命令名> --help`:查看某个命令的用法,比如`git fetch --help`
+### 2.7 查看命令帮助信息
+查看所有命令：`git --help`
 
-### 2.8 `git reflog`:查看关键命令(commit,pull,checkout)的记录
+查看某个具体命令的帮助：`git command_name -h`,比如`git fetch --help`
+
+### 2.8 git reflog:查看关键命令(commit,pull,checkout)的记录
 
 ## 3 拉取
-### 3.1 `git fetch`:抓取远端
+### 3.1 git fetch:抓取远端
 会将指定分支的更新都抓取下来,但是需要自己手动去合并
 
-### 3.1 `git pull`:等于执行`git fetch`和`git merge`
+### 3.1 `git pull:等于执行`git fetch`和`git merge`
 快速合并(fast-forward)
 
 拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
@@ -291,12 +299,13 @@ editor = vim
 
 `git rm --cached <file_path>`:删除暂存区或分支上的文件, 但本地又需要使用, 只是不希望这个文件被版本控制
 
-## 5 `git commit`
+## 5 git commit
 作动词时表示做一个版本,作名词表示版本.
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
 
 参数说明:
 - `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
+- `-m`：commit message
 
 ### 5.1 `git rebase`:压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
@@ -448,7 +457,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 # 四. 高级
 ## 4 git自带的图形界面工具
-### 4.1 `gitk`(常用)
+### 4.1 gitk(常用)
 主要用于查看查看历史,该工具可能需要自己安装
 
 如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
@@ -456,10 +465,10 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
 
 注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
-### 4.1 `git gui`
+### 4.1 git gui
 主要用于制作提交
 
-### 4.3 `git mergetool`
+### 4.3 git mergetool
 主要用于解决冲突,似乎只有存在冲突文件时才会出现(待测试)
 
 ## 5 `.gitignore`文件

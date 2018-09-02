@@ -1,11 +1,38 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：英语的学习：发音和词汇
+1. go的调试
+    1. 断点那种，有没有自带的
+1. go的vendor
+    1. 引用顺序
+    2. 创建和修改方法
+1. 用go创建基于pg的缓存怎么弄
+2. http协议
+    1. application/json
+    1. git：https://www.runoob.com/w3cnote/git-guide.html
+1. 项目中
+    1. fromvalue不能获取body里的内容
+    2. query和form表单的内容时相似的，写在?后面，而且可以用fromvalue获取
+        1. 从restful的角度讲，query是给get用的。一般参数含数组的话
+    3. api中json数组和字符串逗号分隔的比较
+2. golang的调度器
+1. golang json转换时，结构体字段的多少会失败吗
+2. 线程的睡眠，唤醒，阻塞，挂起等
+    1. 做成脑图
+2. illegal character U+FF08 '（'
+    1. 输入了中文的（
+2. postgresql count(*) over() as total 
+    1. pg的转义，目前项目中只处理了单引号，对于其他特殊符号呢？
+2. git blem
+1. golang的http相关包，比如获取参数，获取body中的某个值，获取其他等等
+1. url中数组等的写法，以及各种的形式（curl，组件化），不同数据类型写法一样吗
+
 1. go   
     1. 参数传递：引用类型和js是一样吗，通过*操作呢，也是一样吗  
         1. https://stackoverflow.com/questions/45122496/why-does-json-unmarshal-need-a-pointer-to-a-map-if-a-map-is-a-reference-type
     2. json转换时，直接传入已经是指针类型的结构体可以吗，非空的结构体可以吗？
         1. https://stackoverflow.com/questions/20478577/why-does-json-unmarshal-work-with-reference-but-not-pointer
+1. 分支对比
 2. git自动补全分支名的设置
 2. group by和where的顺序，以及having
 1. sign加密解密
