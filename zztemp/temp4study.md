@@ -3,6 +3,8 @@
 2. 置顶：英语的学习：发音和词汇
 1. go的调试
     1. 断点那种，有没有自带的
+1. go如何声明func 类型，比如map[string]的value是func类型如何声明
+    1. map返回
 1. golang http服务
 1. go的vendor
     1. 引用顺序
