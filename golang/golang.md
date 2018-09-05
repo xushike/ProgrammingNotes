@@ -163,7 +163,7 @@ img.SetColorIndex(
 
 待补充
 
-### 3.14 var、new()和make()的区别（难点）
+### 3.14 var、new()和make()的区别（难点）(待补充)
 `new()`和`make()`最大的区别：`new()`只分配内存而不初始化，`make()`不但分配内存还做初始化。比如:
 ```golang
 p := new([]int) //p == nil; with len and cap 0
@@ -173,9 +173,9 @@ fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]
 ```
 
 以下为详细区别：
-- `var`:没加等号的话就是初始化为对应类型的零值，即零值初始化
-- `new(type)`：为type类型变量分配内存，将该内存置零但不初始化该内存（和其他语言不同，有点难理解），返回指向该内存类型为type的指针。对于值类型，它似乎是零值初始化，和var一样；对于引用类型，它不是零值初始化，所以不等于nil。
-- `make(type,args)`：分配内存，将内存置零并初始化，只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
+- `var`:没加等号的话称为“零值初始化”，虽然带有“初始化”三个字，但对三个特殊的引用类型（slice、map、channel）并没有初始化，只是赋值为nil，对其他类型则是正常赋值为对对应的零值并初始化。
+- `new(type)`：为变量分配内存，将该内存置零但不初始化该内存，返回指针。对于值类型，它是零值初始化，和var一样；对于引用类型，它不等于nil（不知道为啥，和其他语言不同，有点难理解）。
+- `make(type,args)`：分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
 
 ### 3.15 三个点
 它是语法糖，有两种用法:
@@ -591,7 +591,9 @@ Go语言将数据类型分为四类：
 包含int、float、bool、string
 
 #### 2.1.1 整数
+大概可以分为以下几种类型：
 有基于架构的类型，例如：int、uint 和 uintptr.这些类型的长度都是根据运行程序所在的操作系统类型所决定的：int 和 uint 在 32 位操作系统上，它们均使用 32 位（4 个字节），在 64 位操作系统上，它们均使用 64 位（8 个字节）。uintptr 的长度被设定为足够存放一个指针即可。
+1. 查看int类型的位数`strconv.IntSize`，在64位机器上会返回64。也可以根据操作系统架构来判断，比如`runtime.GOARCH`
 
 与操作系统架构无关的类型都有固定的大小，并在类型的名称中就可以看出来：
 整数：
@@ -626,11 +628,12 @@ var ch byte = '\x41'
 
 raw字符串:用反引号包裹.正则表达式中使用raw字符串更简洁
 
-字符串截取:可以用切片(?)一模一样的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
+字符串截取:可以用类似切片的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
 ```golang
 str := "123456"
 str[0:3] // "123"
 str[3:] // "456"
+str3 := str[6:] // 特别的，如果indexA是字符串的长度，此时str3 == ""为true
 ```
 
 #### 2.1.4 布尔bool
@@ -696,9 +699,14 @@ slice := []stirng{99:"hello"}//长度和容量是100
 oldSlice := []int{10,20,30,40,50}
 newSlice := oldSlice[1:3]//newlice的长度为2，容量为4，且和slice同一截数组
 
-//5.使用三个索引创建切片
+//5.使用三个索引创建切片，第三个参数表示容量，是可选的，不写则大小跟元素个数一样
 slice := []string{"a","b","c","d","e"}
 newSlice := slice[1:3:4]//newSlice的长度2，容量为3
+newSlice2 := slice[5:] //特别的，如果indexA是slice的长度，那么newSlice2是长度为0的非nil切片
+
+//6.基于数组创建切片
+array := [...]int{1,2,3}
+newSlice := array[m:n]
 
 //其他：声明空切片,可用于表示空集合
 slice := make([]string,0)
@@ -763,14 +771,25 @@ m["m1"] = m1
 ```
 
 声明方法:
-1. 普通声明:`var map1 map[keytype]valuetype`
-2. 指定容量的声明:`map2 := make(map[string]float32, 100)`:
-
+1. "零值初始化"声明:`var map1 map[key_type]value_type`,这种声明方式声明后不能直接赋值，因为没有初始化
+2. 初始化为零值的声明`var map1 map[key_type]value_type{}`：似乎等价于`map1 := make(map[key_type]value_type)`
+2. 指定容量的声明:`map2 := make(map[string]float32, 100)`，容量是可选的
+    ```golang
+    // 声明值为func() int类型的map
+    mf := map[int]func() int{
+        1: func() int { return 10 },
+        2: func() int { return 20 },
+        5: func() int { return 50 },
+    }
+    fmt.Println(mf)
+    ```
 
 常用操作:
 1. 判断某个key是否存在:`_, ok := map1[key1]` // 如果key1存在则ok == true，否则ok为false
 2. 从 map中删除key:`delete(map1, key1)`,如果 key1 不存在，该操作不会产生错误。
-3. 从map中获取key的值：最佳实践是``
+3. 从map中获取key的值，有两种方式，但应该只使用逗号ok这种：
+    1. 最佳实践是使用逗号ok模式：`_,ok := map1[key1]`，ok表示是否存在这个key1，ok为true，再取值
+    2. 直接取值`map1[key1]`：如果值存在则返回该值，不存在则返回对应数据类型的零值。
 
 #### 2.2.4 结构体
 为什么需要结构体：当需要定义一个类型，它由一系列属性组成，每个属性都有自己的类型和值的时候，就应该使用结构体，它把数据聚集在一起。然后可以访问这些数据，就好像它是一个独立实体的一部分。结构体是复合类型（composite types）也是值类型，因此可以通过 `new()` 函数来创建.组成结构体类型的数据称为 字段（fields），每个字段都有一个类型（可以是任意类型，甚至是结构体类型）和一个名字；在一个结构体中，字段名字必须是唯一的。使用`var`和`new()`零值初始化结构体时，结构体内各字段会被初始化为对应类型的零值。。结构体是自定义类型里比较特殊的类型。
@@ -888,9 +907,10 @@ for index,ele := range xxx {
 }
 ```
 
+注意：
 1. for后面的三个语句(initialization; condition; post)都可以省略，此时可以看做go的`while`
 2. 和其它语言中的`break`和`continue`一样，`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会中跳过当前循环，并开始执行下一次循环。
-
+3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map
 ### 3.2 if else
 
 ### 3.3 switch
@@ -1021,9 +1041,26 @@ func main() {
 2. 配合匿名函数
 
 ## 5. 方法
-1. 关于方法的接收者选择
-    1. 要由接收者类型的本质来决定,感觉有点复杂,简单说就是看使用情况:对于内置类型,基本都是值接收者(?),对于结构类型就要看情况了
-    2. 例外是需要让类型值符合某个接口的时候
+关于方法的接收者选择：
+1. 要由接收者类型的本质来决定,感觉有点复杂,简单说就是看使用情况:对于内置类型,基本都是值接收者(?),对于结构类型就要看情况了
+2. 例外是需要让类型值符合某个接口的时候
+
+回调的简单例子，感觉像是提供一个接口让外部去实现：
+```golang
+package main 
+import "fmt" 
+type Callback func (x, y int) int 
+func main() { 
+ x, y := 1, 2 
+ fmt.Println(test(x, y, add)) 
+} 
+func test(x, y int, callback Callback) int { 
+ return callback(x, y) 
+} 
+func add(x, y int) int { 
+ return x + y 
+}
+```
 
 ## 6. 接口
 1. go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口
@@ -1064,7 +1101,7 @@ main() 退出时，main()中创建的协程会随着程序的结束而消亡
 1. 值的交换
 2. 默认是同步的，保证了两个计算（协程）任何时候都是可知状态
 
-channel的特点：channel只能传输一种类型（支持所有类型，甚至chan类型）的数据，它实际上是类型化消息的队列，是先进先出（FIFO）的结构，是引用类型，所以可以使用`make()`函数创建，零值初始化是nil，因为零值初始化会一直阻塞，所以最好用`make()`函数创建
+channel的特点：channel只能传输一种类型（支持所有类型，甚至chan类型）的数据，它实际上是类型化消息的队列，是先进先出（FIFO）的结构，是引用类型，使用`make()`函数创建。如果使用零值初始化创建则是nil，会一直阻塞，所以最好用`make()`函数创建。
 
 channel的声明。分有缓冲和无缓冲两种，buffer为0或者没有时是无缓冲通道（unbuffered channel），大于0时是有缓冲通道（buffered channel）。无缓冲通道用于顺序执行、同步，缓冲通道通常用来处理异步事件，只要往里面扔就行了，缓冲使程序更具有伸缩性（scalable）。可以使用内置`cap()`函数查看缓冲容量，`len()`查看当前元素个数。为了可读性，通道的命名通常以 ch 开头或者包含 chan：
 1. 无缓冲通道，只能包含一个元素，容量为0，读和写同时准备好了，channel才会开始通信，只有读或者写，则会一直阻塞：形如`var ch chan datatype`或`ch = make(chan datatype)`，如`ch1 := make(chan int)`
@@ -1515,6 +1552,7 @@ os包中实现了平台无关的接口，设计向Unix风格，但是错误处�
 os包可以操作目录、操作文件、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组/环境信息、操作进程等
 
 1. `Args[xxx]`：返回命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
+2. 操作系统架构:`runtime.GOARCH`
 
 ### rand
 该包实现了伪随机数的生成
@@ -1565,8 +1603,9 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 
 ### strconv
 该包用于string类型的各种转换
-2. `Atoi()`:string=>int
-3. `FormatFloat(f float64, fmt byte, prec, bitSize int) string`(待整理):float64=>string,`fmt`表示...;`prec`表示精度,负数的话就取最小的实际精度,正数的话是多少就取多少位;bitSize是64或者32
+1. `Atoi()`:string=>int
+2. `FormatFloat(f float64, fmt byte, prec, bitSize int) string`(待整理):float64=>string,`fmt`表示...;`prec`表示精度,负数的话就取最小的实际精度,正数的话是多少就取多少位;bitSize是64或者32
+3. 查看int的位数`strconv.IntSize`
 
 ### sync
 

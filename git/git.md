@@ -272,12 +272,12 @@ editor = vim
 ### 3.1 git fetch:抓取远端
 会将指定分支的更新都抓取下来,但是需要自己手动去合并
 
-### 3.1 `git pull:等于执行`git fetch`和`git merge`
+### 3.1 git pull:等于执行git fetch和git merge
 快速合并(fast-forward)
 
 拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
 
-## 4 `git add`:暂存(stage)
+## 4 git add:暂存(stage)
 工作目录的文件只有两种状态:已跟踪(tracked)和未跟踪(untracked),加入过暂存的都是已跟踪文件,初次clone后的所有文件都是已跟踪的.
 
 所以暂存有两层意思:对于未跟踪的文件是将其跟踪,对于已跟踪的,是跟踪其最新变动.
@@ -307,7 +307,7 @@ editor = vim
 - `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
 - `-m`：commit message
 
-### 5.1 `git rebase`:压制/衍合/变基
+### 5.1 git rebase:压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
 1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上

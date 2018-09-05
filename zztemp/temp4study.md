@@ -1,10 +1,20 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：英语的学习：发音和词汇
+1. 将go的测试用例改为example的那种形式，看下好不好用
+    1. https://www.jb51.net/article/98326.htm
+1. golang 的性能测试例子
+1. https://gobyexample.com/
+1. homebrew需要翻墙吗
+1. telnet和ping等
+    1. 怎么判断接口是不是通 的
+1. 删除分支并提交
+1. vscode中如何主动触发包引用
+2. sql的dump是什么
+2. 将vscode的设置等用那啥同步
+1. 如何生成文件的hash值
 1. go的调试
     1. 断点那种，有没有自带的
-1. go如何声明func 类型，比如map[string]的value是func类型如何声明
-    1. map返回
 1. golang http服务
 1. go的vendor
     1. 引用顺序
