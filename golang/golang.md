@@ -796,7 +796,7 @@ m["m1"] = m1
 
 带接收者的函数：go的结构体跟面向对象的编程语言中一个无方法的轻量级类一样，它在go里有着重要的地位，但Go中没有类的概念，要实现类的方法的功能需要使用带接收者的函数。
 
-继承：包含这个匿名字段的struct能调用匿名字段的函数和字段
+Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。看起来可以实现类似java继承的功能，但实测仍然有些问题，困惑后明白，：不要强行用java的方式去使用go。
 
 重载：比如下面的Student和Human都有phone字段，那么访问Student中的phone用`student.phone`,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
 
@@ -850,6 +850,12 @@ ms := &struct1{10, 15.5, "Chris"} //底层仍然是调用 new ()实现的
 a := struct1{}
 ms := struct1{10, 15.5, "Chris"}
 human := Human{name:"tom"}
+```
+字段(fields)：小写开头的话只能在当前包访问，要想其他包也能访问可以使用
+```golang
+func GetXXX(){
+    return struct1.xxx
+}
 ```
 
 选择器（selector）：无论变量是一个结构体类型还是一个结构体类型指针，都使用同样的选择器符（selector-notation） 来引用结构体的字段。语法形如`structname.fieldname = value`。好处是不用像 C++ 中那样需要使用 -> 操作符，因为Go 会自动做了这样的转换。
@@ -1645,6 +1651,15 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 
 ## 5 其他
 1. 有空的时候可以多看看Google的工程师是如何实现的
+
+## 6 vendor
+为什么用vendor目录：假如多个应用使用一个依赖包的不同版本？这个问题不只是Go应用，其他语言也会有这个问题。vendor目录允许不同的代码库拥有它自己的依赖包，并且不同于其他代码库的版本，这就很好的做到了工程的隔离。
+
+golang查找依赖包路径的顺序如下：
+1. 当前包下的vendor目录。
+2. 向上级目录查找，直到找到src下的vendor目录。
+3. 在GOPATH下面查找依赖包。
+4. 在GOROOT目录下查找
 
 # 六 问题
 ## 1 已解决

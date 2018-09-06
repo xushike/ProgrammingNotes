@@ -1,15 +1,9 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
-3. 置顶：项目整体的把控
-1. golang有实例方法的概念吗
-1. 将go的测试用例改为example的那种形式，看下好不好用
+2. 置顶：项目整体的把控
+2. 将go的测试用例改为example的那种形式，看下好不好用
     1. https://www.jb51.net/article/98326.htm
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
-1. pg的tex类型
-1. count(*) over
-1. golang结构体首字母大写和小写的区别，指针和非指针的区别
-1. golang测试的时候有没有办法打印方法名
-1. golang 方法接收者带星号和不带的区别，可以混用？
 1. http 请求方式
     1. http://www.moonsec.com/post-772.html
     2. application/json
@@ -23,21 +17,15 @@
 1. golang 的性能测试例子
 2. pg触发器，存储过程，读写分离
 1. https://gobyexample.com/
-1. homebrew需要翻墙吗
 1. telnet和ping等
     1. 怎么判断接口是不是通 的
         1. https://www.jb51.net/article/78082.htm
-1. 删除分支并提交
-1. vscode中如何主动触发包引用
 2. sql的dump是什么
 2. 将vscode的设置等用那啥同步
 1. 如何生成文件的hash值
 1. go的调试
     1. 断点那种，有没有自带的
 1. golang http服务
-1. go的vendor
-    1. 引用顺序
-    2. 创建和修改方法
 1. 用go创建基于pg的缓存怎么弄
 2. http协议
     1. application/json
@@ -53,12 +41,8 @@
     1. 做成脑图
 2. illegal character U+FF08 '（'
     1. 输入了中文的（
-2. postgresql count(*) over() as total 
-    1. pg的转义，目前项目中只处理了单引号，对于其他特殊符号呢？
-2. git blem
 1. golang的http相关包，比如获取参数，获取body中的某个值，获取其他等等
 1. url中数组等的写法，以及各种的形式（curl，组件化），不同数据类型写法一样吗
-
 1. go   
     1. 参数传递：引用类型和js是一样吗，通过*操作呢，也是一样吗  
         1. https://stackoverflow.com/questions/45122496/why-does-json-unmarshal-need-a-pointer-to-a-map-if-a-map-is-a-reference-type
@@ -306,7 +290,6 @@ package github.com/cweill/gotests/...: exit status 1
         ```
     2. 位操作
 
-1. mac上.dmg和.app的区别
 1. db
     1. pgsql自动排版SQL的工具
         1. navicat
@@ -737,27 +720,6 @@ angualr 表单中:#,name等的区别
 2. package-lock.json对跨平台有影响吗
 2. npm install默认的规则是什么样的, 会默认覆盖吗还是?
 2. node-sass
-2. Unable to save binary /Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/vendor/darwin-x64-57 : { Error: EACCES:permission denied, mkdir '/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/vendor'
-    at Object.fs.mkdirSync (fs.js:885:18)
-    at sync (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/mkdirp/index.js:71:13)
-    at Function.sync (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/mkdirp/index.js:77:24)
-    at checkAndDownloadBinary (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/scripts/install.js:114:11)
-    at Object.<anonymous> (/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/scripts/install.js:157:1)
-    at Module._compile (module.js:652:30)
-    at Object.Module._extensions..js (module.js:663:10)
-    at Module.load (module.js:565:32)
-    at tryModuleLoad (module.js:505:12)
-    at Function.Module._load (module.js:497:3)
-  errno: -13,
-  code: 'EACCES',
-  syscall: 'mkdir',
-  path: '/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/vendor' }
-
-
-2. gyp ERR! stack Error: EACCES: permission denied, mkdir '/Users/xushike/work/src/wlwk/wlwk_admin/wlwk_admin_web/node_modules/node-sass/build'
-
-
-
 
 1. http://www.wutianqi.com/?p=3686
 1. sql
@@ -765,30 +727,16 @@ angualr 表单中:#,name等的区别
     2. 如何查看长度单位
     4. 数据库索引是什么东西
     6. 换行符和空格会原样取出来吗
-    7. 框架自动转换?
-        ```golang
-        map[string]interface{}{
-            "count": r,
-            "list":  list,
-        }
-        ```
-    8. oracle的日期操作,比如月份的增加减少
 
 1. npm
     1. 查看某个库的版本号
     2. 错误和警告
     3. darwin等
 
-1. to_char和to_date
-
-1. yyyyMM和yyyymm等
-1. github博客系统
-
 1. 项目中
     1. `DateUtility.toString`和`DateUtility.toUTCString`
     2. 使用字符串类型的枚举为什么会报错
     3. 为什么日期要转换这么多次
-
 1. ng-template和ng-if比会增加渲染效率吗
 
 1. overflow:auto

@@ -254,6 +254,9 @@ editor = vim
 `git diff HEAD`:对比workspace与最后一次commit
 `git diff <分支1> <分支2>`:对比差异。比如对比本地和远程的差异`git diff master origin/master`
 
+### 2.6 git blame（查看文件的每个部分是谁修改的）
+`git blame <filename>`
+
 ### 2.6 git show:查看提交的内容
 直接使用是查看当前commit的内容
 

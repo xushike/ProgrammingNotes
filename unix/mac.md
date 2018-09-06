@@ -18,6 +18,9 @@
 ### 3.5 苹果公司的开源
 苹果开源过的有:darwin操作系统(Mac OS X Kernel),WebKit(web browser engine),LLVM,Swift等
 
+### 3.6 .app和.dmg
+.app直接点开就可以运行，类似于win上面的exe，而.dmg需要安装
+
 # 二 安装配置
 # 三 基础
 ## 1 快捷键
