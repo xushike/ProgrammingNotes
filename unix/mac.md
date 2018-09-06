@@ -27,6 +27,7 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
 2. 关机、睡眠和重启:长按`power`1.5秒
 3. win键盘的`delete`键(mac键盘的`delete`键相当于win的`backspace`键):`fn+delete`
 4. 修改文件名:选中文件后回车(待测试)
+5. 快速查看文件：选中某个文件然后按`space`
 
 ## 2 命令行工具
 1. open命令打开
@@ -71,13 +72,21 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
 ### 2.7 Homebrew
-mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器),相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件都被约束在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
+mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件都被约束在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
 
 安装:官网脚本进行安装,我安装时卡在`HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
 
-配置代理(可选):如果网速较慢,可考虑使用代理.brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
+配置代理的几种方法:
+1. 如果网速较慢,可考虑使用代理.brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
+2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`
 
-常用的三个命令:搜索(search)、更新(install)、卸载(remove),使用形如`brew search <软件名>`
+常用命令:
+1. 搜索(search)、安装(install)、卸载(remove),使用形如`brew search <软件名>`
+2. 更新brew自身：`brew update`
+3. 更新软件:`brew upgrade name`，不加name则是更新所有可以更新的软件。
+    1. 清理旧版本:`brew cleanup`
+2. 显示安装的服务：`brew services list`
+3. 安装服务启动、停止、重启：`brew services start/stop/restart serverName`
 
 # 四 高级
 ## 1 FSEvents

@@ -3,6 +3,7 @@
 2. 置顶：英语的学习：发音和词汇
 1. 将go的测试用例改为example的那种形式，看下好不好用
     1. https://www.jb51.net/article/98326.htm
+2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 1. golang 的性能测试例子
 1. https://gobyexample.com/
 1. homebrew需要翻墙吗
