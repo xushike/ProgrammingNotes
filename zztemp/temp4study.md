@@ -1,14 +1,32 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
-2. 置顶：英语的学习：发音和词汇
+3. 置顶：项目整体的把控
+1. golang有实例方法的概念吗
 1. 将go的测试用例改为example的那种形式，看下好不好用
     1. https://www.jb51.net/article/98326.htm
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
+1. pg的tex类型
+1. count(*) over
+1. golang结构体首字母大写和小写的区别，指针和非指针的区别
+1. golang测试的时候有没有办法打印方法名
+1. golang 方法接收者带星号和不带的区别，可以混用？
+1. http 请求方式
+    1. http://www.moonsec.com/post-772.html
+    2. application/json
+1. golang中的nil
+    1. https://studygolang.com/articles/9506
+1. golang mutex和RWMutex
+    1. how to and when use?
+    1. https://studygolang.com/articles/3373
+1. golang json：https://colobu.com/2017/06/21/json-tricks-in-Go/
+1. https://github.com/avelino/awesome-go
 1. golang 的性能测试例子
+2. pg触发器，存储过程，读写分离
 1. https://gobyexample.com/
 1. homebrew需要翻墙吗
 1. telnet和ping等
     1. 怎么判断接口是不是通 的
+        1. https://www.jb51.net/article/78082.htm
 1. 删除分支并提交
 1. vscode中如何主动触发包引用
 2. sql的dump是什么
@@ -534,7 +552,6 @@ package github.com/cweill/gotests/...: exit status 1
     2. 连接状态是返回一次还是连续不断返回?
     3. 切换页面websocket会自动断开吗
 
-114. telnet
 115. 博客:腾讯web前端coverguo
 116. 自定义路书轨迹
     1. 最简单的,就是不用动画,只需要setPosition和画线就行了

@@ -5,6 +5,10 @@
 1. 一个国外的在线编程教育网站，界面简洁而优雅。如果英语基础扎实，又有足够的好奇心，不妨去体验一下:[https://www.codeschool.com/learn](https://www.codeschool.com/learn)
 
 ### 2 未整理
+1. 写一个格式化postgresql 语句的工具，因为太长的SQL手动格式化很累，不格式化可读性又不好
+    1. 该大写的要大写
+    2. 如果字段名和关键字冲突怎么办
+    3. 如果判断是多条无关的语句，则解析成多条
 1. 简书，关于go env能看到新的gopath，但是运行时却找不到.go文件：https://www.jianshu.com/p/4e699ff478a5#comment-27768847
 2. Github Page搭建个人博客或个人建站
 1. go
