@@ -199,6 +199,15 @@ editor = vim
 常用设置：
 1. 为命令设置别名:比如`git config --global alias.st status`，设置后就可以用`st`代替`status`
 
+### 4.3 配置自动补全
+mac按以下步骤操作：
+1. 下载git-completion.bash：https://github.com/git/git/blob/master/contrib/completion/git-completion.bash
+2. 将git-completion.bash放到该目录下：`~/.git-completion.bash`
+3. 修改.bashrc,在最后添加：`source "/Users/xxx/.git-completion.bash"`
+4. 如果.bash_profile里加上了那句`source .bashrc`，那么对新开的bash已经生效了。
+
+然后就可以使用git的自动补全了，比如输入`git co`，然后按两次tab键，就会出现提示`commit config`,输入`git checkout`按两次tab就会出现所有分支名等。
+
 # 三 基础
 ## 1 开始
 ### 1.1 `git init`:初始化仓库
@@ -401,7 +410,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 查看储藏:使用`git stash list`可以查看储藏版本信息.
 
-恢复储藏:`git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.
+恢复储藏:`git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)
+
 恢复(并删除?)最前面的储藏:`git stash pop`.
 
 删除暂存:`git stash drop <储藏的名字>`,比如`git stash drop stash@{0}`

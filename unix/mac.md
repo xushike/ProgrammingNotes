@@ -21,6 +21,9 @@
 ### 3.6 .app和.dmg
 .app直接点开就可以运行，类似于win上面的exe，而.dmg需要安装
 
+### 3.7 login shell 和 non-login shell，.bash_profile和.bashrc
+为什么会有login shell和non-login shell：会读取不同的配置文件。但mac的shell和linux不同，mac是每个新的shell都默认为login shell，而且只加载`.bash_profile`。
+
 # 二 安装配置
 # 三 基础
 ## 1 快捷键

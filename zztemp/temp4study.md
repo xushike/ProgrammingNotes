@@ -1,6 +1,23 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
+1. pg的各种时间转换
+1. 切片传引用和修改的区别
+1. go test显式覆盖率等
+1. golang如何判断两个方法相等
+1. golang对引用，&和值类型的修改
+    1. 传指针和传引用的区别，只有细节上的不同？
+1. golang imports那个问题
+1. golang 包引用成一个点
+1. alias后新开shell又没了
+1. go test的t.fail()
+1. go panic：什么时候用以及正常情况下什么时候会出现这个
+    1. out range of index会出现吗
+2. 网友：用 interface ，多态算啥～建议你读读官方的 io.Reader 模块
+1. go test里加tags
+2. golang错误处理：https://blog.csdn.net/u013589865/article/details/78754582
+2. pg any:https://yq.aliyun.com/articles/424714
+1. pg的锁，行级锁，表级锁等
 2. 将go的测试用例改为example的那种形式，看下好不好用
     1. https://www.jb51.net/article/98326.htm
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
@@ -155,8 +172,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. 如何格式化golang v,+v,#v等格式的输出？自己写一个？
 2. 回调接口
 2. 待学习：https://colobu.com/2017/06/21/json-tricks-in-Go/
-2. mac上.profile和.bashrc
-    1. 到底是用哪一个
 2. git自己对某个文件修改了，但是其他人删除了文件
 1. http协议
 2. golang的锁，死锁，互斥锁，读写锁
@@ -458,11 +473,6 @@ package github.com/cweill/gotests/...: exit status 1
     19. 如何配置多个 gopath,配置后会怎么样?
     20. 方法和函数的区别
         1. 参考:https://studygolang.com/articles/9945
-    21. gopath和goroot的配置,立即生效参考:https://blog.csdn.net/u013256622/article/details/43703875
-        1. 项目中是配置在`/etc/profile`中的(全局是这儿设置的,但是每次重新打开shell的配置是?)
-            修改了/etc/profile的话,用source /etc/profile之后还是只对当前窗口生效,对新窗口不生效;似乎是因为打开新的shell调用的~/.bashrc(带验证)
-            1. 最新实测,修改了/etc/profile的话,用source /etc/profile之后,还是只对当前窗口生效,对vscode的新bash shell和ubuntu的新shell都没有生效,但是重启vscode之后就变成新的了
-        2. .bash_profile,.bashrc等的区别
     22. golang切片和数组的区别,`...xxx`是接收的切片还是数组
     23. type xxx func(* yyy)
     24. *和&的区别

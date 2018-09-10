@@ -211,9 +211,16 @@
     1. 服务降级
     2. 服务发现、传输协议
 37. Serverless、Service Mesh
+38. 越界slice为什么可以取？比如下面这个开始index是3，明显超过a的最大idnex了，居然不报错
+
+    ```golang
+    a := []int{1,2,3}
+    b := a[3:]
+    ```
 
 ### 3 项目
 1. go crawler项目的编写
     1. pholcus
 2. 打开任意文件的
     1. mac上的open any files
+3. 炫酷的网页：https://www.aurora-polaris.club/void

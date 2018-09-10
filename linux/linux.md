@@ -14,7 +14,7 @@
 4. linux是多用户系统,而win是单用户
 
 ## 3 常识
-### 1.1 快捷键
+### 3.1 快捷键
 1. 复制粘贴快捷键(windows中cmd不生效)：
 ```
 ctrl+insert:复制
@@ -163,6 +163,17 @@ pbcopy < myFile.txt
 
 ### 1.15 终端，Shell，“tty”和控制台（console）有什么区别
 参考知乎网友的回答:[终端，Shell，“tty”和控制台（console）有什么区别？](https://www.zhihu.com/question/21711307)
+
+### 3.16 login shell 和 non-login shell，.bash_profile和.bashrc
+为什么会有login shell和non-login shell：会读取不同的配置文件。
+
+login shell：取得shell时需要完整登录流程（比如需要输入账号密码）就称为login shell，比如图形界面登录，ssh登录，命令行登录。一般会依次去读取几个配置文件，顺序如下：
+1. `/etc/profile`
+2. `~/.bash_profile` 或 `~/.bash_login` 或 `~/.profile`:这三个从左到右只要存在一个，后面的就不会被读取。
+
+non-login shell：取得shell的方法不需要重复登录流程的就是non-login shell。仅会读取`~/.bashrc`
+
+注意：linux的shell读取的配置和mac不同。
 
 # 二 安装配置
 
@@ -681,7 +692,6 @@ dpkg -L package #列出与该包关联的文件
 为什么 Linux 大部分软件都要求编译安装，就是因为动态链接库。
 13. linux和mac上各种格式包的安装和区别
 14. 内容太多终端显示不完怎么办，终端中如何翻页等
-15. login shell和non-login shell，参考鸟哥的linux私房菜
 16. copy的几种方式，除了cp还有什么
 17. 关于软链接和硬链接
     1. 硬链接:与普通文件没什么不同，inode 都指向同一个文件在硬盘中的区块
