@@ -1,8 +1,6 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
-1. pg的各种时间转换
-1. 切片传引用和修改的区别
 1. go test显式覆盖率等
 1. golang如何判断两个方法相等
 1. golang对引用，&和值类型的修改
@@ -21,6 +19,9 @@
 2. 将go的测试用例改为example的那种形式，看下好不好用
     1. https://www.jb51.net/article/98326.htm
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
+
+# later
+2. go的线程模型
 1. http 请求方式
     1. http://www.moonsec.com/post-772.html
     2. application/json

@@ -1360,14 +1360,19 @@ go run *.go
 ### 1.11 go test（重要）
 轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。
 
-对多个包进行测试(package tests)：以空格分割多个包的包名
+对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
+
+对多个包进行测试(package tests)：以空格分割多个包的包名。
+
+注意上面两种测试默认都是按包来并发执行的，好处是缩短了执行时间，缺点是公共资源可能被同时修改导致结果不对，解决办法是加上`-p 1`
 
 对单个或多个文件进行测试（file tests）：形如`go test -v a_test.go b_test.go ...`，命令程序会为指定的源码文件生成一个虚拟代码包“command-line-arguments”，此时如果源码文件调用了其他包中的函数而没有声明的话，而需要加入对应的源码文件。比如a_test.go中调用了a.go中的Foo()方法，则会出现`undefined：Foo`错误，此时应该把a.go也加入进去`o test -v a_test.go a.go`
 
 对单个或多个函数进行测试：加上`-test.run methodName`，形如`go test -v -test.run TestBar bar_test.go`，和上面一样会被指定虚拟包。
 
+
 参数:
-1. 打印辅助信息：`-v`,辅助信息大概如下，
+1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，简单形式如下，
 
     ```bash
     === RUN   Testxxx
@@ -1378,6 +1383,10 @@ go run *.go
 `t *testing.T`的方法:
 1. `Fatal(err)`
 2. `Log()`
+3. 跳过当前测试的方法`Skip()`
+4. 设置并发执行的测试数量`-parallel n`
+5. 竞争探测`-race`：用于探测高并发的死锁...
+6. `-cpu`
 
 ## 2 其他与go有关的工具
 ### 2.1 Cgo
@@ -1596,6 +1605,8 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 }
 ```
 
+4. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
+
 ### sort
 排序相关算法,原理待补充：
 1. 对整数切片排序`sort.Ints(slice []int)`
@@ -1770,3 +1781,5 @@ golang不允许循环引用，比如a引用b，b引用c，c再引用a这种在go
 26. 关于golang的ID和id，参考：https://github.com/golang/go/wiki/CodeReviewComments#initialisms；大意就是说golint认为ID才是正确的并且暂时不会改变这个规则，所以只有自己维护一个golint版本来忽略该提示。
     1. 还有网友推荐了这个东西：https://github.com/alecthomas/gometalinter
         1. allows you to configure which warnings are displayed (including those from golint).
+
+27. 高并发的死锁：https://blog.golang.org/race-detector

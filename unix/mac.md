@@ -69,6 +69,7 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
 ### 2.4 解压缩
 2. The Unarchiver:免费好用
 2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
+
 ### 2.5 snap
 快捷键打开dock.默认的cmd键和浏览器有冲突，所以我改成option键了。
 
@@ -87,12 +88,16 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`
 
 常用命令:
-1. 搜索(search)、安装(install)、卸载(remove),使用形如`brew search <软件名>`
+1. 搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
 2. 更新brew自身：`brew update`
 3. 更新软件:`brew upgrade name`，不加name则是更新所有可以更新的软件。
     1. 清理旧版本:`brew cleanup`
 2. 显示安装的服务：`brew services list`
-3. 安装服务启动、停止、重启：`brew services start/stop/restart serverName`
+3. 安装服务的启动、停止、重启：`brew services start/stop/restart serverName`
+
+关于brew cask和brew：brew主要装命令行工具，偏开发，而brew cask主要装带GUI的工具和驱动，偏应用。brew cask是brew的一个官方源。两者应该是相辅相成的关系。
+
+(待研究)：brew安装时的网络问题
 
 # 四 高级
 ## 1 FSEvents
