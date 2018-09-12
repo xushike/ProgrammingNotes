@@ -1,6 +1,17 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
+1. golang里将一个时间字符串转成时间
+    1. 2018-09-10T13:58:25.240432+08:00
+1. golang debug日志
+1. 交集差集并集等
+    1. 在db中的应用
+1. pg数据库的备份和赋值
+1. pg命令行的提示为什么有时候又有时候没有
+1. golagn命令行直接加上环境变量，然后os.GetEnv()可以直接
+2. 查看当前是什么shell
+1. 死锁
+1. 如何ssh连接其他mac，比如连接家里的mac
 1. go test显式覆盖率等
 1. golang如何判断两个方法相等
 1. golang对引用，&和值类型的修改
@@ -21,6 +32,14 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
+1. bash
+    1. set -o vi
+1. db
+    1. 通过执行计划（查询计划？）来分析SQL的执行性能
+        1. 全表扫描的要调整
+2. csv格式
+2. 听说有不少大牛用vim+vim-go插件开发golang，有空尝试下，还可以省下鼠标钱(笑~)
+    1. https://www.reddit.com/r/golang/comments/8m1usb/what_is_the_best_ide_for_golang/
 2. go的线程模型
 1. http 请求方式
     1. http://www.moonsec.com/post-772.html

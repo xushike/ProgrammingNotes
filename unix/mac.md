@@ -34,6 +34,7 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
 3. win键盘的`delete`键(mac键盘的`delete`键相当于win的`backspace`键):`fn+delete`
 4. 修改文件名:选中文件后回车(待测试)
 5. 快速查看文件：选中某个文件然后按`space`
+6. 是否显示隐藏目录:`shift+cmd+.`
 
 ## 2 命令行工具
 1. open命令打开
