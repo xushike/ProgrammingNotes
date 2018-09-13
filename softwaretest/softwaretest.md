@@ -17,7 +17,7 @@
 1. test coverage
 2. 单元测试和代码覆盖率
 ## 七 待整理
-1. 黑盒，白盒，压力测试
+1. 黑盒，白盒，压力测试,回归测试
 2. 推荐一本书《Windows 程序调试》《Debugging Windows Programs》 
 里面写了一些关于调试心理学的东东。
 

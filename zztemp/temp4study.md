@@ -1,6 +1,10 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
+1. golang定义匿名函数
+1. golang协程串行
+1. git git shallow clone和deep clone
+    1. mac安装postman时
 1. golang里将一个时间字符串转成时间
     1. 2018-09-10T13:58:25.240432+08:00
 1. golang debug日志
@@ -32,6 +36,10 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
+1. iterm2
+    1. mac自带shell的缺点
+1. 前段抓包
+1. vi和vim
 1. bash
     1. set -o vi
 1. db

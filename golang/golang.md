@@ -1349,10 +1349,15 @@ go run *.go
 指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
 
 ### 1.9 go doc和godoc
-#### 1.9.1 go doc
-查看文档,挺方便的.如`go doc http.ListenAndServe`可以看到该函数的说明(显示的是函数上被注释的声明),`go doc http`可以直接看到包的说明,`go doc builtin.make`查看内建函数的说明.
+一些区别：go doc可以用于查看本地的文档，而godoc可以在本地启动go的文档（方便离线查看？）
 
-#### 1.9.2 godoc
+#### go doc
+查看文档,挺方便的.
+1. 查看包的说明：`go doc pkg_path`,如`go doc http`可以直接看到整个包的概述和所有导出方法
+2. 查看具体方法/变量等的说明：`go doc pkg_path.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
+
+#### godoc
+1. 启动本地文档服务器:`godoc -http=:6060`，然后通过`localhost:6060`就可以访问go的文档了，而且文档内容会比标准库多，因为官网只是标准库，而本地是`$GOPATH`和`GOROOT`下所有包生成的文档
 
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
