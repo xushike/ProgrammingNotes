@@ -1,21 +1,12 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
-1. golang定义匿名函数
 1. golang协程串行
-1. git git shallow clone和deep clone
-    1. mac安装postman时
-1. golang里将一个时间字符串转成时间
-    1. 2018-09-10T13:58:25.240432+08:00
 1. golang debug日志
-1. 交集差集并集等
-    1. 在db中的应用
 1. pg数据库的备份和赋值
 1. pg命令行的提示为什么有时候又有时候没有
 1. golagn命令行直接加上环境变量，然后os.GetEnv()可以直接
-2. 查看当前是什么shell
 1. 死锁
-1. 如何ssh连接其他mac，比如连接家里的mac
 1. go test显式覆盖率等
 1. golang如何判断两个方法相等
 1. golang对引用，&和值类型的修改
@@ -24,8 +15,6 @@
 1. golang 包引用成一个点
 1. alias后新开shell又没了
 1. go test的t.fail()
-1. go panic：什么时候用以及正常情况下什么时候会出现这个
-    1. out range of index会出现吗
 2. 网友：用 interface ，多态算啥～建议你读读官方的 io.Reader 模块
 1. go test里加tags
 2. golang错误处理：https://blog.csdn.net/u013589865/article/details/78754582
@@ -36,8 +25,14 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
-1. iterm2
-    1. mac自带shell的缺点
+2. 如何ssh连接其他mac，比如连接家里的mac
+2. 测试端口通不通：https://www.jb51.net/article/78082.htm
+2. 将各种设置同步到一个地方，切换环境的时候直接从里面拉取就行了
+2. vscode snippet:https://blog.csdn.net/aggresss/article/details/79791291
+2. pg: https://yq.aliyun.com/articles/174262
+2. 如何查看psql函数的源码
+1. alfred
+    1. 别人分享的配置：http://www.alfredworkflow.com/
 1. 前段抓包
 1. vi和vim
 1. bash
@@ -52,6 +47,9 @@
 1. http 请求方式
     1. http://www.moonsec.com/post-772.html
     2. application/json
+1. golang
+    1. 待学习，单元和性能测试：https://blog.csdn.net/code_segment/article/details/77507491
+    1. goroutine的错误处理：https://gocn.vip/question/91
 1. golang中的nil
     1. https://studygolang.com/articles/9506
 1. golang mutex和RWMutex
@@ -2173,3 +2171,7 @@ worker.cancel();
 106. left join和inner join等笛卡尔积还是要继续熟悉
 107. 交叉编译
 108. study later:elasticsearch
+
+# problem but ignore
+1. 用mac的默认shell切换到分支下的某个目录，然后切换分支再切换回来，这个时候ls显示为空，但是目录下是有文件的，而且其他命令可以访问到目录下的文件。然后用`cd ../current_path`切换到当前目录，ls又能显示里面的文件了。
+    1. 怀疑ls有缓存之类的东西，应该跟它的实现原理有关,how it works?

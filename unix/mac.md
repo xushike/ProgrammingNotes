@@ -22,9 +22,11 @@
 .app直接点开就可以运行，类似于win上面的exe，而.dmg需要安装
 
 ### 3.7 login shell 和 non-login shell，.bash_profile和.bashrc
-为什么会有login shell和non-login shell：会读取不同的配置文件。但mac的shell和linux不同，mac是每个新的shell都默认为login shell，而且只加载`.bash_profile`。
+为什么会有login shell和non-login shell：会读取不同的配置文件。但mac的shell和linux不同，mac是每个新的bash shell（默认shell）都默认为login shell，而且只加载`.bash_profile`。如果是zsh shell，则加载`.zshrc`
 
 # 二 安装配置
+1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
+
 # 三 基础
 ## 1 快捷键
 mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位于右上角,用来弹出光驱,现在没有光驱了所以也就不需要了.现在的MBA和RMBP都没有该键.
@@ -90,15 +92,36 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 
 常用命令:
 1. 搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
+    1. 使用`info`时，没安装的会提示`not installed`
 2. 更新brew自身：`brew update`
 3. 更新软件:`brew upgrade name`，不加name则是更新所有可以更新的软件。
     1. 清理旧版本:`brew cleanup`
 2. 显示安装的服务：`brew services list`
 3. 安装服务的启动、停止、重启：`brew services start/stop/restart serverName`
 
-关于brew cask和brew：brew主要装命令行工具，偏开发，而brew cask主要装带GUI的工具和驱动，偏应用。brew cask是brew的一个官方源。两者应该是相辅相成的关系。
+关于brew cask和brew：brew主要装命令行工具，偏开发，而brew cask主要装带GUI的工具和驱动，偏应用。而且brew cask是brew的一个官方源。两者应该是相辅相成的关系。
+
+关于安装jdk：官网上的jdk是pkg格式的，和.app不一样，且没有自动卸载方式。可以用brew cask安装，似乎管理更加方便。
 
 (待研究)：brew安装时的网络问题
+
+### 2.8 iterm2和on-my-zsh
+两者结合食用，效果不错。参考：https://www.cnblogs.com/xishuai/p/mac-iterm2.html
+
+#### iterm2
+设置：
+1. 新开标签页时切换到当前目录（默认是HOME目录）
+2. 修改option+左右箭头为移动一个单词（默认是输入字符）
+3. 设置代理。。。
+
+#### on-my-zsh
+主题颜色不错，很多自定义配置，自带git支持（命令提示，分支高亮）
+配置：
+1. 下载主题
+2. 配置Meslo字体
+2. 设置命令高亮
+3. 设置自动补全。注意颜色可能和背景颜色相似，可以设置为“586e75”
+5. 隐藏用户名和主机名
 
 # 四 高级
 ## 1 FSEvents

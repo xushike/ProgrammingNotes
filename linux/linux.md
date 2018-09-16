@@ -25,10 +25,12 @@ shift+insert:粘贴
 4. 强制结束:`ctrl+c`(?)
 5. 挂起:`ctrl+z`,相当于暂停?然后可以用fg和bg在前后台之间切换
 6. 文件结束EOF:`ctrl+d`,不是发送信号,而是表示一个特殊的二进制值.比如在中断`wc`统计命令,然后输入任意字符之后`ctrl+d`就表示输入结束,也能用于退出终端,能退出其他程序?
+
 ### 1.2 关于gcc
 >网友的回答：gcc 最开始的时候是 GNU C Compiler, 如你所知，就是一个c编译器。但是后来因为这个项目里边集成了更多其他不同语言的编译器，GCC就代表 the GNU Compiler Collection，所以表示一堆编译器的合集。 g++则是GCC的c++编译器。
 现在你在编译代码时调用的gcc，已经不是当初那个c语言编译器了，更确切的说他是一个驱动程序，根据代码的后缀名来判断调用c编译器还是c++编译器 (g++)。比如你的代码后缀是*.c，他会调用c编译器还有linker去链接c的library。如果你的代码后缀是cpp, 他会调用g++编译器，当然library call也是c++版本的。
 当然我说了这么多你可能感到有些混乱，没关系，你就把gcc当成c语言编译器，g++当成c++语言编译器用就是了。
+
 ### 1.3 学习linux的一些网站
 1. 查询linux命令：[http://man.linuxde.net/](http://man.linuxde.net/)
 2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
@@ -45,6 +47,7 @@ shift+insert:粘贴
 2. 知乎Han:
     1. 《The Linux Command Line》(豆瓣 9.3分)，中文名“快乐的linux命令行”,作为入门和手册,中文翻译github地址:[http://billie66.github.io/TLCL/book/](http://billie66.github.io/TLCL/book/)
     2. 《The Pragmatic Programmer》（豆瓣 8.9分），中文名“程序员修炼之道”
+
 ### 1.5 动态链接和静态链接
 动态链接和静态链接的区别:前者不会把依赖编译进程序里，而后者会；所以前者编译的程序占用更小，在程序有相同依赖时更节约空间，而后者
 
@@ -99,6 +102,7 @@ shift+insert:粘贴
         不要使用空格,支持`.`,`-`和`_`
 ### 1.9 关于distribution
 distribution一般是指发行版的意思，Linux真正意义上说只是一个内核，我们通常使用的都是基于Linux内核的发行版了。如常见的Linux发行版有：Ubuntu、Fedora、Suse、ArchLinux等
+
 ### 1.10 关于标准输入输出
 执行shell命令时会自动打开三个标准文件:
 - `stdin`标准输入文件,程序从中得到输入,默认连接到键盘

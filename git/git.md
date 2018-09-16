@@ -193,13 +193,15 @@ ci = commit
 editor = vim
 ```
 
-### 4.2 获取和设置配置
+### 4.2 设置
 不带级别的话默认是`--local`,比如`git config color.ui true`，默认是设置到当前git仓库的config文件中，如果没有该文件，会提示出来且不会自动创建该文件。如果在设置时加上了`--global`和`--system`，会在没有对应config文件的情况下自动创建对应的config文件。
 
 常用设置：
-1. 为命令设置别名:比如`git config --global alias.st status`，设置后就可以用`st`代替`status`
+1. 为命令设置别名:比如`git config --global alias.st status`，设置后就可以用`st`代替`status`。如果想使用非git命令，需要在前面加上叹号`!`，如`git config --global alias.visual '!gitk'`
 
 ### 4.3 配置自动补全
+win是安装git就自带了的。
+
 mac按以下步骤操作：
 1. 下载git-completion.bash：https://github.com/git/git/blob/master/contrib/completion/git-completion.bash
 2. 将git-completion.bash放到该目录下：`~/.git-completion.bash`
