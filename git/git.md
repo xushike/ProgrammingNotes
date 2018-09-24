@@ -17,7 +17,10 @@ git是linus用c写的
 ### 3.2 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)
 
-从git的官方中文book来看,三棵树是:工作目录(Working Directory,似乎对应我们说的工作区work space),暂存区(Index)和HEAD(当前分支所在的commit).感觉这三个的名字跟我之前理解的不太一样,暂时还是以官网的为准吧.
+从git的官方中文book来看,三棵树是:
+- 工作目录/工作区(Working Directory或work space)
+- 暂存区(Stage或Index)
+- HEAD(当前分支所在的commit).
 
 ### 3.3 git支持多种协议:https,git和ssh
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
@@ -362,7 +365,7 @@ mac按以下步骤操作：
 - `--mixed`(不带参数时的默认参数):
     - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD从当前commit指向某个commit,**仅仅重置暂存区**,即丢弃当前暂存区,然后将当前commit到某个commit之间的所有修改移动到暂存区,工作区的内容保持不变
     <!-- 也意味着可以直接`git commit`重新提交对本地代码的修改. -->
-    - 也可以作用于单个文件(待测试)
+    - 也可以作用于单个文件,取消暂存：`git reset file_name`
 - `--soft`:保留暂存区和工作区,同时将当前commit到某个commit之间的所有修改移动到暂存区
 
 - `--hard`:重置暂存区、工作区及版本库,也就是说工作区和暂存区以及某个commit之后的所有修改都会丢失,慎用!
@@ -455,7 +458,16 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 - develop:开发
 - feature:功能分支
 
-## 9 多人协作
+## 9 git tag
+指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
+
+既然有commitid为什么还要git tag：tag可以取有意义的的名字，比commitid更易记住。
+
+查看所有标签：`git tag`，根据tag_name查看标签`git show tag_name`
+创建标签：`git tag v1.0`，在某个commitid上打标签：`git tag tag_name commit_id`
+1. 参数`-m`：指定标签的说明文字。
+
+## 10 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
     1. 参数`--author="[user_name]"`:根据名字筛选
 2. 根据commit来筛选:
@@ -466,11 +478,11 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
     最后，如果你添加的任何代码更改会使项目发生极大的变化，则应更新 README 文件以向其他人说明此更改。
 4. pull request
 
-### 9.1 规范
+### 10.1 规范
 1. 多人协作时，不要各自在自己的 Git 分支开发，然后发文件合并。正确的方法应该是开一个远程分支，然后一起在远程分支里协作。不然，容易出现代码回溯（即别人的代码被覆盖的情况）
 
-## 10 不常用命令
-### 10.1 git fsck:文件系统检测
+## 11 不常用命令
+### 11.1 git fsck:文件系统检测
 `git fsck --lost-found`:找回git add过但是已经不存在文件中的内容(待测试)
 
 # 四. 高级
@@ -631,3 +643,5 @@ RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 
 
 9. [廖雪峰的git](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840202368c74be33fbd884e71b570f2cc3c0d1dcf000),有空整理完
 10. 网友的一些总结,感觉写的不错:[http://classfoo.com/ccby/article/j4HZbSN](http://classfoo.com/ccby/article/j4HZbSN)
+11. Git的奇技淫巧🙈：http://www.cnblogs.com/xueweihan/p/5703144.html
+12. https://blog.csdn.net/mrleeapple/article/details/50488455

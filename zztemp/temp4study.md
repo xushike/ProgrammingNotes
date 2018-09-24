@@ -2,15 +2,10 @@
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
 1. 读取文字生成markdown格式的表格
-1. json的tags是转化还是非转化的时候用到？
 2. EXTRACT(epoch FROM sku.time)::bigint
 1. goroutine，channel，实现通知
     1. select
     2. test中的init方法会被初始化吗
-1. golang版本切换后需要重新编译包之类的吗
-    1. 还有vscode的引用
-1. record的定义获取里面的值的方法
-    1. 直接获取和分开获取以及record获取的显示区别
 1. golang协程串行
 1. golang debug日志
 1. pg数据库的备份和赋值
@@ -35,7 +30,6 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
-1. git tag
 1. iterm2命令还是golang test有缓存？我修改了之前的命令，结果还是运行的之前的命令
 1. network
     1. book：计算机网络
