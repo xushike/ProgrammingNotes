@@ -73,6 +73,7 @@
     * [hydra](golang/hydra.md)
     * [xiaomei](golang/xiaomei.md)
     * [go-crawler](golang/go-crawler.md)
+    * [goroutine](golang/goroutine.md)
 * [ios](ios/ios.md)
 * [ssh&ssm](ssh/ssh.md)
     * [1.spring](ssh/spring.md)

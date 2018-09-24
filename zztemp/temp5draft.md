@@ -1,1 +1,1 @@
-select jsonb_object(array_agg(key),array_fill('-1'::text,array[array_length(array_agg(key),1)])) from  (select json_object_keys(info) from orders where id =1) as tmp(key);
+ ✘  ~/go/src/hztl3.com/goods-stocks/models/orders/carts   feature/xushike_20180919_batch_add_carts ●  go test -v index_test.go index.go cart_number.go cart.go check_qty.go type.go list.go list_for_order.go sku_info.go check_perm.go list_test.go cart_test.go

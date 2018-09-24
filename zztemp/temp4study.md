@@ -1,13 +1,23 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
+1. 读取文字生成markdown格式的表格
+1. json的tags是转化还是非转化的时候用到？
+2. EXTRACT(epoch FROM sku.time)::bigint
+1. goroutine，channel，实现通知
+    1. select
+    2. test中的init方法会被初始化吗
+1. golang版本切换后需要重新编译包之类的吗
+    1. 还有vscode的引用
+1. record的定义获取里面的值的方法
+    1. 直接获取和分开获取以及record获取的显示区别
 1. golang协程串行
 1. golang debug日志
 1. pg数据库的备份和赋值
 1. pg命令行的提示为什么有时候又有时候没有
 1. golagn命令行直接加上环境变量，然后os.GetEnv()可以直接
 1. 死锁
-1. go test显式覆盖率等
+1. go test显式覆盖率等git 
 1. golang如何判断两个方法相等
 1. golang对引用，&和值类型的修改
     1. 传指针和传引用的区别，只有细节上的不同？
@@ -25,6 +35,31 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
+1. git tag
+1. iterm2命令还是golang test有缓存？我修改了之前的命令，结果还是运行的之前的命令
+1. network
+    1. book：计算机网络
+    2. rfc
+1. vscode debug
+1. 数据的锁，事务隔离级别，mvvc
+    1. 排他锁，互斥锁
+1. ssh
+    1. mosh：断续连接
+    2. 工业级代码
+2. mac下什么时候需要sudo权限，访问特定文件夹的时候需要吗？
+3. npm的包管理策略：如何管理不同的依赖，不同的版本等
+    1. 以及npm自身各版本的区别
+2. github上各种小图标和文字表示什么
+    1. 比如语言，覆盖率等
+2. 抢购这些是怎么做的
+2. 迪杰斯特拉算法（Dijkstra）
+2. 数据库拖库会怎么样
+    1. 防止sql注入：目前用的转义
+        1. 为什么转义之后就可以防了？
+2. sourcegraph
+2. https://www.jianshu.com/p/ffeeb3d0efd6
+2. 防盗链
+2. 全文索引和分词
 2. 如何ssh连接其他mac，比如连接家里的mac
 2. 测试端口通不通：https://www.jb51.net/article/78082.htm
 2. 将各种设置同步到一个地方，切换环境的时候直接从里面拉取就行了
@@ -50,6 +85,8 @@
 1. golang
     1. 待学习，单元和性能测试：https://blog.csdn.net/code_segment/article/details/77507491
     1. goroutine的错误处理：https://gocn.vip/question/91
+    1. 项目中utils.postjson序列化的实现
+        1. 连`[]*row`这种类型的值都能打印
 1. golang中的nil
     1. https://studygolang.com/articles/9506
 1. golang mutex和RWMutex

@@ -2,7 +2,7 @@
 [TOC]
 # 一 概述
 # 二 安装配置
-1. 安装了npm之后，直接`npm install gitbook-cli -g`全局安装gitbook
+1. 安装:不要执行`npm install -g gitbook`，而是执行`npm install gitbook-cli -g`，后者会自动将gitbook-cli和gitbook都安装上。
 2. 安装了gitbook-cli之后执行gitbook的命令
     1. 如果没有安装node，此时会显示node的提示
     2. 然后会显示installing gitbook 3.2.3，等它装完了之后命令才执行(大概安装1至5分钟)（安装的这个算不算npm模块呢？待补充）

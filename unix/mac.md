@@ -84,7 +84,7 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
 ### 2.7 Homebrew
 mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件都被约束在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
 
-安装:官网脚本进行安装,我安装时卡在`HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
+安装:官网脚本进行安装,我安装时卡在`     HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
 
 配置代理的几种方法:
 1. 如果网速较慢,可考虑使用代理.brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
@@ -112,7 +112,11 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 设置：
 1. 新开标签页时切换到当前目录（默认是HOME目录）
 2. 修改option+左右箭头为移动一个单词（默认是输入字符）
+3. 默认的ctrl+tab切换tabs的顺序是"Cycle Tabs Forward/Backward"，和普通的tab切换顺序不太一样，感觉顺序有点乱。修改为"next/previous tab"
 3. 设置代理。。。
+
+操作：
+1. 块选中:`option+cmd`
 
 #### on-my-zsh
 主题颜色不错，很多自定义配置，自带git支持（命令提示，分支高亮）
