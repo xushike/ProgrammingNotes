@@ -3,12 +3,14 @@
 2. 置顶：项目整体的把控
 3. 置顶：对专业不能只是熟悉，最好做到清晰，言之有物。做到能
 
+1. apt install -f 连内核升级时需要的依赖也能安装？
 1. mac vscode 更新的问题
 1. zsh查找下一个的反人类设计
 1. 老版本的more不能向上翻页？more from util-linux 2.23.2    centos 的more版本不能向上翻页？
 1. github年度报告：增长最快的开源项目
 1. 三表查询时的问题
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
+    1. 如何让psql查询出来的结果美观排版
     1. pgsql 未使用order时的默认顺序，函数的默认顺序
     1. limit对count不生效
     3. 切换到前一个数据库的快捷写法有吗。实测用`-`还是当前
@@ -27,6 +29,7 @@
     7. 拍他锁、共享锁for update，for share
         1. 行级锁
     8. `update table_name t set xxx`中，即时设置了别名，xxx也不能写成`t.xxx`
+    9. 视图
 1. go
     1. go vendor的使用：https://github.com/kardianos/govendor
         1. go官方出的依赖管理叫什么，好用的话后面要切到官方的
@@ -133,6 +136,7 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
+1. 2147483647
 1. go编译器的学习：
     1. go tool compile -help可以查看所有我们可以传递给编译器的参数。禁用编译器优化和内联优化，你可以使用下面的参数：`go build -gcflags="-N -I"`
 1. 同步锁
