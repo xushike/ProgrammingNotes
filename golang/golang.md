@@ -3,14 +3,15 @@
 # 一 概述
 ## 1 简介
 ### 1.1 优点
-1. Go语言的标准库强大且完善，通常被称为语言自带的电池（Batteries Included）
-1. Go语言在语言层面解决软件工程问题的设计哲学
+1. Go语言的标准库强大（难以置信的强大）且完善，常被称为语言自带的电池（Batteries Included）
+1. Go语言在语言层面解决软件工程问题的设计哲学（比如？）
 1. 编译成无依赖二进制:copy部署很方便,拷贝就能跑了.(这也是很多人选go的最大理由)
 1. 协程
 1. 稳定性:go提供了软件生命周期各个环节的工具(开发,测试,部署,维护等)
-5. Go 语言支持交叉编译.比如说你可以在运行 Linux 系统的计算机上开发运行下 Windows 下运行的应用程序
+5. Go 语言支持交叉编译.比如说你可以在运行 Linux 系统的计算机上开发运行下 Windows 下运行的应用程序。
+    1. 网友：利用 docker 实现跨平台编译, Mac 上开发好后直接用 docker 进行编译, 然后扔到服务器就好.（带验证）
 6. 它是第一门完全支持 UTF-8 的编程语言.这不仅体现在它可以处理使用 UTF-8 编码的字符串，就连它的源码文件格式都是使用的 UTF-8 编码。Go 语言做到了真正的国际化。原生支持Unicode，它可以处理全世界任何语言的文本。
-7. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行
+7. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行（待测试）
 8. 有C基础，学Golang非常轻松
 
 ### 1.2 缺点
@@ -169,10 +170,10 @@ fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]
 - `new(type)`：为变量分配内存，将该内存置零但不初始化该内存，返回指针。对于值类型，它是零值初始化，和var一样；对于引用类型，它不等于nil（不知道为啥，和其他语言不同，有点难理解）。
 - `make(type,args)`：分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
 
-### 3.15 三个点
+### 3.15 三个点...
 它是语法糖，有两种用法:
-1. 函数有多个不定参数
-2. slice可以被打散进行传递
+1. 函数有多个不定入参（不能用于出参）
+2. slice可以被打散进行传递：比如不定入参和`append()`处。
 
 ### 3.16 go源码文件
 Go源码文件包括三种：命令源码文件、库源码文件和测试源码文件
@@ -192,9 +193,16 @@ Go源码文件包括三种：命令源码文件、库源码文件和测试源码
     1. 比如想看runtime包，可以访问：https://golang.org/pkg/runtime/
 5. GO入门指南：https://www.kancloud.cn/kancloud/the-way-to-go/72675
 6. go设计模式：https://books.studygolang.com/go-patterns/
+7. 大牛翻译的标准库中文文档：http://cngolib.com/
+8. golang官方
+    1. 博客：https://blog.golang.org/
+    2. playground：https://play.golang.org/
 
-## 6 相关工具
+## 6 相关项目
 1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb
+2. swarm
+3. docker
+4. k8s
 
 # 二 安装配置
 go的环境变量说明:
@@ -727,7 +735,7 @@ slice := []stirng{}
         append(slice1[:index], ele)
         // 当index<slice1的容量时，原index位置的元素被替换成ele；当index>=slice1时，返回的是一个新的切片，对slice1没有影响。
         ```
-3. 切片的迭代，和数组一样:
+3. 切片的迭代。迭代的是`len()`而不是`cap()`:
     1.  使用关键字`range`,第一个返回值是索引，第二个返回值是值的副本（注意是值而不是引用）
 
         ```go
@@ -758,7 +766,7 @@ slice := []stirng{}
     ```
 5. 在函数间传递切片(难点):
     1. 如果入参类型是`s []int`，传递的就是切片本身(可以看作是引用，64位上24字节)，对传入的s整个赋值不会影响原切片，但是对s里的元素进行修改的话，实际是修改的原切片，规则和js里的数组类似。
-    2. 如果入参类型是`s *[]int`，传递的就是切片本身的引用（可以看作是引用的指针），对传入的s整个赋值不会影响原切片，但是对s里的元素进行修改的话，实际是修改的原切片，规则和js里的数组类似。但是对`*s`
+    2. 如果入参类型是`s *[]int`，传递的就是切片本身的引用（可以看作是引用的指针），对传入的s整个赋值不会影响原切片，但是对s里的元素进行修改的话，实际是修改的原切片，规则和js里的数组类似。但是对`*s`（待补充）
 6. 切片的长度和容量:`len()`:返回切片的长度，`cap()`:返回切片的容量
 
 #### 2.2.3 映射/字典map
@@ -799,7 +807,7 @@ m["m1"] = m1
 
 带接收者的函数：go的结构体跟面向对象的编程语言中一个无方法的轻量级类一样，它在go里有着重要的地位，但Go中没有类的概念，要实现类的方法的功能需要使用带接收者的函数。
 
-Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。看起来可以实现类似java继承的功能，但实测仍然有些问题，困惑后明白，：不要强行用java的方式去使用go。
+Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。灵活使用可以实现类似java继承的功能，但不要强行用java的方式去使用go。
 
 重载：比如下面的Student和Human都有phone字段，那么访问Student中的phone用`student.phone`,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
 
@@ -836,6 +844,54 @@ emp3 := struct {
 }
 
 fmt.Println("Employee 3", emp3)// 输出:Employee 3 {Andreah Nikola 31 5000}
+
+// 方法4：使用其他结构体来声明新的结构体
+type SortJson struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+}
+type SortJsonSlice []SortJson
+
+dj := SortJsonSlice{
+		{Name: "a", Count: 1},
+		{Name: "c", Count: 3},
+		{Name: "b", Count: 2},
+		{Name: "f", Count: 6},
+		{Name: "e", Count: 4},
+        {Name: "g", Count: 7}}
+
+func (s SortJsonSlice) Len() int {
+   return len(s)
+}
+
+func (s SortJsonSlice) Swap(i, j int) {
+   s[i], s[j] = s[j], s[i]
+}
+
+func (s SortJsonSlice) Less(i, j int) bool {
+   return s[i].Count > s[j].Count
+}
+```
+
+实现继承的例子：以上面的方法4为例
+```golang
+// 上面的方法4是倒序，如果我想按其他规则排序呢，比如根据count正序
+// 将 Less 绑定到 新的结构体OrderCount 上  
+type OrderCount struct{  
+   SortJsonSlice
+}  
+func (s OrderCount) Less(i, j int) bool {  
+   return s.SortJsonSlice[i].Count < s.SortJsonSlice[j].Count  
+}
+
+// 如果要添加一个排序方式 根据 Name 排序:
+type OrderName struct{  
+   SortJsonSlice
+}  
+func (s OrderCount) Less(i, j int) bool {  
+   return s.SortJsonSlice[i].Name < s.SortJsonSlice[j].Name
+}
+// 这样只要给每种排序方式重写一个 Less 方法，而不用写全部的代码，实现了类似java继承的功能
 ```
 
 赋值的几种方法:
@@ -854,6 +910,7 @@ a := struct1{}
 ms := struct1{10, 15.5, "Chris"}
 human := Human{name:"tom"}
 ```
+
 字段(fields)：小写开头的话只能在当前包访问，要想其他包也能访问可以使用
 ```golang
 func GetXXX(){
@@ -919,7 +976,12 @@ for index,ele := range xxx {
 注意：
 1. for后面的三个语句(initialization; condition; post)都可以省略，此时可以看做go的`while`
 2. 和其它语言中的`break`和`continue`一样，`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会中跳过当前循环，并开始执行下一次循环。
-3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map
+3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map。
+
+优化：因为index后面的ele是元素的副本而不是指针，元素很大的话开销会比较大，有两种优化思路。
+1. 声明成这样`xxx := make([]*ele,0)`，这样的话传递的虽然还是值，但是是指针的值了，开销更小。
+2. 直接用下标更新：`xxx[index]`
+
 ### 3.2 if else
 
 ### 3.3 switch
@@ -1082,7 +1144,7 @@ func add(x, y int) int {
 golang 团队一直引以为傲的就是这个 M 对 N 的调度器，这种 M 对 N 调度器在业界也算是比较先进的。
 2. 网友:协程不是异步回调，协程是状态的保存和切换，这种思想很容易写出异步代码，实现同样的异步功能， c++或者 java 之类的写到你想吐
 
-### 7.1 goroutine
+### 7.1 goroutine（详见goroutine.md）
 是一种比线程更加轻盈、更省资源的协程.使用 4K 的栈内存就可以在堆中创建它们。因为创建非常廉价，必要的时候可以轻松创建并运行大量的协程（在同一个地址空间中 100,000 个连续的协程）。协程的栈会根据需要进行伸缩，从而动态的增加（或缩减）内存的使用，不会出现栈溢出，所以coder不用关心栈的大小；栈的管理是自动的，但不是由垃圾回收器管理的，而是在协程退出后自动释放。Go 运行时可以聪明的意识到哪些协程被阻塞了，暂时搁置它们并处理其他协程。
 
 存在两种并发方式：确定性的（明确定义排序）和非确定性的（加锁/互斥从而未定义排序）。Go 的协程和通道理所当然的支持确定性的并发方式（例如通道具有一个 sender 和一个 receiver）
@@ -1449,7 +1511,7 @@ go run *.go
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
 
 ### 1.11 go test（重要）
-轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。
+轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
 
 对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
 
@@ -1459,11 +1521,12 @@ go run *.go
 
 对单个或多个文件进行测试（file tests）：形如`go test -v a_test.go b_test.go ...`，命令程序会为指定的源码文件生成一个虚拟代码包“command-line-arguments”，此时如果源码文件调用了其他包中的函数而没有声明的话，而需要加入对应的源码文件。比如a_test.go中调用了a.go中的Foo()方法，则会出现`undefined：Foo`错误，此时应该把a.go也加入进去`o test -v a_test.go a.go`
 
-对单个或多个函数进行测试：加上`-test.run methodName`，形如`go test -v -test.run TestBar bar_test.go`，和上面一样会被指定虚拟包。(好像不需要引用？)
+对单个或多个函数进行测试：加上`-test.run methodName`，形如`go test -v -test.run TestBar bar_test.go`，和上面一样会被指定虚拟包,但是不需要加入对应的源码文件。
 
+cached：go1.10开始在go test中引入了cached，规则参考：http://ju.outofmemory.cn/entry/344575，想关闭可以加上`-count=1`参数
 
 参数:
-1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，简单形式如下，
+1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，如，
 
     ```bash
     === RUN   Testxxx
@@ -1472,12 +1535,18 @@ go run *.go
     ```
 
 `t *testing.T`的方法:
-1. `Fatal(err)`
-2. `Log()`
-3. 跳过当前测试的方法`Skip()`
+1. `Log()`
+2. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
+3. `FailNow()`:将当前测试标识为失败并停止执行该测试， 在此之后， 测试过程将在下一个测试或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
+4. `Error(args)`：相当于在调用 `Log()` 之后调用 `Fail()` 
+5. `Fatal(err)`:调用 Fatal 相当于在调用 Log 之后调用 FailNow
+3. 跳过当前测试的方法`Skip()`：相当于调用`Log()`之后调用`SkipNow()`
 4. 设置并发执行的测试数量`-parallel n`
 5. 竞争探测`-race`：用于探测高并发的死锁...
 6. `-cpu`
+
+注意：
+1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
 
 ## 2 其他与go有关的工具
 ### 2.1 Cgo
@@ -1567,12 +1636,34 @@ Go类型和JSON类型的对应关系如下：
 4. 指针在编码的时候会输出指针指向的内容，而空指针会输出null(待补充)
 5. 多个相同名字的字段：假设结构体a里嵌套有b、c两个结构体，然后b和c有相同的字段Name，如果两个Name都没有tag或者两个Name的tag所声明的json名称一样，那么生成json的时候两个Name都不会被编码；如果b和c中有Name字段，a里有Name字段（不在b或c中），那么以a中的Name字段会覆盖掉（不是替换）b和c中的。这些特性可实现以下技巧：
     1. 临时忽略某些字段：
+6. golang json反序列化的时候，只会反序列化存在的字段，不存在的不会管。这个特性可以实现默认值的设置：
+
+    ```golang
+    type Info struct {
+        A int `json:"a"`
+        B int `json:"b"`
+        C int `json:"c"`
+    }
+
+    i1 := `{"a":11,"b":22}`
+    i2 := `{"a":11,"b":22,"c":33}`
+    info := Info{
+        C:100
+    }
+    
+    json.Unmarshal([]byte(i1),&info)    // info.C 为 100
+    json.Unmarshal([]byte(i2),&info)    // info.C 为 33
+    ```
+7. 反序列化的时候是大小写无关的
 
 ## 5 go连接其他数据库
 postgresql：
 1. https://godoc.org/github.com/lib/pq
 
 ## 6 正则
+### 6.1 常用
+1. 查找汉字：`\p{Han}`
+2. 以xxx开头：`^xxx`，以xxx结尾`xxx$`（待验证）
 
 ## 7 位运算/移位运算
 位运算主要用于底层性能优化，或者一些tricks，比如用0和1来表示两种状态，这样int8类型就可以表示16中状态了。
@@ -1611,6 +1702,26 @@ postgresql：
 获取整数的最大值：对于无符号整数形如`^uint(0)`，对于有符号整数（最大值是首位0，其余1）形如`^uint(0) >> 1`。
 
 有符号类型的负数的十进制大小：对于有符号类型，如果最高位是1，表示是负数，根据补码规则，应该取反加1，比如有符号两位的`10`,取反加1是`10`,绝对值是`2`因为是负数，所以是`-2`
+
+## 8 序列化/串行化（serialization）和反序列化
+参考：https://blog.csdn.net/fengfengdiandia/article/details/79986237
+
+有四种方法：
+
+| 方式      | 优点             | 缺点 |
+| -------- | ---------------- | --- |
+| protobuf |支持多种类型，性能高 |需要单独存放结构|
+| json     |支持多种类型        |性能低于 binary 和 protobuf|
+| binary   |性能高             |不支持不确定大小类型 int、slice、string|
+| gob      |支持多种类型	    |性能低|
+
+### 8.1 protobuf
+参考：
+1. https://www.ibm.com/developerworks/cn/linux/l-cn-gpb/index.html
+2. https://developers.google.com/protocol-buffers/docs/gotutorial
+
+Varint（待补充）
+
 
 # 五 经验
 ## 1 go编程思想和习惯
@@ -1693,6 +1804,14 @@ func main() {
 
 ### math
 1. `Floor()`:向下取整。golang没有提供四舍五入的内置函数，自己实现如下：`math.Floor(xxx+0.5)`
+
+### net
+
+#### net/url
+1. `ParseRequestURI(string) *URL,err`：解析绝对URL到一个URL结构体中
+2. `ParseQuery(string) Values,err`：将query解析成Values结构体，传入的参数必须是url问号后的path
+3. `*URL.Query() Values`：里面调的`ParseQuery()`方法，只不过忽略了错误
+4. `Values.Set()、Get()、Add()、Del()`
 
 ### os
 os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．

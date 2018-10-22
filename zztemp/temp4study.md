@@ -1,6 +1,109 @@
 # temp4study
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
+3. 置顶：对专业不能只是熟悉，最好做到清晰，言之有物。做到能
+
+1. mac vscode 更新的问题
+1. zsh查找下一个的反人类设计
+1. 老版本的more不能向上翻页？more from util-linux 2.23.2    centos 的more版本不能向上翻页？
+1. github年度报告：增长最快的开源项目
+1. 三表查询时的问题
+1. psql默认输出调用的系统的什么tool？more不能翻页吗
+    1. pgsql 未使用order时的默认顺序，函数的默认顺序
+    1. limit对count不生效
+    3. 切换到前一个数据库的快捷写法有吗。实测用`-`还是当前
+    4. 锁的种类级别，查询的时候会锁吗
+    5. set transaction isolation level serializable
+    6. exist的写法
+
+        ```sql
+        update company_skus as sku set alliances = alliances || '{"21": true}'
+        where sku.company_id = 101 and sku.id in (405,404) and sku.alliances @> '{"21": false}' and exists (
+            select 1 from alliance_stocks
+            where alliance_id = 21 and alliance_part_id = sku.alliance_part_id
+        and property = sku.property and qty > 0
+        )
+        ```
+    7. 拍他锁、共享锁for update，for share
+        1. 行级锁
+    8. `update table_name t set xxx`中，即时设置了别名，xxx也不能写成`t.xxx`
+1. go
+    1. go vendor的使用：https://github.com/kardianos/govendor
+        1. go官方出的依赖管理叫什么，好用的话后面要切到官方的
+    2. go的嵌入：还有种区分内嵌与子类的重要手段。当内嵌一个类型时，该类型的方法会成为外部类型的方法，但当它们被调用时，该方法的接收者是内部类型，而非外部的。
+        1. 上面这句话怎么理解。有相同方法时，优先调用外面的方法？方法的接收者是内部的？
+        1. 和java或者c++的继承有什么区别
+
+    3. 网友：go 的所有 io 操作（包括数据库查询， socket ，文件等）是不是没有阻塞的说法，一旦进入等待马上让出 cpu 给别的协程，等 io 的数据返回了协程调度又恢复执行了呢？
+        1. 其他网友回答：文件操作至少 windows 是直接使用的系统阻塞调用，但是 go 运行时会自动再启动一个系统线程来提供给其他 go 协程，所以可以当作是。
+        2. 网友2：流的操作系统也就只有 windows 可以读写文件达到也达到异步， IO 操作请使用 windows 特有的 IOCP
+        3. 网友3：搞 compiler 么有搞 ai 好玩么 23333
+    4. golang debug的工具链：可以通过 HTML 暴露程序内部状态，比如说一共有多少个 goroutine 在跑，他们各自的调用栈和当前的状态。
+    5. go 自带的 interface+ auto generate VS 泛型
+    6. string []byte 的转换是会拷贝的吗
+
+1. git如何 正确查看本地和远程存在的分支
+1. golang查看内置函数的方法
+    1. 比如append，第二个参数可以不要嘛
+
+1. psql的left join等的各种写法
+    1. values常量表的写法：`(values (1),(2)) as person(id)`
+1. git fetch
+1. mac vscode 安装后移动到applications里 后更新就失效了了？
+1. session和cookie
+1. 并发
+1. git branch -r或者-a能看到被删除的分支？
+    1. 如何只看存在的分支
+    2. 如何查看合并到master的分支
+1. pgsql 插入的时候如果第一个做了类型转换，后面的也会跟着做类型转换,比如这儿的jsonb？
+
+    ```sql
+    values 
+    (3, '{"31":{"102":0,"110":0,"101":0}}'::jsonb, 12, '正常'),
+    (4, '{"31":{"102":0,"110":0,"101":0}}', 12, '无包装'),
+    ```
+1. 详细研究下vscode里面go的设置，使其更好用。
+1. go test -race 的竞争检车到底是干嘛 的，对电商通知那个有用吗
+1. https://blog.csdn.net/erlib/article/details/52703165
+1. full join，inner join
+1. golang range的顺序
+1. go test启动的协程会在什么时候退出？
+1. 印象笔记支持md了？
+1. 导出xxx.sql，xxx.csv，xxx.dump,xxx.tar,二进制文件和普通文件的区别
+1. 数据库修改记录？
+1. 将复制那个写成脚本
+1. jsonb_set的实际例子，感觉对类型转换的理解还是不够,比如要被替换的值是字符串
+1. golang查看进程号、线程号？
+1. 行级锁 for udpate
+1. 防御性编程指的是什么，把用户想象成恶意用户？限制各种边界条件？
+    1. 什么情况下不需要防御性编程
+1. 什么情况下回出现io.EOF，post请求的 时候也会出现？
+1. query和form的区别
+1. shell能接受最大多少的输入和输出，比如给它1G的输出，会崩掉吗
+1. 高内聚低耦合的实际例子理解
+1. 同时跑多个测试用例，怎么知道，几个成功，几个失败
+    1. 如何查看mac是几核几CPU
+1. golang里有相同底层数据类型的算是同一个数据类型吗
+1. 各数据类型在各种情况下的初始值
+1. 结构体中的切片，map等默认是nil吗
+1. &结构体.字段名
+1. url.Query()
+1. 消息队列的原理
+    1. 和锁的区别
+1. 信号量，多线程，锁，自旋锁
+1. golang *string
+    1. *(*xxx)和xxx的区别
+    1. 	defaultMaxMemory = 32 << 20 // 32 MB
+1. decimal包的实现原理
+1. git checkout origin会怎么样？
+1. 对git的理解还是不够啊
+1. 数据库的垃圾回收：
+1. git如何 批量清除本地存在，但远程已经被删了的分支
+    1. git如何查看二进制文件的创建者
+1. go test 会使用缓存吗
+    1. slice，map等声明在返回数据类型里是怎么初始化的，nil还是？
+1. go
+    1. []struct和[]*struct
 1. 读取文字生成markdown格式的表格
 2. EXTRACT(epoch FROM sku.time)::bigint
 1. goroutine，channel，实现通知
@@ -30,7 +133,13 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
-1. iterm2命令还是golang test有缓存？我修改了之前的命令，结果还是运行的之前的命令
+1. go编译器的学习：
+    1. go tool compile -help可以查看所有我们可以传递给编译器的参数。禁用编译器优化和内联优化，你可以使用下面的参数：`go build -gcflags="-N -I"`
+1. 同步锁
+1. DOM编程：DOM的渲染顺序
+1. rpc
+1. golang远程方法调用
+1. utf-8等的区别，go是用的哪一种
 1. network
     1. book：计算机网络
     2. rfc
@@ -40,6 +149,12 @@
 1. ssh
     1. mosh：断续连接
     2. 工业级代码
+2. java 和kotlin:coroutine
+2. mac duti
+2. 无锁队列，并行，非阻塞，无栈有栈协议，上下文切换，actor ，csp这些黑话
+2. make和makefile
+2. golang的包管理工具：glide
+    1. 如何检测golang的string里具体的内容
 2. mac下什么时候需要sudo权限，访问特定文件夹的时候需要吗？
 3. npm的包管理策略：如何管理不同的依赖，不同的版本等
     1. 以及npm自身各版本的区别
@@ -50,6 +165,7 @@
 2. 数据库拖库会怎么样
     1. 防止sql注入：目前用的转义
         1. 为什么转义之后就可以防了？
+2. 二进制转成数字还是字母是用的什么协议？
 2. sourcegraph
 2. https://www.jianshu.com/p/ffeeb3d0efd6
 2. 防盗链
@@ -79,8 +195,6 @@
 1. golang
     1. 待学习，单元和性能测试：https://blog.csdn.net/code_segment/article/details/77507491
     1. goroutine的错误处理：https://gocn.vip/question/91
-    1. 项目中utils.postjson序列化的实现
-        1. 连`[]*row`这种类型的值都能打印
 1. golang中的nil
     1. https://studygolang.com/articles/9506
 1. golang mutex和RWMutex
@@ -733,8 +847,6 @@ angualr 表单中:#,name等的区别
 1. mac vscode占用内存很高
 2. npm 符号链接
 1. npm 创建的目录,为什么没有删除权限
-1. 序列化的本质是什么,js中的 序列化又是什么
-    1. 比如postMessage接受你放入它的任何对象，序列化它，将它发送给另一个web worker，
 2. js
     1. 待整理:https://hacks.mozilla.org/author/lclarkmozilla-com/
 2. oracle
@@ -2202,7 +2314,22 @@ worker.cancel();
 106. left join和inner join等笛卡尔积还是要继续熟悉
 107. 交叉编译
 108. study later:elasticsearch
+109. IO多路复用
 
 # problem but ignore
 1. 用mac的默认shell切换到分支下的某个目录，然后切换分支再切换回来，这个时候ls显示为空，但是目录下是有文件的，而且其他命令可以访问到目录下的文件。然后用`cd ../current_path`切换到当前目录，ls又能显示里面的文件了。
     1. 怀疑ls有缓存之类的东西，应该跟它的实现原理有关,how it works?
+
+2. 逆向三件套：capstone engine, unicorn engine, keystone engine
+3. CPU架构（如：X86 、X86_64 、ARM 、ARM 64、MIPS、SPARC）
+4. go cloud项目
+5. k8s
+6. 区块链
+7. 各种语言的转换工具：java,kotlin,js...
+
+# projects
+1. mit开源的Scratch
+
+# job requires
+1. 深入理解和使用 JSON and RESTful Web Services、RPC 通信接口开发
+2. 熟悉消息组件，Kafka、Mongodb、Redis 的使用；
