@@ -57,6 +57,18 @@ hundreds of thousands of
 
 2. 注释:comment,annotation
 
+## 3 一词多义
+1. bear with me：请忍受我一下
+2. It's sick：如果谈论的话题是在说宠物，那可能就是它病了。还有一个意思是“狂拽炫霸屌炸天”
+3. I don't buy it：我不相信，我没有被说服
+4. I feel you：表示挺你，“我懂你”的意思
+5. sleep late不是“睡的晚”，而是“睡到很晚才起床”，和get up late, sleep in意思一样。sleep并不是“去睡觉”的意思，它表示睡觉的状态。例如“睡得好”就是slept well, “睡得少”就是slept little
+    ```
+    e.g.
+    “我今天晚上会早点睡”不是I'll sleep early tonight. 而是I'll go to bed early tonight.
+    “昨天我很晚才睡”不是I slept late last night. 而是I went to bed late last night.
+    ```
+
 # 五 经验
 1. 坚持听bbconline
 
