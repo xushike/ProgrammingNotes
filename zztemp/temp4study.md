@@ -3,11 +3,18 @@
 2. 置顶：项目整体的把控
 3. 置顶：对专业不能只是熟悉，最好做到清晰，言之有物。做到能
 
-1. apt install -f 连内核升级时需要的依赖也能安装？
-1. mac vscode 更新的问题
-1. zsh查找下一个的反人类设计
-1. 老版本的more不能向上翻页？more from util-linux 2.23.2    centos 的more版本不能向上翻页？
-1. github年度报告：增长最快的开源项目
+1. 隔离级别串行化和普通的有什么区别
+    1. 单元测试非常友好？
+1. vscode的方法提示，居然不支持大小写和中间的？怎么修改
+1. 数据库死锁的问题
+1. go cloud 和google cloud
+1. git查看这行代码是谁创建的
+1. 依赖注入和普通方法调用的区别
+1. session、cookie、context等
+    1. 主动T用户下线
+1. go
+    2. go build相关的问题
+2. golang快捷键
 1. 三表查询时的问题
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
     1. 如何让psql查询出来的结果美观排版
@@ -45,18 +52,12 @@
     5. go 自带的 interface+ auto generate VS 泛型
     6. string []byte 的转换是会拷贝的吗
 
-1. git如何 正确查看本地和远程存在的分支
-1. golang查看内置函数的方法
-    1. 比如append，第二个参数可以不要嘛
-
 1. psql的left join等的各种写法
     1. values常量表的写法：`(values (1),(2)) as person(id)`
 1. git fetch
-1. mac vscode 安装后移动到applications里 后更新就失效了了？
 1. session和cookie
 1. 并发
 1. git branch -r或者-a能看到被删除的分支？
-    1. 如何只看存在的分支
     2. 如何查看合并到master的分支
 1. pgsql 插入的时候如果第一个做了类型转换，后面的也会跟着做类型转换,比如这儿的jsonb？
 
@@ -75,7 +76,6 @@
 1. 导出xxx.sql，xxx.csv，xxx.dump,xxx.tar,二进制文件和普通文件的区别
 1. 数据库修改记录？
 1. 将复制那个写成脚本
-1. jsonb_set的实际例子，感觉对类型转换的理解还是不够,比如要被替换的值是字符串
 1. golang查看进程号、线程号？
 1. 行级锁 for udpate
 1. 防御性编程指的是什么，把用户想象成恶意用户？限制各种边界条件？
@@ -136,6 +136,13 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
+1. xxx协议：http://www.bittorrent.org/index.html
+    1. https://www.cnblogs.com/LittleHann/p/6180296.html
+1. golang
+    1. number of Unicode和number of character是一样的？
+    2. 在zsh中打印的的时候如果没有换行，会多一个百分号
+    3. 大神推荐将该项目作为学习的项目，代码非常优美：github.com/golang/groupcache；然后是gin框架的代码，代码量比前者大10倍左右，不过代码不复杂，只有路由的部分比较复杂。
+        1. 怎么做这样的文档：https://godoc.org/github.com/golang/groupcache
 1. 2147483647
 1. go编译器的学习：
     1. go tool compile -help可以查看所有我们可以传递给编译器的参数。禁用编译器优化和内联优化，你可以使用下面的参数：`go build -gcflags="-N -I"`

@@ -74,6 +74,7 @@
     * [xiaomei](golang/xiaomei.md)
     * [go-crawler](golang/go-crawler.md)
     * [goroutine](golang/goroutine.md)
+    * [go-cloud](golang/go-cloud.md)
 * [ios](ios/ios.md)
 * [ssh&ssm](ssh/ssh.md)
     * [1.spring](ssh/spring.md)

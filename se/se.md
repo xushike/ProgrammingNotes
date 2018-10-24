@@ -68,7 +68,7 @@ Serverless Architecture:无服务架构
 ### 1.16 入参和出参
 入参应该是传进来的参数,出参应该是返回的参数
 
-### 1.17 串行，并行和并发
+### 1.17 串行，并行（Parallel）和并发（Concurrent）
 简单图示参考：http://www.cnblogs.com/goxcheer/p/9299181.html
 
 ### 1.18 文本流和二进制流

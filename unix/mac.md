@@ -115,7 +115,12 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 (待研究)：brew安装时的网络问题
 
 ### 2.8 iterm2和on-my-zsh
-两者结合食用，效果不错。参考：https://www.cnblogs.com/xishuai/p/mac-iterm2.html
+两者结合食用，效果不错。
+参考：
+1. wiki
+2. https://www.cnblogs.com/xishuai/p/mac-iterm2.html
+
+`zsh_stats`：可以看到你的使用频率前 20 的命令是什么
 
 #### iterm2
 设置：
