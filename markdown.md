@@ -2,26 +2,17 @@
 [TOC]
 # 一 概述
 ## 1 简介
-Markdown一种轻量级的「标记语言」,开发者是John Gruber,他创建了Daring Fireball([https://daringfireball.net/](https://daringfireball.net/ "daring fireball官网"))——一个每年可以赚取 50 万美元的博客。
+Markdown一种轻量级的「标记语言」，开发者是约翰·格鲁伯（John Gruber），他创建了Daring Fireball([https://daringfireball.net/](https://daringfireball.net/ "daring fireball官网"))——一个每年可以赚取 50 万美元的博客。
 
-### 特点
-- 轻量
+常见的标准有CommonMark和GFM (GitHub Flavored Markdown) 
 
-    不像Word或Pages有大量的排版、字体设置,它使我们专心于码字.常用的标记符号也不超过十个,
-
-- 简单
-
-    学习成本低
-
-- 通用
-
-    熟悉后一劳永逸
-
+### 优点
+- 轻量：不像Word或Pages有大量的排版、字体设置,它使我们专心于码字.常用的标记符号也不超过十个,
+- 简单：学习成本低
+- 通用：熟悉后一劳永逸
 - 支持基本的HTMl语法
 - 纯文本内容，兼容所有的文本编辑器与字处理软件
-- 导出多种格式
-
-    pdf,html等
+- 导出多种格式：pdf,html等
 
 ## 3 常识
 ### 3.1 Daring Fireball 
