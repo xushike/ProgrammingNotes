@@ -12,7 +12,6 @@
 1. 简书，关于go env能看到新的gopath，但是运行时却找不到.go文件：https://www.jianshu.com/p/4e699ff478a5#comment-27768847
 2. Github Page搭建个人博客或个人建站
 1. go
-    1. go generate：https://blog.csdn.net/deus_ex_machina/article/details/54931938
     2. golang设计模式
 2. 持续集成，持续交付，持续部署
 

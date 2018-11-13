@@ -2,7 +2,31 @@
 1. 置顶：除代码外，其他有中文的地方，用全角标点
 2. 置顶：项目整体的把控
 3. 置顶：对专业不能只是熟悉，最好做到清晰，言之有物。做到能
+4. 置顶：坚持阅读英文资料
+5. 置顶：解决问题时，先解决核心问题，不要一开始就追求所有细节，否则效率很难提升
 
+1. linux挂起和恢复
+1. sql批量模拟数据
+    1. on的条件写到where里会不会有什么区别
+1. linux -gt -f test
+1. sql支持多行注释 吗
+    1. 顺序扫描很慢？所以应该尽量避免？update的时候只能顺序扫描
+1. 触发器和存储过程
+1. less自动滚屏
+1. 周末解决死锁的问题
+    1. 如何手动实现死锁
+    2. 死锁的原因分析
+    3. 是procedure的原因吗
+
+1. golang字符编码的问题
+    1. sync.Mutex
+    1. 给定一个utf8字符，如何在各种格式间转换
+
+1. differences between a and an
+1. pg 导出表和库的数据练习
+    1. pg_advisory_unlock,pg_try_advisory_lock
+    2. idle in transaction
+1. pg查看历史命令
 1. 隔离级别串行化和普通的有什么区别
     1. 单元测试非常友好？
 1. vscode的方法提示，居然不支持大小写和中间的？怎么修改
@@ -136,6 +160,10 @@
 2. 关于代理的设置：https://www.jianshu.com/p/ff4093ed893f
 
 # later
+1. wangyin说的：然而在 Go 里面 string 类型里面每个元素都是一个 byte，所以每次你都得把它 cast 成“rune”类型才能正确的遍历每个字符，然后 cast 回去。这种把任何东西都看成 byte 的方式，就是 Unix 的思维方式，它引起过度底层和复杂的代码。
+    1. 对吗
+
+1. 增长黑客
 1. xxx协议：http://www.bittorrent.org/index.html
     1. https://www.cnblogs.com/LittleHann/p/6180296.html
 1. golang
@@ -160,6 +188,9 @@
 1. ssh
     1. mosh：断续连接
     2. 工业级代码
+2. java 
+    1. dump线程trace，golang可以吗
+2. hash state
 2. java 和kotlin:coroutine
 2. mac duti
 2. 无锁队列，并行，非阻塞，无栈有栈协议，上下文切换，actor ，csp这些黑话
@@ -335,6 +366,8 @@ package github.com/cweill/gotests/...: exit status 1
     2. git fetch和pull的实战区别
     3. pull的时候，其他分支会被快速合并吗（如果有快速合并的话）
     4. post，get的使用场景和区别，什么时候可以不区分
+2. MapReduce是一种编程思想
+    1. 那么如何用golang实现
 1. go的枚举和const
 1. go的 协程和通知
 1. go的面向接口编程
@@ -485,7 +518,6 @@ package github.com/cweill/gotests/...: exit status 1
             fmt.Println(reflect.TypeOf(arr))
         }
         ```
-    2. 位操作
 
 1. db
     1. pgsql自动排版SQL的工具
@@ -501,6 +533,7 @@ package github.com/cweill/gotests/...: exit status 1
     1. 定时任务
     2. 自己实现一个psql格式化的工具
 1. html value等的区别
+2. Pipeline流水线执行模型
 1. goalng
     1. 哪种数据类型适合频繁存取
     1. 待笔记:数组（第 7 章）和结构（第 10 章）这些复合类型也是值类型
@@ -891,7 +924,6 @@ angualr 表单中:#,name等的区别
 	ctx.Info("返回结果")
 	response.Success()
 
-1. js判断是否是数值类型
 1. blob,dataview,webgl,轮询
 1. js有类型的概念吗
     1. js引擎能区分不同的基本数据类型吗
@@ -2303,8 +2335,6 @@ worker.cancel();
 94. RSS订阅
 95. viewport
 96. SharedArrayBuffer有线程问题吗
-97. 视频音频
-    1. 七牛的文件上传
 98. source-map
 99. 防御性编程
 100. 面试：页面加载海量数据:https://juejin.im/post/5ae17a386fb9a07abc299cdd
@@ -2326,6 +2356,7 @@ worker.cancel();
 107. 交叉编译
 108. study later:elasticsearch
 109. IO多路复用
+110. 服务编排
 
 # problem but ignore
 1. 用mac的默认shell切换到分支下的某个目录，然后切换分支再切换回来，这个时候ls显示为空，但是目录下是有文件的，而且其他命令可以访问到目录下的文件。然后用`cd ../current_path`切换到当前目录，ls又能显示里面的文件了。

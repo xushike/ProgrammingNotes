@@ -172,11 +172,14 @@ fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]
 
 ### 3.15 三个点...
 它是语法糖，有两种用法:
-1. 函数有多个不定入参（不能用于出参）
-2. slice可以被打散进行传递：比如不定入参和`append()`处。
+1. 第一种用于入参（不能用于出参），比如`func myfunc(arg ...int)`，变量arg就是一个int的slice，但是它比直接声明一个切片更加灵活，比如想接收0个或n个int参数，写成切片的话，0个时需要传空切片或者nil，如果用三个点的写法就什么都不用传。
+2. 第二种用于传递时：slice可以被打散进行传递，比如`append()`处。
 
 ### 3.16 go源码文件
 Go源码文件包括三种：命令源码文件、库源码文件和测试源码文件
+
+### 3.17 平行赋值
+`i, j = i+1, j-1`
 
 ## 4 文档
 1. _Effective Go_(中文名《高效Go编程》)
@@ -187,6 +190,7 @@ Go源码文件包括三种：命令源码文件、库源码文件和测试源码
 ## 5 网址
 1. 大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
     1. https://astaxie.gitbooks.io/build-web-application-with-golang/zh/
+2. http://bmknav.com/go/
 2. go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
 3. 该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
 4. go语言官方文档地址：https://golang.org/
@@ -215,10 +219,10 @@ go的环境变量说明:
     1. `/src`：包含源代码构建脚本和标准库的包的完整源代码（Go 是一门开源语言）
     1. `/src/cmd`：包含 Go 和 C 的编译器和命令行脚本
 
-2. `$GOPATH`:即工作区目录,安装后默认是`~/go`,必须包含三个子目录,bin,src和pkg.项目一般都是放在src下.注意最好不要将`$GOROOT`和`$GOPATH`设置在同一目录下.当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中,设置了GOPATH之后，`import`时就会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下.
-    1. `bin`:包含可执行文件.如编译器，Go 工具等
-    2. `src`:源码文件
-    3. `pkg`:包文件
+2. `$GOPATH`:即工作区目录,安装后默认是`~/go`,必须包含三个子目录,bin,src和pkg。只需要有src目录，bin和pkg会自动生成（待测试）。项目一般都是放在src下.注意最好不要将`$GOROOT`和`$GOPATH`设置在同一目录下.当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中,设置了GOPATH之后，`import`时就会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下.
+    1. `bin`:可执行文件的存放路径，包含golang编译可执行文件、编译器、Go 工具等
+    2. `src`:源码文件。go run，go install等命令后跟的路径默认基于当前工作路径
+    3. `pkg`:包文件路径，包含golang将可执行文件所依赖的各种package编译后的.a(or ?)中间文件
 
 3. `$GOARCH`:表示目标机器的处理器架构，它的值可以是 386、amd64 或 arm。
 4. `$GOBIN`:表示编译器和链接器的安装位置，默认是`$GOROOT/bin`.一般情况下你可以将它的值设置为空，Go 将会使用前面提到的默认值。
@@ -276,18 +280,12 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 
 # 三 基础
 ## 0 Go程序的执行（程序启动）顺序
-如下（感觉还不够详细，待补充）：
-1. 按顺序导入所有被 main 包引用的其它包，然后在每个包中执行如下流程：
-2. 如果该包又导入了其它的包，则从第一步开始递归执行，但是每个包只会被导入一次。
-3. 然后以相反的顺序在每个包中初始化常量和变量，如果该包含有 init 函数的话，则调用该函数。
-4. 在完成这一切之后，main 也执行同样的过程，最后调用 main 函数开始执行程序。
+编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，然后对最后的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。但是每个包只会被导入一次。
 
 ## 1 程序结构
-### 1.1 命名
-Go语言程序员推荐使用 驼峰式 命名
 
 ### 1.2 声明
-Go语言主要有四种类型的声明语句：var、const、type和func，分别对应变量、常量、类型和函数实体对象的声明。
+Go主要有四种类型的声明语句：var、const、type和func，分别对应变量、常量、类型和函数实体对象的声明。
 
 ### 1.3 变量
 #### 1.3.1 变量声明
@@ -392,28 +390,20 @@ func g() {
 
 ### 1.4 常量
 使用`const`声明,只可以是字符串、布尔或数字类型的值,不能用`:=`定义.语法形如`const xxx [type] = xxx`,如
-
 ```go
 const Pi = 3.14159
-```
-
-常量也允许使用并行赋值的形式,如：
-```go
 const beef, two, c = "eat", 2, "veg"
-```
-
-常量还可以用作枚举：
-```go
+// 常量还可以用作枚举
 const (
 	Unknown = 0
 	Female = 1
 	Male = 2
 )
 ```
-#### 1.4.1 iota
-参考:https://studygolang.com/articles/2192
 
-最佳实践是:常量一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。
+特别的iota：参考:https://studygolang.com/articles/2192
+
+常量命令的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。
 
 ### 1.5 指针
 指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言里可以对指针进行加或减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
@@ -575,10 +565,13 @@ Go语言将数据类型分为四类：
 
 类型转换(难点)(待补充)：
 1. 显式转换,语法形如`var a typeA = typeA(b)`,这种方式适合以下几种情况
+
     1. 一个取值范围较小的类型转换到一个取值范围较大的类型，一定会成功；一个取值范围较大的类型转换到范围较小的类型，没有溢出的话才会成功。
+        1. int和int64之间的相互转换
         1. int=>float64:`var f float64 = float64(i)`或者`f := float64(i)`
         2. string=>[]byte:`data := []byte(str)`
         3. []byte=>string:`str := string(bytes)`
+
     2. 具有相同字段名称，相同字段类型的结构体（tag可不一样）
     
 2. 具有相同底层类型的变量之间可以相互转换.如,
@@ -589,9 +582,11 @@ Go语言将数据类型分为四类：
     c := int(a)
     d := IZ(c)
     ```
-3. 整形和字符串
+
+3. 数值和字符串
     1. 整形到字符串`s = strconv.Itoa(i)` 或者 `s = strconv.FormatInt(int64(i), 10)`
     2. 字符串到整形：`i, err = strconv.Atoi(s) 或者 i, err = strconv.ParseInt(s, 10, 0)`
+    3. 字符串到float32/64：`float32, err = ParseFloat(string, 32)`和`float64,err = ParseFloat(string,64)`
 
 ### 2.1 基础数据类型
 包含int、float、bool、string
@@ -623,26 +618,37 @@ var ch byte = 65
 var ch byte = '\x41'
 ```
 
-注意：
-1. 直接整数
+关于byte的有趣例子：
+```golang
+var i byte
+go func() {
+    for i = 0; i <= 255; i++ {
+        // 该条件永远成立，因为byte的值是255后会溢出，又从0开始
+    }
+}()
+```
 
 #### 2.1.2 浮点数
 你应该尽可能地使用 float64，因为 math 包中所有有关数学运算的函数都会要求接收这个类型。
 
 #### 2.1.3 字符串
-golang中字符串是以 UTF-8 为格式进行存储
+golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和raw字符串,raw字符串和js6中的模板字符串有点像，用反引号包裹.正则表达式中使用raw字符串更简洁。
 
-分为普通字符串和raw字符串,raw字符串和js6中的模板字符串有点像.
+操作：
+1. 字符串截取:可以用类似切片的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
 
-raw字符串:用反引号包裹.正则表达式中使用raw字符串更简洁
-
-字符串截取:可以用类似切片的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
-```golang
-str := "123456"
-str[0:3] // "123"
-str[3:] // "456"
-str3 := str[6:] // 特别的，如果indexA是字符串的长度，此时str3 == ""为true
-```
+    ```golang
+    str := "123456"
+    str[0:3] // "123"
+    str[3:] // "456"
+    str3 := str[6:] // 特别的，如果indexA是字符串的长度，此时str3 == ""为true
+    ```
+2. 字符串的修改：默认字符串是不能修改的，如果想实现修改，可以先转成[]byte，修改后再转成string
+3. 拼接的几种方式及比较
+    1. `+`，量大时效率较低，因为每次都会产生一个新字符串
+    2. `fmt.Sprintf()`:内部使用 []byte 实现
+    3. `strings.Join()`
+    4. `buffer.WriteString()`：不需要复制，只需要将添加的字符串放在缓存末尾即可，所以性能理论上最好，不过和java的StringBuilder一样是线程不安全的
 
 #### 2.1.4 布尔bool
 对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
@@ -769,6 +775,7 @@ slice := []stirng{}
 5. 在函数间传递切片(难点):
     1. 如果入参类型是`s []int`，传递的就是切片本身(可以看作是引用，64位上24字节)，对传入的s整个赋值不会影响原切片，但是对s里的元素进行修改的话，实际是修改的原切片，规则和js里的数组类似。
     2. 如果入参类型是`s *[]int`，传递的就是切片本身的引用（可以看作是引用的指针），对传入的s整个赋值不会影响原切片，但是对s里的元素进行修改的话，实际是修改的原切片，规则和js里的数组类似。但是对`*s`（待补充）
+    3. 若函数需改变slice的长度，则仍需要取地址传递指针，也就是传`*[]int`
 6. 切片的长度和容量:`len()`:返回切片的长度，`cap()`:返回切片的容量
 
 #### 2.2.3 映射/字典map
@@ -800,6 +807,7 @@ m["m1"] = m1
 3. 从map中获取key的值，有两种方式，但应该只使用逗号ok这种：
     1. 最佳实践是使用逗号ok模式：`_,ok := map1[key1]`，ok表示是否存在这个key1，ok为true，再取值
     2. 直接取值`map1[key1]`：如果值存在则返回该值，不存在则返回对应数据类型的零值。
+4. 遍历map：map是无序的。
 
 注意：
 1. 如果map是带名字地声明在函数返回值中，还是不能直接使用，还是需要make一下才能用
@@ -811,7 +819,7 @@ m["m1"] = m1
 
 Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。灵活使用可以实现类似java继承的功能，但不要强行用java的方式去使用go。
 
-重载：比如下面的Student和Human都有phone字段，那么访问Student中的phone用`student.phone`,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
+重载：假如Student和Human都有phone字段，go的规则是最外层的优先访问。所以`student.phone`访问的是Student中的phone,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
 
 注：
 1. 数组也可以看作是一种结构体类型，不过它使用下标而不是具名的字段。
@@ -827,7 +835,7 @@ type Human struct {
     phone string
 }
 
-// 方法2：匿名字段/嵌入字段：只提类型，而不写字段名，此时新的结构体隐式引入了该类型的所有字段和函数(如果有的话)，这里的类型包括所有自定义类型和内置类型
+// 方法2：匿名字段/嵌入字段：只写类型，而不写字段名，此时新的结构体隐式引入了该类型的所有字段和函数(如果有的话)，这里的类型包括所有自定义类型和内置类型
 type Student struct {
     Human  // 匿名字段，那么默认Student就包含了Human的所有字段和函数
     speciality string
@@ -933,6 +941,8 @@ func GetXXX(){
 
 函数接收者的类型：函数接收者可以是值类型也可以是指针类型，可以把函数接收者看作函数的第一个参数，所以值类型时操作的是副本，指针类型操作的是实例对象。用Rob Pike的话来说就是："A method is a function with an implicit first argument, called a receiver."。
 
+什么时候用带接收者的函数呢：比如有一个三角形结构体（对象），需要对它计算面积，这个计算方法肯定跟形状相关，这种就比较适合写成带接收者的函数。
+
 ### 2.3 用户自定义类型
 自定义类型：使用`type`关键字基于已有的类型来声明新的类型，实际上只是定义了一个别名。struct是自定义类型的一个特殊类型。
 
@@ -952,7 +962,7 @@ type months map[string]int
 ## 3 流程控制
 go的三个流程控制语句后都可以紧跟一个简短的变量声明，一个自增表达式、赋值语句，或者一个函数调用.比如紧跟一个简短变量声明,好处是:
 - 让代码更加简单
-- 限制这个变量的作用域(易忘点)
+- 这个变量的作用域只在流程控制里(易忘点)
 
 go的三个流程控制语句后的条件都不需要加`()`
 
@@ -987,9 +997,11 @@ for index,ele := range xxx {
 ### 3.2 if else
 
 ### 3.3 switch
-1. 语法
-    1. 从上到下匹配，成功时停止;不需要显式写上`break`,因为匹配某个`case`并执行完成后会自动退出`switch`;
-    2. 没有条件的switch等于`switch true`，这种形式叫做无tag switch(tagless switch),可以更清晰的用来编写长的 if-then-else 链：
+简单总结就是：显式fallthrough，隐式break，case支持逗号语法。（其他语言一般是隐式fallthrough，显式break）
+
+语法
+1. 从上到下匹配，成功时停止;不需要显式写上`break`,因为匹配某个`case`并执行完成后会自动退出`switch`;
+2. 没有条件的switch等于`switch true`，这种形式叫做无tag switch(tagless switch),可以更清晰的用来编写长的 if-then-else 链：
 
         ```go
         t := time.Now()
@@ -1003,36 +1015,37 @@ for index,ele := range xxx {
         }
         ```
 
-    3. `fallthrough`
+3. `fallthrough`
 
-        该关键字很少用.如果在`case`执行语句末尾加上该关键字,该`case`执行完成后不会退出,而是直接执行下一个`case`(跳过下一个`case`的判断)里的语句,如,
+    该关键字很少用.如果在`case`执行语句末尾加上该关键字,该`case`执行完成后不会退出,而是直接执行下一个`case`(跳过下一个`case`的判断)里的语句,如,
 
-        ```go
-        switch {
-        case false:
-                fmt.Println("The integer was <= 4")
-                fallthrough
-        case true:
-                fmt.Println("The integer was <= 5")
-                fallthrough
-        case false:
-                fmt.Println("The integer was <= 6")
-                fallthrough
-        case true:
-                fmt.Println("The integer was <= 7")
-        case false:
-                fmt.Println("The integer was <= 8")
-                fallthrough
-        default:
-                fmt.Println("default case")
-        }
-        ```
-2. `switch`中的`continue`,`break`
+    ```go
+    switch {
+    case false:
+            fmt.Println("The integer was <= 4")
+            fallthrough
+    case true:
+            fmt.Println("The integer was <= 5")
+            fallthrough
+    case false:
+            fmt.Println("The integer was <= 6")
+            fallthrough
+    case true:
+            fmt.Println("The integer was <= 7")
+    case false:
+            fmt.Println("The integer was <= 8")
+            fallthrough
+    default:
+            fmt.Println("default case")
+    }
+    ```
+4. `switch`中的`continue`,`break`
 
+### 4 goto
 
 ## 4 函数
 基本语法:
-1. 所有go函数以`func`开头,函数方法名首字母大写(?)，函数外的每个语句都必须以关键字开始(也就意味着简短声明表达式不能在函数外使用)
+1. 所有go函数以`func`开头，函数外的每个语句都必须以关键字开始(也就意味着简短声明表达式不能在函数外使用)
 2. 支持多返回值，返回值名称可作为文档使用，且可以像变量一样直接使用
 
 函数的命名:返回某个对象的函数或方法的名称一般都是使用名词，没有`Get...`之类的字符，如果是用于修改某个对象，则使用`SetName`
@@ -1075,10 +1088,10 @@ log.Println(links, err)
 关于bare return(裸返回)：如果一个函数将所有的返回值都显示的变量名，那么该函数的return语句可以省略操作数。这称之为bare return。
 >当一个函数有多处return语句以及许多返回值时，bare return 可以减少代码的重复，但是使得代码难以被理解。
 
-### 4.5 函数值
+### 4.5 函数作为值、类型
 第一类值(first-class values)和第二类值:有些语言中function跟int, double的地位是一样的。这种语言就为函数是第一类值；而有些语言是不能存储函数，不能动态创建函数，不能动态销毁函数。(这里函数是已经是广义的了，用来表示代码code)。只能存储一个指向函数的指针，这种语言称为函数是第二类值。
 
-函数类型的零值是nil。函数值之间是不可比较的，但函数值可以与nil比较。调用值为nil的函数值会引起panic错误。
+函数类型的零值是nil。函数值之间是不可比较的，但函数值可以与nil比较。调用值为nil的函数值会引起panic错误。在Go中函数也是一种变量，我们可以通过type来定义它，它的类型就是所有拥有相同的参数，相同的返回值的一种类型
 
 ### 4.6 匿名函数(anonymous function)
 定义：函数字面量(function literal)的语法和函数声明相似，区别在于func关键字后没有函数名。函数值字面量是一种表达式，它的值称为匿名函数（anonymous function）.
@@ -1131,17 +1144,115 @@ func add(x, y int) int {
 }
 ```
 
-## 6. 接口
-1. go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口
-    带来的优点是：
-    1. 不用绘制类库的继承树图
-    2. 不用纠结接口需要拆的多细
-    3. 不用为了实现一个接口而专门导入一个包
-2. 
+## 6 interface{}和接口
+go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口，所以任意的类型都实现了空interface（包含0个method的interface）。
 
+优点是：
+1. 不用绘制类库的继承树图
+2. 不用纠结接口需要拆的多细
+3. 不用为了实现一个接口而专门导入一个包
 
-## 10 测试
-## 11 反射
+### 6.2 接口
+接口的写法
+```golang
+type Men interface{
+    Say(a int) (b string, c bool)
+}
+```
+
+只要实现了接口里的所有方法，就可以作为接口的值，即Go通过interface实现了duck-typing（看起来像鸭子，那么就认为它是鸭子）。比如Student结构体实现了Say()方法，那么可以
+```golang
+var i Men
+tom := Student{...}
+i = tom
+```
+
+空interface{}：空interface对于描述起不到任何的作用(因为它不包含任何的method），但是空interface在我们需要存储任意类型的数值的时候相当有用，因为它可以存储任意类型的数值。类似于C语言的void*类型。
+
+接口的嵌套：类似结构体的嵌套
+
+## 7 测试和go test
+轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
+
+对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
+
+对多个包进行测试(package tests)：以空格分割多个包的包名。
+
+注意上面两种测试默认都是按包来并发执行的，好处是缩短了执行时间，缺点是公共资源可能被同时修改导致结果不对，解决办法是加上`-p 1`
+
+对单个或多个文件进行测试（file tests）：形如`go test -v a_test.go b_test.go ...`，命令程序会为指定的源码文件生成一个虚拟代码包“command-line-arguments”，此时如果源码文件调用了其他包中的函数而没有声明的话，而需要加入对应的源码文件。比如a_test.go中调用了a.go中的Foo()方法，则会出现`undefined：Foo`错误，此时应该把a.go也加入进去`o test -v a_test.go a.go`
+
+对单个或多个函数进行测试：加上`-test.run methodName`，形如`go test -v -test.run TestBar bar_test.go`，和上面一样会被指定虚拟包,但是不需要加入对应的源码文件。
+
+cached：go1.10开始在go test中引入了cached，规则参考：http://ju.outofmemory.cn/entry/344575，想关闭可以加上`-count=1`参数
+
+参数:
+1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，如，
+
+    ```bash
+    === RUN   Testxxx
+    ...
+    --- PASS: Testxxx (0.20s)
+    ```
+
+`t *testing.T`的方法:
+1. `Log()`
+2. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
+3. `FailNow()`:将当前测试标识为失败并停止执行该测试， 在此之后， 测试过程将在下一个测试或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
+4. `Error(args)`：相当于在调用 `Log()` 之后调用 `Fail()` 
+5. `Fatal(err)`:调用 Fatal 相当于在调用 Log 之后调用 FailNow
+3. 跳过当前测试的方法`Skip()`：相当于调用`Log()`之后调用`SkipNow()`
+4. 设置并发执行的测试数量`-parallel n`
+5. 竞争探测`-race`：用于探测高并发的死锁...
+6. `-cpu`
+
+注意：
+1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
+
+## 8 反射和reflect包
+反射机制就是在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同。
+
+反射的原理：待补充
+
+反射回来的类型大概有：待补充
+
+使用反射一般分为三步：
+1. 要去反射是一个类型的值(这些值都实现了空interface)，首先需要把它转化成reflect对象(reflect.Type或者reflect.Value，根据不同的情况调用不同的函数)
+    
+    ```golang
+    t := reflect.TypeOf(i)    //得到类型的元数据,通过t我们能获取类型定义里面的所有元素
+    v := reflect.ValueOf(i)   //得到实际的值，通过v我们获取存储在里面的值，还可以去改变值
+    ```
+2. 转化为reflect对象之后我们就可以进行一些操作了，也就是将reflect对象转化成相应的值，例如
+
+    ```golang
+    tag := t.Elem().Field(0).Tag  //获取定义在struct里面的标签
+    name := v.Elem().Field(0).String()  //获取存储在第一个字段里面的值
+    ```
+
+3. 获取反射值能返回相应的类型和数值
+
+    ```golang
+    var x float64 = 3.4
+    v := reflect.ValueOf(x)
+    fmt.Println("type:", v.Type())
+    fmt.Println("kind is float64:", v.Kind() == reflect.Float64)
+    fmt.Println("value:", v.Float())
+    ```
+
+修改值：反射的字段必须是可读写的意思如下（？）
+```golang
+// 如果下面这样写，那么会发生错误
+var x float64 = 3.4
+v := reflect.ValueOf(x)
+v.SetFloat(7.1)
+// 如果要修改相应的值，必须这样写
+var x float64 = 3.4
+p := reflect.ValueOf(&x)
+v := p.Elem()
+v.SetFloat(7.1)
+```
+
 ## 12 底层编程
 ## 13 错误处理
 Golang 没有传统的异常机制:对于非致命的错误，Golang 使用返回值来报告;对于致命的错误，Golang 直接选择“崩溃”掉(当然也有恢复机制), 不过按照 Golang 的哲学，既然是致命错误，就应当挂掉。
@@ -1211,6 +1322,8 @@ func main() {
 `panic(string)`
 
 什么情况会panic：数组下标越界或类型断言失败这样的运行错误时，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）抛出一个runtime.Error 接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+
+也可以手动触发panic：`panic("xxx")`，一般是把它作为最后的手段来使用
 
 #### defer
 `defer func(){...}`
@@ -1318,11 +1431,13 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 1. 行注释以`//`开始，至行尾结束。一条行注释视为一个换行符。
 2. 块注释 以`/*`开始，至`*/`结束。 块注释在包含多行时视为一个换行符，否则视为一个空格。
 
-注意:
+注释的最佳实践:`//`之后应该加一个空格.(其他语言也应该这样))
+
+go注释的规则：
 1. 注释不可嵌套
 2. 版权注释和 Package前面加一个空行，否则版权注释会作为Package的注释。
-
-注释的最佳实践:`//`之后应该加一个空格.(其他语言也应该这样))
+3. 标识不被编译：`// +build generate`
+4. 标识代码是机器生成的（待补充）
 
 ### 15.1 文档注释
 几乎所有全局作用域的类型、常量、变量、函数和被导出的对象都应该有一个合理的注释。如果这种注释（称为文档注释）出现在函数前面，例如函数 Abcd，则要以 "Abcd..." 作为开头。如,
@@ -1342,32 +1457,45 @@ func enterOrbit() error {
 ## 1 go自带的工具（go tool套件）
 Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
 
+查看帮助：`go help xxx`，比如`go help generate`
+
 ### 1.1 go run
 `go run ...`编译且运行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成：
-```
+```golang
 go run main.go a.go
-#或者
+// 或者
 go run *.go
 ```
 
-### 1.2 go install
-安装自身包和依赖包.
+### 1.2 go build
+主要用于编译代码。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
+1. 直接执行时`go build`时，默认编译当前目录下的所有`.go`文件，如果有`main.go`文件，那么会生成可执行文件--默认是目录名
+2. 执行`go build a.go b.go ...`，如果文件中有`main.go`，则生成可执行文件`main`，否则只是编译
+3. 执行`go build drectory_a drectory_b ...`，如果目录下有`main.go`，则生成可执行文件--默认是mian文件所在的目录名，否则只是编译
 
-1. 首先说一下一般的go项目在GOPATH下的目录结构：
-```bash
--- GOPATH  #GOPATH目录
-  -- bin  #golang编译可执行文件的存放路径，可自动生成。
-  -- pkg  #golang将可执行文件所依赖的各种package编译后的.a(or ?)中间文件存放路径，可自动生成
-  -- src  #源码路径。按照golang默认约定，go run，go install等命令的当前工作路径（即在此路径下执行上述命令）。
-```
-2. 命令会安装go包所依赖的任何东西
-3. 只需要有src目录，bin和pkg会自动生成；install后是跟main.go的父级目录名，生成的可执行文件也是父级目录名；
+参数:
+1. `-o`：指定生成的可执行文件的名字
 
-### 1.3 go build
-编译并安装自身包和依赖包.形如`go build hello.go`
+### 1.3 go install
+这个命令在内部实际上分成了两步操作：第一步是生成结果文件(可执行文件或者.a包)，第二步会把编译好的结果移到$GOPATH/bin或者$GOPATH/pkg，生成的可执行文件默认是是父级目录名
 
 ### 1.4 go clean
-清理生成的可执行文件，如`go clean hello.go`
+清理go编译生成的文件，如`.go`、`.out`、`.a`等
+
+### 1.5 go generate
+在执行go generate时将会加入些信息到环境变量，可在命令程序中使用。$GOARCH 架构 (arm, amd64, etc.)、$GOOS OS (linux, windows, etc.)、$GOFILE 当前处理中的文件名$GOLINE 当前命令在文件中的行号、$GOPACKAGE 当前处理文件的包名、$DOLLAR 一个美元符号（？），同时该命令是在所处理文件的目录下执行，故利用上述信息和当前目录，边可获得丰富的DIY功能。
+
+参数：
+`-run` 正则表达式匹配命令行，仅执行匹配的命令
+`-v` 打印已被检索处理的文件。
+`-n` 打印出将被执行的命令，此时将不真实执行命令
+`-x` 打印已执行的命令
+
+本人感觉该命令很像hook，即使不用它你也可以直接用shell命令等来完成你想做的事情，但是适用情况不一样：
+1. 熟悉go并不一定熟悉shell，学习成本不同
+2. 提供了方便的环境变量
+
+（待研究）There are already a number of tools available that are designed to be run by the go:generate directive, such as `stringer`, `jsonenums`, and `schematyper`.
 
 ### 1.6 go get
 通过源码控制工具(比如git)递归获取代码包及其依赖,并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于go build命令和go install命令的标记。
@@ -1394,56 +1522,19 @@ go run *.go
 指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
 
 ### 1.9 go doc和godoc
-一些区别：go doc可以用于查看本地的文档，而godoc可以在本地启动go的文档（方便离线查看？）
+两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，而godoc是新版命令，后者可以启动本地文档服务器
 
 #### go doc
 查看文档,挺方便的.
-1. 查看包的说明：`go doc pkg_path`,如`go doc http`可以直接看到整个包的概述和所有导出方法
-2. 查看具体方法/变量等的说明：`go doc pkg_path.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
+1. 查看包的说明：`go doc pkg_name`,如`go doc http`可以直接看到整个包的概述和所有导出方法
+2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
 
 #### godoc
-1. 启动本地文档服务器:`godoc -http=:6060`，然后通过`localhost:6060`就可以访问go的文档了，而且文档内容会比标准库多，因为官网只是标准库，而本地是`$GOPATH`和`GOROOT`下所有包生成的文档
+1. 查看包说明和`go doc`一样，查看具体方法/变量等的说明略有不同：`godoc pkg_name xxx`,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
+1. 启动本地文档服务器:`godoc -http=:6060`，然后通过`localhost:6060`就可以访问本地go的文档了，而且文档内容会比标准库多，因为官网只是标准库，而本地是`$GOPATH`和`GOROOT`下所有包生成的文档
 
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
-
-### 1.11 go test（重要）
-轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
-
-对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
-
-对多个包进行测试(package tests)：以空格分割多个包的包名。
-
-注意上面两种测试默认都是按包来并发执行的，好处是缩短了执行时间，缺点是公共资源可能被同时修改导致结果不对，解决办法是加上`-p 1`
-
-对单个或多个文件进行测试（file tests）：形如`go test -v a_test.go b_test.go ...`，命令程序会为指定的源码文件生成一个虚拟代码包“command-line-arguments”，此时如果源码文件调用了其他包中的函数而没有声明的话，而需要加入对应的源码文件。比如a_test.go中调用了a.go中的Foo()方法，则会出现`undefined：Foo`错误，此时应该把a.go也加入进去`o test -v a_test.go a.go`
-
-对单个或多个函数进行测试：加上`-test.run methodName`，形如`go test -v -test.run TestBar bar_test.go`，和上面一样会被指定虚拟包,但是不需要加入对应的源码文件。
-
-cached：go1.10开始在go test中引入了cached，规则参考：http://ju.outofmemory.cn/entry/344575，想关闭可以加上`-count=1`参数
-
-参数:
-1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，如，
-
-    ```bash
-    === RUN   Testxxx
-    ...
-    --- PASS: Testxxx (0.20s)
-    ```
-
-`t *testing.T`的方法:
-1. `Log()`
-2. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
-3. `FailNow()`:将当前测试标识为失败并停止执行该测试， 在此之后， 测试过程将在下一个测试或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
-4. `Error(args)`：相当于在调用 `Log()` 之后调用 `Fail()` 
-5. `Fatal(err)`:调用 Fatal 相当于在调用 Log 之后调用 FailNow
-3. 跳过当前测试的方法`Skip()`：相当于调用`Log()`之后调用`SkipNow()`
-4. 设置并发执行的测试数量`-parallel n`
-5. 竞争探测`-race`：用于探测高并发的死锁...
-6. `-cpu`
-
-注意：
-1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
 
 ## 2 其他与go有关的工具
 ### 2.1 Cgo
@@ -1460,8 +1551,9 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 编译器源码目录下，src/cmd/compile/internal
 
 ## 4 golang json处理
-例子1:
+最常用的是下面两个方法，其中的`v interface{}`可以是struct、map、slice。
 
+例子1:
 ```golang
 // 结构体
 type Product struct {
@@ -1496,14 +1588,21 @@ Go类型和JSON类型的对应关系如下：
 3. tag中如果带有"omitempty"选项，那么如果该字段值为空，就不会输出到JSON串中
 4. 如果字段类型是bool, string, int, int64等，而tag中带有",string"选项，那么这个字段在输出到JSON的时候会把该字段对应的值转换成JSON字符串
 
-解析JSON`func Unmarshal(data []byte, v interface{}) error`:注意这儿v必须是指针
+通过字符串直接生成[]byte类型的json：
+```golang
+jsonStr:=`{"Username":"Tom","Password":"123456","FriendName":["Li","Fei"]}`
+b := []byte(jsonStr)
+```
+
+### 4.1 解析JSON`func Unmarshal(data []byte, v interface{}) error`:注意这儿v必须是指针
 1. 解析到结构体(已知被解析的JSON数据结构)
     1. 例如JSON的key是Foo，那么怎么找对应的字段呢？
         1. 首先查找tag含有Foo的可导出的struct字段(首字母大写)
         2. 其次查找字段名是Foo的导出字段
         3. 最后查找类似FOO或者FoO这样的除了首字母之外其他大小写不敏感的导出字段
     2. 能够被赋值的字段必须是可导出字段(即首字母大写）。同时JSON解析的时候只会解析能找得到的字段，找不到的字段会被忽略，这样的一个好处是：当你接收到一个很大的JSON数据结构而你却只想获取其中的部分数据的时候，你只需将你想要的数据对应的字段名大写，即可轻松解决这个问题。
-2. 解析到interface{}(未知)：例子如下，
+
+2. 解析到interface{}(未知)：例子如下，但好像可以直接用全部类型是string的去接收而不用这么麻烦？
 
     ```golang
     b := []byte(`{"Name":"Wednesday","Age":6,"Parents":["Gomez","Morticia"]}`)
@@ -1523,7 +1622,7 @@ Go类型和JSON类型的对应关系如下：
 
     ```
 
-生成JSON`func Marshal(v interface{}) ([]byte, error)`：
+### 4.2 生成JSON`func Marshal(v interface{}) ([]byte, error)`：
 1. 默认输出字段名的首字母都是大写的，如果你想用小写的首字母怎么办呢？首先想到的是把结构体的字段名改成首字母小写的，但是JSON输出的时候，只有导出的字段才会被输出，如果如果修改字段名首字母小写，那么就会发现什么都不会输出，所以必须通过struct tag定义来实现。
 
 生成json需要注意的：
@@ -1553,14 +1652,95 @@ Go类型和JSON类型的对应关系如下：
     ```
 7. 反序列化的时候是大小写无关的
 
+注意：如果是字符串生成json，字符串似乎要写成小驼峰
+
 ## 5 go连接其他数据库
 postgresql：
 1. https://godoc.org/github.com/lib/pq
 
-## 6 正则
-### 6.1 常用
+## 6 正则表达式（regular expression）和regexp包
+一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准（https://github.com/google/re2）：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
+
+然后我看了下，支持`\014`这种（utf8?），但是还不支持直接通过unicode码来匹配unicode字符。
+
+一些重要概念：
+1. 贪婪模式（greedy）：趋向于匹配最长的，反之则是贪婪模式。
+2. 回溯：假如有*Regexp为`ab{1,3}c`，对于字符串`abbbc`，一次就匹配成功，不会发生回溯；而对于字符串`abc`，匹配完前两个字符之后，此时b只匹配到了一个，根据贪婪特性，还会将c放进去判断是否符合第二个b，发现不符合后会将c吐出来，然后再用正则的c去匹配文本的c，此时发生了一次回溯。
+    1. 所以使用时需要小心回溯带来的性能问题。
+3. 独占模式：同贪婪模式一样，独占模式一样会匹配最长。不过在独占模式下，正则表达式尽可能长地去匹配字符串，一旦匹配不成功就会结束匹配而不会回溯。
+    
+    在该模式下（go暂未支持？），假如有正则对象`ab{1,2}b+c`，对于字符串`abbc`，最后结果是匹配失败。
+4. 懒惰模式：在该模式下，正则引擎尽可能少的重复匹配字符，匹配成功之后它会继续匹配剩余的字符串。
+
+### 6.1 语法
 1. 查找汉字：`\p{Han}`
-2. 以xxx开头：`^xxx`，以xxx结尾`xxx$`（待验证）
+2. 以xxx开头：`^xxx`，以xxx结尾`xxx$`。可以`(?m)`使其匹配行为变为行首和行尾。
+3. `(xxx)`是捕获分组，会保存在内存中，`(?xxx)`是非捕获分组，不会保存在内存中。在正则替换的时候，“替换内容”中可以使用`$1`、`${1}`、`$name`、`${name}`这样的“分组引用符”获取相应的分组内容，其中`$0`代表整个匹配项，`$1`代表第`1`个分组，`$2` 代表第 2 个分组，以此类推。
+
+### 6.2 regexp包
+通过这些方法，可以看出go regexp的设计哲学，至于好不好用，就仁者见仁智者见智了。
+1. `CompilePOSIX()`和`Compile()`：前者的匹配规则是最左最长，后者只匹配最左。
+2. `Compile(string) *Regexp, error`和`MustCompile(string) *Regexp`：两者都是返回优化后的Regexp结构体，该结构体有许多正则相关的方法。
+    
+    ```golang
+    r,_:=regexp.Compile("p([a-z]+)ch")
+    b:=r.MatchString("peach")
+    fmt.Println(b)  //true
+    ```
+3. 包含All的方法捕获所有match, 返回值是一个slice. 同时一般会提供一个参数n作为最大匹配次数。
+4. 包含String的方法对string类型进行匹配，反之对[]byte进行匹配。
+5. 包含Submatch的方法返回所有子匹配，返回值是一个slice. 位置0是对应整个正则表达式匹配结果，位置n(n>0)是第n个子表达式(group) 匹配结果。
+6. 包含Index的方法返回匹配的位置。例如，返回loc []int, 则与之对应的匹配字符为src[loc[0]:loc[1]].
+
+### 6.3 例子
+看下例子很容易就明白怎么使用了
+```golang
+// 验证是不是ip
+regexp.MatchString("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$", ip)
+
+// 判断是不是合法的数字
+regexp.MatchString("^[0-9]+$", os.Args[1])
+
+// 查找连续的非单词字母、非空白字符
+text := `Hello 世界！123 Go.`
+reg := regexp.MustCompile(`[^\w\s]+`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["世界！" "."]
+
+// 查找连续的非 ASCII 字符
+reg = regexp.MustCompile(`[[:^ascii:]]+`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["世界！"]
+
+// 查找连续的标点符号
+reg = regexp.MustCompile(`[\pP]+`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["！" "."]
+
+// 查找 Hello 或 Go
+reg = regexp.MustCompile(`Hello|Go`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["Hello" "Go"]
+
+// 查找行首以 H 开头，以空白结尾的字符串（非贪婪模式）
+reg = regexp.MustCompile(`(?U)^H.*\s`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["Hello "]
+
+// 查找以 hello 开头（忽略大小写），以 Go 结尾的字符串
+reg = regexp.MustCompile(`(?i:^hello).*Go`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1)) // ["Hello 世界！123 Go"]
+
+// 查找 Go.
+reg = regexp.MustCompile(`\QGo.\E`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["Go."]
+
+// 查找“单词边界”之间的字符串
+reg = regexp.MustCompile(`(?U)\b.+\b`)
+fmt.Printf("%q\n", reg.FindAllString(text, -1))// ["Hello" " 世界！" "123" " " "Go"]
+
+// 查找 Hello 或 Go，替换为 Hellaaa、Gaaa
+reg = regexp.MustCompile(`(?P<name>Hell|G)o`)
+fmt.Printf("%q\n", reg.ReplaceAllString(text, "${name}aaa")) // "Hellaaa 世界！123 Gaaa."
+
+// 验证email地址格式是否正确
+regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
+```
 
 ## 7 位运算/移位运算
 位运算主要用于底层性能优化，或者一些tricks，比如用0和1来表示两种状态，这样int8类型就可以表示16中状态了。
@@ -1647,6 +1827,30 @@ Varint（待补充）
 
 ## 2 常用包和方法
 
+### crypto
+#### crypto/md5
+使用md5加密的两种方法：
+```golang
+str := "abc123"
+
+// 方法一
+data := []byte(str)
+fmt.Println("data:", data)
+has := md5.Sum(data)
+md5str1 := fmt.Sprintf("%x", has) // 将[]byte转成16进制
+fmt.Println(md5str1)
+
+// 方法二
+w := md5.New()
+io.WriteString(w, str)                   //将str写入到w中
+md5str2 := fmt.Sprintf("%x", w.Sum(nil)) //w.Sum(nil)将w的hash转成[]byte格式
+fmt.Println(md5str2)
+
+// 生成32位md5字符串
+```
+### errs
+1. `New(code, msg string) *Error`
+
 ### fmt
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法跟`%v`差不多的方式格式化参数，并在最后添加一个换行符。
 
@@ -1680,7 +1884,7 @@ func main() {
 6. 进制格式化
     - `%d`:标准十进制格式化
     - `%b`:二进制，注意会把结果前面的0忽略掉，比如`int8(3)`的二进制是`00000011`,会输出`11`
-    - `%x`:十六
+    - `%x`:十六进制，`hex.EncodeToString([]byte) string`方法也是做类似的事。
 7. `%c`:输出给定整数的对应字符
 8. 浮点数格式化
     - `%f`:标准十进制格式化
@@ -1690,7 +1894,8 @@ func main() {
 11. 指定输出宽度,使用`[num]`:如`fmt.Printf("|%6s|%6s|\n", "foo", "b")`,会输出`|   foo|     b|`
 
     在有宽度的时候,默认是右对齐
-11. 输出左对齐,使用`-`:如`fmt.Printf("|%-6s|%-6s|\n", "foo", "b")`,会输出`|foo   |b     |`
+12. 输出左对齐,使用`-`:如`fmt.Printf("|%-6s|%-6s|\n", "foo", "b")`,会输出`|foo   |b     |`
+13. `%U`:输出为Unicode格式
 
 转义：
 1. 对`\n`等转义，有两种方法：
@@ -1725,18 +1930,27 @@ func main() {
 ### os
 os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．
 
-os包可以操作目录、操作文件、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组/环境信息、操作进程等
+os包可以操作目录、操作文件（文件操作的大多数函数都是在os包里）、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组/环境信息、操作进程等
 
 1. `Args[xxx]`：返回命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
 2. 操作系统架构:`runtime.GOARCH`
 
+文件操作：
+1. 新建文件
+    1. `Create(file_name string) (file *File, err Error)`：返回一个文件对象，默认权限是0666的文件，返回的文件对象是可读写的
+    2. `NewFile(fd uintptr, name string) *File`:根据文件描述符创建相应的文件，返回一个文件对象
+2. 打开文件
+    1. `Open(name string) (file *File, err Error)`：该方法打开一个名称为name的文件，但是是只读方式，内部实现其实调用了OpenFile。
+    2. `OpenFile(name string, flag int, perm uint32) (file *File, err Error)`：打开名称为name的文件，flag是打开的方式，只读、读写等，perm是权限
+3. 写文件：`(file *File)Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件， `(file *File) WriteString(s string) (ret int, err Error)`，写入string信息到文件
+4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中
+5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
+
 ### rand
 该包实现了伪随机数的生成
 
-### reflect
-反射机制就是在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同，反射的原理：待补充
-
-反射回来的类型大概有：
+### regexp
+正则相关，具体参考正则表达式章节
 
 ### runtime
 runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
@@ -1847,7 +2061,8 @@ golang查找依赖包路径的顺序如下：
 1. `fmt.Sprintf("%T",xxx)`:通过fmt包获取,其实也是通过反射获取的
 2. `reflect.TypeOf(xxx)`:通过反射获取
 3. 类型断言，有两种方式：
-    1. `xxx.(type)`：配合switch使用，如
+    1. Comma-ok断言：`value,ok := xxx.(type)`，断言成功的ok为true，否则为false
+    2. 配合switch使用，此时不需要ok:`xxx.(type)`：，如
         
         ```golang
         switch t := a.(type) {
@@ -1863,8 +2078,6 @@ golang查找依赖包路径的顺序如下：
             fmt.Printf("type [%T] not support!\n", t)
         }
         ```
-
-    2. `xxx.(<具体类型>)`:如果断言失败，会触发panic，所以最好判断再使用。
 
 注意:注意上面的方法都可以获取interface{}的实际类型
 
@@ -1903,18 +2116,26 @@ l5 := len(str)
 // 输出19
 ```
 
+### 1.10 invalid identifier character U+00A0
+因为代码里包含了`U+00A0`（不间断空格no-break space，空白符的一种），导致golang不能正常编译
+
+方法1（最简单）：放入模板字符串，然后打印到终端，然后从终端复制到编辑器里就是正常的字符
+方法2：替换掉所有的空白符或者空格之类的
+
+### 1.11 实现在shell中的覆盖输出
+覆盖单行的方法如下：
+在shell中输出的时候，使用`\r`（即回车符）会覆盖掉当前行前面的所有内容，`\r` stands for carriage return, implemented by many terminals as moving the cursor to the beginning of the current line, hence providing the "overwrite line" facility.；在play.golang.org中则是使用`\f`（换页符）
+
+多行的方法还没找到，似乎要借助cursor库
+
 ## 2 未解决
 1. 因式分解
 3. 编程范式
 4. Erlang风格的并发模型
 5. go支持Erlang语言为代表的面向消息编程思想
-6. 不清楚go的稳定性，所以目前很多公司还不太敢用
 7. 从源码安装软件怎么操作？二进制发行版和安装版的区别？
 10. protobuf的获得和使用
 11. go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？
-13. go generate 生成代码
-14. go type的几种写法
-15. why golang don't support Stored Procedure or Generic?
 16. 一些文章
     1. [http://blog.csdn.net/libaineu2004/article/details/49722651](http://blog.csdn.net/libaineu2004/article/details/49722651)
 21. 网友:string []byte 的转换是会拷贝的?
@@ -1928,7 +2149,6 @@ l5 := len(str)
         如果是这样的话,go的很多方法实现的汇编代码都可以抽空看看,应该值得学习的不少
     2. 调用了某个文件里声明的copy方法
 
-2. [网友写的go学习资料](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
 3. [为什么那么多开发人员用Go语言来构建自己的新项目](http://www.epubit.com.cn/article/942)
 4. [我为什么喜欢Go语言(简洁的Go语言)_Golang](https://edu.aliyun.com/a/12182)
 5. go的unsafe,Pointer,uintptr,funcPC,slicestringcopy,copyany
@@ -1973,3 +2193,4 @@ l5 := len(str)
         1. allows you to configure which warnings are displayed (including those from golint).
 
 27. 高并发的死锁：https://blog.golang.org/race-detector
+28. https://github.com/happyer/distributed-computing

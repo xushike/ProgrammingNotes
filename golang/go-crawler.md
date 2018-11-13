@@ -16,6 +16,22 @@ Go官网的server是32位的
 
 Golang 标准包布局：https://www.jianshu.com/p/022ba2dd9239
 
+# 六 问题
+## 1 已解决
+### 1.1 复用http.request.body的方法
+requset.body默认是readcloser
+
+方法一：取出来之后再用`ioutil.NopCloser()`设置进去
+```go
+// 把request的内容读取出来
+var bodyBytes []byte
+if c.Request.Body != nil {
+ bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+}
+// 把刚刚读出来的再写进去
+c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+```
+
 # 七 未整理
 1. https://blog.csdn.net/kenkao/article/details/55505742
 2. 参考：https://blog.csdn.net/superwebmaster/article/details/80319502

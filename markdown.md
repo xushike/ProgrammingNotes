@@ -71,9 +71,27 @@ Content from cell 1 | Content from cell 2
 Content in the first column | Content in the second column
 
 ### 转义
-不想显示Markdown标记时可以在markdown符号前面加上反斜杠或者用``包裹，比如
+对于Markdown标记，想直接显示有下面三种方法：
+1. 在markdown符号前面加上反斜杠
+2. 使用html里转义字符。比如将两个尖括号转义，写成`&lt;br&gt;`
+3. 或者用``包裹
+
+```
+\\ 反斜杠
+\` 反引号
+\* 星号
+\_ 下划线
+\{\} 大括号
+\[\] 中括号
+\(\) 小括号
+\# 井号
+\+ 加号
+\- 减号
+\. 英文句号
+\! 感叹号
 *This text will be bold*
 \*This text will be bold\*
+```
 
 ### 上标和下标
 19^th^
@@ -85,6 +103,7 @@ System.out.println("hello world!");
 ```
 ###  行内代码
 就是用``包裹，使用场景很模糊，本人觉得只要不混淆就随便用
+
 ###  注释(comment out)
 有两种
 

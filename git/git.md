@@ -577,15 +577,12 @@ git commit -m 'update .gitignore'
 ### 1.8 文件内容没变,但是git显示文件的被修改
 因为文件的权限被修改了.可以设置忽略检查文件的权限:`git config core.filemode false`
 
+### 1.9 Permission denied (publickey)...
+git协议需要配置ssh key并且上传到服务器上
+
 ## 2 未解决
-### 2.1 Permission denied (publickey)...
-这个问题应该有些复杂(待补充)
-
-临时解决方法是,将git协议换成https协议
-
 ### 2.N 其他
 2. git 可以只clone分支而不是master吗？
-3. 写到一半，要切换到另外一个分支怎么弄？
 4. win7 64位旗舰版下使用git reset --hard HEAD^无法恢复到上个版本
 网友的回答是:
     >你用的shell把^当做换行转义了, 类似于`\`;

@@ -31,7 +31,7 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 .app直接点开就可以运行，类似于win上面的exe，而.dmg需要安装
 
 ### 3.7 login shell 和 non-login shell，.bash_profile和.bashrc
-为什么会有login shell和non-login shell：会读取不同的配置文件。但mac的shell和linux不同，mac是每个新的bash shell（默认shell）都默认为login shell，而且只加载`.bash_profile`。如果是zsh shell，则加载`.zshrc`
+为什么会有login shell和non-login shell：会读取不同的配置文件。但mac的shell和linux不同，mac是每个新的bash shell（默认shell）都默认为login shell，而且只加载`.bash_profile`。如果是zsh shell，则只加载`.zshrc`
 
 # 二 安装配置
 1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
@@ -126,7 +126,6 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 设置：
 1. 新开标签页时切换到当前目录（默认是HOME目录）
 2. 修改option+左右箭头为移动一个单词（默认是输入字符）
-3. 默认的ctrl+tab切换tabs的顺序是"Cycle Tabs Forward/Backward"，和普通的tab切换顺序不太一样，感觉顺序有点乱。修改为"next/previous tab"
 3. 设置代理。。。
 
 操作：
