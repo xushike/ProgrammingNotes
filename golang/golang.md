@@ -1854,7 +1854,7 @@ fmt.Println(md5str2)
 ### fmt
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法跟`%v`差不多的方式格式化参数，并在最后添加一个换行符。
 
-许多类型都会定义一个String方法，因为当使用fmt包的打印方法时，将会优先使用该类型对应的String方法返回的结果打印.
+许多类型都会定义一个`String()`方法，因为当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回的结果打印.
 
 动词（verb）/占位符说明:
 
@@ -1915,6 +1915,30 @@ func main() {
 5. `Sprintf()`:格式化并返回一个字符串而不带任何输出
 2. `fmt.Errorf`函数使用`fmt.Sprintf`处理错误信息
 6. `Fprintf()`:依据指定的格式向第一个参数内写入字符串，第一参数必须实现了 io.Writer 接口。Fprintf() 能够写入任何类型，只要其实现了 Write 方法，包括 os.Stdout,文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入。适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入。
+
+### io
+学习包也是学习它的设计思想。比如io包，定义了4各基本操作原语(接口)，分别对应二进制流读、写、关闭、寻址操作：
+1. `Reader`
+2. `Writer`
+3. `Closer`
+4. `Seeker`
+
+有了 Reader 和 Writer 抽象，我们就可以格式化读写文件、内存块、字符串、网络文件等。（其实 java 1.5 就有了）
+
+然后定义了原语组合接口，表示常用的文件流处理，比如`ReadWriter`（包含`Reader`和`Writer`）、`ReadWriteCloser`（包含`Reader`、`Writer`和`Closer`）。
+
+为了兼容以往编程习惯，还定义了常见操作接口：
+1. `ReaderAt`、`WriterAt`
+2. `ByteReader`、`ByteWriter`
+3. `RuneReader`、`stringWriter`
+
+基于上面的接口，实现了常见（实用）的IO处理函数：
+1. `Copy`
+
+#### io/ioutil
+1. `io.Pipe()`提供了 线程安全 的管道服务
+
+其他的功能很多都比较鸡肋。
 
 ### math
 1. `Floor()`:向下取整。golang没有提供四舍五入的内置函数，自己实现如下：`math.Floor(xxx+0.5)`
