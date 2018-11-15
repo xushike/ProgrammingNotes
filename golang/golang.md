@@ -853,6 +853,11 @@ emp3 := struct {
     salary:    5000,
 }
 
+emp4 := []struct {
+    Name string
+    Age int64
+}{}
+
 fmt.Println("Employee 3", emp3)// 输出:Employee 3 {Andreah Nikola 31 5000}
 
 // 方法4：使用其他结构体来声明新的结构体
@@ -1429,6 +1434,8 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 ## 15 注释
 注释有两种形式：
 1. 行注释以`//`开始，至行尾结束。一条行注释视为一个换行符。
+    1. 下一行会在转化时，会作为同一个段落，如果要分段落，插入空行
+    2. 如果需要预格式化（比如示例代码）的部分，只要使用缩进即可
 2. 块注释 以`/*`开始，至`*/`结束。 块注释在包含多行时视为一个换行符，否则视为一个空格。
 
 注释的最佳实践:`//`之后应该加一个空格.(其他语言也应该这样))
@@ -1437,7 +1444,6 @@ go注释的规则：
 1. 注释不可嵌套
 2. 版权注释和 Package前面加一个空行，否则版权注释会作为Package的注释。
 3. 标识不被编译：`// +build generate`
-4. 标识代码是机器生成的（待补充）
 
 ### 15.1 文档注释
 几乎所有全局作用域的类型、常量、变量、函数和被导出的对象都应该有一个合理的注释。如果这种注释（称为文档注释）出现在函数前面，例如函数 Abcd，则要以 "Abcd..." 作为开头。如,
@@ -1455,6 +1461,8 @@ func enterOrbit() error {
 
 # 四 高级
 ## 1 go自带的工具（go tool套件）
+参考赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
+
 Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
 
 查看帮助：`go help xxx`，比如`go help generate`
@@ -1522,7 +1530,7 @@ go run *.go
 指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
 
 ### 1.9 go doc和godoc
-两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，而godoc是新版命令，后者可以启动本地文档服务器
+两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器；推荐使用后者
 
 #### go doc
 查看文档,挺方便的.
@@ -1530,8 +1538,10 @@ go run *.go
 2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
 
 #### godoc
-1. 查看包说明和`go doc`一样，查看具体方法/变量等的说明略有不同：`godoc pkg_name xxx`,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
-1. 启动本地文档服务器:`godoc -http=:6060`，然后通过`localhost:6060`就可以访问本地go的文档了，而且文档内容会比标准库多，因为官网只是标准库，而本地是`$GOPATH`和`GOROOT`下所有包生成的文档
+1. 查看包说明和`go doc`一样，查看具体方法/变量等的说明略有不同：`godoc pkg_name xxx...`,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
+2. 启动本地文档服务器:`godoc -http=:6060`，然后通过`localhost:6060`就可以访问本地go的文档了，而且文档内容会比标准库多，因为官网只是标准库，而本地是`$GOPATH`和`GOROOT`下所有包生成的文档
+3. `-src`在命令行中打印源代码
+4. `-ex`查看文档和示例代码
 
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
@@ -1650,13 +1660,7 @@ b := []byte(jsonStr)
     json.Unmarshal([]byte(i1),&info)    // info.C 为 100
     json.Unmarshal([]byte(i2),&info)    // info.C 为 33
     ```
-7. 反序列化的时候是大小写无关的
-
-注意：如果是字符串生成json，字符串似乎要写成小驼峰
-
-## 5 go连接其他数据库
-postgresql：
-1. https://godoc.org/github.com/lib/pq
+7. 反序列化的时候是大小写无关的，不管写没写tag
 
 ## 6 正则表达式（regular expression）和regexp包
 一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准（https://github.com/google/re2）：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
@@ -1827,6 +1831,9 @@ Varint（待补充）
 
 ## 2 常用包和方法
 
+### byfio
+封装了带缓存的io操作以及Scanner
+
 ### crypto
 #### crypto/md5
 使用md5加密的两种方法：
@@ -1852,7 +1859,7 @@ fmt.Println(md5str2)
 1. `New(code, msg string) *Error`
 
 ### fmt
-其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法跟`%v`差不多的方式格式化参数，并在最后添加一个换行符。
+其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。
 
 许多类型都会定义一个`String()`方法，因为当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回的结果打印.
 
@@ -1918,12 +1925,13 @@ func main() {
 
 ### io
 学习包也是学习它的设计思想。比如io包，定义了4各基本操作原语(接口)，分别对应二进制流读、写、关闭、寻址操作：
-1. `Reader`
+1. `Reader`：
+    1. 即使我们在读取的时候遇到错误，但是也应该也处理已经读到的数据，因为这些已经读到的数据是正确的，如果不进行处理丢失的话，读到的数据就不完整了
 2. `Writer`
 3. `Closer`
 4. `Seeker`
 
-有了 Reader 和 Writer 抽象，我们就可以格式化读写文件、内存块、字符串、网络文件等。（其实 java 1.5 就有了）
+有了 Reader 和 Writer 抽象，我们就可以格式化读写文件、内存块、字符串、网络文件等。（其实 java 1.5就有了）
 
 然后定义了原语组合接口，表示常用的文件流处理，比如`ReadWriter`（包含`Reader`和`Writer`）、`ReadWriteCloser`（包含`Reader`、`Writer`和`Closer`）。
 
@@ -1935,8 +1943,11 @@ func main() {
 基于上面的接口，实现了常见（实用）的IO处理函数：
 1. `Copy`
 
+以及不常用的接口：
+2. `io.Pipe()`提供了 线程安全 的管道服务，“Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”，适合于产生了一条数据，紧接着就要处理掉这条数据的场景。因为其内部是一把大锁，因此是线程安全的
+
 #### io/ioutil
-1. `io.Pipe()`提供了 线程安全 的管道服务
+2. `ReadAll`
 
 其他的功能很多都比较鸡肋。
 
@@ -1944,6 +1955,15 @@ func main() {
 1. `Floor()`:向下取整。golang没有提供四舍五入的内置函数，自己实现如下：`math.Floor(xxx+0.5)`
 
 ### net
+
+#### net/http
+发起http请求:
+1. Get:`http.Get()`
+2. Post:
+    1. `http.Post()`:第二个参数要设置成”application/x-www-form-urlencoded”，否则post参数无法传递
+    2. `http.PostForm()`
+3. 复杂的请求:`http.Do()`
+
 
 #### net/url
 1. `ParseRequestURI(string) *URL,err`：解析绝对URL到一个URL结构体中
@@ -2151,6 +2171,9 @@ l5 := len(str)
 在shell中输出的时候，使用`\r`（即回车符）会覆盖掉当前行前面的所有内容，`\r` stands for carriage return, implemented by many terminals as moving the cursor to the beginning of the current line, hence providing the "overwrite line" facility.；在play.golang.org中则是使用`\f`（换页符）
 
 多行的方法还没找到，似乎要借助cursor库
+
+### 1.12 golang读取文件的几种方法
+1. 所有文件放到一个
 
 ## 2 未解决
 1. 因式分解
