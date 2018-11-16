@@ -192,8 +192,6 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 这样可以非常高效的在不同应用之间切换,比如放PPT时,浏览器全屏阅读时等.
 
 ## 2 未解决
-4. .bash_profile和.bashrc和linux是反过来的？
-5. m2_home
 6. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
 7. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
 

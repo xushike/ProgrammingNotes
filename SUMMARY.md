@@ -27,7 +27,7 @@
     * [9.spring](java/9.spring.md)
 * [js](js/AllJS.md)
     * [1.NPM](js/1.NPM.md)
-    * [2.NodeJS](js/2.NodeJS.md)
+    * [2.Nodejs](js/2.Nodejs.md)
     * [3.Angular](js/3.Angular/3.Angular.md)
         * [3.1.AngularCLI](js/3.Angular/3.1.AngularCLI.md)
         * [3.2.AngularMaterial2](js/3.Angular/3.2.AngularMaterial2.md)
