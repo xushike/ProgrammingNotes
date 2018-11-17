@@ -1747,7 +1747,7 @@ regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
 ```
 
 ## 7 位运算/移位运算
-位运算主要用于底层性能优化，或者一些tricks，比如用0和1来表示两种状态，这样int8类型就可以表示16中状态了。
+位运算主要用于底层性能优化，或者一些tricks，比如用0和1来表示两种状态，这样int8类型就可以表示16种状态了。
 
 位运算操作符有以下：
 1. 左移`<<`和右移`>>`：比如右移2位写作`xxx >> 2`，超出位数的部分会被丢弃，不足的部分自动补0。
@@ -1966,10 +1966,13 @@ func main() {
 
 
 #### net/url
-1. `ParseRequestURI(string) *URL,err`：解析绝对URL到一个URL结构体中
-2. `ParseQuery(string) Values,err`：将query解析成Values结构体，传入的参数必须是url问号后的path
-3. `*URL.Query() Values`：里面调的`ParseQuery()`方法，只不过忽略了错误
-4. `Values.Set()、Get()、Add()、Del()`
+1. 将字符串转成url类型:`Parse()`
+2. 获取:`Scheme`、`User`（包含所有认证信息）、`User.Username()`、`User.Password()`、`Host`（包括主机名和端口信息）、`Path`（Host后面的）、`Fragment`、`RawQuery`（将查询参数解析成map）
+
+<!-- 1. `ParseRequestURI()`：解析绝对URL到一个URL结构体中
+2. `ParseQuery()`：将query解析成Values结构体，传入的参数必须是url问号后的path
+3. `*URL.Query()`：里面调的`ParseQuery()`方法，只不过忽略了错误
+4. `Values.Set()、Get()、Add()、Del()` -->
 
 ### os
 os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．
@@ -1989,6 +1992,16 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 3. 写文件：`(file *File)Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件， `(file *File) WriteString(s string) (ret int, err Error)`，写入string信息到文件
 4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中
 5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
+
+### path
+#### path/filepath
+1. 转成绝对路径`Abs()`
+2. 返回路径中最后的那个路径（通常是目录名或者文件名）:`Base()`
+3. 返回除最后的目录之外的路径（即最后的目录之前的路径）:`Dir`
+4. 返回带文件名的路径中的文件后缀名（如.txt）:`Ext()`
+5. 将路径中的`/`替换为`\`，多个`/`替换为多个`\\`:`FromSlash()`
+6. 连接路径成为一个完整路径:`Join()`
+7. 获取某个目录下的子目录:`ReadDir()`
 
 ### rand
 该包实现了伪随机数的生成
