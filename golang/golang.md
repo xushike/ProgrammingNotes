@@ -1176,7 +1176,7 @@ i = tom
 
 接口的嵌套：类似结构体的嵌套
 
-## 7 测试和go test
+## 7 单元测试、go test、Benchmark、Example
 轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
 
 对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
@@ -1191,6 +1191,14 @@ i = tom
 
 cached：go1.10开始在go test中引入了cached，规则参考：http://ju.outofmemory.cn/entry/344575，想关闭可以加上`-count=1`参数
 
+命令行参数:
+1. `-cover`：是否开启覆盖率统计。`-covermode`、`-coverpkg`、`-coverprofile`这些参数默认会打开这个选项
+2. `-covermode mode`：可选值有 set、count、atomic，其中 set （默认值）仅统计语法块是否覆盖，count 会统计语法块覆盖了多少次，atomic 用于多线程测试中统计语法块覆盖了多少次。
+3. `-coverpkg pattern1，pattern2，pattern3`：覆盖率统计 packages 的范围，若不设置默认只统计有执行了测试的 packages。
+4. `-coverprofile cover.out`：覆盖率 profile 文件输出地址
+5. `-timeout t`：单个测试用例的超时时间，默认值 10 分钟
+
+### 7.1 test
 参数:
 1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，如，
 
@@ -1200,19 +1208,45 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
     --- PASS: Testxxx (0.20s)
     ```
 
-`t *testing.T`的方法:
-1. `Log()`
-2. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
-3. `FailNow()`:将当前测试标识为失败并停止执行该测试， 在此之后， 测试过程将在下一个测试或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
-4. `Error(args)`：相当于在调用 `Log()` 之后调用 `Fail()` 
-5. `Fatal(err)`:调用 Fatal 相当于在调用 Log 之后调用 FailNow
-3. 跳过当前测试的方法`Skip()`：相当于调用`Log()`之后调用`SkipNow()`
+`t *testing.T`的接口:
+1. 打印信息：`Log()`和`Logf()`
+2. 失败：
+    1. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
+    2. `FailNow()`:将当前测试标识为失败并停止执行该测试， 在此之后， 测试过程将在下一个测试或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
+3. 跳过
+    1. `SkipNow()`跳过当前测试 
+    2. `Skip()`：相当于调用`Log()`之后调用`SkipNow()`
+    3. `Skiped` 检测是否跳过
+4. 综合接口
+    1. `Error(args)`：报告出错并继续。相当于在调用 `Log()` 之后调用 `Fail()` 
+    2. `Fatal(err)`：报告出错终止。相当于在调用`Log`之后调用`FailNow`
 4. 设置并发执行的测试数量`-parallel n`
 5. 竞争探测`-race`：用于探测高并发的死锁...
 6. `-cpu`
 
 注意：
 1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
+
+### 7.2 Example
+### 7.3 压力测试Benchmark
+形如`func BenchmarkXxx(b *testing.B)`，当`go test`带有bench相关参数就会执行benchmark关联的方法。循环体内需要使用`testing.B.N`，会自动计算合理的次数。
+
+命令相关参数：
+1. `-bench xxx`
+2. `-test.bench`：语法:`-test.bench="test_name_regex"`，`.*`表示测试全部压力测试函数
+3. `-count=num`：指定执行多少次
+4. `-benchmem`：输出内存情况。比如输出结果中的`144 B/op    2 allocs/op`，表示每次操作需要进行2次内存分配，分配114字节的内存
+5. `-benchtime=time`：性能测试运行的时间，默认是1s
+
+`b *testing.B`拥有`testing.T`的全部接口，除此之外还有：
+
+1. `SetBytes( i uint64)` 统计内存消耗， 如果你需要的话
+2. `SetParallelism(p int)` 制定并行数目
+3. `StartTimer / StopTimer / ResertTimer` 操作计时器
+
+`*testing.PB`接口：
+
+1. `Next()`：判断是否继续循环
 
 ## 8 反射和reflect包
 反射机制就是在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同。
@@ -1483,6 +1517,24 @@ go run *.go
 
 参数:
 1. `-o`：指定生成的可执行文件的名字
+2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
+    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
+
+        ```
+        go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
+        ```
+        会给这三个变量设置对应的值。
+
+        注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
+
+    2. `-w`去掉调试信息（无法使用gdb调试）
+    3. `-s` 禁用符号表
+3. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
+    1. `-N` 禁用优化
+    2. `-l` 禁用函数内联
+    3. `-u` 禁用unsafe代码
+    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析
+    5. `-S` 输出汇编代码
 
 ### 1.3 go install
 这个命令在内部实际上分成了两步操作：第一步是生成结果文件(可执行文件或者.a包)，第二步会把编译好的结果移到$GOPATH/bin或者$GOPATH/pkg，生成的可执行文件默认是是父级目录名
@@ -1803,6 +1855,49 @@ regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
 
 Varint（待补充）
 
+## 9 go性能调优
+
+### 9.2 编译优化
+三个重要的优化：逃逸分析、内联、死码消除。内联和死码消除是一起工作的。
+
+#### 逃逸分析（escape analysis）
+1. 尽量使用局部变量：stack作用域是本地的（locals），在函数执行完之后会自动收回，CPU控制，效率高；而heap则需要由程序来管理，效率低。应该把不需要传出的参数尽量控制在函数内。
+
+#### 内联（inlining）
+什么是字面函数：在Go语言中，lamda、匿名函数和内联函数的实现称作字面函数（function literals）。当一个函数足够小时，你可以创建一个字面函数。如
+
+```golang
+substract := func(a, b int) int { return a - b }
+fmt.Print("--substraction function literals: ", substract(10, 2), "\n")
+```
+
+什么是函数内联（or内联函数）：比如我有如下两个函数，编译器编译`Double()`的时候，发现`Max()`是可以内联的并且它的源代码也存在，为了降低调用`Max()`的成本，这时编译器会插入`Max()`函数的源代码，而不是插入一个`Max()`的调用，即把`Max()`内联到`Double()`函数里。
+```go
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+func Double(a, b int) int {
+	return 2 * Max(a, b)
+}
+```
+
+#### 死码消除（dead code elimination）
+内联使其他优化成为了可能：比如下面例子，编译的时候就知道`getBool()`返回false，内联后就知道`if xxx {}`里面的代码不会被执行，代码就不会编译进去，即死码消除。
+```golang
+func getBool() bool {
+	return false
+}
+
+func test() {
+	if getBool() {
+		// some unreachable code
+	}
+}
+```
+
 
 # 五 经验
 ## 1 go编程思想和习惯
@@ -2044,11 +2139,11 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 
     有空研究一下里面的实现原理
 2. `Replace(str, " ", "", -1)`:去掉字符中所有的空格(实测回车和换行都去除不掉)
-2. `Replace(str, "\n", "", -1)`:去掉字符中所有的换行
+3. `Replace(str, "\n", "", -1)`:去掉字符中所有的换行
 4. `Join()`和`Split()`:可以看成两个功能相反的方法
+5. 使用`strings.TrimPrefix／strings.TrimSuffix`掐头去尾
 
-最佳实践:
-1. 使用`strings.TrimPrefix／strings.TrimSuffix`掐头去尾,而不是自己去判断
+go1.10开始新增了builder类型，用于提高字符串拼接性能，用法类似buffer
 
 ### strconv
 该包用于string类型的各种转换

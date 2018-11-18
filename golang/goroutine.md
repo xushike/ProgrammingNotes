@@ -204,6 +204,30 @@ println("timeout")
 
 ## 8 基于共享变量的并发
 
+## 9 go的运行时调度器(Runtime Scheduler)
+Goroutine 是协作式调度(Cooperative Scheduled)的，而不是依靠内核来调度。
+
+### 9.1 触发和不触发调度器的情况
+调度器会在GC、“go”声明、阻塞channel操作、阻塞系统调用和lock操作后运行。它也会在非内联函数调用后执行。即如下情况会触发goroutine调度：
+1. 阻塞的chan 收发
+2. go声明
+2. gc
+2. C函数调用（本质上和syscall一样）
+3. 主动调用runtime.Gosched
+4. 某个goroutine的调用时间超过100ms，并且这个goroutine调用了非内联的函数
+
+但是其他情况就不会触发调度，最简单的比如下面这个例子，因为空的for循环，会导致其他协程永远无法得到运行:
+```go
+runtime.GOMAXPROCS(1)
+go func() {
+    done = true
+}()
+
+for !done {
+    // forever run 
+}
+```
+
 # 四 高级
 ## 1 go的线程模型
 三个核心元素支撑起了这个模型的主框架：
