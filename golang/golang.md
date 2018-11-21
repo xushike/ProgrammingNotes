@@ -1249,11 +1249,15 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 1. `Next()`：判断是否继续循环
 
 ## 8 反射和reflect包
-反射机制就是在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同。
+参考：https://juejin.im/post/5a75a4fb5188257a82110544
+
+反射的定义：通过采用某种机制来实现对自己行为的描述（self-representation）和监测（examination），并能根据自身行为的状态和结果，调整或修改应用所描述行为的状态和相关的语义。可以在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同，并且有些不支持反射。
 
 反射的原理：待补充
 
 反射回来的类型大概有：待补充
+
+<!-- 使用反射之前需要了解（感觉不够准确，后面再补充吧）：go的变量包括type和value两部分（所以nil!=nil？），type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、[]string)，concrete type是runtime系统看见的类型；类型断言能否成功，取决于变量的concrete type，而不是static type. 因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer。反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说，它的value是实际变量值，type是实际变量的类型，该pair对在连续赋值的过程中是不变的，所以反射就是用来检测存储在接口变量内部(值value，类型concrete type) pair对的一种机制。 -->
 
 使用反射一般分为三步：
 1. 要去反射是一个类型的值(这些值都实现了空interface)，首先需要把它转化成reflect对象(reflect.Type或者reflect.Value，根据不同的情况调用不同的函数)
@@ -1279,18 +1283,78 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
     fmt.Println("value:", v.Float())
     ```
 
-修改值：反射的字段必须是可读写的意思如下（？）
+修改值：
 ```golang
-// 如果下面这样写，那么会发生错误
-var x float64 = 3.4
-v := reflect.ValueOf(x)
-v.SetFloat(7.1)
-// 如果要修改相应的值，必须这样写
 var x float64 = 3.4
 p := reflect.ValueOf(&x)
 v := p.Elem()
 v.SetFloat(7.1)
 ```
+
+表现类型和实际类型在连续赋值的过程中是不会变的？
+
+常用函数：
+1. 两种类型
+    1. `Typeof()`和`Value.Type()`：api里说的是dynamic representation type，就是表现类型，
+    2. `Kind()`：返回concrete type，可以理解为实际类型，这些类型是有限的，比如int、struct、map、对于空接口返回的Invalid等
+2. `ValueOf()`
+3. `Value.Elem()`：获取反射对象指针指向的值，如果指针的地址是可修改的（`CanSet()`方法为true），那么获取后就可以对它进行修改。非指针则panic
+4. `Value.Interface().(xxx)`：可以将“反射类型对象”转变回“接口类型变量”，失败则panic
+    
+    ```go
+    // Value 转原始类型
+    if u1, ok := v.Interface().(User); ok {
+        fmt.Println("after:", u1.Name, u1.Age)
+    }
+    ```
+
+5. `DeepEqual()`
+
+
+获取结构体的字段和方法：
+```go
+type User struct {
+	Id   int
+	Name string
+	Age  int
+}
+
+func (u User) ReflectCallFunc() {
+	fmt.Println("Allen.Wu ReflectCallFunc")
+}
+
+user := User{1, "Allen.Wu", 25}
+
+// 获取方法字段
+// 1. 先获取interface的reflect.Type，然后通过NumField进行遍历
+// 2. 再通过reflect.Type的Field获取其Field
+// 3. 最后通过Field的Interface()得到对应的value
+getType := reflect.TypeOf(user)
+for i := 0; i < getType.NumField(); i++ {
+    field := getType.Field(i)
+    value := getValue.Field(i).Interface()
+    fmt.Printf("%s: %v = %v\n", field.Name, field.Type, value)
+}
+
+// 获取方法：先获取interface的reflect.Type，然后通过.NumMethod进行遍历
+for i := 0; i < getType.NumMethod(); i++ {
+    m := getType.Method(i)
+    fmt.Printf("%s: %v\n", m.Name, m.Type)
+}
+
+// output:
+// Id: int = 1
+// Name: string = Allen.Wu
+// Age: int = 25
+// ReflectCallFunc: func(main.User)
+```
+StructField相关：
+1. `Tag`
+2. `Anonymous`
+3. `PkgPath`：如果字段是导出则为空
+
+反射对象的方法相关：
+
 
 ## 12 底层编程
 ## 13 错误处理
@@ -1582,7 +1646,7 @@ go run *.go
 指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
 
 ### 1.9 go doc和godoc
-两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器；推荐使用后者
+两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器
 
 #### go doc
 查看文档,挺方便的.
@@ -2041,6 +2105,34 @@ func main() {
 以及不常用的接口：
 2. `io.Pipe()`提供了 线程安全 的管道服务，“Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”，适合于产生了一条数据，紧接着就要处理掉这条数据的场景。因为其内部是一把大锁，因此是线程安全的
 
+读取文件的例子：
+```go
+f, err := os.Open("/test.txt")
+if err != nil {
+    panic(err)
+}
+defer f.Close()
+fd, err := ioutil.ReadAll(f)
+if err != nil {
+    panic(err)
+}
+fmt.Println(string(fd))
+```
+
+写文件的例子：
+```go
+func writeFile(path string, b []byte) {
+    file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
+    defer file.Close()
+
+    if err != nil {
+        panic(err)
+    }
+
+    file.Write(b)
+}
+```
+
 #### io/ioutil
 2. `ReadAll`
 
@@ -2050,6 +2142,16 @@ func main() {
 1. `Floor()`:向下取整。golang没有提供四舍五入的内置函数，自己实现如下：`math.Floor(xxx+0.5)`
 
 ### net
+简单的获取 IP：
+```go
+func GetPulicIP() string {
+    conn, _ := net.Dial("udp", "8.8.8.8:80")
+    defer conn.Close()
+    localAddr := conn.LocalAddr().String()
+    idx := strings.LastIndex(localAddr, ":")
+    return localAddr[0:idx]
+}
+```
 
 #### net/http
 发起http请求:
@@ -2098,6 +2200,25 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 6. 连接路径成为一个完整路径:`Join()`
 7. 获取某个目录下的子目录:`ReadDir()`
 
+遍历目录下的文件
+```go
+func getFilelist(r string) {
+    err := filepath.Walk(r, func(p string, f os.FileInfo, err error) error {
+        if f == nil {
+            return nil
+        }
+        if p == r || f.IsDir() {
+            return nil
+        }
+        fmt.Println(p)
+        return nil
+    })
+    if err != nil {
+        fmt.Printf("filepath.Walk() returned %v\n", err)
+    }
+}
+```
+
 ### rand
 该包实现了伪随机数的生成
 
@@ -2126,7 +2247,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 }
 ```
 4. `NumCPU() int`：获取系统的逻辑CPU数量
-5. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
+5. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量），从1.5开始成为默认设置（之前默认是1）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
 
 ### sort
 排序相关算法,原理待补充：
@@ -2152,6 +2273,40 @@ go1.10开始新增了builder类型，用于提高字符串拼接性能，用法�
 3. 查看int的位数`strconv.IntSize`
 
 ### sync
+参考：
+1. https://deepzz.com/post/golang-sync-package-usage.html
+
+互斥锁`Mutex`：锁定指的是锁定互斥锁，而不是说去锁定一段代码。也就是说，当代码执行到有锁的地方时，它获取不到互斥锁的锁定，会阻塞在那里，从而达到控制同步的目的。
+1. `Lock()`
+2. `UnLock()`
+
+读写锁`RWMutex`：针对读写操作的互斥锁，读写锁与互斥锁最大的不同就是可以分别对 读、写 进行锁定。一般用在大量读操作、少量写操作的情况
+
+`WaitGroup`:用于等待一组 goroutine 结束。Add用来添加 goroutine 的个数（要写在go func前面）。Done 执行一次数量减 1。Wait 用来等待结束
+1. `Add()`
+2. `Done()`
+3. `Wait()`
+
+例子
+```go
+var wg sync.WaitGroup
+for i := 0; i < 5; i++ {
+    // 计数加 1
+    wg.Add(1)
+    go func(i int) {
+        // 计数减 1
+        defer wg.Done()
+        time.Sleep(time.Second * time.Duration(i))
+        fmt.Printf("goroutine%d 结束\n", i)
+    }(i)
+}
+
+// 等待执行结束
+wg.Wait()
+fmt.Println("所有 goroutine 执行结束")
+```
+
+`Cond`唤醒锁
 
 #### sync/atomic
 提供一些原子操作，比如：

@@ -616,10 +616,12 @@ non-login shell：取得shell的方法不需要重复登录流程的就是non-lo
 ## 8 curl
 文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等
 参数：
-1. `-X`:指定协议，比如POST、GET、DELETE等
-2. `-H 'data'`:自定义头信息传递给服务器
-3. `-d 'data'`：HTTP POST方式传送数据
-4. `-F 'data'`:模拟http表单提交数据
+1. `-X`:指定request method：POST、GET、DELETE等，默认是GET
+2. `-H 'xxx: xxx'`:自定义头信息传递给服务器
+3. `-d 'xxx'`：HTTP POST方式传送数据
+4. `-F 'xxx'`:模拟http表单提交数据
+
+例子如：`curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
 
 ## 10 其他
 1. 别名`alias`
