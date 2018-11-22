@@ -86,10 +86,9 @@ ssh 秘钥公钥的原理
 多个秘钥的情况
 
 
-## 4 文档
-
-## 5 网站
+## 4 文档视频资料
 1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
+2. 网友翻译的linus关于git的演讲：https://v.youku.com/v_show/id_XMzg5MjIzODM3Mg==.html
 
 # 二 安装配置
 ## 1 win

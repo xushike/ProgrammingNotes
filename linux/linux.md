@@ -618,7 +618,7 @@ non-login shell：取得shell的方法不需要重复登录流程的就是non-lo
 参数：
 1. `-X`:指定request method：POST、GET、DELETE等，默认是GET
 2. `-H 'xxx: xxx'`:自定义头信息传递给服务器
-3. `-d 'xxx'`：HTTP POST方式传送数据
+3. `-d 'xxx'`：HTTP POST方式传送的body数据
 4. `-F 'xxx'`:模拟http表单提交数据
 
 例子如：`curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
