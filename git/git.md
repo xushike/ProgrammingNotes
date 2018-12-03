@@ -12,7 +12,7 @@ git是linus用c写的
 
 ## 3 常识
 ### 3.1 commit id（版本号）
-就是commit信息里的那一长串数字,SHA1计算出来的一个非常大的数字，用十六进制表示.
+就是commit信息里的那一长串数字,SHA1计算出来的一个非常大的数字，用十六进制表示。所以经常看到的sha1 hash、sha1 id和commit id是一个东西。
 
 ### 3.2 三棵树
 官方参考资料:[https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#_git_reset)

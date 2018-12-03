@@ -112,6 +112,9 @@ ASCII码： 00110101 00110110 00110111 00111000
 
 序列化和编码的区别：编码也是一种约定数据的含义的方式。与序列化不同，其约定的是更底层一些的数据含义，例如字符的表示，有ASCII、UTF-8、GBK等等，例如整数的表示，1=00000001一个字节，编码约定了数据格式的最小单元，序列化是依赖于字符编码之上的一种数据格式。
 
+### 1.20 Host OS 和 Guest OS 是什麼
+Host (或是叫做 Host OS )指的是用來安裝虛擬機器軟體的作業系統，而 Guest ( 也叫做 Guest OS) 則是指安裝在虛擬機器上的作業系統，舉例來說，阿舍在筆電上裝了 Winodws 7，然後在 Windows 7 上安裝了 VirtualBox 或 VMWare，接著，再把 Ubuntu 或 Windows XP 裝在 由 VirtualBox 或是 VMWare 建立的虛擬機器上，那麼，這個裝在 VirtualBox 或是 VMWare 虛擬機器的 Ubuntu 或是 Windows XP 就叫做 Guest OS，而阿舍原本筆電上安裝的 Windows 7 就是 Host OS
+
 # 四 高级
 ## 1 未来方向
 ### 无服务器

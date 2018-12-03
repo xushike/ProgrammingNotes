@@ -207,6 +207,7 @@ Go源码文件包括三种：命令源码文件、库源码文件和测试源码
 2. swarm
 3. docker
 4. k8s
+5. 高性能json库：https://github.com/json-iterator/go
 
 # 二 安装配置
 go的环境变量说明:
@@ -842,7 +843,7 @@ type Student struct {
     phone string
 }
 
-// 方法3：匿名结构体:只创建结构体变量而没有定义新的结构体类型，因为没有类型，所以对它的赋值似乎只能使用选择器的方法
+// 方法3：匿名结构体（注意几种写法的不同）:只创建结构体变量而没有定义新的结构体类型，因为没有类型，所以对它的赋值似乎只能使用选择器的方法
 emp3 := struct {
     firstName, lastName string
     age, salary         int
@@ -853,7 +854,12 @@ emp3 := struct {
     salary:    5000,
 }
 
-emp4 := []struct {
+var emp4 struct {
+    irstName, lastName string
+    age, salary        int
+}
+
+emp5 := []struct {
     Name string
     Age int64
 }{}
@@ -1212,9 +1218,9 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 1. 打印信息：`Log()`和`Logf()`
 2. 失败：
     1. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
-    2. `FailNow()`:将当前测试标识为失败并停止执行该测试， 在此之后， 测试过程将在下一个测试或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
+    2. `FailNow()`:将当前测试标识为失败并停止执行该Test函数， 在此之后， 测试过程将在下一个Test函数或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
 3. 跳过
-    1. `SkipNow()`跳过当前测试 
+    1. `SkipNow()`跳过当前Test函数
     2. `Skip()`：相当于调用`Log()`之后调用`SkipNow()`
     3. `Skiped` 检测是否跳过
 4. 综合接口
@@ -1228,6 +1234,20 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
 
 ### 7.2 Example
+这种写法更加简洁方便，不需要参数。隐式规则似乎是输出标志只能写到末尾，后面不能再插入代码，后面的验证内容不能空行，会以当前function的所有`fmt`打印的内容拿来和验证内容对比。每个function的末尾都可以带输出标志，但是只有当前执行的function末尾的验证内容会拿来作为验证。如果写得不对，测试用例不会被go test识别。
+
+输出标志有两种：`Output:`和`Unordered output:`，后者表示无序。
+
+对整个包测试可以写成`ExamplePkgName`，如`ExampleSort`
+
+对function或者type进行测试写成`ExampleFunctionName`or`ExampleTypeName`，如`ExampleFoo`，如果有多个例子，可以用下划线小写（不是小驼峰吗？），如`ExampleReverse_second`、`ExampleReverse_third`
+
+对type的method进行测试`ExampleTypeName_MethodName`，如`ExampleBar_Qux`
+
+遵照上面的写法，在最后的go doc中会生成对应的Example。
+
+看官网的例子发现过程中需要处理err的用的是log。
+
 ### 7.3 压力测试Benchmark
 形如`func BenchmarkXxx(b *testing.B)`，当`go test`带有bench相关参数就会执行benchmark关联的方法。循环体内需要使用`testing.B.N`，会自动计算合理的次数。
 
@@ -1631,6 +1651,7 @@ go run *.go
 - `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
 - `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
 - `...`：在后面加上三个点表示。。。
+- `-d`：下载包后停止，不要安装。
 
 注意:
 1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
@@ -1676,7 +1697,7 @@ go run *.go
 ### 3.1 待整理
 编译器源码目录下，src/cmd/compile/internal
 
-## 4 golang json处理
+## 4 golang json处理（待重新整理）
 最常用的是下面两个方法，其中的`v interface{}`可以是struct、map、slice。
 
 例子1:
@@ -1708,11 +1729,22 @@ Go类型和JSON类型的对应关系如下：
 - nil 代表 JSON null.
 - interface{} 按照内部的实际类型进行转换
 
-标签tag：就是上面的结构体每个字段后面反引号包裹的内容，在转成json时会用到.
-1. 如果tag设置为`json:"-"`，那么这个字段不会输出到JSON
+标签tag（也称为字段的元数据）：就是上面的结构体每个字段后面反引号包裹的内容，可以是任意的字符串，但是通常是用空格分割的key:value键值对序列，因为Tag中包含了双引号字符串，因此一般用原生字符串形式书写。key是json的会在json的转换时用到，key是xml会在xml转换时用到，以此类推，还可以自定义，比如第三方包用到的validate。
+1. 如果tag设置为`json:"-"`，从结构体生成json的时候该字段不会输出到JSON，但是从json解析到结构体的时候会初始化为零值
 2. tag中带有自定义名称，那么这个自定义名称会出现在JSON的字段名中，例如上面的vehBrand
 3. tag中如果带有"omitempty"选项，那么如果该字段值为空，就不会输出到JSON串中
 4. 如果字段类型是bool, string, int, int64等，而tag中带有",string"选项，那么这个字段在输出到JSON的时候会把该字段对应的值转换成JSON字符串
+
+    ```go
+    type Account struct {
+        Money    float64 `json:"money,string"`
+    }
+
+    var data string = `{
+        "money" : "100.5" 
+    }`
+    // 上面的data不能没有双引号，否则会报错
+    ```
 
 通过字符串直接生成[]byte类型的json：
 ```golang
@@ -1721,15 +1753,15 @@ b := []byte(jsonStr)
 ```
 
 ### 4.1 解析JSON`func Unmarshal(data []byte, v interface{}) error`:注意这儿v必须是指针
-1. 解析到结构体(已知被解析的JSON数据结构)
+可以解析到以下三种数据类型里。如果go类型是`interface{}`，而json类型是数字，解析之后默认会变成科学计数法：
+1. （最推荐）解析到结构体(已知被解析的JSON数据结构)，可以直接使用
     1. 例如JSON的key是Foo，那么怎么找对应的字段呢？
         1. 首先查找tag含有Foo的可导出的struct字段(首字母大写)
         2. 其次查找字段名是Foo的导出字段
         3. 最后查找类似FOO或者FoO这样的除了首字母之外其他大小写不敏感的导出字段
     2. 能够被赋值的字段必须是可导出字段(即首字母大写）。同时JSON解析的时候只会解析能找得到的字段，找不到的字段会被忽略，这样的一个好处是：当你接收到一个很大的JSON数据结构而你却只想获取其中的部分数据的时候，你只需将你想要的数据对应的字段名大写，即可轻松解决这个问题。
-
-2. 解析到interface{}(未知)：例子如下，但好像可以直接用全部类型是string的去接收而不用这么麻烦？
-
+2. （次推荐）解析到`map[string]interface{}`，这样使用的时候就不需要断言，个人感觉比较适合在框架里使用
+3. （最不推荐）解析到`interface{}`，使用的时候还需要断言：
     ```golang
     b := []byte(`{"Name":"Wednesday","Age":6,"Parents":["Gomez","Morticia"]}`)
     var f interface{}
@@ -1745,8 +1777,9 @@ b := []byte(jsonStr)
             "Morticia",
         },
     }
-
     ```
+
+延迟解析：可以把结构体字段的类型定义为`json.RawMessage`，解析后会以`[]byte`存在，用的时候再解析成对应的类型。
 
 ### 4.2 生成JSON`func Marshal(v interface{}) ([]byte, error)`：
 1. 默认输出字段名的首字母都是大写的，如果你想用小写的首字母怎么办呢？首先想到的是把结构体的字段名改成首字母小写的，但是JSON输出的时候，只有导出的字段才会被输出，如果如果修改字段名首字母小写，那么就会发现什么都不会输出，所以必须通过struct tag定义来实现。
@@ -1777,6 +1810,10 @@ b := []byte(jsonStr)
     json.Unmarshal([]byte(i2),&info)    // info.C 为 33
     ```
 7. 反序列化的时候是大小写无关的，不管写没写tag
+
+其他常用函数：
+1. `MarshalIndent()`：`Marshal()`函数返回的JSON字符串是没有空白字符和缩进，这种紧凑的表示形式是传输时最常用的，但是肉眼看起来就不方便，而`MarshalIndent()`可以生成便于阅读的格式，第二个参数表示前缀，第三个参数表示缩进排版。
+2. `NewDecoder().Decode()`：作用等于`Unmarshal`，不过`json.Decoder`可以多次解码
 
 ## 6 正则表达式（regular expression）和regexp包
 一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准（https://github.com/google/re2）：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
@@ -2056,12 +2093,13 @@ func main() {
     - `%f`:标准十进制格式化
     - `%e`和`%E`:科学计数法
 9. `%s`:对给定字符串进行原样输出.比如字符串有一个空行,输出结果中也会有一个空行
-10. `%p`:输出指针的值.如`fmt.Printf("%p\n", &p)`，会输出`0xc42000e280`。同一个对象的不同引用的指针是一样的。
-11. 指定输出宽度,使用`[num]`:如`fmt.Printf("|%6s|%6s|\n", "foo", "b")`,会输出`|   foo|     b|`
+10. `%q`:安全地转义成单引号or双引号围绕的字符字面值，如`Printf("%q", 0x4E2D) // '中'`
+11. `%p`:输出指针的值.如`fmt.Printf("%p\n", &p)`，会输出`0xc42000e280`。同一个对象的不同引用的指针是一样的。
+12. 指定输出宽度,使用`[num]`:如`fmt.Printf("|%6s|%6s|\n", "foo", "b")`,会输出`|   foo|     b|`
 
     在有宽度的时候,默认是右对齐
-12. 输出左对齐,使用`-`:如`fmt.Printf("|%-6s|%-6s|\n", "foo", "b")`,会输出`|foo   |b     |`
-13. `%U`:输出为Unicode格式
+13. 输出左对齐,使用`-`:如`fmt.Printf("|%-6s|%-6s|\n", "foo", "b")`,会输出`|foo   |b     |`
+14. `%U`:输出为Unicode格式
 
 转义：
 1. 对`\n`等转义，有两种方法：
@@ -2176,7 +2214,7 @@ os包中实现了平台无关的接口，设计向Unix风格，但是错误处�
 
 os包可以操作目录、操作文件（文件操作的大多数函数都是在os包里）、操作环境变量、退出程序、替换字符串中的`$xxx`、获取用户/组/环境信息、操作进程等
 
-1. `Args[xxx]`：返回命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
+1. `Args[xxx]`：返回路径和命令行参数，其中`Arsg[0]`是文件执行时的相对路径，`Args[1]`开始才是命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
 2. 操作系统架构:`runtime.GOARCH`
 
 文件操作：
@@ -2189,6 +2227,9 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 3. 写文件：`(file *File)Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件， `(file *File) WriteString(s string) (ret int, err Error)`，写入string信息到文件
 4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中
 5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
+
+调用外部程序：
+1. `StartProcess()`
 
 ### path
 #### path/filepath
@@ -2435,20 +2476,22 @@ l5 := len(str)
 
 多行的方法还没找到，似乎要借助cursor库
 
-### 1.12 golang读取文件的几种方法
+### 1.12 golang读取文件的几种方法（待补充）
 1. 所有文件放到一个
+
+### 1.13 下载
 
 ## 2 未解决
 1. 因式分解
-3. 编程范式
-4. Erlang风格的并发模型
-5. go支持Erlang语言为代表的面向消息编程思想
-7. 从源码安装软件怎么操作？二进制发行版和安装版的区别？
-10. protobuf的获得和使用
-11. go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？
-16. 一些文章
+2. 编程范式
+3. Erlang风格的并发模型
+4. go支持Erlang语言为代表的面向消息编程思想
+5. 从源码安装软件怎么操作？二进制发行版和安装版的区别？
+6.  protobuf的获得和使用
+7.  go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？
+8.  一些文章
     1. [http://blog.csdn.net/libaineu2004/article/details/49722651](http://blog.csdn.net/libaineu2004/article/details/49722651)
-21. 网友:string []byte 的转换是会拷贝的?
+9.  网友:string []byte 的转换是会拷贝的?
 
 # 七 待整理
 1. go源代码的分析
