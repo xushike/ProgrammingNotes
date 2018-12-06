@@ -91,7 +91,7 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
 ### 2.7 Homebrew
-mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件都被约束在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。
+mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。而且它还会自动安装依赖和设置好环境变量。
 
 安装:官网脚本进行安装,我安装时卡在`     HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
 
@@ -100,11 +100,11 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`
 
 常用命令:
-1. 搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
+1. 模糊搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
     1. 使用`info`时，没安装的会提示`not installed`
 2. 更新brew自身：`brew update`
 3. 更新软件:`brew upgrade name`，不加name则是更新所有可以更新的软件。
-    1. 清理旧版本:`brew cleanup`
+    1. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等
 2. 显示安装的服务：`brew services list`
 3. 安装服务的启动、停止、重启：`brew services start/stop/restart serverName`
 
@@ -112,7 +112,14 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 
 关于安装jdk：官网上的jdk是pkg格式的，和.app不一样，且没有自动卸载方式。可以用brew cask安装，似乎管理更加方便。
 
-(待研究)：brew安装时的网络问题
+目录说明：
+1. brew下载的文件缓存的位置(download cache):`brew --cache`，我的是`$HOME/Library/Caches/Homebrew`
+2. 非cask包的安装位置:`/usr/local/Cellar`，同时会被软链接到`/usr/local/opt`，命令会被软链接到`/usr/local/bin`
+3. cask包安装在`/usr/local/Caskroom`，然后软链接到`~/Applications`
+
+`formula`的意思：应该是指一个完整的软件。
+
+为什么取名homebrew：似乎是作者比较关心酒，而且没想到这个软件会这么火，而且文件夹名称也是用的Cella（地窖）。
 
 ### 2.8 iterm2和on-my-zsh
 两者结合食用，效果不错。
