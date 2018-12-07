@@ -91,7 +91,7 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
 ### 2.7 Homebrew
-mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件在`/usr/local/`一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。而且它还会自动安装依赖和设置好环境变量。
+mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos.Homebrew最棒的一点是：所有的文件在`/usr/local/`（`brew config`里的`HOMEBREW_PREFIX`）一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。而且它还会自动安装依赖和设置好环境变量。
 
 安装:官网脚本进行安装,我安装时卡在`     HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
 
@@ -197,6 +197,9 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 为什么需要该设置:咱们可以这么想，20岁的你经常使用电脑，难道70岁后的你就不使用了？中间的五十年，一天操作下来省下几分钟，50年的每天几分钟，加起来就是一个很大很大的数目了。
 
 这样可以非常高效的在不同应用之间切换,比如放PPT时,浏览器全屏阅读时等.
+
+### 1.8 强行新开一个应用实例
+比如WeChat，点击图标的话是不会打开两个的，可以用命令`open -n /Applications/WeChat.app/Contents/MacOS/WeChat`
 
 ## 2 未解决
 6. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
