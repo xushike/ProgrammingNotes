@@ -17,10 +17,11 @@ Flutter是Google下一代操作系统Fuchsia的UI框架，在保持原生性能�
 # 二 安装配置
 ## 1 mac
 1. 下载后flutter SDK解压后，将flutter的bin添加到PATH中。
-2. 运行`flutter doctor`查看其它依赖
-3. 在android studio中安装flutter插件
-4. 安装xcode
-5. 设置IOS simulator
+2. 安装jdk
+3. 运行`flutter doctor`查看其它依赖
+4. 在android studio中安装flutter插件,以及许可`flutter doctor --android-licenses`
+5. 安装xcode
+6. 设置IOS simulator
 
 在vscode上运行debug：
 1. 如果卡在`Resolving dependencies...`，运行下`./android/gradlew`

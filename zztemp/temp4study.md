@@ -167,8 +167,6 @@
 1. xxx协议：http://www.bittorrent.org/index.html
     1. https://www.cnblogs.com/LittleHann/p/6180296.html
 1. golang
-    1. number of Unicode和number of character是一样的？
-    2. 在zsh中打印的的时候如果没有换行，会多一个百分号
     3. 大神推荐将该项目作为学习的项目，代码非常优美：github.com/golang/groupcache；然后是gin框架的代码，代码量比前者大10倍左右，不过代码不复杂，只有路由的部分比较复杂。
         1. 怎么做这样的文档：https://godoc.org/github.com/golang/groupcache
 1. 2147483647

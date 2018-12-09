@@ -17,4 +17,11 @@ Unix System Resource,一般放程序软件,注意不是user
 
 执行顺序:如果两个目录下有相同的可执行程序，谁优先执行受到PATH环境变量的影响,写在前面的优先执行
 
+### 1.2 关于/usr/libexec目录
+参考FHS标准的section4.7：https://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.html#usrlibexec
+
+大概就是该目录的二进制文件，主要不是给用户或者脚本直接使用的。实际使用时，因为版本差异，可以看作和/usr/lib一样。
+
+比如mac查看的java安装位置的命令是`/usr/libexec/java_home`
+
 ## 2 未解决

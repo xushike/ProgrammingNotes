@@ -75,13 +75,10 @@ java xxx        //运行
 ```
 
 ## 2 mac
-1. 安装后的路径查看：mac上安装之后查看java路径：
-```
-/usr/libexec/java_home
-```
-一般显示结果是：/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
+1. mac上安装之后查看java路径：`/usr/libexec/java_home`，一般显示结果是：`/Library/Java/JavaVirtualMachines/jdkxxx.jdk/Contents/Home`
 2. 将`jdk/bin`目录添加到执行路径中——执行路径是操作系统查找可执行文件时所遍历的目录列表
 （此处待补充）
+
 ## 3 linux
 1. 如果是prm文件安装，则检查是否在`/usr/java/jdk1.8_version`下；但是推荐下载.tar.gz格式的文件安装，可以直接解压到任何地方
 
