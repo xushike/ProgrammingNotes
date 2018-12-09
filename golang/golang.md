@@ -10,13 +10,14 @@
 1. 稳定性:go提供了软件生命周期各个环节的工具(开发,测试,部署,维护等)
 5. Go 语言支持交叉编译.比如说你可以在运行 Linux 系统的计算机上开发运行下 Windows 下运行的应用程序。
     1. 网友：利用 docker 实现跨平台编译, Mac 上开发好后直接用 docker 进行编译, 然后扔到服务器就好.（带验证）
+    2. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行（待测试）
 6. 它是第一门完全支持 UTF-8 的编程语言.这不仅体现在它可以处理使用 UTF-8 编码的字符串，就连它的源码文件格式都是使用的 UTF-8 编码。Go 语言做到了真正的国际化。原生支持Unicode，它可以处理全世界任何语言的文本。
-7. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行（待测试）
 8. 有C基础，学Golang非常轻松
+9. 内存排列：Go的任何变量在内存中都是紧密连续排列的，对于内存的访问速度来说，亲和度是很高的，而且CPU缓存也更加容易命中
 
 ### 1.2 缺点
 以下列出了go不支持的其他语言的一些特性和缺点,不过在未来的版本可能改善:
-1. 不能用的变量写成`-`,不方便调试
+1. 不能用的变量写成`-`,不方便调试（问题不大）
 1. go的包管理:感觉不如npm好用
 1. 为了简化设计，不支持函数重载和操作符重载
 2. 为了避免在 C/C++ 开发中的一些 Bug 和混乱，不支持隐式转换
@@ -181,13 +182,11 @@ Go源码文件包括三种：命令源码文件、库源码文件和测试源码
 ### 3.17 平行赋值
 `i, j = i+1, j-1`
 
-## 4 文档
+## 4 文档网址视频等
 1. _Effective Go_(中文名《高效Go编程》)
 2. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
 3. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
 4. 网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
-
-## 5 网址
 1. 大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
     1. https://astaxie.gitbooks.io/build-web-application-with-golang/zh/
 2. http://bmknav.com/go/
@@ -201,6 +200,7 @@ Go源码文件包括三种：命令源码文件、库源码文件和测试源码
 8. golang官方
     1. 博客：https://blog.golang.org/
     2. playground：https://play.golang.org/
+9. awesome-go：需要什么第三方库就从这里找
 
 ## 6 相关项目
 1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb

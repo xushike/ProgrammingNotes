@@ -59,7 +59,9 @@ PaaS(Platform-as-a-Service):平台即服务
 
 SaaS(Software-as-a-Service):软件即服务
 
-Functions as a Service:功能即服务
+Functions as a Service:功能即服务，代表有k8s
+
+CaaS（Communications-as-a-Service）：通讯即服务，代表有docker
 
 Serverless Architecture:无服务架构
 
