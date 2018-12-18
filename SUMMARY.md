@@ -174,6 +174,7 @@
     * [android](mobile/android/android.md)
         * [1.Kotlin](mobile/android/1.Kotlin.md)
         * [2.weixin](mobile/android/2.weixin.md)
+        * [3.miniProgram](mobile/android/3.miniProgram.md)
     * [ios](mobile/ios/ios.md)
         * [xcode](mobile/ios/xcode.md)
     * [cordova](mobile/cordova.md)

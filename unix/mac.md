@@ -202,9 +202,14 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 ### 1.8 强行新开一个应用实例
 比如WeChat，点击图标的话是不会打开两个的，可以用命令`open -n /Applications/WeChat.app/Contents/MacOS/WeChat`
 
-## 2 未解决
-6. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
-7. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
+### 1.9 提示xxx软件已损坏
+升级到macOS Sierra系统之后任何来源按钮消失了，苹果为了系统的安全禁用了任何来源的按钮。打开`sudo spctl --master-disable`，关闭``。
 
-8. 合上盖子是什么状态?每隔一段时间就会自动联网?
-9. sbin
+似乎右键选择打开也行：显示打包内容 > Contents > MacOS 点击 xxx
+
+## 2 未解决
+1. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
+2. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
+
+3. 合上盖子是什么状态?每隔一段时间就会自动联网?
+4. sbin

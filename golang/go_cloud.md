@@ -15,6 +15,8 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 # 四 高级
 ## 1 groupcache
 
+## 2 https://github.com/go-playground/validator/tree/v9.24.0
+
 # 七 未整理
 ## 2 未整理
 1. Google Cloud Platform是干嘛的

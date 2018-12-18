@@ -238,6 +238,8 @@ mac按以下步骤操作：
 
 可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,如`git pull <远程仓库名> <分支名>`
 
+修改远程仓库的url地址：`git remote set-url origin new_url`
+
 重命名远程仓库:`git remote rename <原名称> <新名称>`
 
 取消远程仓库:`git remote rm <远程仓库名>`,注意每次取消再重新关联远程仓库之后,都需要重新推送并关联分支.
@@ -330,11 +332,11 @@ mac按以下步骤操作：
 也可以在压制前新建一个分支备份下.
 1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
 2. 交互式参数`p`(`pick`):使 commit 保持原样
-2. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
-3. 交互式参数`s`(`squash`):将此 commit 的更改结合到之前的 commit 中（列表中位于其上面的 commit ）
-3. 交互式参数`f`(`fixup`):将此 commit 的更改结合到前一个 commit 中，但删除提交说明
-3. 交互式参数`x`(`exec`):运行 shell 命令
-3. 交互式参数`d`(`drop`):删除 commit
+3. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
+4. 交互式参数`s`(`squash`):将此 commit 的更改结合到之前的 commit 中（列表中位于其上面的 commit ）
+5. 交互式参数`f`(`fixup`):将此 commit 的更改结合到前一个 commit 中，但删除提交说明
+6. 交互式参数`x`(`exec`):运行 shell 命令
+7. 交互式参数`d`(`drop`):删除 commit
 
 注意,多人合作的情况下,压制**不应包含已push的commit**,因为其他人可能已经pull了你准备压制的commit,如果你再压制,其他人可能需要做非常麻烦的修改才能同步.
 
