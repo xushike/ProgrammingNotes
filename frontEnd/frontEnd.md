@@ -62,6 +62,9 @@ MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择
 
 当没有DOCTYPE声明或声明不正确时,会呈现怪异模式.
 
+### 3.7 如何优雅的选择默认字体(font-family)
+参考：https://www.imooc.com/article/11261
+
 ## 4 文档
 1. 如何设计「拖放」功能:[https://zhuanlan.zhihu.com/p/33243404](https://zhuanlan.zhihu.com/p/33243404)
 

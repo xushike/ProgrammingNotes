@@ -182,6 +182,13 @@ Go源码文件包括三种：命令源码文件、库源码文件和测试源码
 ### 3.17 平行赋值
 `i, j = i+1, j-1`
 
+### 3.18 运行时环境变量
+主要有四个：GOGC,GOTRACEBACK,GOMAXPROCS, GODEBUG。
+
+GOGC：默认值是100，简单来讲就是值越低GC的频率越快。GOGC=off将会完全关闭垃圾回收
+
+GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
+
 ## 4 文档网址视频等
 1. _Effective Go_(中文名《高效Go编程》)
 2. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
@@ -909,7 +916,7 @@ func (s OrderCount) Less(i, j int) bool {
 type OrderName struct{  
    SortJsonSlice
 }  
-func (s OrderCount) Less(i, j int) bool {  
+func (s OrderCount) Less(i, j int) bool {  Z
    return s.SortJsonSlice[i].Name < s.SortJsonSlice[j].Name
 }
 // 这样只要给每种排序方式重写一个 Less 方法，而不用写全部的代码，实现了类似java继承的功能
@@ -1599,7 +1606,7 @@ go run *.go
 主要用于编译代码。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
 1. 直接执行时`go build`时，默认编译当前目录下的所有`.go`文件，如果有`main.go`文件，那么会生成可执行文件--默认是目录名
 2. 执行`go build a.go b.go ...`，如果文件中有`main.go`，则生成可执行文件`main`，否则只是编译
-3. 执行`go build drectory_a drectory_b ...`，如果目录下有`main.go`，则生成可执行文件--默认是mian文件所在的目录名，否则只是编译
+3. 执行`go build drectory_a drectory_b ...`，如果目录下有`main.go`，则生成可执行文件--默认是main文件所在的目录名，否则只是编译
 
 参数:
 1. `-o`：指定生成的可执行文件的名字
@@ -2032,6 +2039,64 @@ func test() {
 ### byfio
 封装了带缓存的io操作以及Scanner
 
+### context
+goroutine的上下文，用来跟踪一系列的goroutine。它就像一个控制器一样，按下开关后，所有基于这个Context或者衍生的子Context（不管多少层）都会收到通知，这时就可以进行清理操作了，最终释放goroutine，这就优雅的解决了goroutine启动后不可控的问题。Context是县城安全的，可以放心的在多个goroutine中传递。
+
+Context接口：
+```go
+type Context interface {
+	Deadline() (deadline time.Time, ok bool)
+	Done() <-chan struct{}
+	Err() error
+	Value(key interface{}) interface{}
+}
+```
+
+1. `Deadline()`方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
+2. `Done()`方法返回一个只读的chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号后，就应该做清理操作，然后退出goroutine，释放资源。
+3. `Err()`方法返回取消的错误原因，因为什么Context被取消。
+4. `Value()`方法获取该Context上绑定的值，是一个键值对，所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
+
+以上四个方法中常用的就是Done了，如果Context取消的时候，我们就可以得到一个关闭的chan，关闭的chan是可以读取的，所以只要可以读取的时候，就意味着收到Context取消的信号了。
+
+go已经帮我们实现了两个Context：background和todo，这两个都是emptyCtx结构体类型，且不可取消、没有设置截止时间、没有携带任何值的Context。
+
+1. `Background()`：返回一个空的Context，这个空的Context一般用于整个Context树的根节点。使用场景包括main函数、初始化以及测试代码。然后我们使用`context.WithCancel(parent)`函数，创建一个可取消的子Context，然后当作参数传给goroutine使用，这样就可以使用这个子Context跟踪这个goroutine。
+2. `TODO()`:它目前还不知道具体的使用场景，如果我们不知道该使用什么Context的时候，可以使用这个。
+3. `cancel()`:
+
+```go
+ctx, cancel := context.WithCancel(context.Background())
+go func(ctx context.Context) {
+    for {
+        select {
+        case <-ctx.Done():
+            fmt.Println("监控退出，停止了...")
+            return
+        default:
+            fmt.Println("goroutine监控中...")
+            time.Sleep(2 * time.Second)
+        }
+    }
+}(ctx)
+
+time.Sleep(10 * time.Second)
+fmt.Println("可以了，通知监控停止")
+cancel()
+//为了检测监控过是否停止，如果没有监控输出，就表示停止了
+time.Sleep(5 * time.Second)
+```
+
+Context的继承衍生：使用`With`系列函数。
+1. `func WithCancel(parent Context) (ctx Context, cancel CancelFunc)`,传入父Context，返回子Context，以及一个取消函数用来取消Context。
+2. `WithDeadline()`：传递截止时间，到了该时间点自动取消Context，也可以主动提前取消。
+3. `WithTimeout()`：和上面类似，传入时间，超过这个时间自动取消。
+4. `WithValue()`：生成一个绑定了一个键值对数据的Context，其中key必需具有可比性，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
+
+Context使用原则：
+1. 不要把Context放在结构体中，要以参数的方式传递，放在第一个参数。
+2. 给一个函数方法传递Context的时候，不要传递nil，如果不知道传递什么，就使用context.TODO
+
 ### crypto
 #### crypto/md5
 使用md5加密的两种方法：
@@ -2121,6 +2186,9 @@ func main() {
 5. `Sprintf()`:格式化并返回一个字符串而不带任何输出
 2. `fmt.Errorf`函数使用`fmt.Sprintf`处理错误信息
 6. `Fprintf()`:依据指定的格式向第一个参数内写入字符串，第一参数必须实现了 io.Writer 接口。Fprintf() 能够写入任何类型，只要其实现了 Write 方法，包括 os.Stdout,文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入。适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入。
+
+### httputil
+1. `DumpRequestOut()`
 
 ### io
 学习包也是学习它的设计思想。比如io包，定义了4各基本操作原语(接口)，分别对应二进制流读、写、关闭、寻址操作：
@@ -2233,6 +2301,8 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 调用外部程序：
 1. `StartProcess()`
 
+#### os/exec
+
 ### path
 #### path/filepath
 1. 转成绝对路径`Abs()`
@@ -2270,7 +2340,7 @@ func getFilelist(r string) {
 
 ### runtime
 runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
-1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（绝对路径）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 runtime.Caller 的调用者。由于历史原因, 该参数和runtime.Callers 中的 skip 含义并不相同。
+1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（代码文件绝对路径，这个路径不会因为编译成可执行文件而改变，也不会因为go run的位置而改变）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 runtime.Caller 的调用者。由于历史原因, 该参数和runtime.Callers 中的 skip 含义并不相同。
     1. 网友实测, Go的普通程序的启动顺序如下:
         1. runtime.goexit 为真正的函数入口(并不是main.main)
         2. 然后 runtime.goexit 调用 runtime.main 函数
@@ -2325,7 +2395,7 @@ go1.10开始新增了builder类型，用于提高字符串拼接性能，用法�
 
 读写锁`RWMutex`：针对读写操作的互斥锁，读写锁与互斥锁最大的不同就是可以分别对 读、写 进行锁定。一般用在大量读操作、少量写操作的情况
 
-`WaitGroup`:用于等待一组 goroutine 结束。Add用来添加 goroutine 的个数（要写在go func前面）。Done 执行一次数量减 1。Wait 用来等待结束
+`WaitGroup`:用于等待一组 goroutine 结束，尤其适用于多个goroutine协同做一件事情的场景。Add用来添加 goroutine 的个数（要写在go func前面）。Done 执行一次数量减 1。Wait 用来等待结束
 1. `Add()`
 2. `Done()`
 3. `Wait()`
@@ -2382,10 +2452,12 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 2. 禁止包的环状依赖，因为没有循环依赖，包的依赖关系形成一个有向无环图，每个包可以被独立编译，而且很可能是被并发编译。
 3. 编译后包的目标文件不仅仅记录包本身的导出信息，目标文件同时还记录了包的依赖关系。因此，在编译一个包的时候，编译器只需要读取每个直接导入包的目标文件，而不需要遍历所有依赖的的文件（译注：很多都是重复的间接依赖）
 
-## 4 第三方包
-1. mysql驱动:[github.com/go-sql-driver/mysql](github.com/go-sql-driver/mysql)
-2. 猴子补丁，在测试用例中挺好用的：https://github.com/bouk/monkey。注意下载和引入是`bou.ke/monkey`，github地址只是放的代码，而不是引入用的地址。
-    1. 参考：https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+## 4 交叉编译
+交叉编译依赖下面几个环境变量：
+1. `$GOARCH`:目标平台（编译后的目标平台）的处理器架构（386、amd64、arm），其中amd64是64位，386是32位
+2. `$GOOS`:目标平台（编译后的目标平台）的操作系统（darwin、freebsd、linux、windows）
+
+比如编译windows平台下的exe文件：`CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build test.go`，交叉编译不支持CGO所以要禁用它
 
 ## 5 其他
 1. 有空的时候可以多看看Google的工程师是如何实现的
@@ -2481,7 +2553,14 @@ l5 := len(str)
 ### 1.12 golang读取文件的几种方法（待补充）
 1. 所有文件放到一个
 
-### 1.13 下载
+### 1.13 golang获取文件执行的几个路径
+`_, filename, _, _ := runtime.Caller(0)`：filename是执行的go文件的绝对路径，不会因为`go run`等命令执行的位置而改变，在生成的二进制文件中也不会改变。
+
+`ex, _ := os.Executable()`：通过可执行文件运行的时候显示的是可执行文件所在目录的绝对路径，其他情况都是输出一个临时目录的地址。
+
+`dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))`：执行可执行文件时得到的是当前的目录，比如在HOME目录执行bin目录中的可执行文件，得到的就是`~`，如果是`go run`等命令，得到的是临时目录。
+
+`pwd, err := os.Getwd()`：任何情况下都是得到当前的目录，比如在HOME目录下运行`go run`或者可执行文件，得到的是`~`
 
 ## 2 未解决
 1. 因式分解

@@ -1,7 +1,7 @@
 # go-cloud
 
 # 一 概述
-go_cloud和一些开源项目的笔记
+go_cloud、第三方包和开源项目的笔记
 
 ## 1 简介
 Go Cloud Project是一项计划，允许应用程序开发人员在任何云提供商组合上无缝部署云应用程序。它通过为存储和数据库等常见用途提供稳定的惯用接口来实现此目的，旨在为各种云中最常用的服务提供中立于厂商的 API，这样可以轻松地将 Go 应用程序进行跨云迁移。
@@ -16,6 +16,14 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 ## 1 groupcache
 
 ## 2 https://github.com/go-playground/validator/tree/v9.24.0
+
+## 3 github.com/SebastiaanKlippert/go-wkhtmltopdf
+
+## 4 猴子补丁
+在测试用例中挺好用的：https://github.com/bouk/monkey。注意下载和引入是`bou.ke/monkey`，github地址只是放的代码，而不是引入用的地址。
+
+参考：https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+
 
 # 七 未整理
 ## 2 未整理

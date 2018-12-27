@@ -1825,27 +1825,9 @@ for (let [i, item] of arr.entries()) {
     1. git checkout会丢弃工作区的更改?
     2. 工作区等的概念
 
-420. 项目中版权所有的那个页面怎么做的
-    1. 项目中css字体等cdn的笔记,如
 
-        ```css
-        @font-face {font-family: "iconfont";
-
-            src: url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.eot?t=1511252675294'); /* IE9*/
-
-            src: url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.eot?t=1511252675294#iefix') format('embedded-opentype'), /* IE6-IE8 */
-
-            url('data:application/x-font-woff;charset=utf-8;base64,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') format('woff'),
-
-            url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.ttf?t=1511252675294') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-
-            url('//at.alicdn.com/t/font_481604_nhaejqxrzy9cnmi.svg?t=1511252675294#iconfont') format('svg'); /* iOS 4.1- */
-
-        }
-        ```
-
-421. 网页怎么截长屏
-423. 如何自定义项目中的错误,还是说msg返回:
+420. 网页怎么截长屏
+421. 如何自定义项目中的错误,还是说msg返回:
 
     ```go
     err = fmt.Errorf("ICCID长度不对,iccid:%+v", iccid)
@@ -1853,72 +1835,72 @@ for (let [i, item] of arr.entries()) {
     return
     ```
 
-424. 如何切图,给图片换颜色大小啊之类的
-425. 如何系统学习css
+422. 如何切图,给图片换颜色大小啊之类的
+423. 如何系统学习css
     1. mdn的css
     2. vscode上的css插件
 
-426. 为什么需要框架
-    1. angular的特性
-    2. 渐进式应用
-427. 自连接用于什么样的查询?
-    1. 里面的表名可以和外面一样吗
-    2. 如果id是在自增的,那么按id排序和按时间排序效果是一样的,而且比较数字的话更快?
+424. 为什么需要框架
+    3. angular的特性
+    4. 渐进式应用
+425. 自连接用于什么样的查询?
+    5. 里面的表名可以和外面一样吗
+    6. 如果id是在自增的,那么按id排序和按时间排序效果是一样的,而且比较数字的话更快?
 
-428. 项目中用户表那几个做下笔记
-429. 熟练使用分支
+426. 项目中用户表那几个做下笔记
+427. 熟练使用分支
     不然多个切换时很麻烦
     1. 本地未add,未commit,未push的在新建和切换branch下的表现
 
-430. java isletter我源码中的`<<` 的用法
-    1. go 中呢
+428. java isletter我源码中的`<<` 的用法
+    2. go 中呢
 
-431. 为什么要使用angular 框架
-432. 把config写成一个公共的,然后其他都是引用?
-433. js和angualr的import是复制吗
-    1. 把项目中的commonConfig中写上`min:this.query.startTime`会怎么样?和js函数的那啥有没有关系
+429. 为什么要使用angular 框架
+430. 把config写成一个公共的,然后其他都是引用?
+431. js和angualr的import是复制吗
+    3. 把项目中的commonConfig中写上`min:this.query.startTime`会怎么样?和js函数的那啥有没有关系
 
-434. `xxx.d.ts`是什么
+432. `xxx.d.ts`是什么
 
-435.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
+433.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
 `Your local changes to the following files would be overwritten by checkout`
     `Please, commit your changes or stash them before you can switch branches. Aborting
-437. git stash之后变成九十多为啥
+1.   git stash之后变成九十多为啥
 
-439. 测试普通的类可以注册为服务然后依赖注入吗
+2.   测试普通的类可以注册为服务然后依赖注入吗
 
-440.  insert select
-441. [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
-442. html 语义化标签,比如nav
+3.    insert select
+4.   [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)
+5.   html 语义化标签,比如nav
 
     语义化标签有自带样式吗
 
-443. sql的in适用于任何数据类型吗(似乎是)
+6.   sql的in适用于任何数据类型吗(似乎是)
 
     sql的""和num可以直接比较吗
 
-445. in这种查询,可不可以传参数去表示呢
+7.   in这种查询,可不可以传参数去表示呢
 
-447. sftp
+8.   sftp
 
-448. 行内css如何添加多个
+9.   行内css如何添加多个
 
-449. angular的安全导航符能用到属性里吗,还是只能用到{{}}中
+10.  angular的安全导航符能用到属性里吗,还是只能用到{{}}中
 
-451. angular select中option的disabled怎么使用?
+11.  angular select中option的disabled怎么使用?
     angualr中有几种disabled
 
-452. 前端  自定义错误码 的研究
+12.  前端  自定义错误码 的研究
 
-452. 后端 错误码 相关的代码
+13.  后端 错误码 相关的代码
 
-454. 如何让组件带上版本的命名?
-456. 管理系统的api如何设计比较好
+14.  如何让组件带上版本的命名?
+15.  管理系统的api如何设计比较好
 
-457. https://www.cnblogs.com/wl0000-03/p/6050108.html
+16.  https://www.cnblogs.com/wl0000-03/p/6050108.html
 
 
-459. temp
+17.  temp
 ```
  95% emitting
 <--- Last few GCs --->
@@ -1949,300 +1931,300 @@ FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memo
 
 node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-extract-license
 
-460. 依赖注入和import的区别是啥,为什么项目中的登录弹框用的import而不是依赖注入
+1.   依赖注入和import的区别是啥,为什么项目中的登录弹框用的import而不是依赖注入
     1. 以及angular的路由
 
         window.location.href = "/";
 
-462. 0.0.0.0 代表什么
+2.   0.0.0.0 代表什么
 
-463. 编译hydra的命令:go install hydra
+3.   编译hydra的命令:go install hydra
 
-464. 变量前面加上`_`一般代表着什么
+4.   变量前面加上`_`一般代表着什么
 
-465. 如何在一个hover的时候修改其他css 的样式
+5.   如何在一个hover的时候修改其他css 的样式
     css 的hover是不是比onmouseover快?那篇加载顺序的文章
 
-466. 项目中的`<i>`被`<a>`包围是什么意思
-467. 项目中可以继续写(onclick)吗,还是只能angular的clikc?
+6.   项目中的`<i>`被`<a>`包围是什么意思
+7.   项目中可以继续写(onclick)吗,还是只能angular的clikc?
     使用方法有什么不同
 
-468. angular的优秀项目
+8.   angular的优秀项目
 
-469. 如何处理项目中的大数据和小数据?
-468. 用好腾讯的服务器
+9.   如何处理项目中的大数据和小数据?
+10.  用好腾讯的服务器
     1. 自己搭建一个小项目,五脏俱全的那种
 
-469. github可以给master分支设置权限吗，就是操作master需要验证的那种
-470. 网友;一切异步都是流，只要是流就可以订阅？
+11.  github可以给master分支设置权限吗，就是操作master需要验证的那种
+12.  网友;一切异步都是流，只要是流就可以订阅？
 
-473. angular从表单获取的默认是字符串吗
+13.  angular从表单获取的默认是字符串吗
 
-475. 项目中`ng build --prod --no-extract-license`和`ng build --prod`的区别?似乎后者不能检测出严格的错误?
+14.  项目中`ng build --prod --no-extract-license`和`ng build --prod`的区别?似乎后者不能检测出严格的错误?
     直接`ng build`能检测出错误吗?用那个language插件会不会更好?
-476. git查看某个文件的历史
+15.  git查看某个文件的历史
 
-481. plsql中的冒号表示什么
-482. dom 事件  大多数是冒泡的还是非冒泡的 
+16.  plsql中的冒号表示什么
+17.  dom 事件  大多数是冒泡的还是非冒泡的 
 
-483. `this.upproductInfo = this.productInfo || {};`
+18.  `this.upproductInfo = this.productInfo || {};`
     js中的||和&& 的详细笔记
 
-484. 输入法自动插入空格
-485. 如何表现select的联动呢?
-486. 他们测试的那个工具挺牛逼的
-487. 明明有配置有ignore,为什么拉下来代码还是有很多跟踪的变动
+19.  输入法自动插入空格
+20.  如何表现select的联动呢?
+21.  他们测试的那个工具挺牛逼的
+22.  明明有配置有ignore,为什么拉下来代码还是有很多跟踪的变动
 
-488. 不同环境下多css的写法
+23.  不同环境下多css的写法
 
-489. 项目里一格分成多格的写法
+24.  项目里一格分成多格的写法
 
-491. angular表单验证的几种方式和最佳实践
+25.  angular表单验证的几种方式和最佳实践
 
-492. git文件被跟踪后再修改忽略文件,怎么才能是忽略文件立即生效呢?
+26.  git文件被跟踪后再修改忽略文件,怎么才能是忽略文件立即生效呢?
     1. 如何保留文件修改而不跟踪?
     2. 本地有已跟踪但不想跟踪的,此时从远程拉下来最新的gitignore会生效吗
-475. xshell 中win和linux文件互传的命令
-477. plsql的占位符和通配符和标准sql中一样吗
-478. google调试如何判断两个元素有没有对齐
-479. 原生class的多css写法
-480. margin的几种写法
+27.  xshell 中win和linux文件互传的命令
+28.  plsql的占位符和通配符和标准sql中一样吗
+29.  google调试如何判断两个元素有没有对齐
+30.  原生class的多css写法
+31.  margin的几种写法
 
-481. 放弃已跟踪文件的修改
-482. 商户系统npm安装的时候一直报那个miss 什么的错,一直装不上,然后 复制别人的node_modules就好了, 一定要抽空搞清楚
-483. .gitignore的排除写法
+32.  放弃已跟踪文件的修改
+33.  商户系统npm安装的时候一直报那个miss 什么的错,一直装不上,然后 复制别人的node_modules就好了, 一定要抽空搞清楚
+34.  .gitignore的排除写法
 
-484. 几种css选择器的详解
+35.  几种css选择器的详解
 
-485. 项目中多行的的写法
+36.  项目中多行的的写法
 
-486. js数组操作
-487. 数组push的问题
+37.  js数组操作
+38.  数组push的问题
     声明的数组和赋值的数组好像不一样.
-488. css选择器和圆角
-489. Metronic – 响应式后台管理HTML5模板-创客云
-490. angular NgZone的学习
+39.  css选择器和圆角
+40.  Metronic – 响应式后台管理HTML5模板-创客云
+41.  angular NgZone的学习
     runOutsideAngular
 
-491. 引入类型定义的库@types
-492. 
+42.  引入类型定义的库@types
+43.  
 chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
-493. 项目中引入第三方插件如echarts的写法:
+1.   项目中引入第三方插件如echarts的写法:
 
-494. go报错:typechecking loop involving DeviceGroupAllListQuery
+2.   go报错:typechecking loop involving DeviceGroupAllListQuery
 
-495. angular三等号和两等号
+3.   angular三等号和两等号
 
-495. typescript中funtion(){xxx}和()=>{xxx}写法的不同,前者似乎不能访问全局变量,后者可以访问
+4.   typescript中funtion(){xxx}和()=>{xxx}写法的不同,前者似乎不能访问全局变量,后者可以访问
     因为this指针的问题?
 
-496. 项目后台如何返回json
+5.   项目后台如何返回json
 
-497. ngOnChanges
-498. map可以被for循环吗
+6.   ngOnChanges
+7.   map可以被for循环吗
 
-499. news about ECharts
+8.   news about ECharts
     可视化
 
-500. 研究material日期组件的月份写法
+9.   研究material日期组件的月份写法
 
-501. angular先渲染父组件还是子组件,html,w3c的标准呢?
+10.  angular先渲染父组件还是子组件,html,w3c的标准呢?
     写一个实际的demo来记录下
-502. 时间戳
+11.  时间戳
 
-503. angular input接受多个参数的时候,如果几个参数传的时间不一样,那么是触发几次ng changes和ng init?总结下规律
+12.  angular input接受多个参数的时候,如果几个参数传的时间不一样,那么是触发几次ng changes和ng init?总结下规律
 
-504. NgZone.runOutsideAngular
-505. for of 遍历map的笔记
+13.  NgZone.runOutsideAngular
+14.  for of 遍历map的笔记
 
-506. window.innerWidth
+15.  window.innerWidth
 
-507. setTimeout是在页面渲染完之后执行吗?
+16.  setTimeout是在页面渲染完之后执行吗?
 
-508. 跳过登录的测试
-509. angular引用第三方组件的方法,ydj的话
-510. ajax和jquery
+17.  跳过登录的测试
+18.  angular引用第三方组件的方法,ydj的话
+19.  ajax和jquery
 
-512. setTimeout(xxx,0)
+20.  setTimeout(xxx,0)
     这个是在dom渲染完成之后才触发的吗,还是?
-513. js中fn和fn()
-514. Typed Array
-515. 单等号和双等号的区别
+21.  js中fn和fn()
+22.  Typed Array
+23.  单等号和双等号的区别
 
-516. 目前主流的几种js引擎是?
-517. js instanceof  和typeof
+24.  目前主流的几种js引擎是?
+25.  js instanceof  和typeof
 
-518. 仅更新前端的 话需要重启服务吗
-519. 后面要用的layui框架如何
-520. git中二进制文件的历史能恢复吗
+26.  仅更新前端的 话需要重启服务吗
+27.  后面要用的layui框架如何
+28.  git中二进制文件的历史能恢复吗
 
-521. vscdoe无法检测大型工作区的文件变化,请访问说明..
+29.  vscdoe无法检测大型工作区的文件变化,请访问说明..
     说明链接:https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
     1. node_modules中的文件也会算在内吗,.gitignore会生效吗?
 
-522. 如何取消input两边的空格
-523. angular input中change,ngModelChange,input等事件的关系,onchange
+30.  如何取消input两边的空格
+31.  angular input中change,ngModelChange,input等事件的关系,onchange
 
-524. formControlName和两种表单的关系
+32.  formControlName和两种表单的关系
     form表单的valueChanges订阅事件
 
-525. 禁用工作区和禁用
+33.  禁用工作区和禁用
 
-526. angular待笔记
+34.  angular待笔记
     1. angular事件里可以使用$event
     2. 通过$event.target.value修改input的值是修改的DOM上面的值,但是通过表单里的实际值还是没变?(待研究)
 
 
-527. angularhtml的事件里可以直接写js吗
+35.  angularhtml的事件里可以直接写js吗
 
-528. 深入理解oracle的分页rownum等
-    1. 以及最基本的增删改查
-    2. 只操作一个表的创建语句需要事务吗
-    3. 序列 nextval
+36.  深入理解oracle的分页rownum等
+    3. 以及最基本的增删改查
+    4. 只操作一个表的创建语句需要事务吗
+    5. 序列 nextval
         1. 后面的from跟什么表都可以?
         2. 在insert语句中的话可以直接`序列.nextval`,查询的话...
-    4. dual
+    6. dual
 
-529. 项目中execute和scalar
-    1. types.toint等
+37.  项目中execute和scalar
+    7. types.toint等
 
-530. 如果有新建文件 stash似乎就不合适了?
+38.  如果有新建文件 stash似乎就不合适了?
 
-531. oracle exists
+39.  oracle exists
 
-532. 出现无法监视的时候好像代码变动的识别也会出问题
+40.  出现无法监视的时候好像代码变动的识别也会出问题
 
-533. 查看远程分支的命令,删除本地分支后还能看到远程分支吗,还是说要提交后远程才会同步,新建的时候也是吗?
+41.  查看远程分支的命令,删除本地分支后还能看到远程分支吗,还是说要提交后远程才会同步,新建的时候也是吗?
 
-534. update会锁住数据库,锁住之后其他人只能等待,那么其他人能查询吗
-535. 为什么sql查出来的金额需要FM那个转换
-    1. 第一种方式getString()然后strconv..
-    2. 
-    3. float(xxx)
+42.  update会锁住数据库,锁住之后其他人只能等待,那么其他人能查询吗
+43.  为什么sql查出来的金额需要FM那个转换
+    8. 第一种方式getString()然后strconv..
+    9. 
+    10. float(xxx)
 
-537. golang 几种类型转换方式的区别
+44.  golang 几种类型转换方式的区别
 
-538. 下拉框中数据很多怎么办,会导致卡顿吗
-    1. angular安全导航符第一个对象为undefined会生效吗
-    2. angular [htmlfor]
+45.  下拉框中数据很多怎么办,会导致卡顿吗
+    11. angular安全导航符第一个对象为undefined会生效吗
+    12. angular [htmlfor]
 
-539. input抱在label中
-540. angular 扩展的比如ng... = 后面要带引号,原生html的有些后面不带?
+46.  input抱在label中
+47.  angular 扩展的比如ng... = 后面要带引号,原生html的有些后面不带?
 
-541. 项目中应该有拷贝之类的方法把,而不是用JSON.parse(JSON.stringify(
+48.  项目中应该有拷贝之类的方法把,而不是用JSON.parse(JSON.stringify(
 
-542. select如何适应文字长度
+49.  select如何适应文字长度
 
-543. oracle查出来的0.9,返回前端的时候会变成.9,那么在go中是怎么样的呢
+50.  oracle查出来的0.9,返回前端的时候会变成.9,那么在go中是怎么样的呢
 
-544. trunc
+51.  trunc
 
-545. angular 单选框默认选中的研究
-546. select的自适应，go和区块链
-547. insert into () select
+52.  angular 单选框默认选中的研究
+53.  select的自适应，go和区块链
+54.  insert into () select
 
-548. js计算中文和英文字符长度
+55.  js计算中文和英文字符长度
 
-549. select里面内容过多的优化方案
+56.  select里面内容过多的优化方案
 
-550. go判断是否中文字符的 
-551. 存数据库时,对于有默认值的有哪几种生效方式
+57.  go判断是否中文字符的 
+58.  存数据库时,对于有默认值的有哪几种生效方式
 
-552. 创建已有商户时 的 904错误
+59.  创建已有商户时 的 904错误
 
-553. git pull是拉取所有分支信息,还是仅当前分支
+60.  git pull是拉取所有分支信息,还是仅当前分支
 
-554. created a lockfile as package-lock.json. You should commit this file.
+61.  created a lockfile as package-lock.json. You should commit this file.
 
-556. css studying :https://segmentfault.com/q/1010000000193129
-557. 感觉input list值得了解一下
+62.  css studying :https://segmentfault.com/q/1010000000193129
+63.  感觉input list值得了解一下
 
-558. 浏览器打断点
-559. jquery的使用
-560. var _this = this;
-561. js类的写法
-562. vue每次刷新的时候是只刷新页面?
+64.  浏览器打断点
+65.  jquery的使用
+66.  var _this = this;
+67.  js类的写法
+68.  vue每次刷新的时候是只刷新页面?
 
-563. parseFloat的精度问题
+69.  parseFloat的精度问题
 
-564. chrome标签很多时的内存优化方法
-566. 深入研究js func的prototype
+70.  chrome标签很多时的内存优化方法
+71.  深入研究js func的prototype
 
-567. git pull和git push是只影响当前分支吗?如果是影响多分支怎么办?
-568. 浏览器调试js怎么弄,console.log太恼火
-569. mqtt协议
+72.  git pull和git push是只影响当前分支吗?如果是影响多分支怎么办?
+73.  浏览器调试js怎么弄,console.log太恼火
+74.  mqtt协议
 
-16. websocket主题和队列名字???
+75. websocket主题和队列名字???
 
-17. 如何查看网页哪部分重新渲染了?
-18. 微信的文件可以撤回吗
-19. npm的教程
-20. js
+76. 如何查看网页哪部分重新渲染了?
+77. 微信的文件可以撤回吗
+78. npm的教程
+79. js
     1. js引擎有垃圾回收吗
     2. js func在什么情况下会变成一个类?
     3. promise,ajax,rxjs,callback等的区别
     4. 如何判断一个方法是不是异步的
 
-22. js中0和其他的比较会怎么样
-23. 防止重复点击
-24. chrome如何动态修改代码,调试代码等
+80. js中0和其他的比较会怎么样
+81. 防止重复点击
+82. chrome如何动态修改代码,调试代码等
     1. firebug?
-25. 事件派发的作用dispatch,例子参考百度测距工具
-26. js精度问题
+83. 事件派发的作用dispatch,例子参考百度测距工具
+84. js精度问题
 
-27. js math相关的方法
+85. js math相关的方法
     1. Math.sqrt
     2. Math.pow
     3. atan 角度
 
 
-28. 地图相关
+86. 地图相关
     1. 墨卡托坐标等
     2. google坐标,全球坐标,百度坐标等等
     3. 高斯什么算法之类的
 
-29. 跨域请求
+87. 跨域请求
     1. 浏览器同源策略
     2. 什么样的情况会出现跨域问题
         1. localhost然后请求局域网内的其他api就会出现吗?
 
-30. 认真思考和总结目前用到的技术:为什么需要用到这些技术(比如webpack),不用的话,原始解决方案是什么
+88. 认真思考和总结目前用到的技术:为什么需要用到这些技术(比如webpack),不用的话,原始解决方案是什么
     1. 坚定之后再做深入研究
 
-31. html的i标签代表什么
+89. html的i标签代表什么
 
-32. 单页面应用的好处和优点
-33. 重现
-34. websocket和心跳检测
+90. 单页面应用的好处和优点
+91. 重现
+92. websocket和心跳检测
 
-35. js undefined == 0?
+93. js undefined == 0?
     1. 其他几个的比较原理
-    1. 以及 == 和===区别
+    2. 以及 == 和===区别
 
 
-36. 什么样的情况下回出现滚动条
+94. 什么样的情况下回出现滚动条
     1. height为100%的时候会出现滚动条
 
-37. 项目中的Page里面的 mosq 为什么不能访问到,还有Observle对象和普通对象有什么 区别.
-38. js里变量前面没有声明语句的话是默认是什么?
+95. 项目中的Page里面的 mosq 为什么不能访问到,还有Observle对象和普通对象有什么 区别.
+96. js里变量前面没有声明语句的话是默认是什么?
     1. 在方法中呢?
     2. 假如在类中有个var 声明的变量,会变成当前类的静态变量吗
 
-39. w3c规范和mdn的关系
+97. w3c规范和mdn的关系
     1. 如何学习w3c规范
 
-40. 自己搭建服务器,比如nginx然后发布--主要是熟悉
-41. css的学习
+98. 自己搭建服务器,比如nginx然后发布--主要是熟悉
+99. css的学习
     1. 百度地图的position: relative;
 
-42. json和xml的优劣
-43. 跨域
-    1. https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001434499861493e7c35be5e0864769a2c06afb4754acc6000
+100. json和xml的优劣
+101. 跨域
+    2. https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001434499861493e7c35be5e0864769a2c06afb4754acc6000
 
-44. 事件委托减少DOM事件注册的数量
-45. mysql的本质是什么
-46. 
+102. 事件委托减少DOM事件注册的数量
+103. mysql的本质是什么
+104. 
 Worker<Void> worker = webEngine.getLoadWorker();
 worker.cancel();
 

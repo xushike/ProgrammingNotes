@@ -1,7 +1,7 @@
 # goroutine
 
 # 一 概述
-golang的goroutine笔记，因为内容复杂，所以单独弄一个笔记，主要是goroutine，也包括相关的内容。
+golang的goroutine笔记，因为内容复杂，所以单独弄一个笔记，主要是goroutine，也包括相关的内容，水平有限，整理得比较乱。。。
 
 ## 3 常识
 ### 3.1 linux进程分类
