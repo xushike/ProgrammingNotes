@@ -2563,6 +2563,14 @@ l5 := len(str)
 `pwd, err := os.Getwd()`：任何情况下都是得到当前的目录，比如在HOME目录下运行`go run`或者可执行文件，得到的是`~`
 
 ## 2 未解决
+### 2.1 example中尾部的空格无法测试
+gofmt(goimports/goreturns)的bug，参考：
+1. https://github.com/kubernetes/kubernetes/pull/10851，最后似乎是重写了输入输出流来解决这个问题。
+2. https://play.golang.org/p/51D2DYVHTy
+
+用`/*...*/`注释也不行，末尾的空格依然会被忽略。比较简单的解决方案是修改代码，让字符串中的空格尽量放在前面而不是后面。
+
+### 2.N 其他
 1. 因式分解
 2. 编程范式
 3. Erlang风格的并发模型
