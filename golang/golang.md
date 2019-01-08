@@ -1733,15 +1733,35 @@ p.VehBrand = "大众"
 
 Go类型和JSON类型的对应关系如下：
 - bool 代表 JSON booleans,
-- float64 代表 JSON numbers（如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64）
+- float64 代表 JSON numbers（如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64，没写的话默认是float64）
 - string 代表 JSON strings,
 - nil 代表 JSON null.
 - interface{} 按照内部的实际类型进行转换
 
-标签tag（也称为字段的元数据）：就是上面的结构体每个字段后面反引号包裹的内容，可以是任意的字符串，但是通常是用空格分割的key:value键值对序列，因为Tag中包含了双引号字符串，因此一般用原生字符串形式书写。key是json的会在json的转换时用到，key是xml会在xml转换时用到，以此类推，还可以自定义，比如第三方包用到的validate。
+标签tag（也称为字段的元数据）：就是上面的结构体每个字段后面反引号包裹的内容，可以是任意的字符串，但是通常是用空格分割的key:value键值对序列，因为Tag中包含了双引号字符串，因此一般用原生字符串形式书写。key是json的会在json的转换时用到，key是xml会在xml转换时用到，以此类推，还可以自定义，比如第三方包用到的validate。注意这里有个坑：有多个tags时，golang解析`json:"xxx"`是按照空白符分隔的（参考`lookup()`方法），如果把`json:"xxx"`在第二行，因为前面是换行符，就识别不到。
+
 1. 如果tag设置为`json:"-"`，从结构体生成json的时候该字段不会输出到JSON，但是从json解析到结构体的时候会初始化为零值
 2. tag中带有自定义名称，那么这个自定义名称会出现在JSON的字段名中，例如上面的vehBrand
-3. tag中如果带有"omitempty"选项，那么如果该字段值为空，就不会输出到JSON串中（貌似有坑，待补充）
+3. omitempty：用于反序列化，如果数据中该字段为空或者字段的值为对应的零值，则反序列化时该字段不会输出到json中。写法是前面一定要有逗号，`json:"xxxName,omitempty"`or`json:",omitempty"`。比如有如下类型1，当变量person为`Person{Age:0}`或者`Person{}`时，反序列化后json中都不会有age字段。零值算是一个坑，因为有可能age就是要取0，解决方案是使用指针如类型2，不需要输出该字段的时候就传入nil，需要的时候就传入具体的值，不过写法上就会啰嗦一些，golang支持`&age`和`&(age)`但不支持`&(getAge())`这种写法，有需要用一个临时变量接收非指针的int64然后转成指针类型。
+        
+    ```golang
+    // 类型1
+    type Person struct{
+        Age int64 `json:"age,omitempty"`
+    }
+    
+    // 类型2 
+    type Person2 struct{
+        Age int64 `json:"age,omitempty"`
+    }
+    
+    func getAge() int64 {
+        return 20
+    }
+    var age = getAge()
+    var person = Person2{Age:&age}
+    ```
+               
 4. 如果字段类型是bool, string, int, int64等，而tag中带有",string"选项，那么这个字段在输出到JSON的时候会把该字段对应的值转换成JSON字符串
 
     ```go

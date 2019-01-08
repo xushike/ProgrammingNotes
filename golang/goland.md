@@ -14,5 +14,10 @@ goland开发工具的笔记
 6. 新开一行，`start new line`
 7. 删除到行首，`delete to Line Start`
 
+# 二 安装配置
+## 4 配置
+1. 设置竖线：`show hard wrap guide(configured in code style options)`
+2. 配置运行测试的环境：默认类似于dev，配置`GOENV=test`，暂时没看到全局配置的地方，先忽略。
+
 # 三 基础
 
