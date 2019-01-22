@@ -190,6 +190,7 @@ GOGC：默认值是100，简单来讲就是值越低GC的频率越快。GOGC=off
 GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
 
 ## 4 文档网址视频等
+1. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
 1. _Effective Go_(中文名《高效Go编程》)
 2. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
 3. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
@@ -957,9 +958,20 @@ func GetXXX(){
 ##### 2.2.4.1 带接收者的函数
 方法/函数接收者(Receiver)：Receiver 的名称应该缩写，一般使用一个或者两个字符作为Receiver的名称，如`func (f foo) method() {...}`;如果方法中没有使用receiver,还可以省略receiver name,这样更清晰的表明方法中没有使用它:`func (foo) method() {...}`。如果函数的接收者不一样，name方法就不一样。
 
-函数接收者的类型：函数接收者可以是值类型也可以是指针类型，可以把函数接收者看作函数的第一个参数，所以值类型时操作的是副本，指针类型操作的是实例对象。用Rob Pike的话来说就是："A method is a function with an implicit first argument, called a receiver."。
+函数接收者的类型：函数接收者可以是值类型（此时称为value receiver）也可以是指针类型（此时称为pointer receiver），可以把函数接收者看作函数的第一个参数，所以值类型时操作的是副本，指针类型操作的是实例对象。用Rob Pike的话来说就是："A method is a function with an implicit first argument, called a receiver."。其中值类型是concurrency safe，而指针类型是concurrency unsafe。
 
-什么时候用带接收者的函数呢：比如有一个三角形结构体（对象），需要对它计算面积，这个计算方法肯定跟形状相关，这种就比较适合写成带接收者的函数。
+什么时候用带接收者的函数：
+1. 理论上讲，只要一个func需要传递参数，就可以写成带receiver的形式。不过最好是有意义，比如有一个三角形结构体（对象），需要对它计算面积，这个计算方法肯定跟形状相关，这种就比较适合写成带接收者的函数。
+
+什么时候使用pointer receiver：
+1. MODIFY THE RECEIVER：不能用value receiver，因为它是一份拷贝
+2. OPTIMIZATION：如果struct特别大的话用value receiver的cost很expensive。
+3. 如果该receiver的类型上已经有pointer receiver了，为了consistency，所有地方都应该用pointer receiver。
+
+什么时候使用value receiver：
+1. 除开上面两种情况就可以
+
+
 
 ### 2.3 用户自定义类型
 自定义类型：使用`type`关键字基于已有的类型来声明新的类型，实际上只是定义了一个别名。struct是自定义类型的一个特殊类型。
@@ -1061,7 +1073,7 @@ for index,ele := range xxx {
 
 ### 4 goto
 
-## 4 函数
+## 4 function
 基本语法:
 1. 所有go函数以`func`开头，函数外的每个语句都必须以关键字开始(也就意味着简短声明表达式不能在函数外使用)
 2. 支持多返回值，返回值名称可作为文档使用，且可以像变量一样直接使用
@@ -1080,10 +1092,13 @@ go函数的大概结构:Go中大部分函数的代码结构几乎相同，首先
     func Sin(x float64) float //implemented in assembly language
     ```
 
-### 4.2 递归
+### 4.2 参数传递
+值传递：go 中函数都是按值传递即 passed by value。个人觉得传递指针的时候也是copy的一份指针传递进去的。
+
+### 4.3 递归
 1. 大部分编程语言使用固定大小的函数调用栈，常见的大小从64KB到2MB不等。固定大小栈会限制递归的深度，当你用递归处理大量数据时，需要避免栈溢出；除此之外，还会导致安全性问题。与相反,Go语言使用可变栈，栈的大小按需增加(初始时很小)。这使得我们使用递归时不必考虑溢出和安全问题
 
-### 4.3 多返回值
+### 4.4 多返回值
 函数可以拥有多返回值，返回类型之间需要使用逗号分割，并使用小括号()将它们括起来，如：
 
 ```go
@@ -1140,7 +1155,9 @@ func main() {
 
 和js闭包的对比:个人觉得,两者在功能上是差不多的,只是写法上有一点儿不同.可能因为go要声明返回值,所以被返回的函数只能以匿名函数的方式声明,但是js用js的函数声明(function declaration)来定义被返回的函数.
 
-## 5. 方法
+## 5 method
+什么类型可以作为method receiver：Go语言支持的除Interface类型外的任何其它数据类型都可以定义其method。
+
 关于方法的接收者选择：
 1. 要由接收者类型的本质来决定,感觉有点复杂,简单说就是看使用情况:对于内置类型,基本都是值接收者(?),对于结构类型就要看情况了
 2. 例外是需要让类型值符合某个接口的时候
@@ -1162,15 +1179,40 @@ func add(x, y int) int {
 }
 ```
 
-## 6 interface{}和接口
-go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口，所以任意的类型都实现了空interface（包含0个method的interface）。
+method receiver alias的使用例子参考：https://stackoverflow.com/questions/28251283/golang-function-alias-on-method-receiver
 
-优点是：
+## 6 interface{}和接口
+interface{}有两种用法，一种是只作为类型，另一种是作为接口（写法也是）
+
+### 6.1 interface{}类型
+`interface{}`类型的变量包含两种类型信息：interface type和concrete type。
+
+concrete type（具体类型），比如如下例子，其中i的concrete type就是string：
+```go
+var i interface{} = "hello"
+s,ok := i.(string)
+```
+
+空`interface{}`和`interface{}`类型的slice：空interface对于描述起不到任何的作用(因为它不包含任何的method），但是空interface在我们需要存储任意类型的数值的时候相当有用，因为它可以存储任意类型的数值。类似于C语言的void*类型。但golang不会自动把一般的slice转换成interface{} 类型的 slice，具体参考:https://github.com/golang/go/wiki/InterfaceSlice。例子如下：
+```go 
+var _ []interface{} = []string{`tom`} // 编译不过
+var _ interface{} = []string{`tom`}
+```
+
+
+### 6.2 接口
+作为接口时interface是一种具有一组方法的类型，这些方法定义了 interface 的行为。如果一个类型实现了一个 interface 中所有方法，我们说类型实现了该interface。go 允许不带任何方法的 interface ，这种类型的 interface 叫 empty interface。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
+
+go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口，所以任意的类型都实现了空interface（包含0个method的interface）。优点是：
 1. 不用绘制类库的继承树图
 2. 不用纠结接口需要拆的多细
 3. 不用为了实现一个接口而专门导入一个包
 
-### 6.2 接口
+为什么要使用接口，有如下几个理由：
+1. writing generic algorithm （泛型编程）
+2. hiding implementation detail （隐藏具体实现）
+3. providing interception points（待补充）
+
 接口的写法
 ```golang
 type Men interface{
@@ -1184,8 +1226,6 @@ var i Men
 tom := Student{...}
 i = tom
 ```
-
-空interface{}：空interface对于描述起不到任何的作用(因为它不包含任何的method），但是空interface在我们需要存储任意类型的数值的时候相当有用，因为它可以存储任意类型的数值。类似于C语言的void*类型。
 
 接口的嵌套：类似结构体的嵌套
 
@@ -1278,7 +1318,7 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 ## 8 反射和reflect包
 参考：https://juejin.im/post/5a75a4fb5188257a82110544
 
-反射的定义：通过采用某种机制来实现对自己行为的描述（self-representation）和监测（examination），并能根据自身行为的状态和结果，调整或修改应用所描述行为的状态和相关的语义。可以在运行时动态的调用对象的方法和属性，每种语言的反射模型都不同，并且有些不支持反射。
+反射的定义：通过采用某种机制来实现对自己行为的描述（self-representation）和监测（examination），并能根据自身行为的状态和结果，调整或修改应用所描述行为的状态和相关的语义。每种语言的反射模型都不同，并且有些不支持反射。Golang的反射机制就是在运行时动态的调用对象的方法和属性。
 
 反射的原理：待补充
 
@@ -1552,10 +1592,10 @@ Go的垃圾回收机制会回收不被使用的内存，但是这不包括操作
 
 Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和写屏障，垃圾回收的性能才有了好转。这套机制最终的目标就是在用户业务无感知的情况下实现垃圾回收，希望未来的版本这部分有更优秀的表现。
 
-## 14.1 变量的生命周期
+### 14.1 变量的生命周期
 **go中一个变量的有效周期只取决于是否可达**，因此一个循环迭代内部的局部变量的生命周期可能超出其局部作用域。同时，局部变量可能在函数返回之后依然存在
 
-## 14.2 堆栈分配
+### 14.2 堆栈分配
 局部变量分配到堆或者栈上并不是由用var还是new声明变量的方式决定的,编译器会做逃逸分析(escape analysis),当发现变量的作用域没有跑出函数范围，就可以在栈上，反之则必须分配在堆上.比如某个局部变量x在函数退出后依然可以通过包一级的global变量找到，那么x必须在堆上分配内存，用Go语言的术语说，这个x局部变量从函数f中逃逸了.所以不用担心会不会导致内存泄漏(memory leak),go语言声称这样可以释放程序员关于内存的使用限制，更多的让程序员关注于程序功能逻辑本身。
 
 ## 15 注释
@@ -1733,16 +1773,17 @@ p.VehBrand = "大众"
 
 Go类型和JSON类型的对应关系如下：
 - bool 代表 JSON booleans,
-- float64 代表 JSON numbers（如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64，没写的话默认是float64）
+- float64 代表 JSON numbers（如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64，没写的话go不会去区分，而是默认用float64）
 - string 代表 JSON strings,
 - nil 代表 JSON null.
+- 日期会序列化为ISO 8601标准的格式。
 - interface{} 按照内部的实际类型进行转换
 
 标签tag（也称为字段的元数据）：就是上面的结构体每个字段后面反引号包裹的内容，可以是任意的字符串，但是通常是用空格分割的key:value键值对序列，因为Tag中包含了双引号字符串，因此一般用原生字符串形式书写。key是json的会在json的转换时用到，key是xml会在xml转换时用到，以此类推，还可以自定义，比如第三方包用到的validate。注意这里有个坑：有多个tags时，golang解析`json:"xxx"`是按照空白符分隔的（参考`lookup()`方法），如果把`json:"xxx"`在第二行，因为前面是换行符，就识别不到。
 
 1. 如果tag设置为`json:"-"`，从结构体生成json的时候该字段不会输出到JSON，但是从json解析到结构体的时候会初始化为零值
 2. tag中带有自定义名称，那么这个自定义名称会出现在JSON的字段名中，例如上面的vehBrand
-3. omitempty：用于反序列化，如果数据中该字段为空或者字段的值为对应的零值，则反序列化时该字段不会输出到json中。写法是前面一定要有逗号，`json:"xxxName,omitempty"`or`json:",omitempty"`。比如有如下类型1，当变量person为`Person{Age:0}`或者`Person{}`时，反序列化后json中都不会有age字段。零值算是一个坑，因为有可能age就是要取0，解决方案是使用指针如类型2，不需要输出该字段的时候就传入nil，需要的时候就传入具体的值，不过写法上就会啰嗦一些，golang支持`&age`和`&(age)`但不支持`&(getAge())`这种写法，有需要用一个临时变量接收非指针的int64然后转成指针类型。
+3. `omitempty`：用于序列化，如果数据中该字段为空或者字段的值为对应的零值，则序列化时该字段不会输出到json中。写法是前面一定要有逗号，`json:"xxxName,omitempty"`or`json:",omitempty"`。比如有如下类型1，当变量person为`Person{Age:0}`或者`Person{}`时，序列化后json中都不会有age字段。零值算是一个坑，因为有可能age就是要取0，解决方案是使用指针如类型2，不需要输出该字段的时候就传入nil，需要的时候就传入具体的值，不过写法上就会啰嗦一些，golang支持`&age`和`&(age)`但不支持`&(getAge())`这种写法，有需要用一个临时变量接收非指针的int64然后转成指针类型。
         
     ```golang
     // 类型1
@@ -1808,7 +1849,18 @@ b := []byte(jsonStr)
     }
     ```
 
-延迟解析：可以把结构体字段的类型定义为`json.RawMessage`，解析后会以`[]byte`存在，用的时候再解析成对应的类型。
+延迟解析：
+1. 可以把结构体字段的类型定义为`json.RawMessage`，解析后会以`[]byte`存在，用的时候再解析成对应的类型。
+2. 对于数值类型，golang未明确指明类型的时候，默认解析成float64，可能导致不准确。可以用`json.Number`（本质是string类型）去接收，待需要的时候再解析成对应的类型，比如
+
+    ```go
+    m := user.(map[string]interface{})
+    fansCount := m["fansCount"]
+    v, err := fansCount.(json.Number).Int64()
+    if err != nil {
+        ...
+    }
+    ```
 
 ### 4.2 生成JSON`func Marshal(v interface{}) ([]byte, error)`：
 1. 默认输出字段名的首字母都是大写的，如果你想用小写的首字母怎么办呢？首先想到的是把结构体的字段名改成首字母小写的，但是JSON输出的时候，只有导出的字段才会被输出，如果如果修改字段名首字母小写，那么就会发现什么都不会输出，所以必须通过struct tag定义来实现。
@@ -1842,7 +1894,11 @@ b := []byte(jsonStr)
 
 其他常用函数：
 1. `MarshalIndent()`：`Marshal()`函数返回的JSON字符串是没有空白字符和缩进，这种紧凑的表示形式是传输时最常用的，但是肉眼看起来就不方便，而`MarshalIndent()`可以生成便于阅读的格式，第二个参数表示前缀，第三个参数表示缩进排版。
-2. `NewDecoder().Decode()`：作用等于`Unmarshal`，不过`json.Decoder`可以多次解码
+2. `NewDecoder().Decode()`：作用等于`Unmarshal`，但数据来源不同--它是从流中获取数据，然后将整个json缓存到内存中，然后再转成对应的go结构。
+
+`MarshalIndent`和`Decode`的选择：
+1. 如果数据来自io.Reader流，或者需要从数据流中解码多个值，请使用json.Decoder。
+2. 如果已经在内存中有JSON数据，请使用json.Unmarshal
 
 ## 6 正则表达式（regular expression）和regexp包
 一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准（https://github.com/google/re2）：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
@@ -1852,11 +1908,12 @@ b := []byte(jsonStr)
 一些重要概念：
 1. 贪婪模式（greedy）：趋向于匹配最长的，反之则是贪婪模式。
 2. 回溯：假如有*Regexp为`ab{1,3}c`，对于字符串`abbbc`，一次就匹配成功，不会发生回溯；而对于字符串`abc`，匹配完前两个字符之后，此时b只匹配到了一个，根据贪婪特性，还会将c放进去判断是否符合第二个b，发现不符合后会将c吐出来，然后再用正则的c去匹配文本的c，此时发生了一次回溯。
+3. 
     1. 所以使用时需要小心回溯带来的性能问题。
-3. 独占模式：同贪婪模式一样，独占模式一样会匹配最长。不过在独占模式下，正则表达式尽可能长地去匹配字符串，一旦匹配不成功就会结束匹配而不会回溯。
+4. 独占模式：同贪婪模式一样，独占模式一样会匹配最长。不过在独占模式下，正则表达式尽可能长地去匹配字符串，一旦匹配不成功就会结束匹配而不会回溯。
     
     在该模式下（go暂未支持？），假如有正则对象`ab{1,2}b+c`，对于字符串`abbc`，最后结果是匹配失败。
-4. 懒惰模式：在该模式下，正则引擎尽可能少的重复匹配字符，匹配成功之后它会继续匹配剩余的字符串。
+5. 懒惰模式：在该模式下，正则引擎尽可能少的重复匹配字符，匹配成功之后它会继续匹配剩余的字符串。
 
 ### 6.1 语法
 1. 查找汉字：`\p{Han}`
@@ -2447,6 +2504,8 @@ fmt.Println("所有 goroutine 执行结束")
 2. 以‘CompareAndSwap’为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
 
 ### time
+大概有两种日期格式：ISO和时间戳，ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
+
 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 
 10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
@@ -2504,7 +2563,7 @@ golang查找依赖包路径的顺序如下：
 2. `reflect.TypeOf(xxx)`:通过反射获取
 3. 类型断言，有两种方式：
     1. Comma-ok断言：`value,ok := xxx.(type)`，断言成功的ok为true，否则为false
-    2. 配合switch使用，此时不需要ok:`xxx.(type)`：，如
+    2. switch断言，这种方式只能配合switch使用，此时不需要ok:`xxx.(type)`：，如
         
         ```golang
         switch t := a.(type) {
