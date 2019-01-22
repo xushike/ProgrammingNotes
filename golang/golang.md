@@ -2117,7 +2117,7 @@ func test() {
 封装了带缓存的io操作以及Scanner
 
 ### context
-goroutine的上下文，用来跟踪一系列的goroutine。它就像一个控制器一样，按下开关后，所有基于这个Context或者衍生的子Context（不管多少层）都会收到通知，这时就可以进行清理操作了，最终释放goroutine，这就优雅的解决了goroutine启动后不可控的问题。Context是县城安全的，可以放心的在多个goroutine中传递。
+goroutine的上下文，用来跟踪一系列的goroutine。它就像一个控制器一样，按下开关后，所有基于这个Context或者衍生的子Context（不管多少层）都会收到通知，这时就可以进行清理操作了，最终释放goroutine，这就优雅的解决了goroutine启动后不可控的问题。Context是线程安全的，可以放心的在多个goroutine中传递。
 
 Context接口：
 ```go
@@ -2199,9 +2199,9 @@ fmt.Println(md5str2)
 1. `New(code, msg string) *Error`
 
 ### fmt
-其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。
+其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
 
-许多类型都会定义一个`String()`方法，因为当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回的结果打印.
+许多类型都会定义一个`String()`方法，当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回的结果打印.
 
 动词（verb）/占位符说明:
 
@@ -2322,6 +2322,14 @@ func writeFile(path string, b []byte) {
 2. `ReadAll`
 
 其他的功能很多都比较鸡肋。
+
+### log
+参考：http://blog.51cto.com/gotaly/1405754
+
+log相比fmt的优点：
+1. 添加了输出时间
+2. 线程安全
+3. 方便对日志信息进行转存，形成日志文件
 
 ### math
 1. `Floor()`:向下取整。golang没有提供四舍五入的内置函数，自己实现如下：`math.Floor(xxx+0.5)`
@@ -2640,6 +2648,9 @@ l5 := len(str)
 `dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))`：执行可执行文件时得到的是当前的目录，比如在HOME目录执行bin目录中的可执行文件，得到的就是`~`，如果是`go run`等命令，得到的是临时目录。
 
 `pwd, err := os.Getwd()`：任何情况下都是得到当前的目录，比如在HOME目录下运行`go run`或者可执行文件，得到的是`~`
+
+### 1.14 fmt和log
+fmt是线程不安全的，但是log是。
 
 ## 2 未解决
 ### 2.1 example中尾部的空格无法测试

@@ -408,10 +408,10 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
 
-### 8.2 切换分支
-切换分支:`git checkout xxx`,工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。
+### 8.2 切换/签出分支（git checkout）
+切换分支:`git checkout branch_name`,工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。
 
-所以对于新增的文件,如果目标分支没有改文件,切换成功;有该文件,切换失败.
+所以对于新增的文件,如果目标分支没有该文件,切换成功;有该文件,切换失败.
 
 ### 8.3 git stash:储藏修改(常用)
 当某个分支改到一半需要切换到另一个分支时,有些文件只更改到一半,这个时候有两种解决方法:commit和stash,使用stash最好.注意新增的文件不受影响.
@@ -448,6 +448,13 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 合并目标分支到当前分支:`git merge <目标分支名>`,默认是快进模式(Fast-forward)
 
 撤销上次的分支合并：`git merge ---abort`
+
+`cherry-pick`：只merge部分commit到当前分支上，`git cherry-pick commit_id`。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。
+1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
+2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，可以和上面的混用。
+
+如果有冲突：可以解决冲突之后使用`git cherry-pick --continue`继续，也可以取消合并`git cherry-pick --abort`
+
 
 ### 8.5 分支命名
 大概围绕以下几种来命名
@@ -580,6 +587,11 @@ git commit -m 'update .gitignore'
 
 ### 1.9 Permission denied (publickey)...
 git协议需要配置ssh key并且上传到服务器上
+
+### 1.10 拉取很久没更新的项目，一直卡在“展开对象中”
+可能原因：待补充
+
+解决办法1：删除项目，重新clone
 
 ## 2 未解决
 ### 2.N 其他
