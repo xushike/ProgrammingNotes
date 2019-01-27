@@ -656,8 +656,9 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
 3. 拼接的几种方式及比较
     1. `+`，量大时效率较低，因为每次都会产生一个新字符串
     2. `fmt.Sprintf()`:内部使用 []byte 实现
-    3. `strings.Join()`
+    3. `strings.Join()`：效率比`+`高
     4. `buffer.WriteString()`：不需要复制，只需要将添加的字符串放在缓存末尾即可，所以性能理论上最好，不过和java的StringBuilder一样是线程不安全的
+    5. go1.10开始新增了builder类型
 
 #### 2.1.4 布尔bool
 对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
@@ -1516,7 +1517,7 @@ func main() {
 也可以手动触发panic：`panic("xxx")`，一般是把它作为最后的手段来使用
 
 #### defer
-`defer func(){...}`
+`defer func(){...}()`
 
 deger的定义：Defer is used to ensure that a function call is performed later in a program’s execution, usually for purposes of cleanup. defer is often used where e.g. ensure and finally would be used in other languages.
 
@@ -1535,7 +1536,7 @@ func main() {
 // 打印的是1而不是0
 ```
 
-为什么需要defer：defer的存在，让我们有更多的选择，比如在defer中通过recover截取panic，从而达到`try..catch`的效果。defer的特点就是LIFO，即后进先出，所以如果在同一个函数下多个defer的话，会逆序执行。注意defer要在panic之前声明才能捕获panic,最好写到最前面。比如以下几种典型使用场景：
+为什么需要defer：一句话总结，defer一般用来做扫尾。defer的存在，让我们有更多的选择，比如在defer中通过recover截取panic，从而达到`try..catch`的效果。defer的特点就是LIFO，即后进先出，所以如果在同一个函数下多个defer的话，会逆序执行。注意defer要在panic之前声明才能捕获panic,最好写到最前面。比如以下几种典型使用场景：
 1. 释放资源：解锁、释放数据库连接、文件资源释放等
 
     ```golang
@@ -1734,7 +1735,7 @@ go run *.go
 指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
 
 ### 1.9 go doc和godoc
-两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器
+两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器。感觉前者用起来更方便。。。
 
 #### go doc
 查看文档,挺方便的.
