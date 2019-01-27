@@ -1318,6 +1318,11 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 ## 8 反射和reflect包
 参考：https://juejin.im/post/5a75a4fb5188257a82110544
 
+golang的类型（待完善）：见过`static type`、`concrete type`、`specific king of type`、`dynamic type`,这些怎么区分呢？
+1. `reflect.Typeof()`获取的是concrete type，`King()`方法获取的是specfic kind of type。比如下面的例子1，对于i来讲`myInt`是concrete type，`int`是specfic kind of type（原始类型？）
+2. 在例子2中，`io.Reader`是static type，`*bytes.Buffer`是concrete type，也是dynamic type，而`ptr`就是specific king of type
+3. 断言里的类型是`concrete type`
+
 反射的定义：通过采用某种机制来实现对自己行为的描述（self-representation）和监测（examination），并能根据自身行为的状态和结果，调整或修改应用所描述行为的状态和相关的语义。每种语言的反射模型都不同，并且有些不支持反射。Golang的反射机制就是在运行时动态的调用对象的方法和属性。
 
 反射的原理：待补充
@@ -1325,6 +1330,21 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 反射回来的类型大概有：待补充
 
 <!-- 使用反射之前需要了解（感觉不够准确，后面再补充吧）：go的变量包括type和value两部分（所以nil!=nil？），type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、[]string)，concrete type是runtime系统看见的类型；类型断言能否成功，取决于变量的concrete type，而不是static type. 因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer。反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说，它的value是实际变量值，type是实际变量的类型，该pair对在连续赋值的过程中是不变的，所以反射就是用来检测存储在接口变量内部(值value，类型concrete type) pair对的一种机制。 -->
+
+reflect包:reflect包里的有两个重要结构`Type`和`Value`，`Type` 是一个接口，定义了所有类型相关的 api，reflect 里的`*rtype`实现了这个接口，通过 `reflect.TypeOf` 函数可以获取任何传入值的`*rtype`。`Value` 是一个 `struct`，通过 `reflect.ValueOf` 函数获取，它在*rtype的基础上又封装了传入值的 unsafe.Pointer 类型的地址以及这个值的元数据。 在 Type 和 Value 之上还有一个Kind，它代表传入值的原始类型。例子如下：
+```go
+// 例子1
+type myInt int
+var i myInt
+t := reflect.TypeOf(i) // t是myInt
+k := t.Kind() // k是int
+
+// 例子2
+var r io.Reader
+r = new(bytes.Buffer)
+rt := reflect.TypeOf(r) // rt是 *bytes.Buffer
+rk := rt.Kind() // rk是ptr
+```
 
 使用反射一般分为三步：
 1. 要去反射是一个类型的值(这些值都实现了空interface)，首先需要把它转化成reflect对象(reflect.Type或者reflect.Value，根据不同的情况调用不同的函数)
@@ -1358,18 +1378,16 @@ v := p.Elem()
 v.SetFloat(7.1)
 ```
 
-表现类型和实际类型在连续赋值的过程中是不会变的？
-
 常用函数：
 1. 两种类型
-    1. `Typeof()`和`Value.Type()`：api里说的是dynamic representation type，就是表现类型，
-    2. `Kind()`：返回concrete type，可以理解为实际类型，这些类型是有限的，比如int、struct、map、对于空接口返回的Invalid等
+    1. `Typeof()`和`Value.Type()`：api里说的是dynamic representation type，字面意思是表现类型，我理解为dynamic type,似乎也是concrete type。
+    2. `Kind()`：返回specific kind of type，可以理解为原始类型，这些类型是有限的，比如int、struct、map、对于空接口返回的Invalid等
 2. `ValueOf()`
 3. `Value.Elem()`：获取反射对象指针指向的值，如果指针的地址是可修改的（`CanSet()`方法为true），那么获取后就可以对它进行修改。非指针则panic
 4. `Value.Interface().(xxx)`：可以将“反射类型对象”转变回“接口类型变量”，失败则panic
     
     ```go
-    // Value 转原始类型
+    // Value 转 原始类型
     if u1, ok := v.Interface().(User); ok {
         fmt.Println("after:", u1.Name, u1.Age)
     }
@@ -1393,7 +1411,7 @@ func (u User) ReflectCallFunc() {
 user := User{1, "Allen.Wu", 25}
 
 // 获取方法字段
-// 1. 先获取interface的reflect.Type，然后通过NumField进行遍历
+// 1. 先获取interface的reflect.Type，如果不是带指针的类型，直接通过NumField进行遍历；如果带指针，则调用Elem()方法后再通过NumField进行遍历
 // 2. 再通过reflect.Type的Field获取其Field
 // 3. 最后通过Field的Interface()得到对应的value
 getType := reflect.TypeOf(user)
@@ -1738,6 +1756,11 @@ go run *.go
 
 ### 2.2 gb
 社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
+
+### 2.3 GVM
+go的版本管理工具，项目地址：https://github.com/moovweb/gvm
+
+配置：该工具是用shell写的，默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以应该修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。
 
 ## 3 go runtime运行时
 尽管 Go 编译器产生的是本地可执行代码，这些代码仍旧运行在 Go 的 runtime（这部分的代码可以在 runtime 包中找到）当中。这个 runtime 类似 Java 和 .NET 语言所用到的虚拟机，它负责管理包括内存分配、垃圾回收、栈处理、goroutine、channel、切片（slice）、map 和反射（reflection）等等。

@@ -152,9 +152,10 @@ MPA:多页面跳转刷新所有资源，每个公共资源(js、css等)需选择
     1. This allowed for single page applications to be search engine friendly.
 
 ### 2.3 PWA
-PWA的核心能力:
-1. Service Worker，独立的JS线程，与文档无关的生命周期，离线更新资源的能力。
-2. Reliable : SW Cache、Fetch、Push、Navigation Preload、Background Fetch、Background Synchronization、   CompositorWorker
+PWA的特点:
+1. 利用Service Worker在网络不确定的情况下即时加载：Service Worker是独立的JS线程，与文档无关的生命周期，离线更新资源的能力--通过预缓存关键资源，可以消除对网络的依赖，确保为用户提供即时可靠的体验。
+2. 快速：据统计，如果站点加载时间超过 3s，53% 的用户会放弃等待
+3. Reliable : SW Cache、Fetch、Push、Navigation Preload、Background Fetch、Background Synchronization、   CompositorWorker
 
 PWA带来的影响:
 1. 逐步给前端开放浏览器内核基础能力，甚至是操作系统能力，比如缓存、推送、添加桌面图标、下载、图片解码、渲染等等

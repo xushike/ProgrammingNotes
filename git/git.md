@@ -422,7 +422,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 恢复储藏:`git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)
 
-恢复(并删除?)最前面的储藏:`git stash pop`.
+恢复并删除最前面的储藏:`git stash pop`.
 
 删除暂存:`git stash drop <储藏的名字>`,比如`git stash drop stash@{0}`
 
@@ -430,7 +430,9 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 - `git stash --keep-index`:不储藏暂存区的内容
 - `git stash -u`:也会储藏创建的未跟踪文件
 
-注意:`git stash`对新增的文件不生效
+注意:不带参数的`git stash`对新增的文件不生效
+
+查看stash里的内容：`git stash show`，支持所有`git diff`的参数
 
 ### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
@@ -592,6 +594,11 @@ git协议需要配置ssh key并且上传到服务器上
 可能原因：待补充
 
 解决办法1：删除项目，重新clone
+
+### 1.11 git stash pop出现：xxx already exists, no checkout    Could not restore untracked files from stash
+可能原因1：做了一些骚操作，比如混合了新增、修改、拉取等，导致最后stash之后恢复不了了。
+
+解决办法1：确保文件没问题的情况下，强制恢复`git checkout stash -- .`，参考：https://stackoverflow.com/questions/16606203/force-git-stash-to-overwrite-added-files
 
 ## 2 未解决
 ### 2.N 其他

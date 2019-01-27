@@ -182,7 +182,6 @@
 114. 朋友推荐去了解的:postcss(用起来超爽),vw以及element-ui(朋友的vue项目中把bootstrap换成了element-ui)
 115. 如何封装自己的css,就是一次写好到处使用
 116. GNU,GPL和自由软件的区别，是不是有的是完全开源而有的可以按服务等收费？
-117. swagger是接口生成插件?和postman的区别?
 119. webgl是什么东西,好像比较赚钱,听说越来越流行了
 120. H5的学习
 121. 服务器的学习:Apache,Nginx,IIS

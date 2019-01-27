@@ -12,7 +12,6 @@
 1. sql支持多行注释 吗
     1. 顺序扫描很慢？所以应该尽量避免？update的时候只能顺序扫描
 1. 触发器和存储过程
-1. less自动滚屏
 1. 周末解决死锁的问题
     1. 如何手动实现死锁
     2. 死锁的原因分析
@@ -633,7 +632,6 @@ package github.com/cweill/gotests/...: exit status 1
 60. godep那个tool的使用
 61. golang给包设置多个目录,下载的包需要在多个版本间切换怎么弄比较好
 62. 密钥:私钥,公钥
-63. postman
 64. chrome的投影
 65. git log是按时间顺序排吗, 如果不是怎么弄?
 66. 取数组最大最小值的算法
@@ -2246,7 +2244,6 @@ worker.cancel();
 	StringBuffer和String;stringbuffer；不用第三个参数实现两个数交换；数组可以用泛型吗？集合内数组的排序；sql查询排序等；双色球；排序；字符操作；字符排序操作；依赖注入的实现方式；java面试题；面试官说觉得自己擅长的，问开发编程中遇到
 的问题；ajax；jQuery；编码问题，各种的默认编码和编码表，字符串拆分；各种Writer的区别和使用；数据库一对多，多对多等；
 
-60. postman的使用,现在大家都用什么?
 61. go编译后的后缀名是什么,在linux和mac中?
 62. js arraybuffer和java ByteBuffer
     1. 参考:
