@@ -71,6 +71,15 @@ First Header | Second Header
 Content from cell 1 | Content from cell 2
 Content in the first column | Content in the second column
 
+### 图表
+需要插件支持，比如mermaid，github和gitlab已经集成了该插件：https://mermaidjs.github.io
+
+```mermaid
+sequenceDiagram
+    Alice->John: Hello John, how are you?
+    John-->Alice: Great!
+```
+
 ### 转义
 对于Markdown标记，想直接显示有下面三种方法：
 1. 在markdown符号前面加上反斜杠

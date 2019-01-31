@@ -207,6 +207,11 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 
 似乎右键选择打开也行：显示打包内容 > Contents > MacOS 点击 xxx
 
+### 1.10 xcrun: error: invalid active developer path (/Library/Developer/CommandLineTools), missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun
+似乎是mac升级后出现
+
+解决办法：重装xcode command line`xcode-select --install`，如果还不行则执行`sudo xcode-select -switch /`
+
 ## 2 未解决
 1. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
 2. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
