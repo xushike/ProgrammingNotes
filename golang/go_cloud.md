@@ -16,6 +16,7 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 ## 1 groupcache
 
 ## 2 https://github.com/go-playground/validator/tree/v9.24.0
+文档地址：https://godoc.org/gopkg.in/go-playground/validator.v9
 
 ## 3 github.com/SebastiaanKlippert/go-wkhtmltopdf
 

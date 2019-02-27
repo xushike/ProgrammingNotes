@@ -189,26 +189,38 @@ GOGC：默认值是100，简单来讲就是值越低GC的频率越快。GOGC=off
 
 GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
 
+### 3.19 文件名
+以下划线`_`开头的文件不会被go编译，对golang而言类似于没有该文件
+
+### 3.20 go的几种指针
+有三种：
+1. *类型：普通指针，用于传递对象地址，不能进行指针运算。
+2. unsafe.Pointer：通用指针类型，用于转换不同类型的指针，在Go中可以把它理解成任何指针的父类型，不能进行指针运算。
+3. uintptr：用于指针运算，GC 不把 uintptr 当指针，uintptr 无法持有对象。uintptr 类型的目标会被回收。字节长度和int一样，32位系统中是4字节，64位8字节
+
+三种类型的转换：unsafe.Pointer 可以和 普通指针 进行相互转换，unsafe.Pointer 可以和 uintptr 进行相互转换，也就是说 unsafe.Pointer 是桥梁，可以让任意类型的指针实现相互转换，也可以将任意类型的指针转换为 uintptr 进行指针运算。具体做法是将Pointer类型转换成uintptr类型，做完加减法后，转换成Pointer，通过*操作，取值，修改值...
+
+
 ## 4 文档网址视频等
 1. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
-1. _Effective Go_(中文名《高效Go编程》)
-2. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
-3. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
-4. 网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
-1. 大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
+2. _Effective Go_(中文名《高效Go编程》)
+3. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
+4. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
+5. 网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
+6. 大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
     1. https://astaxie.gitbooks.io/build-web-application-with-golang/zh/
-2. http://bmknav.com/go/
-2. go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
-3. 该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
-4. go语言官方文档地址：https://golang.org/
+7. http://bmknav.com/go/
+8. go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
+9. 该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
+10. go语言官方文档地址：https://golang.org/
     1. 比如想看runtime包，可以访问：https://golang.org/pkg/runtime/
-5. GO入门指南：https://www.kancloud.cn/kancloud/the-way-to-go/72675
-6. go设计模式：https://books.studygolang.com/go-patterns/
-7. 大牛翻译的标准库中文文档：http://cngolib.com/
-8. golang官方
+11. GO入门指南：https://www.kancloud.cn/kancloud/the-way-to-go/72675
+12. go设计模式：https://books.studygolang.com/go-patterns/
+13. 大牛翻译的标准库中文文档：http://cngolib.com/
+14. golang官方
     1. 博客：https://blog.golang.org/
     2. playground：https://play.golang.org/
-9. awesome-go：需要什么第三方库就从这里找
+15. awesome-go：需要什么第三方库就从这里找
 
 ## 6 相关项目
 1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb
@@ -331,7 +343,7 @@ i, j := 0, 1
 
 注意：
 1. 简短变量声明语句中必须至少要声明一个新的变量,对于其他已经声明过的变量，则只有赋值操作
-2. 简短变量声明语句只有对已经在同级词法域声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
+2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
 
 #### 1.3.2 变量的初始值
 零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以简化很多代码，而且可以在没有增加额外工作的前提下确保边界条件下的合理行为。
@@ -410,9 +422,9 @@ const (
 )
 ```
 
-特别的iota：参考:https://studygolang.com/articles/2192
+优雅的常量iota：iota是无类型的int(untyped int)，不是int也不是uint；iota只能在常量表达式中使用，所以`fmt.Println(iota)`会报错
 
-常量命令的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。
+常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。
 
 ### 1.5 指针
 指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言里可以对指针进行加或减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
@@ -595,7 +607,7 @@ Go语言将数据类型分为四类：
 3. 数值和字符串
     1. 整形到字符串`s = strconv.Itoa(i)` 或者 `s = strconv.FormatInt(int64(i), 10)`
     2. 字符串到整形：`i, err = strconv.Atoi(s) 或者 i, err = strconv.ParseInt(s, 10, 0)`
-    3. 字符串到float32/64：`float32, err = ParseFloat(string, 32)`和`float64,err = ParseFloat(string,64)`
+    3. 字符串到float32/64：`float32, err = strconv.ParseFloat(string, 32)`和`float64,err = strconv.ParseFloat(string,64)`
 
 ### 2.1 基础数据类型
 包含int、float、bool、string
@@ -950,7 +962,9 @@ func GetXXX(){
 
 选择器（selector）：无论变量是一个结构体类型还是一个结构体类型指针，都使用同样的选择器符（selector-notation） 来引用结构体的字段。语法形如`structname.fieldname = value`。好处是不用像 C++ 中那样需要使用 -> 操作符，因为Go 会自动做了这样的转换。
 
-结构体的内存布局：Go 语言中，结构体和它所包含的数据在内存中是以连续块的形式存在的，即使结构体中嵌套有其他的结构体，这在性能上带来了很大的优势。不像 Java 中的引用类型，一个对象和它里面包含的对象可能会在不同的内存空间中，这点和 Go 语言中的指针很像
+结构体的内存布局：Go 语言中，结构体和它所包含的数据在内存中是以连续块的形式存在的，即使结构体中嵌套有其他的结构体，这在性能上带来了很大的优势。不像 Java 中的引用类型，一个对象和它里面包含的对象可能会在不同的内存空间中，这点和 Go 语言中的指针很像。
+```golang
+```
 
 递归结构体：（待补充）比如二叉树
 
@@ -975,7 +989,7 @@ func GetXXX(){
 
 
 ### 2.3 用户自定义类型
-自定义类型：使用`type`关键字基于已有的类型来声明新的类型，实际上只是定义了一个别名。struct是自定义类型的一个特殊类型。
+自定义类型：使用`type`关键字基于已有的类型来声明新的类型，实际上只是定义了一个别名，如`type doration int64`,此时int64是doration的基础类型，但是go并不认为doration和int64是同一个类型。struct是自定义类型的一个特殊类型。
 
 声明：比如
 ```golang
@@ -986,11 +1000,7 @@ type money float32
 type months map[string]int
 ```
 
-#### 2.3.2 基于已有的类型
-如`type doration int64`,此时int64是doration的基础类型,但是go并不认为doration和int64是同一个类型
-
-
-## 3 流程控制
+## 3 流程控制/控制流程(control flow)
 go的三个流程控制语句后都可以紧跟一个简短的变量声明，一个自增表达式、赋值语句，或者一个函数调用.比如紧跟一个简短变量声明,好处是:
 - 让代码更加简单
 - 这个变量的作用域只在流程控制里(易忘点)
@@ -1018,7 +1028,7 @@ for index,ele := range xxx {
 
 注意：
 1. for后面的三个语句(initialization; condition; post)都可以省略，此时可以看做go的`while`
-2. 和其它语言中的`break`和`continue`一样，`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会中跳过当前循环，并开始执行下一次循环。
+2. 和其它语言中的`break`以及`continue`一样，`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会中跳过当前循环，并开始执行下一次循环。
 3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map。
 
 优化：因为index后面的ele是元素的副本而不是指针，元素很大的话开销会比较大，有两种优化思路。
@@ -1186,6 +1196,12 @@ method receiver alias的使用例子参考：https://stackoverflow.com/questions
 interface{}有两种用法，一种是只作为类型，另一种是作为接口（写法也是）
 
 ### 6.1 interface{}类型
+根据`interface{}`是否包含有 method，底层实现上用两种 struct 来表示：iface 和 eface。eface表示不含 method 的 interface 结构，或者叫 empty interface。对于 Golang 中的大部分数据类型都可以抽象出来 _type 结构，同时针对不同的类型还会有一些其他信息。概括起来，接口对象由接口表 (interface table) 指针和数据指针组成，或者说由动态类型和动态值组成，当`interface{}`的动态类型和动态值都为nil的时候，`interface{}`才等于nil。所以不能直接通过与nil比较来判断`interface{}`里的动态值是否为空，可以通过反射的`reflect.Ptr.IsNil()`来判断
+```golang
+
+
+```
+
 `interface{}`类型的变量包含两种类型信息：interface type和concrete type。
 
 concrete type（具体类型），比如如下例子，其中i的concrete type就是string：
@@ -1231,7 +1247,7 @@ i = tom
 接口的嵌套：类似结构体的嵌套
 
 ## 7 单元测试、go test、Benchmark、Example
-轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
+轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test或Example开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
 
 对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
 
@@ -1657,7 +1673,7 @@ Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`�
 查看帮助：`go help xxx`，比如`go help generate`
 
 ### 1.1 go run
-`go run ...`编译且运行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成：
+`go run ...`编译且运行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
 ```golang
 go run main.go a.go
 // 或者
@@ -2553,11 +2569,36 @@ fmt.Println("所有 goroutine 执行结束")
 2. 判断是否为数字：`unicode.IsDigit(ch)`
 3. 判断是否为空白符号：`unicode.IsSpace(ch)`
 
+### unsafe
+两个type三个方法
+
+1. `type ArbitraryType int`:Go中对ArbitraryType赋予特殊的意义。代表一个任意Go表达式类型（比如指针），虽然看起来它是int的别名。
+2. `type Pointer *ArbitraryType`：Go中可以把Pointer类型，理解成任何指针的父类型。
+3. `Sizeof(anyType) uintptr`：官方文档说的返回变量本身占用的空间大小（单位：字节），而不是变量指向的内存的大小。比如字符串string类型内部是由两部分组成，一部分是指向字符串起始地址的指针，另一部分是字符串的长度，两部分各是8字节，所以一共16字节。切片的描述符（descriptor）是24字节。该方法在编译期就进行求值，而不是在运行时，所以`Sizeof()`的返回值可以赋值给常量。数组总是在编译期就指明自己的容量，意味着可以获得数组所占的内存大小。对于结构体类型，不是简单的将各字段的size加起来，因为会有对齐
+
+    ```golang
+    type W struct {
+        a byte
+        b int32
+        c int64
+    }
+
+    var w W
+    fmt.Println(unsafe.Sizeof(w)) //16，因为发生了对齐
+    ```
+    
+4. `Alignof()`：返回变量对齐字节数量。反射包也有某些方法可用于计算对齐值：`unsafe.Alignof(w)`等价于`reflect.TypeOf(w).Align`，`unsafe.Alignof(w.i)`等价于`reflect.Typeof(w.i).FieldAlign()`
+5. `Offsetof()`：返回变量指定属性的偏移量，这个函数虽然接收的是任何类型的变量，但是有一个前提，就是变量要是一个struct类型，且还不能直接将这个struct类型的变量当作参数，只能将这个struct类型变量的属性当作参数
+
 ### utf8
 与 rune 相关的函数
 
-### encoding/json
+### encoding
+#### json
 参考json部分
+
+#### binary
+1. `Size()`：返回编码某些类型数据需要的字节数（待补充）
 
 ## 3 go的编译器
 ### 3.1 为何这么快(from圣经)
@@ -2677,7 +2718,10 @@ l5 := len(str)
 `pwd, err := os.Getwd()`：任何情况下都是得到当前的目录，比如在HOME目录下运行`go run`或者可执行文件，得到的是`~`
 
 ### 1.14 fmt和log
-fmt是线程不安全的，但是log是。
+fmt是线程不安全的，但是log是。（待测试）
+
+### 1.15 cannot define new methods on non-local type
+method 和它所属的类型必需定义在同一个包下
 
 ## 2 未解决
 ### 2.1 example中尾部的空格无法测试

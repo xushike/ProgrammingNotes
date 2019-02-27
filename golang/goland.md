@@ -19,6 +19,7 @@ goland开发工具的笔记
 1. 设置竖线：`show hard wrap guide(configured in code style options)`
 2. 配置运行测试的环境：默认类似于dev，配置`GOENV=test`，暂时没看到全局配置的地方，先忽略。
 3. 本地有多个go版本时，想切换似乎只需要设置goland的`GOROOT`
+4. 设置import不自动折叠（collapse）：`Edit->General->Code Folding`
 
 # 三 基础
 

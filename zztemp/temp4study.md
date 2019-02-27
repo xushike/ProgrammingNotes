@@ -1675,16 +1675,10 @@ for (let [i, item] of arr.entries()) {
     比如邮费那儿,当字段太长的时候选择出来就只能显示部分字段
 
 359. [成都公租房租赁补贴开始申请 最高补贴100%](http://cd.qq.com/a/20180301/004785.htm)
-
-360. zookeeper的配置是什么意思
 361. go中错误的最佳实践
 
     如果err有很多层,怎么判断是从哪层传过来的?
 362. ts里在变量名前面加`_`和后面`_`有没有什么特殊意义
-363. hadra启动命令行的`-d`和`-w`等的意义
-364. wlwk_merchant项目本地前端启动的特殊性
-    
-    必须先非本地启动的方式获取session_id然后保存为固定的,然后才能以固定的session_id本地启动
 
 365. `link`标签是干嘛的,css放的位置
 366. oracle
@@ -1742,15 +1736,10 @@ for (let [i, item] of arr.entries()) {
 386. 项目中css没有生效的研究
 
     偶尔出现的bug还是?
-
-387. js和go的各种格式化
 388. css布局
 389. sum over() 不能和group by一起用?
 390. ubuntu `whereis`
 391. package-lock.json作用
-393. 源文本中存在无法识别的标记
-
-    @angualr/cli
 394. import 后面那个带`-`,以及default是什么意思
 395. saas
 396. webpack的unchanged chunks是什么
@@ -1789,11 +1778,6 @@ for (let [i, item] of arr.entries()) {
     2. 存储过程的原理,如果有很多判断什么的,效率会低吗?
 414. update可以left join吗
     1. query的时候,如果字段没有获取到会报错吗,还是返回null?
-
-415. golang input,interface和map,slice,json,int等的转换
-    
-416. res的值是啥,如果操作了条返回啥
-    1. 数据交换时的数据类型
 
 417. js中有go的那种格式化打印方法吗
 418. golang

@@ -628,7 +628,6 @@ git协议需要配置ssh key并且上传到服务器上
 16. Pull Request 的命令行管理:[http://www.ruanyifeng.com/blog/2017/07/pull_request.html](http://www.ruanyifeng.com/blog/2017/07/pull_request.html)
 
 17. ip前的git和https有什么区别
-18. git移除remote再重新添加，然后识别好像就有点问题，指令能够正常使用，vscode的状态看不了了。
 19. git提交多了会导致变慢吗?
 20. global和本地都配置了,则优先使用的哪个?
 21. 网友的文章:[https://segmentfault.com/a/1190000011168654](https://segmentfault.com/a/1190000011168654)

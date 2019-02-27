@@ -31,6 +31,9 @@ Flutter是Google下一代操作系统Fuchsia的UI框架，在保持原生性能�
 
 # 三 基础
 
+# 五 经验
+## 1 《万物起源》
+动画使用2Dimensions发布的flutter动画制作工具Flare制作，这个应用的灵感来源于 Kurzgesagt – In a Nutshell 频道的一个相当出名的视频：The History and Future of Everything。原视频链接：https://www.youtube.com/watch?v=5TbUxGZtwGI，原视频中作者说动画是通过Adobe After Effects和多年的经验制作的，skillsshare网站有制作过程的视频
 
 # 六 问题
 # 七 未整理

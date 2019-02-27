@@ -99,6 +99,9 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 1. 如果网速较慢,可考虑使用代理.brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
 2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`
 
+特性：
+1. 支持断点续传（因为使用curl下载）
+
 常用命令:
 1. 模糊搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
     1. 使用`info`时，没安装的会提示`not installed`
