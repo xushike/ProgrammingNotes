@@ -2370,7 +2370,7 @@ func writeFile(path string, b []byte) {
 参考：http://blog.51cto.com/gotaly/1405754
 
 log相比fmt的优点：
-1. 添加了输出时间
+1. 默认添加了输出时间，而时间对于排查问题非常重要。还可以添加文件名和行号。
 2. 线程安全
 3. 方便对日志信息进行转存，形成日志文件
 
