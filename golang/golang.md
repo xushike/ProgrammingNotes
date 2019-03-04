@@ -1915,7 +1915,7 @@ b := []byte(jsonStr)
 4. 指针在编码的时候会输出指针指向的内容，而空指针会输出null(待补充)
 5. 多个相同名字的字段：假设结构体a里嵌套有b、c两个结构体，然后b和c有相同的字段Name，如果两个Name都没有tag或者两个Name的tag所声明的json名称一样，那么生成json的时候两个Name都不会被编码；如果b和c中有Name字段，a里有Name字段（不在b或c中），那么以a中的Name字段会覆盖掉（不是替换）b和c中的。这些特性可实现以下技巧：
     1. 临时忽略某些字段：
-6. golang json反序列化的时候，只会反序列化存在的字段，不存在的不会管。这个特性可以实现默认值的设置：
+6. golang json反序列化的时候，只会反序列化不存在的字段，存在的不会管。这个特性可以实现默认值的设置：
 
     ```golang
     type Info struct {
@@ -2468,13 +2468,13 @@ func getFilelist(r string) {
 
 ### runtime
 runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
-1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（代码文件绝对路径，这个路径不会因为编译成可执行文件而改变，也不会因为go run的位置而改变）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 runtime.Caller 的调用者。由于历史原因, 该参数和runtime.Callers 中的 skip 含义并不相同。
+1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（代码文件绝对路径，这个路径不会因为编译成可执行文件而改变，也不会因为go run的位置而改变）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 `Caller()` 的调用者。由于历史原因, 该参数和`Callers` 中的 skip 含义并不相同。
     1. 网友实测, Go的普通程序的启动顺序如下:
         1. runtime.goexit 为真正的函数入口(并不是main.main)
         2. 然后 runtime.goexit 调用 runtime.main 函数
         3. 最终 runtime.main 调用用户编写的 main.main 函数
-2. `runtime.Callers()`
-3. `runtime.FuncForPC(pc uintptr)`:返回包含给定 pc 地址的函数, 如果是无效 pc 则返回 nil。可以用来获取函数名。
+2. `Callers()`
+3. `FuncForPC(pc uintptr)`:返回包含给定 pc 地址的函数, 如果是无效 pc 则返回 nil。可以用来获取函数名。
 
 基于上面几个方法，可以做一个获取调用者的函数名/文件名/行号等用户友好的信息的简单函数：
 ```golang
@@ -2709,7 +2709,7 @@ l5 := len(str)
 1. 所有文件放到一个
 
 ### 1.13 golang获取文件执行的几个路径
-`_, filename, _, _ := runtime.Caller(0)`：filename是执行的go文件的绝对路径，不会因为`go run`等命令执行的位置而改变，在生成的二进制文件中也不会改变。
+`_, filename, _, _ := runtime.Caller(0)`：filename是该代码所在文件的绝对路径，不会因为`go run`等命令执行的位置而改变，在生成的二进制文件中也不会改变。比如这段代码在文件`.../Tom/a.go`中，filenae的值就是".../Tom/a.go"
 
 `ex, _ := os.Executable()`：通过可执行文件运行的时候显示的是可执行文件所在目录的绝对路径，其他情况都是输出一个临时目录的地址。
 
