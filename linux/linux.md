@@ -643,6 +643,9 @@ Change ...
 
 例子如：`curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
 
+判断端口连通性：`curl ip:port`
+1. Connection reset by peer
+
 ## 9 wget
 用来从指定的URL下载文件，支持断点续传。
 

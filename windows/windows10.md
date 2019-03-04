@@ -9,6 +9,9 @@
     3. 快捷键`alt+PrtScn`:截图最前面的窗口
     4. `PrtScn`:直接截取全屏
     5. Edge网页长截图:钢笔(添加笔记)=>剪辑=>拖动可截网页长图
+    
+## 4 文档视频网址等
+1. Windows 10 ISO 映像官方下载地址：https://www.microsoft.com/zh-cn/software-download/windows10ISO
 
 # 四 高级
 # 1 windows to go

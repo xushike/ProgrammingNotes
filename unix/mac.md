@@ -151,6 +151,13 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 3. 设置自动补全。注意颜色可能和背景颜色相似，可以设置为“586e75”
 5. 隐藏用户名和主机名
 
+### 2.9 网络实用工具（Network Utility）
+新版本的 macOS 中已经将它从应用程序隐藏了，不能从 Finder 中直接找到，位于`/System/Library/CoreServices/Applications/`
+
+功能有：端口扫描
+
+端口扫描：会非常方便标注扫描出来的常用端口的服务名。
+
 # 四 高级
 ## 1 FSEvents
 首先需要了解文件更改监视器(File Alteration Monitor):它是一个子系统,允许应用程序watch特定的文件，并在修改后得到通知。而FSEvents API就是mac系统提供给应用程序的基于FAM的接口.
@@ -214,6 +221,20 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 似乎是mac升级后出现
 
 解决办法：重装xcode command line`xcode-select --install`，如果还不行则执行`sudo xcode-select -switch /`
+
+### 1.11 vim修改文件时出现： Can't open file for writing
+权限不够，`sudo su`切换成超级用户
+
+### 1.12 清理图标缓存
+mac会对图标进行缓存，图标缓存包括finder和dock，一次执行下面的命令：
+
+`sudo find /private/var/folders/ \( -name com.apple.dock.iconcache -or -name com.apple.iconservices \) -exec rm -rfv {} \;`
+
+`sudo rm -rf /Library/Caches/com.apple.iconservices.store;`
+
+`killall Dock`
+
+`killall Finder`
 
 ## 2 未解决
 1. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
