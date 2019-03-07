@@ -517,8 +517,6 @@ package github.com/cweill/gotests/...: exit status 1
         ```
 
 1. db
-    1. pgsql自动排版SQL的工具
-        1. navicat
     1. 增加表字段对原有数据有什么影响
     2. 触发器
     1. postgressql ssl

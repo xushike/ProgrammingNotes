@@ -1789,7 +1789,7 @@ go的版本管理工具，项目地址：https://github.com/moovweb/gvm
 ### 3.1 待整理
 编译器源码目录下，src/cmd/compile/internal
 
-## 4 golang json处理（待重新整理）
+## 4 json处理（待重新整理）
 最常用的是下面两个方法，其中的`v interface{}`可以是struct、map、slice。
 
 例子1:

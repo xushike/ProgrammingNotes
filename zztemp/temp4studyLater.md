@@ -14,8 +14,6 @@
 1. go
     2. golang设计模式
 2. 持续集成，持续交付，持续部署
-
-1. 匿名函数
 1. golang 写爬虫
 1. js进阶:
     1. 原型链和普通类的区别
@@ -33,9 +31,6 @@
     2. 如何真正利用多处理器实现并发
     4. 线程等的几种转换状态
         1. `time.sleep()`暂时挂起？它可以暂停函数或协程的执行
-
-1. angular 
-    1. ionic
 
 1. protobuf
 1. 爬虫的学习
@@ -115,17 +110,13 @@
     1. 听说看源码可以学到很多东西?
     2. [https://www.zhihu.com/question/28603641](https://www.zhihu.com/question/28603641)
     3. [https://www.zhihu.com/question/30954492](https://www.zhihu.com/question/30954492)
-58. ionic 2和nativescript2
 59. java9和javafx如何了
-60. curl命令
 61. Gatsbyjs
 62. git remove origin之后再追踪vscode就没有pull的那个提示了,怎么弄出来?
 64. 心跳检测
     什么情况下需要,如果实施.
 65. viewport
 66. 用flex和动态页面重写互联易通的网站+
-67. 物联网IoT
-68. 一些常见代码的源码
 69. windows符号链接
 69. iis
 70. ngnix
@@ -139,7 +130,6 @@
 79. nginx
 80. Dashboards
 82. 关注分离
-84. 防卫性编程
 85. 一些软件提供源码安装,如何操作,优缺点是什么
 86. K8s
 87. 技术,产品和文案
