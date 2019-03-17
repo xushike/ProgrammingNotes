@@ -27,12 +27,11 @@
 ### 3.1 吉祥物蟒蛇
 python(意思是蟒蛇)，因为作者喜欢一个叫MontyPython的喜剧团体
 
-## 4 文档
-### 4.1 《python核心编程》
-了解python的工作机制--包括数据对象和内存管理之间的关系--你将成功一名更高效的python程序员
-
-## 5 网址
-1. 阮一峰python教程:https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000
+## 4 文档等
+1. 《python核心编程》：了解python的工作机制--包括数据对象和内存管理之间的关系--你将成功一名更高效的python程序员
+2. 阮一峰python教程:https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000
+3. Google Colab：练习python的好地方，直接云端跑代码。似乎连国外的老师都推荐。
+   1. 参考：https://sspai.com/post/52980
 
 # 二 安装配置
 ## 3 mac

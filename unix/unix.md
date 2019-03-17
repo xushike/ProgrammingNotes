@@ -4,8 +4,9 @@
 
 #  一 概述
 ## 3 常识
-### 3.1 unix 思想
+### 3.1 unix 思想/哲学
 1. 一个工具只做好一件事情
+2. 一切皆文件。意味着都可以用“打开open –> 读写write/read –> 关闭close”模式来操作。
 
 ### 3.2 usr目录的全称
 Unix System Resource,一般放程序软件,注意不是user

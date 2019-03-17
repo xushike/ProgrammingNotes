@@ -1460,6 +1460,16 @@ StructField相关：
 
 反射对象的方法相关：
 
+## 9 socket（待完善）
+使用TCP/IP协议的应用程序通常采用应用编程接口：UNIX BSD的套接字（socket）和UNIX System V的TLI（已经被淘汰）来实现网络进程之间的通信。
+
+常用的Socket类型有两种：流式Socket（SOCK_STREAM）和数据报式Socket（SOCK_DGRAM）。
+1. 流式Socket（TCP Socket）是一种面向连接的Socket，针对于面向连接的TCP服务应用；
+2. 数据报式Socket（UDP Socket）是一种无连接的Socket，对应于无连接的UDP服务应用。
+
+go的`TCPConn`类型可以用来作为客户端和服务器端交互的通道，他有两个主要的函数:`Write()`、`Read()`,可以用在客户端和服务器端来读写数据。我们还需要`TCPAddr`类型，他表示一个TCP的地址信息,通过`ResolveTCPAddr()`解析。通过`DialTCP()`来建立TCP连接，返回一个TCPConn类型的对象，当连接建立时服务器端也创建一个同类型的对象，此时客户端和服务器段通过各自拥有的TCPConn对象来进行数据交换，只有当任一端关闭了连接之后才失效，不然这连接可以一直使用（默认没有过期时间？）。
+
+socket是全双工的，所以两边的读写都有缓冲区，没有指定缓冲区大小的时候，默认是使用的系统内核宏所设置的socke缓冲区大小（似乎接收缓冲区默认是1M，最大值是8M，发送默认是512Kb，最大是16M，具体参考`SO_SNDBUF`、`SO_RCVBUF`等）。
 
 ## 12 底层编程
 主要指C语言相关
@@ -2277,7 +2287,12 @@ func main() {
     - `%x`:十六进制，`hex.EncodeToString([]byte) string`方法也是做类似的事。
 7. `%c`:输出给定整数的对应字符
 8. 浮点数格式化
-    - `%f`:标准十进制格式化
+    - `%f`:标准十进制格式化，使用银行家四舍五入，比如
+
+        ```go
+        fmt.Printf("%0.2f,%0.2f\n", 9.825, 9.835) // 9.82,9.84
+        ```
+        
     - `%e`和`%E`:科学计数法
 9. `%s`:对给定字符串进行原样输出.比如字符串有一个空行,输出结果中也会有一个空行
 10. `%q`:安全地转义成单引号or双引号围绕的字符字面值，如`Printf("%q", 0x4E2D) // '中'`
@@ -2381,7 +2396,9 @@ log相比fmt的优点：
 3. 方便对日志信息进行转存，形成日志文件
 
 ### math
-1. `Floor()`:向下取整。golang没有提供四舍五入的内置函数，自己实现如下：`math.Floor(xxx+0.5)`
+1. `Floor()`:向下取整。自己实现四舍五入如下：`math.Floor(xxx+0.5)`
+2. `Round()`：普通四舍五入
+3. `RoundToEven()`：银行家四舍五入
 
 ### net
 简单的获取 IP：
@@ -2394,6 +2411,13 @@ func GetPulicIP() string {
     return localAddr[0:idx]
 }
 ```
+
+常用func：
+2. `ParseIP(string) IP`:解析ip地址
+3. `ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`：解析`TCPAddr`。`TCPAddr`表示TCP的地址信息
+4. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
+5. `SetReadDeadline()`、`SetWriteDeadline()`：设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。
+6. `SetKeepAlive()`:设置keepAlive属性，是操作系统层在tcp上没有数据和ACK的时候，会间隔性的发送keepalive包，操作系统可以通过该包来判断一个tcp连接是否已经断开，在windows上默认2个小时没有收到数据和keepalive包的时候人为tcp连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。
 
 #### net/http
 发起http请求:
@@ -2561,12 +2585,16 @@ fmt.Println("所有 goroutine 执行结束")
 2. 以‘CompareAndSwap’为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
 
 ### time
-大概有两种日期格式：ISO和时间戳，ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
+go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
+
+时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
 
 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 
 10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
-1. `Unix()`:时间戳（秒）：向下取整。
+1. `Unix()`:时间戳（秒）：向下取整，默认使用系统的时区。
+
+跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.
@@ -2774,7 +2802,6 @@ gofmt(goimports/goreturns)的bug，参考：
 11. 有空的话应该都看完:[极客学院的go教程](http://wiki.jikexueyuan.com/list/go/)
 
 12. flag包是干嘛的 
-13. go的socket.
 
 14. [用go写一个windows外挂](http://www.ituring.com.cn/article/468550)
 

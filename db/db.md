@@ -2,16 +2,24 @@
 # 一 概述
 ## 1 简介
 该目录主要是数据库的笔记
+
 ## 3 常识
 ### 3.1 不同数据库对sql的扩展
 1. oracle：PL/SQL
 1. DB2：SQL/PL
 1. SQLSever:Transac-SQL(T-SQL)
 
+### 3.2 数据集、样本数据库
+许多数据库系统都为自家的产品提供了样本数据库，比如MySQL的sakila数据集，PostgreSQL的sakila数据集
+
+### 3.3 E-R模型（ER Model）
+ER模型，全称为实体联系模型、实体关系模型或实体联系模式图（ERD）（英语：Entity-relationship model）由美籍华裔计算机科学家陈品山发明，是概念数据模型的高层描述所使用的数据模型或模式图。
+
 # 三 基础
 1. 事务的ACID
 
 # 四 高级
+
 ## 1 NoSQL
 NoSQL(Not Only SQL,意即“不仅仅是SQL”)，泛指非关系型的数据库。随着互联网web2.0网站的兴起，传统的关系数据库在应付web2.0网站，特别是超大规模和高并发的SNS类型的web2.0纯动态网站已经显得力不从心
 ### 1.1 NoSQL数据库的四大分类

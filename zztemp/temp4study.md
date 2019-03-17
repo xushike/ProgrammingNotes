@@ -918,7 +918,7 @@ angualr 表单中:#,name等的区别
 	ctx.Info("返回结果")
 	response.Success()
 
-1. blob,dataview,webgl,轮询
+1. blob,dataview,轮询
 1. js有类型的概念吗
     1. js引擎能区分不同的基本数据类型吗
 

@@ -1,7 +1,9 @@
 # jQuery
 # 一 概述
 ## 1 简介
-讲真,我没用过jQuery,但是jQuery迟早要被淘汰的,我是不想花时间在上面.不过立志于成为改变世界的前端,同时也因为现在市面上不少以前的产品还是使用的jquery,促成了现在的这个笔记,主要记录下它的主要用法和过时的原因.
+讲真,我没用过jQuery,但是jQuery迟早要被淘汰的,我是不想花时间在上面。不过立志于成为改变世界的前端,同时也因为现在市面上不少以前的产品还是使用的jquery,促成了现在的这个笔记,主要记录下它的主要用法和过时的原因。
+
+不过jQuery的实现有很多值得借鉴的地方，拿来学习还是不错的
 
 ## 2 历史
 ### 2.1 辉煌和没落
@@ -18,21 +20,20 @@
 1. IE6和8已经慢慢的被大家抛弃了,用polyfill JS也可以搞定兼容性问题
 2. 选择器
     1. CSS3新增了很多选择器
-    2. js的`querySelector`和`querySelectorAll`,可直接通过CSS选择器获取元素
+    2. js的`querySelector`和`querySelectorAll`,可直接通过CSS选择器获取元素，使用也很简单。
 3. 动画
 
     CSS3以及各种前端框架提供了丰富的动画效果
-4. ajax
+4. `$.ajax`
     1. 原生的fetch方法,返回Promise,比`jQuery.ajax()`的实现更好、更清晰的解决问题
-5. DOM操作和事件绑定
-
-    不管从性能的角度，还是易于开发和维护的角度来看，mvvm框架都要超jQuery很多。
+    2. axios
+5. DOM操作和事件绑定：不管从性能的角度，还是易于开发和维护的角度来看，mvvm框架都要超jQuery很多。`addEvenListener()`接口现在也很稳定了。
 6. 组件化和模块化
 
     模块化不管是用ES2015也好（import,export），用webpack也好（require,module.exports），再不行，咱们复古有点用require.js或者sea.js,这显然和jQuery都没什么关系
 7. 便利性
 
-    如今，原生的DOM API借鉴jQuery的优点，也整出了很多简单遍历的API方法
+    如今，原生的DOM API借鉴jQuery的优点，也整出了很多简单遍历的API方法。也就是jQuery里一些语法糖现在也变得多余了，或者换种说法，jQuery的精髓已经被融入到web标准里了。
 
 # 三 基础
 
