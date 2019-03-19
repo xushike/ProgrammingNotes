@@ -228,7 +228,7 @@ mac按以下步骤操作：
 
 ### 1.3 git remote:远程仓库相关
 查看远程仓库:
-- `git remote -v`:查看所有关联的远程仓库的名称和地址(拉取和推送)
+- `git remote -v`:查看所有关联的远程仓库的名称和地址(拉取和推送)。在对远程仓库有修改后可以用该命令判断是否修改正确。
 - `git remote show <远程仓库名>`:查看远程仓库详细信息,包括:
     * 哪些远程分支没有同步到本地
     * 哪些已同步到本地的远端分支在远端服务器上已被删除
@@ -238,7 +238,11 @@ mac按以下步骤操作：
 
 可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,如`git pull <远程仓库名> <分支名>`
 
-修改远程仓库的url地址：`git remote set-url origin new_url`
+修改远程仓库的url地址：`git remote set-url REMOTE_NAME NEW_REMOTE_URL`，如果设置错误，会出现`xxx does not to be a git repository`。例子如，
+```
+git remote set-url origin https://github.com/xushike/ProgrammingNotes
+git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git 
+```
 
 重命名远程仓库:`git remote rename <原名称> <新名称>`
 

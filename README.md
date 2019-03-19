@@ -22,6 +22,6 @@ picture文件夹放的图片，其二级目录是个各个笔记文件夹的名�
 - 常识
 
 # 三 笔记阅读方法:
-推荐直接在[github](https://github.com/xushike/study)或使用带有markdown功能的工具阅读,[点击跳转到笔记目录](./SUMMARY.md)
+推荐直接在[github](https://github.com/xushike/ProgrammingNotes)上阅读，可以使用带有markdown功能的工具阅读,[点击跳转到笔记目录](./SUMMARY.md)
 
-如果在[gitbook](https://xushike.gitbooks.io/study/content/)中,则直接点击左边的目录或右边的绿色read按钮,gitbook网站自动生成的序号和本人自定义的排版有点冲突会稍微影响阅读.
+或者在[gitbook](https://programmingnotes.gitbook.io/index)中,gitbook网站自动生成的序号和本人自定义的排版有点冲突会稍微影响阅读.
