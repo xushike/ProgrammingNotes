@@ -2672,7 +2672,7 @@ golang查找依赖包路径的顺序如下：
 1. `fmt.Sprintf("%T",xxx)`:通过fmt包获取,其实也是通过反射获取的
 2. `reflect.TypeOf(xxx)`:通过反射获取
 3. 类型断言，有两种方式：
-    1. Comma-ok断言：`value,ok := xxx.(type)`，断言成功的ok为true，否则为false
+    1. Comma-ok断言：`value,ok := xxx.(type)`，断言成功的ok为true，否则为false。如果没写ok，成功的话没问题，但失败的时候回panic。
     2. switch断言，这种方式只能配合switch使用，此时不需要ok:`xxx.(type)`：，如
         
         ```golang
