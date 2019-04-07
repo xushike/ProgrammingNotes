@@ -37,7 +37,6 @@
     1. 主动T用户下线
 1. go
     2. go build相关的问题
-2. golang快捷键
 1. 三表查询时的问题
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
     1. 如何让psql查询出来的结果美观排版
@@ -654,9 +653,8 @@ package github.com/cweill/gotests/...: exit status 1
 71. 队列,task,queue,Metric
 72. 从gitlab clone需要权限吗?为什么有时候需要输入密码
 73. 存储过程,队列,任务调度,时间齿轮,activeMQ
-74. RESTful
-75. 元祖类型和set差不多?
-76. golang
+74. 元祖类型和set差不多?
+75. golang
     1. https://segmentfault.com/a/1190000006885571
     2. note:格式转换:【链接】Go语言string，int，int64,float转换https://www.cnblogs.com/vdvvdd/p/7211122.html
     3. go web编程:https://www.kancloud.cn/kancloud/web-application-with-golang#/comment
@@ -682,126 +680,126 @@ package github.com/cweill/gotests/...: exit status 1
     19. 如何配置多个 gopath,配置后会怎么样?
     20. 方法和函数的区别
         1. 参考:https://studygolang.com/articles/9945
-    22. golang切片和数组的区别,`...xxx`是接收的切片还是数组
-    23. type xxx func(* yyy)
-    24. *和&的区别
-    25. go get默认会显示是否更新,是否成功吗?
-    26. exported type ICoordinate should have comment or be unexported
+    21. golang切片和数组的区别,`...xxx`是接收的切片还是数组
+    22. type xxx func(* yyy)
+    23. *和&的区别
+    24. go get默认会显示是否更新,是否成功吗?
+    25. exported type ICoordinate should have comment or be unexported
         1. 似乎是缺少某方法或数据
-77. html 
+76. html 
     1. rotation
 
-78. oracle
+77. oracle
     1. sid是什么
-79. mdn
+78. mdn
     1. creatEvent
     2. 事件触发器
     3. 事件:https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Building_blocks/Events
-80. qq
+79. qq
     1. 提取图片中的文字只有手机才有?
 
-81. linux
+80. linux
     1. 执行source /etc/profile之后 用户名称由绿色变成白色了
     2. 递归创建目录
-82. git删除远程分支后需要提交吗?其他人本地还有这个分支,操作会有什么影响?
-83. to和for
-84. ubuntu自带的"提取到此处"有问题?
-85. 事件派发
-86. OpenLayers 3 
+81. git删除远程分支后需要提交吗?其他人本地还有这个分支,操作会有什么影响?
+82. to和for
+83. ubuntu自带的"提取到此处"有问题?
+84. 事件派发
+85. OpenLayers 3 
     1. 之 动态点扩散效果:https://www.2cto.com/kf/201511/450555.html
     2. https://blog.csdn.net/qingyafan/article/details/45950125
-87. git commit内容非常多之后怎么办
-88. 区块链:
+86. git commit内容非常多之后怎么办
+87. 区块链:
     1. 交易记录非常多之后怎么办
-89. cpu和核心数,核心数和线程的关系
-90. dom渲染顺序
-91. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
-92. js获取js文件中的数据?
-93. html document对象
-94. canvas画图:https://www.w3cplus.com/canvas/draw-dashed-and-dotted-lines.html
-95. 分辨率变化的时候矢量图会被重新渲染?
-96. js
+88. cpu和核心数,核心数和线程的关系
+89. dom渲染顺序
+90. GEOJSON等:http://www.maiziedu.com/wiki/json/geojson/
+91. js获取js文件中的数据?
+92. html document对象
+93. canvas画图:https://www.w3cplus.com/canvas/draw-dashed-and-dotted-lines.html
+94. 分辨率变化的时候矢量图会被重新渲染?
+95. js
     1. 方法的声明不能在调用之后?
         什么情况下可以违背这个规则
 
-97. 网页画图的几种方法,画矢量图用什么合适
-98. 事件的几种写法
+96. 网页画图的几种方法,画矢量图用什么合适
+97. 事件的几种写法
     1. 原生click和onclick的区别
-99. jsDoc规范
-100. 事件和观察者模式
-101. json的语法和js普通对象的语法有没有什么区别
-102. 什么是全拼和双拼
-103. 打开csdn blog后cpu占用很高,是什么原因, 重启浏览器后打开相同的网页还是这个情况
+98. jsDoc规范
+99.  事件和观察者模式
+100. json的语法和js普通对象的语法有没有什么区别
+101. 什么是全拼和双拼
+102. 打开csdn blog后cpu占用很高,是什么原因, 重启浏览器后打开相同的网页还是这个情况
     flash? 网页开太多了?设置了chrome的最新特性?
-104. .pyc和.tmp
-105. 苹果发布会的ar文件格式
+103. .pyc和.tmp
+104. 苹果发布会的ar文件格式
 
-106. git diff输出为空的问题
+105. git diff输出为空的问题
     note:默认没变应该是输出为空,如果权限变了会显示出来吗?(待测试),为什么看别人网上的可以显示出权限的变化,但是我的没看到权限的变化
 
-107. golang
+106. golang
     1. `GOROOT/src/builtin/builtin.go`,这个包是干嘛的
     2. errors.New("xxx")
         1. 用该方式生成的相同的error相等吗
-108. 坐标系的转换
-109. webpak热部署
-110. golang
-    1. 通过index访问长度为0的数组和切片会报错吗,用`[0:]`呢
-111. sqlite
-112. sso
-113. websocket
-    1. 有订阅成功失败的状态吗
-    2. 连接状态是返回一次还是连续不断返回?
-    3. 切换页面websocket会自动断开吗
+107. 坐标系的转换
+108. webpak热部署
+109. golang
+    3. 通过index访问长度为0的数组和切片会报错吗,用`[0:]`呢
+110. sqlite
+111. sso
+112. websocket
+    4. 有订阅成功失败的状态吗
+    5. 连接状态是返回一次还是连续不断返回?
+    6. 切换页面websocket会自动断开吗
 
-115. 博客:腾讯web前端coverguo
-116. 自定义路书轨迹
-    1. 最简单的,就是不用动画,只需要setPosition和画线就行了
-    2. 参考:https://blog.csdn.net/projectno/article/details/78281689
-117. js this的问题, 在func中this表示啥, 如果使用`var self = this`,此时self又表示啥,func使用箭头函数的话this又表示啥
-118. 用什么数据表示三种状态比较好
-119. js不存在线程安全的问题
-120. js event loop
-    1. 浏览器多线程和js单线程
-    2. 阻塞等
+113. 博客:腾讯web前端coverguo
+114. 自定义路书轨迹
+    7. 最简单的,就是不用动画,只需要setPosition和画线就行了
+    8. 参考:https://blog.csdn.net/projectno/article/details/78281689
+115. js this的问题, 在func中this表示啥, 如果使用`var self = this`,此时self又表示啥,func使用箭头函数的话this又表示啥
+116. 用什么数据表示三种状态比较好
+117. js不存在线程安全的问题
+118. js event loop
+    9. 浏览器多线程和js单线程
+    10. 阻塞等
         1. alert和同步xhr
             1. alert会阻塞异步代码吗,promise呢?
             2. xhr的原理
             3. 如何主动结束异步,主动实现类似alert的效果
-    3. 外部js和当前js
-    4. 浏览器的event loop,每遍历一个就会渲染一次?
-    5. js同步和异步的优缺点和使用场景
-    6. js异步编程的几种方式
+    11. 外部js和当前js
+    12. 浏览器的event loop,每遍历一个就会渲染一次?
+    13. js同步和异步的优缺点和使用场景
+    14. js异步编程的几种方式
         1. 哪些是可以阻塞的?哪些是可以主动停止的
         2. 异步事件加入的时间顺序是?
-    7. setTimeout有最大等待时间吗;最小时间多少比较合理:30msor 50ms
+    15. setTimeout有最大等待时间吗;最小时间多少比较合理:30msor 50ms
         1. setTimeout的深度使用
         2. setTimeout中有多行代码的话需要再用setTimeout包裹吗,是顺序执行的吗
-    8. setTimeout和setInterval的嵌套
+    16. setTimeout和setInterval的嵌套
 
-    9. 异步的顺序不能保证?
-    10. 如何主动把某个事件弄成异步的?比如路书中的`_addMarker()`方法,弄成完成后回调的那种
-    11. 多个setTimeout之间的时间间隔是怎么算的?比如100ms,是前一个执行完后的一百毫秒还是跟前一个没关系?
+    17. 异步的顺序不能保证?
+    18. 如何主动把某个事件弄成异步的?比如路书中的`_addMarker()`方法,弄成完成后回调的那种
+    19. 多个setTimeout之间的时间间隔是怎么算的?比如100ms,是前一个执行完后的一百毫秒还是跟前一个没关系?
         已解决:跟前一个执行的时间有关.如果没超出,比如前一个执行了20ms,那么再过80ms后一个就开始执行;如果前一个超出了,比如执行了200ms,那么执行完后后一个立刻执行.
 
-121. 实现回调的几种方式
-    1. 如何把普通方法弄成可以回调的?
-    2. 如何修改event loop中事件的顺序?
+119. 实现回调的几种方式
+    20. 如何把普通方法弄成可以回调的?
+    21. 如何修改event loop中事件的顺序?
 
-122. angular数据异步渲染的优缺点
+120. angular数据异步渲染的优缺点
 
-123. js如何一边遍历一边添加?
-124. typedarray和普通array在语法上的区别
-125. 网页动画的原理
-    1. https://www.zhihu.com/question/20453427
-    2. w3c关于动画的规范
-    3. 网页动画实现的方式(不管新老):
+121. js如何一边遍历一边添加?
+122. typedarray和普通array在语法上的区别
+123. 网页动画的原理
+    22. https://www.zhihu.com/question/20453427
+    23. w3c关于动画的规范
+    24. 网页动画实现的方式(不管新老):
         1. css animation
-126. https://developer.mozilla.org/zh-CN/docs/Games
-127. html的整个渲染流程:reflow等
-128. https://www.w3cplus.com/svg/bear-animation-width-svg.html
-129. 矢量图的数据比图片体积小
-130. 【链接】百度地图自定义图标动画
+124. https://developer.mozilla.org/zh-CN/docs/Games
+125. html的整个渲染流程:reflow等
+126. https://www.w3cplus.com/svg/bear-animation-width-svg.html
+127. 矢量图的数据比图片体积小
+128. 【链接】百度地图自定义图标动画
 https://blog.csdn.net/jifashihan/article/details/50460309
 1. js
     1. var arr = new ArrayBuffer(16)
@@ -1383,18 +1381,12 @@ END;
 
 206. 手机和电脑如何截长屏
 208. 研究下项目中subscribe的写法
-209. 后端go中各种fmt和返回输出，错误等的写法
-
 211. 如何判断子组件的状态
-212. 阿里云等网站是怎么做的,学习
-
-214. 幂等的:Idempotence
 215. js等的实例演示gif生成
 216. [http://www.01happy.com/golang-err-is-shadowed-during-return/](http://www.01happy.com/golang-err-is-shadowed-during-return/)
 217. linux vscode不显示下划线
 218. plsql dev快捷键和技巧
 219. js中 && 和大小与的优先级
-220. oracle的模糊查询用`%`为什么没有生效
 
 221. 额
 
@@ -1416,22 +1408,10 @@ let val = input.card_id
 
 
 222. angular textarea的cols没有生效的原因
-223. oracle一直显示正在执行
-
-
-227. js引入的模块没用的话会占用性能吗/
 228. ngmodule单独写的作用是什么， 
 229. [https://valor-software.com/ng2-file-upload/](https://valor-software.com/ng2-file-upload/)
 230. 将项目表单的验证写成服务
-231. 咨询公司lc牙医是否可报
 234. angular在表单组件上双绑某个值和事件，那么值会先变化然后触发事件？
-235. ngModel和ngvalue,以及[ngModel]几者的区别，以及name
-236. app.module的和page.module的区别
-237. 看看别人优秀的angular代码
-238. angualr的disabled
-239. 限制某些框输入的小数位数.
-240. ngValue，ngGroup
-
 242. select 有绑定值时，想绑定一个空值用。。。没有绑定值时默认是第一个。。。
 243. 为什么声明了`#downCardType`还是不能在ngif中获取它的值呢？
 245. 如果把ngif的值的绑定到模板引用变量，会很慢，但是绑定组件中的值则不会。。。
@@ -1475,17 +1455,7 @@ for (let [i, item] of arr.entries()) {
 
 252. 局域网能访问localhost启动的服务吗
     在虚拟机里，如果开启了虚拟机的防火墙呢
-
-253. 没有登录能访问api吗
-
 255. 查看linux内存占用状态
-
-260. angular表单提示，可以做成侧边那种吗
-
-        有没有经典的现成例子
-
-263. angular2渐进式编程.
-264. 自定义指令和系统指令一样的话，默认用哪个
 265. markdown流程图
 266. oracle时间转换为天
 267. js中各种遍历的比较：[https://www.incredible-web.com/blog/performance-of-for-loops-with-javascript/](https://www.incredible-web.com/blog/performance-of-for-loops-with-javascript/)
@@ -1497,9 +1467,6 @@ for (let [i, item] of arr.entries()) {
 271. 深入js的for of:[http://www.jb51.net/article/70106.htm](http://www.jb51.net/article/70106.htm)
 272. linux删除后的撤销
 273. es6展开运算符
-274. angular json的管道怎么用
-    
-    在代码里用管道
 275. 项目问题
 
     1. constructor中注入的服务比如dic,可以直接用dic,不用加this;但是在方法外面必须要加dic?
@@ -2195,9 +2162,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
     1. 如何学习w3c规范
 
 98. 自己搭建服务器,比如nginx然后发布--主要是熟悉
-99. css的学习
-    1. 百度地图的position: relative;
-
 100. json和xml的优劣
 101. 跨域
     2. https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001434499861493e7c35be5e0864769a2c06afb4754acc6000
@@ -2240,9 +2204,6 @@ worker.cancel();
 63. curl 和wget
     1. curl后面的命令跟括号还有大于小于什么意思
 
-64. go 已经哈希操作 /usr/local/go/bin/go
-    1. type的三种类型
-
 65. zookeeper发音
 66. inline-block等的深入理解和使用
 
@@ -2252,8 +2213,6 @@ worker.cancel();
 68. 二进制文件删了可以复原吗, 修改不能对吧?
 
 69. 如何搜索某个文件的历史记录
-70. 纸短情长为什么火了,钢琴谱,梦想三国
-71. angular5 强大的响应式表单
 72. 数据库索引
 
 73. go的参数传递是不是引用传递?
@@ -2301,11 +2260,6 @@ worker.cancel();
 102. H5之地理位置必知必会:https://juejin.im/post/5ae34306f265da0ba60f89bb
 
 99. 从表单取出来的都是字符串吗?
-100. 笔记:项目常识
-    1. 前端传到后天的都是字符串类型?
-    2. oracle查询和插入的时候区分字符串和数字吗?
-    3. 如何去掉组件的记忆功能
-
 101. js在导出的组件中声明var变量, 会影响其他 组件吗
 102. for of不能遍历对象?
 103. 腾讯区块链

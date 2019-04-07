@@ -1,6 +1,6 @@
 # softwaretest
 [TOC]
-## 一 概述
+# 一 概述
 
 1. 软件测试的分类
     1. 按测试阶段来分：单元测试、集成测试、系统测试、验收测试
@@ -13,14 +13,16 @@
     * 静态测试、动态测试
     * 手工测试、自动化测试
 
-## 六 问题
+# 六 问题
 1. test coverage
 2. 单元测试和代码覆盖率
-## 七 待整理
+
+
+# 七 待整理
 1. 黑盒，白盒，压力测试,回归测试
 2. 推荐一本书《Windows 程序调试》《Debugging Windows Programs》 
 里面写了一些关于调试心理学的东东。
 
-3. 集成测试,单元测试，回归测试
+3. 集成测试,单元测试，回归测试（ regression test）
 
 4. progress telerik fiddler web debugger

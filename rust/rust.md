@@ -24,6 +24,7 @@
 1. 在线练习场：play.rust-lang.org
 3. https://www.rust-lang.org/
 2. https://rustlang-cn.org/
+3. 大牛写的：https://rustcc.gitbooks.io/rustprimer/content/
 
 # 三 基础
 

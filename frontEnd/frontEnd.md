@@ -42,7 +42,8 @@ disabled attribute 是另一个古怪的例子。按钮的disabled property 是f
 ### 3.2 各浏览器的激进版
 - 黄色的Chrome([Chrome Canary](https://www.google.com/chrome/browser/canary.html)):可与chrome同时运行.
 - 紫色的Safari技术预览版([Safari Technology Preview](https://developer.apple.com/safari/technology-preview/))
-- 深蓝色的Firefox([Firefox Nightly](https://www.mozilla.org/en-US/firefox/nightly/all/))
+- 深蓝色的Firefox([Firefox Nightly](https://www.mozilla.org/en-US/firefox/nightly/all/))：更新最快、新功能最多，也是最不稳定的一个版本，每天更新的 所以叫nightly。另外还有Aurora，Beta、Release和esr版本。
+- Firefox开发者版本：https://www.mozilla.org/zh-CN/firefox/developer/
 - 改头换面的IE([Microsoft Edge](https://www.microsoft.com/en-us/windows/microsoft-edge))
 
 ### 3.3 UI库和CSS框架

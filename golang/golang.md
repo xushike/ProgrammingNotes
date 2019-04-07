@@ -200,27 +200,36 @@ GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name�
 
 三种类型的转换：unsafe.Pointer 可以和 普通指针 进行相互转换，unsafe.Pointer 可以和 uintptr 进行相互转换，也就是说 unsafe.Pointer 是桥梁，可以让任意类型的指针实现相互转换，也可以将任意类型的指针转换为 uintptr 进行指针运算。具体做法是将Pointer类型转换成uintptr类型，做完加减法后，转换成Pointer，通过*操作，取值，修改值...
 
+### 3.21 go为什么不推荐使用me, this, self as receiver names
+参考这个回答：https://stackoverflow.com/questions/23482068/in-go-is-naming-the-receiver-variable-self-misleading-or-good-practice
+
+总结就是：
+1. go里method receiver只是被认为method的第一个参数，不同于OOP里面的对象（虽然我们经常这么认为并且工作良好），所以用这些命名不太合适。
+2. 还有人提到了law of demeter
 
 ## 4 文档网址视频等
-1. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
-2. _Effective Go_(中文名《高效Go编程》)
-3. Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
-4. go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
-5. 网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
-6. 大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
+1. golang官方
+    1. 博客：https://blog.golang.org/
+    2. playground：https://play.golang.org/
+    3. https://golang.org/doc/effective_go.html
+    4. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
+    5. github的wiki：https://github.com/golang/go/wiki
+       1. 代码评审注释：https://github.com/golang/go/wiki/CodeReviewComments#receiver-names
+2.  _Effective Go_(中文名《高效Go编程》)
+3.  Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
+4.  go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
+5.  网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
+6.  大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
     1. https://astaxie.gitbooks.io/build-web-application-with-golang/zh/
-7. http://bmknav.com/go/
-8. go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
-9. 该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
+7.  http://bmknav.com/go/
+8.  go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
+9.  该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
 10. go语言官方文档地址：https://golang.org/
     1. 比如想看runtime包，可以访问：https://golang.org/pkg/runtime/
 11. GO入门指南：https://www.kancloud.cn/kancloud/the-way-to-go/72675
 12. go设计模式：https://books.studygolang.com/go-patterns/
 13. 大牛翻译的标准库中文文档：http://cngolib.com/
-14. golang官方
-    1. 博客：https://blog.golang.org/
-    2. playground：https://play.golang.org/
-15. awesome-go：需要什么第三方库就从这里找
+14. awesome-go：需要什么第三方库就从这里找
 
 ## 6 相关项目
 1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb
@@ -953,7 +962,7 @@ ms := struct1{10, 15.5, "Chris"}
 human := Human{name:"tom"}
 ```
 
-字段(fields)：小写开头的话只能在当前包访问，要想其他包也能访问可以使用
+导出和非导出字段(fields)：小写开头的字段是非导出字段，只能在当前包访问，并且不会参与json的生成。要想其他包也能访问非导出字段可以声明导出的方法来访问，如，
 ```golang
 func GetXXX(){
     return struct1.xxx
@@ -971,6 +980,8 @@ func GetXXX(){
 结构体转换：Go 中的类型转换遵循严格的规则。当为结构体定义了一个 alias 类型时，此结构体类型和它的 alias 类型都有相同的底层类型，它们可以互相转换，同时需要注意其中非法赋值或转换引起的编译错误。（待补充）
 
 ##### 2.2.4.1 带接收者的函数
+参考：https://golang.org/doc/faq#methods_on_values_or_pointers
+
 方法/函数接收者(Receiver)：Receiver 的名称应该缩写，一般使用一个或者两个字符作为Receiver的名称，如`func (f foo) method() {...}`;如果方法中没有使用receiver,还可以省略receiver name,这样更清晰的表明方法中没有使用它:`func (foo) method() {...}`。如果函数的接收者不一样，name方法就不一样。
 
 函数接收者的类型：函数接收者可以是值类型（此时称为value receiver）也可以是指针类型（此时称为pointer receiver），可以把函数接收者看作函数的第一个参数，所以值类型时操作的是副本，指针类型操作的是实例对象。用Rob Pike的话来说就是："A method is a function with an implicit first argument, called a receiver."。其中值类型是concurrency safe，而指针类型是concurrency unsafe。
@@ -985,6 +996,24 @@ func GetXXX(){
 
 什么时候使用value receiver：
 1. 除开上面两种情况就可以
+
+一些合法的写法，参考官方文档：https://golang.org/ref/spec#Method_expressions，如
+```go
+
+type T struct {
+	a int
+}
+func (tv  T) Mv(a int) int         { return 0 }  // value receiver
+func (tp *T) Mp(f float32) float32 { return 1 }  // pointer receiver
+var t T
+
+
+t.Mv(7)
+T.Mv(t, 7) // 可以像简单方法一样调用
+(T).Mv(t, 7)
+f1 := T.Mv; f1(t, 7) // 注意不是 t.f(7)
+f2 := (T).Mv; f2(t, 7)
+```
 
 
 
@@ -1098,8 +1127,7 @@ go函数的大概结构:Go中大部分函数的代码结构几乎相同，首先
 1. 如果函数在声明时，包含返回值列表，则函数必须以return语句结尾，除非函数明显无法运行到结尾处。例如函数在结尾时调用了panic异常或函数中存在无限循环.
 2. 函数实参通过值的方式传递，即形参是实参的拷贝，对形参修改不会影响实参。但是，如果实参包括引用类型，如指针，slice(切片)、map、function、channel等类型，实参可能会由于函数的间接引用被修改。
 4. 可能会偶尔遇到没有函数体的函数声明，这表示该函数不是以Go实现的。这样的声明定义了函数标识符，如:
-    ```go
-    package math
+    ```g
     func Sin(x float64) float //implemented in assembly language
     ```
 
@@ -1218,7 +1246,7 @@ var _ interface{} = []string{`tom`}
 
 
 ### 6.2 接口
-作为接口时interface是一种具有一组方法的类型，这些方法定义了 interface 的行为。如果一个类型实现了一个 interface 中所有方法，我们说类型实现了该interface。go 允许不带任何方法的 interface ，这种类型的 interface 叫 empty interface。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
+作为接口时interface是一种具有一组方法的类型，这些方法定义了 interface 的行为。如果一个类型实现了一个 interface 中所有方法，我们说类型实现了该interface（即Structural Typing）。go 允许不带任何方法的 interface ，这种类型的 interface 叫 empty interface。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
 
 go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口，所以任意的类型都实现了空interface（包含0个method的interface）。优点是：
 1. 不用绘制类库的继承树图
@@ -2225,7 +2253,7 @@ Context的继承衍生：使用`With`系列函数。
 
 Context使用原则：
 1. 不要把Context放在结构体中，要以参数的方式传递，放在第一个参数。
-2. 给一个函数方法传递Context的时候，不要传递nil，如果不知道传递什么，就使用context.TODO
+2. 给一个函数方法传递Context的时候，不要传递nil，如果不知道传递什么，就使用context.TODO。（why）
 
 ### crypto
 #### crypto/md5
@@ -2384,8 +2412,9 @@ func writeFile(path string, b []byte) {
 
 #### io/ioutil
 2. `ReadAll`
+3. `WriteFile(filename string, data []byte, perm os.FileMode) error`:WriteFile 向文件 filename 中写入数据 data,如果文件不存在，则以 perm 权限创建该文件,如果文件存在，则先清空文件，然后再写入,返回写入过程中遇到的任何错误。
 
-其他的功能很多都比较鸡肋。
+其他的功能很多似乎都比较鸡肋。
 
 ### log
 参考：http://blog.51cto.com/gotaly/1405754
@@ -2444,6 +2473,18 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 
 1. `Args[xxx]`：返回路径和命令行参数，其中`Arsg[0]`是文件执行时的相对路径，`Args[1]`开始才是命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
 2. 操作系统架构:`runtime.GOARCH`
+3. func Getpagesize() int　　　//获取底层系统内存页的数量
+
+
+操作目录：
+1. `func Chdir(dir string) error`:chdir将当前工作目录更改为dir目录．
+2. `func Getwd() (dir string, err error)`获取当前目录，类似linux中的pwd
+3. `func Chmod(name string, mode FileMode) error`:更改文件的权限（读写执行，分为三类：all-group-owner)
+4. `func Chown(name string, uid, gid int) error`:更改文件拥有者owner
+5. `func Chtimes(name string, atime time.Time, mtime time.Time) error`:更改文件的访问时间和修改时间，atime表示访问时间，mtime表示更改时间
+6. func Link(oldname, newname string) error       //创建一个从oldname指向newname的硬连接，对一个进行操作，则另外一个也会被修改．
+7. func Mkdir(name string, perm FileMode) error　//创建一个新目录，该目录具有FileMode权限，当创建一个已经存在的目录时会报错
+8. func MkdirAll(path string, perm FileMode) error　//创建一个新目录，该目录是利用路径（包括绝对路径和相对路径）进行创建的，如果需要创建对应的父目录，也一起进行创建，如果已经有了该目录，则不进行新的创建，当创建一个已经存在的目录时，不会报错.
 
 文件操作：
 1. 新建文件
@@ -2455,6 +2496,37 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 3. 写文件：`(file *File)Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件， `(file *File) WriteString(s string) (ret int, err Error)`，写入string信息到文件
 4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中
 5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
+6. func SameFile(fi1, fi2 FileInfo) bool　　　　　　//查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
+
+操作环境变量：
+1. `func Clearenv()`:清除所有环境变量（慎用）
+2. `func Environ() []string`:返回所有环境变量
+3. `func Getenv(key string) string`:获取系统key的环境变量，如果没有环境变量就返回空
+4. func Setenv(key, value string) error           //设定环境变量，经常与Getenv连用，用来设定环境变量的值
+
+
+退出程序：
+1. `func Exit(code int)`：系统退出，并返回code，其中０表示执行成功并退出（正常退出），非０表示错误并退出，其中执行Exit后程序会直接退出，defer函数不会执行．
+
+替换字符串中的`$xxx`:
+1. `func Expand(s string, mapping func(string) string) string`:Expand用mapping 函数指定的规则替换字符串中的`${var}`或者`$var`（注：变量之前必须有$符号）。比如，
+2. `func ExpandEnv(s string) string`:ExpandEnv根据当前环境变量的值来替换字符串中的`${var}`或者`$var`。如果引用变量没有定义，则用空字符串替换。
+
+    ```go
+    // 下面两个方法等效
+	fmt.Println(os.Expand("$HOME", os.Getenv)) 
+	fmt.Println(os.ExpandEnv("$HOME"))
+    ```
+操作用户/组等信息：
+1. `func Geteuid() int`:获取调用者用户id
+2. `func Getgid() int`:获取调用者的组id
+3. `func Getgroups() ([]int, error)`：返回调用者属于的group，其和chown配合使用，改变文件属于的group．
+3. func Hostname() (name string, err error)    //获取主机名
+   
+
+操作进程：
+1. func Getpid() int　　　　//获取进程id
+2. func Getppid() int             //获取调用者进程父id
 
 调用外部程序：
 1. `StartProcess()`
@@ -2527,21 +2599,32 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 3. Strings
 
 ### strings
-1. `TrimSpace()`:去除字符串左右两边的空格,包括回车符等,但是不会去除字符串里面的空格
+里面的方法主要是字符串的操作
 
-    有空研究一下里面的实现原理
-2. `Replace(str, " ", "", -1)`:去掉字符中所有的空格(实测回车和换行都去除不掉)
-3. `Replace(str, "\n", "", -1)`:去掉字符中所有的换行
-4. `Join()`和`Split()`:可以看成两个功能相反的方法
-5. 使用`strings.TrimPrefix／strings.TrimSuffix`掐头去尾
+1. `Trim(s string, cutset string) string`:在s字符串的头部和尾部去除cutset指定的字符串
+   1. `TrimSpace()`:去除字符串左右两边的空格,包括回车符等,但是不会去除字符串里面的空格。
+2. `Replace(s, old, new string, n int) string`:在s字符串中，把old字符串替换为new字符串，n表示替换的次数，小于0表示全部替换。例如
+   
+    ```go
+    Replace(str, " ", "", -1) // 去掉字符中所有的空格(实测回车和换行都去除不掉)
+    Replace(str, "\n", "", -1) // 去掉字符中所有的换行
+    ```
+3. `Join()`和`Split()`:可以看成两个功能相反的方法
+4. `Repeat(s string, count int) string`:重复s字符串count次，最后返回重复的字符串
+5. `Fields(s string) []string`:去除s字符串的空格符，并且按照空格分割返回slice
+6. 使用`strings.TrimPrefix／strings.TrimSuffix`掐头去尾
 
 go1.10开始新增了builder类型，用于提高字符串拼接性能，用法类似buffer
 
 ### strconv
-该包用于string类型的各种转换
-1. `Atoi()`:string=>int
-2. `FormatFloat(f float64, fmt byte, prec, bitSize int) string`(待整理):float64=>string,`fmt`表示...;`prec`表示精度,负数的话就取最小的实际精度,正数的话是多少就取多少位;bitSize是64或者32
-3. 查看int的位数`strconv.IntSize`
+里面的方法主要是字符串转换
+
+1. Append 系列函数将整数等转换为字符串后，添加到现有的字节数组中。  
+2. Format 系列函数把其他类型的转换为字符串
+   1. `FormatFloat(f float64, fmt byte, prec, bitSize int) string`(待整理):float64=>string,`fmt`表示...;`prec`表示精度,负数的话就取最小的实际精度,正数的话是多少就取多少位;bitSize是64或者32
+3. Parse 系列函数把字符串转换为其他类型
+   1. `Atoi()`:string=>int
+4. 查看int的位数`strconv.IntSize`
 
 ### sync
 参考：
@@ -2583,6 +2666,8 @@ fmt.Println("所有 goroutine 执行结束")
 提供一些原子操作，比如：
 1. 增或减：`AddUint32(x,x)`
 2. 以‘CompareAndSwap’为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
+
+### syscall
 
 ### time
 go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
