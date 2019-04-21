@@ -1104,3 +1104,4 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 3. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/JavaScript_technologies_overview
 4. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide
 5. es模块默认导入是静态的。这个静态是什么意思？
+6. js代码格式化的选择：Prettier 和 StandardJS
