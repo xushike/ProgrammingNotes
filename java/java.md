@@ -407,12 +407,10 @@ java有三个特殊的浮点数值用来表示溢出和出错：
 1. 特别的：当把基本类型的值和字符串进行连接运算时，基本类型的值会自动转换为字符串类型。如
 ```java
 int a=9527；
-String str=a+""; //str="9527"
-System.out.println(3+4+"hello");//7hello
-```
-```java
-System.out.println("Hello"+'a'+7);//Helloa7
-System.out.println('a'+7+"Hello");//104Hello
+String str=a+""; // str="9527"
+System.out.println(3+4+"hello"); // 7hello
+System.out.println("Hello"+'a'+7); // Helloa7
+System.out.println('a'+7+"Hello"); // 104Hello
 ```
 
 2. 表达式类型的自动提升，当一个算术表达式中包括多个基本类型的值时（不管这些基本类型是不是同一类型）：
@@ -584,6 +582,7 @@ String str="hello";
 str="world";
 ```
 字符串"hello"被创建后不可变，但是str作为引用可以指向别的字符串
+
 ### 6.1 字符串的创建
 #### 6.1.1 字面量创建
 ```java
