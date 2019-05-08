@@ -56,7 +56,7 @@ Pike说:
 2. 有一些优秀的微服务框架:我们选用go-micro
 
 ## 2 历史
-Go 语言本身是由 C 语言开发的，而不是 Go 语言.不过go从1.5开始就移除了"最后残余的C代码"实现了自举.
+Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始就移除了"最后残余的C代码"实现了自举.
 
 Go语言的每次版本更新，都会在标准库环节增加强大的功能、提升性能或是提高使用上的便利性。每次版本更新，标准库也是改动最大的部分。
 
@@ -865,7 +865,12 @@ m["m1"] = m1
 3. 从map中获取key的值，有两种方式，但应该只使用逗号ok这种：
     1. 最佳实践是使用逗号ok模式：`_,ok := map1[key1]`，ok表示是否存在这个key1，ok为true，再取值
     2. 直接取值`map1[key1]`：如果值存在则返回该值，不存在则返回对应数据类型的零值。
-4. 遍历map：map是无序的。
+4. 遍历map：是无序的。而且go没有提供类似java的直接获取set（将key和value放在一个变量里）的方法，go里只能分别获取key和value
+    ```golang
+    for k:= range m {
+        fmt.Println(k) // 获取的是key
+    }
+    ```
 
 注意：
 1. 如果map是带名字地声明在函数返回值中，还是不能直接使用，还是需要make一下才能用
@@ -1302,6 +1307,8 @@ i = tom
 接口的嵌套：类似结构体的嵌套
 
 ## 7 单元测试、go test、Benchmark、Example
+参考：https://golang.org/pkg/testing/
+
 轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test或Example开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
 
 对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
@@ -1334,7 +1341,7 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
     ```
 
 `t *testing.T`的接口:
-1. 打印信息：`Log()`和`Logf()`
+1. 打印信息：`Log()`和`Logf()`：内部其实还是使用类似的logs的方法，都是对基本的并行的操作进行了封装之后再处理的，加上了mutex操作，因此在单元测试中不推荐直接使用`fmt.printf`相关的几个的方法。
 2. 失败：
     1. `Fail()`:将当前测试标识为失败， 但是仍继续执行该测试
     2. `FailNow()`:将当前测试标识为失败并停止执行该Test函数， 在此之后， 测试过程将在下一个Test函数或者下一个基准测试中继续。FailNow 必须在运行测试函数或者基准测试函数的 goroutine 中调用， 而不能在测试期间创建的 goroutine 中调用。 调用 FailNow 不会导致其他 goroutine 停止。
@@ -1353,19 +1360,26 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
 
 ### 7.2 Example
-这种写法更加简洁方便，不需要参数。隐式规则似乎是输出标志只能写到末尾，后面不能再插入代码，后面的验证内容不能空行，会以当前function的所有`fmt`打印的内容拿来和验证内容对比。每个function的末尾都可以带输出标志，但是只有当前执行的function末尾的验证内容会拿来作为验证。如果写得不对，测试用例不会被go test识别。
+这种写法更加简洁方便，不需要参数。隐式规则似乎是输出标志只能写到末尾，后面不能再插入代码，后面的验证内容不能空行，会以当前测试方法里所有标准输出的内容拿来和验证内容对比（所以要打印错误与信息推荐用log，看官网的例子也是这样做的）。每个function的末尾都可以带输出标志，但是只有当前执行的function末尾的验证内容会拿来作为验证。如果写得不对，测试用例不会被go test识别。
 
-输出标志有两种：`Output:`和`Unordered output:`，后者表示无序。
+输出标志有两种：`Output:`和`Unordered output:`。后者表示无序,只要能全部匹配上就行，不管顺序。
+```golang
+func ExamplePrint() {
+	a := []int64{1, 2, 3}
+	for _, s := range a {
+		fmt.Println(s)
+	}
+    // Unordered output: 
+    // 2
+	// 1
+	// 3
+}
+```
 
-对整个包测试可以写成`ExamplePkgName`，如`ExampleSort`
-
-对function或者type进行测试写成`ExampleFunctionName`or`ExampleTypeName`，如`ExampleFoo`，如果有多个例子，可以用下划线小写（不是小驼峰吗？），如`ExampleReverse_second`、`ExampleReverse_third`
-
-对type的method进行测试`ExampleTypeName_MethodName`，如`ExampleBar_Qux`
-
-遵照上面的写法，在最后的go doc中会生成对应的Example。
-
-看官网的例子发现过程中需要处理err的用的是log。
+命令约定（naming convention）:遵照上面的写法，在最后的go doc中会生成对应的Example。
+1. 对整个包测试可以写成`ExamplePkgName`，如`ExampleSort`
+2. 对function或者type进行测试写成`ExampleFunctionName`or`ExampleTypeName`，如`ExampleFoo`，如果有多个例子，可以加上用下划线加上小写开头的后缀（是否小驼峰待确定），如`ExampleReverse_suffix`、`ExampleBar_Qux_suffix`
+3. 对type的method进行测试`ExampleTypeName_MethodName`，如`ExampleBar_Qux`
 
 ### 7.3 压力测试Benchmark
 形如`func BenchmarkXxx(b *testing.B)`，当`go test`带有bench相关参数就会执行benchmark关联的方法。循环体内需要使用`testing.B.N`，会自动计算合理的次数。
@@ -2383,7 +2397,7 @@ func main() {
 3. `Printf()`:支持格式化输出
 5. `Sprintf()`:格式化并返回一个字符串而不带任何输出
 2. `fmt.Errorf`函数使用`fmt.Sprintf`处理错误信息
-6. `Fprintf()`:依据指定的格式向第一个参数内写入字符串，第一参数必须实现了 io.Writer 接口。Fprintf() 能够写入任何类型，只要其实现了 Write 方法，包括 os.Stdout,文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入。适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入。
+3. `Fprintf()`：重定向打印。第一参数必须实现了 io.Writer 接口。`Fprintf()` 能够写入任何类型，只要其实现了 Write 方法，包括标准输出、标准错误输出(os.Stdout、os.Stderr),文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入（适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入）。
 
 ### httputil
 1. `DumpRequestOut()`
@@ -2458,6 +2472,15 @@ log相比fmt的优点：
 2. `Round()`：普通四舍五入
 3. `RoundToEven()`：银行家四舍五入
 
+
+#### math/rand
+该包实现了伪随机数的生成。它使用种子来生成伪随机数，种子有默认值，每次使用应该指定新的种子，否则每次随机出来的数列是一样的。
+```golang
+rand.Seed(time.Now().UnixNano()) // 指定种子
+fmt.Println(rand.Intn(100))
+```
+
+
 ### net
 简单的获取 IP：
 ```go
@@ -2471,11 +2494,11 @@ func GetPulicIP() string {
 ```
 
 常用func：
-2. `ParseIP(string) IP`:解析ip地址
-3. `ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`：解析`TCPAddr`。`TCPAddr`表示TCP的地址信息
-4. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
-5. `SetReadDeadline()`、`SetWriteDeadline()`：设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。
-6. `SetKeepAlive()`:设置keepAlive属性，是操作系统层在tcp上没有数据和ACK的时候，会间隔性的发送keepalive包，操作系统可以通过该包来判断一个tcp连接是否已经断开，在windows上默认2个小时没有收到数据和keepalive包的时候人为tcp连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。
+1. `ParseIP(string) IP`:解析ip地址
+2. `ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`：解析`TCPAddr`。`TCPAddr`表示TCP的地址信息
+3. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
+4. `SetReadDeadline()`、`SetWriteDeadline()`：设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。
+5. `SetKeepAlive()`:设置keepAlive属性，是操作系统层在tcp上没有数据和ACK的时候，会间隔性的发送keepalive包，操作系统可以通过该包来判断一个tcp连接是否已经断开，在windows上默认2个小时没有收到数据和keepalive包的时候人为tcp连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。
 
 #### net/http
 发起http请求:
@@ -2590,9 +2613,6 @@ func getFilelist(r string) {
     }
 }
 ```
-
-### rand
-该包实现了伪随机数的生成
 
 ### regexp
 正则相关，具体参考正则表达式章节
@@ -2809,6 +2829,13 @@ golang查找依赖包路径的顺序如下：
 ### 1.4 常见错误:err is shadowed during return
 作用域问题,在if等语句内部声明的err覆盖了外面的err,当内部执行完毕之后外部的err并没有变.
 
+```golang
+err ：= errors.New("") // shadowed err
+if err := errors.New("xxx"); true {
+    fmt.Println(err) // 此处的err覆盖掉了外层的shadowed err，也就是说在这个块里面操作的err都不是外层的shadowed err
+}
+```
+
 ### 1.5 debug.gcstackbarrieroff undefined ...
 我当时是覆盖安装新版本go后使用`go build`命令出现的这个问题,网上搜了下,答案是删除``(待补充)
 
@@ -2867,10 +2894,46 @@ l5 := len(str)
 `pwd, err := os.Getwd()`：任何情况下都是得到当前的目录，比如在HOME目录下运行`go run`或者可执行文件，得到的是`~`
 
 ### 1.14 fmt和log
-fmt是线程不安全的，但是log是。（待测试）
+区别：
+1. 前者不是线程安全的，但后者是。原因在于fmt序列化到output的时候没有加锁，在并发调用时可能导致interleaved，而log是有加锁的。（待整理）
+2. fmt默认打印到标准输出，而log默认打印到标准错误输出。
 
 ### 1.15 cannot define new methods on non-local type
 method 和它所属的类型必需定义在同一个包下
+
+### 1.16 sql: Register called twice for driver postgres/mySQl
+可能原因：代码的的包用的vendor中的pq，而vendor中的某些包用的src中pg，导致初始化了两次。参考：https://github.com/lib/pq/issues/238
+
+### 1.17 cannot call pointer method on xxx
+引用StackOverflow的例子：
+```golang
+// This compiles and works:
+diff := projected.Minus(c.Origin)
+dir := diff.Normalize()
+
+// This does not (yields the errors in the title):
+
+dir := projected.Minus(c.Origin).Normalize()
+
+// Here are those methods:
+// Minus subtracts another vector from this one
+func (a *Vector3) Minus(b Vector3) Vector3 {
+    return Vector3{a.X - b.X, a.Y - b.Y, a.Z - b.Z}
+}
+// Normalize makes the vector of length 1
+func (a *Vector3) Normalize() Vector3 {
+    d := a.Length()
+    return Vector3{a.X / d, a.Y / d, a.Z / d}
+}
+```
+
+参考：
+1. 官网：https://golang.org/ref/spec#Address_operators
+2. https://stackoverflow.com/questions/44543374/cannot-take-the-address-of-and-cannot-call-pointer-method-on
+
+Variables in Go are addressable，但return values of function and method calls are not addressable。
+
+再深层次一点挖掘，go将函数的返回值放在寄存器（register）中（在寄存器中肯定是not addressable），或者堆栈上（堆栈上可能能取值也可能不能），为了保证可寻址性，go必需将它分配给一个变量，但这个应该coder来做而不是编译器。
 
 ## 2 未解决
 ### 2.1 example中尾部的空格无法测试

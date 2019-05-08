@@ -291,6 +291,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 查看某个具体命令的帮助：`git command_name -h`,比如`git fetch --help`
 
 ### 2.8 git reflog:查看关键命令(commit,pull,checkout)的记录
+出现错误的时候很有用。
 
 ## 3 拉取
 ### 3.1 git fetch:抓取远端
@@ -328,8 +329,9 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
 
 参数说明:
-- `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
-- `-m`：commit message
+1. `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
+   1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873
+2. `-m`：commit message
 
 ### 5.1 git rebase:压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
