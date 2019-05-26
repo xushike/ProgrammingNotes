@@ -1,5 +1,7 @@
 # golang
+
 [TOC]
+
 # 一 概述
 ## 1 简介
 ### 1.1 优点
@@ -145,6 +147,9 @@ img.SetColorIndex(
  - 
 注意他们之间的比较用`bytes.Equal(s1, s2) == 0`而不是`bytes.Compare(s1, s2) == 0`
 
+### 3.10 字符串、数组和切片
+底层原始数据有相同的内存结构（？），在上层，因为语言的限制而有着不同的行为表现
+
 ### 3.11 2009-11-10 23:00:00 UTC
 该日期是go的开源日期,可以看做是go的生日(?).
 
@@ -156,7 +161,9 @@ img.SetColorIndex(
 
 待补充
 
-### 3.14 var、new()和make()的区别（难点）(待补充)
+### 3.14 var、new()和make()的区别（难点）
+![difference between new() and make()](../picture/golang/1-3-14.jpg)
+
 `new()`和`make()`最大的区别：`new()`只分配内存而不初始化，`make()`不但分配内存还做初始化。比如:
 ```golang
 p := new([]int) //p == nil; with len and cap 0
@@ -167,8 +174,24 @@ fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]
 
 以下为详细区别：
 - `var`:没加等号的话称为“零值初始化”，虽然带有“初始化”三个字，但对三个特殊的引用类型（slice、map、channel）并没有初始化，只是赋值为nil，对其他类型则是正常赋值为对对应的零值并初始化。
-- `new(type)`：为变量分配内存，将该内存置零但不初始化该内存，返回指针。对于值类型，它是零值初始化，和var一样；对于引用类型，它不等于nil（不知道为啥，和其他语言不同，有点难理解）。
-- `make(type,args)`：分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
+- `new(type)`：为变量分配内存，将内存置零（注意不是将变量置零，不要混淆了），但不初始化该内存，返回指针。对于值类型，它是零值初始化，和var一样；对于引用类型,此时变量等于nil（注意和其他语言不同，有点难理解）。
+- `make(type,args)`：为变量分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
+
+
+```go
+foo := new([]int)
+bar := make([]int, 0)
+fmt.Println(*foo == nil, bar == nil) // true false
+fmt.Println(foo == nil, &bar == nil) // false false
+```
+
+```go
+a1 := new([]int)
+a2:= &[]int{}
+a3:= make([]int,0)
+
+fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
+```
 
 ### 3.15 三个点...
 它是语法糖，有两种用法:
@@ -229,13 +252,17 @@ GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name�
 12. go设计模式：https://books.studygolang.com/go-patterns/
 13. 大牛翻译的标准库中文文档：http://cngolib.com/
 14. awesome-go：需要什么第三方库就从这里找
+15. Go 语言实战: 编写可维护 Go 语言代码建议：https://mp.weixin.qq.com/s?__biz=MjM5OTcxMzE0MQ==&mid=2653371497&idx=1&sn=1dfc90bb65d61d710d7d1cf6783d4464&chksm=bce4dc738b9355651daeadd812e9a0d877d34e5fe6a1bf16235f58f4cd02833a81ffe5e8a6d0&mpshare=1&scene=23&srcid=0427tyKn9Fu1LyGyTXUonCZf#rd
+    1.  个人对于其中关于命名的部分很赞同
 
 ## 6 相关项目
 1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb
 2. swarm
 3. docker
 4. k8s
-5. 高性能json库：https://github.com/json-iterator/go
+5. gRPC
+6. etcd
+7. 高性能json库：https://github.com/json-iterator/go
 
 # 二 安装配置
 go的环境变量说明:
@@ -711,7 +738,15 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
 特点：
 1. 元素占用内存相同且连续，所以访问元素速度很快。
 2. go数组的元素必须是同一个类型,没有指定值的元素默认是零值初始化。
-3. 注意go的数组是值类型，虽然数组的元素可以被修改，但是数组本身的赋值和函数传参都是以整体复制的方式处理的。这点和不少编程语言不一样，比如js/C/C++中是指向首元素的指针。
+3. 注意go的数组是值类型，虽然数组的元素可以被修改，但是数组本身的赋值、函数传参都是以整体复制的方式处理的（**值传递**），也就是说修改dst不会影响src。（这点和不少编程语言不一样，比如js/C/C++中是指向首元素的指针）
+    
+    ```go
+    a := [...]string{"USA", "China", "India", "Germany", "France"}
+    b := a // a copy of a is assigned to b
+    b[0] = "Singapore"
+    fmt.Println("a is ", a) // [USA China India Germany France]  
+    fmt.Println("b is ", b) // [Singapore China India Germany France]
+    ```
 
 数组声明:
 1. 使用字面量:`arr := [5]int{1,2,,5,5,6}`
@@ -787,7 +822,7 @@ slice := []stirng{}
 切片的操作：
 1. 往切片末尾追加元素或切片，使用内置的`append()`，该函数会自动处理存储空间不足的问题。追加元素使用内置的`append(slice,ele1,ele2,...,eleN)`函数，追加切片要写成`append(slice1,slice2...)`，这三个点的意思是把slice2所有元素打散后传递给`append()`，这是由于`append()`从第二个参数起的所有参数都必须是待附加的单个元素。:
     1. 当每次容量不够的时候，`append()`就会分配一个新的数组，所以可以通过设置长度和容量一样的切片来保证第一次`append()`分配的是新数组
-    2. 容量<1000时，每次扩容是翻倍；超过1000，每次增加25%
+    2. 扩容策略：容量<1024时，每次扩容是容量翻倍；超过1000，则每次增加25%。扩容会涉及数组拷贝，产生额外性能开销。
 2. 切片中元素的插入、删除和替换，go没有提供直接在切片中间插入/删除元素的方法，所以只有使用子切片的方法来实现，而且切片这种数据结构本身也不适合频繁的插入和删除：
     1. 删除元素：可以使用：`s2=append(s1[:index],s1[index+1:]...)`，注意有坑。
     2. 插入元素：创建临时切片保存后面的部分，然后类似上面那样。。。
@@ -1272,13 +1307,13 @@ var _ []interface{} = []string{`tom`} // 编译不过
 var _ interface{} = []string{`tom`}
 ```
 
+接口类型的变量总是有着相同的静态类型。
 
 ### 6.2 接口
-作为接口时interface是一种具有一组方法的类型，这些方法定义了 interface 的行为。如果一个类型实现了一个 interface 中所有方法，我们说类型实现了该interface（即Structural Typing）。go 允许不带任何方法的 interface ，这种类型的 interface 叫 empty interface。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
+作为接口时interface是一种具有一组方法的类型，这些方法定义了 interface 的行为。如果一个类型实现了一个 interface 中所有方法，我们说类型实现了该interface（即`Structural Typing`，有的人称为静态的`Duck Typing`），编译器在**编译时**就判断是否实现了某个接口。go 允许不带任何方法的 interface ，这种类型的 interface 叫 empty interface。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
 
-go的接口是非侵入式的，只要实现了接口里要求的全部方法，就实现了接口，所以任意的类型都实现了空interface（包含0个method的interface）。优点是：
-1. 不用绘制类库的继承树图
-2. 不用纠结接口需要拆的多细
+go的接口是非侵入式的（C++、java的接口就是侵入式的），只要实现了接口里要求的全部方法，就实现了接口，所以任意的类型都实现了空interface（包含0个method的interface）。非侵入式接口的优点是：
+1. 不用纠结接口需要拆的多细，简化了接口的设计
 3. 不用为了实现一个接口而专门导入一个包
 
 为什么要使用接口，有如下几个理由：
@@ -1298,6 +1333,33 @@ type Men interface{
 var i Men
 tom := Student{...}
 i = tom
+```
+
+#### 接口赋值
+go的接口赋值有两种：
+1. 将对象实例赋值给接口 
+2. 将一个接口赋值给另外一个接口
+
+#### 接口查询
+接口查询就是判断接口指向的对象是否是某个类型。是否成功，这个要在**运行期**才能够确定。如
+
+```go
+type Canidae interface{
+    Howl()
+}
+
+type Dog struct {    
+}
+
+func(d Dog) Howl() {
+    ...    
+}
+var c Canidae
+c = Dog{}
+// 接口查询
+if dog,ok := c.(Dog);ok{
+    ....
+}
 ```
 
 接口的嵌套：类似结构体的嵌套
@@ -1400,11 +1462,25 @@ func ExamplePrint() {
 ## 8 反射和reflect包
 参考：https://juejin.im/post/5a75a4fb5188257a82110544
 
-golang的类型（待完善）：见过`static type`、`concrete type`、`specific king of type`、`dynamic type`,这些怎么区分呢？
-1. `reflect.Typeof()`获取的是concrete type，`King()`方法获取的是specfic kind of type。比如下面的例子1，对于i来讲`myInt`是concrete type，`int`是specfic kind of type（原始类型？）
+### 8.1 golang的类型（待完善）
+见过`static type`（静态类型）、`concrete type`（具体类型）、`specific king of type`（原始类型、底层类型）、`dynamic type`（动态类型）,这些怎么区分呢？
+1. `reflect.Typeof()`获取的是concrete type，`King()`方法获取的是specfic kind of type。比如下面的例子1，对于i来讲`myInt`是concrete type，也是static type,`int`是specfic kind of type
 2. 在例子2中，`io.Reader`是static type，`*bytes.Buffer`是concrete type，也是dynamic type，而`ptr`就是specific king of type
 3. 断言里的类型是`concrete type`
 
+`static type`（静态类型）：Go 是静态类型的。每一个变量有一个静态的类型，也就是说，有一个已知类型并且在**编译**时就确定下来了。比如例子1里：i的static type是`myInt`，j的static type是`int`，虽然两者的底层类型相同，但静态类型不同，只有做类型转换后才能相互赋值。
+
+
+```golang
+// 例子1
+type myInt int
+var i myInt
+var j int
+t := reflect.TypeOf(i) // t是myInt
+k := t.Kind() // k是int·
+```
+
+### 8.2 反射和reflect包
 反射的定义：通过采用某种机制来实现对自己行为的描述（self-representation）和监测（examination），并能根据自身行为的状态和结果，调整或修改应用所描述行为的状态和相关的语义。每种语言的反射模型都不同，并且有些不支持反射。Golang的反射机制就是在运行时动态的调用对象的方法和属性。
 
 反射的原理：待补充
@@ -1418,6 +1494,7 @@ reflect包:reflect包里的有两个重要结构`Type`和`Value`，`Type` 是一
 // 例子1
 type myInt int
 var i myInt
+var j int
 t := reflect.TypeOf(i) // t是myInt
 k := t.Kind() // k是int
 

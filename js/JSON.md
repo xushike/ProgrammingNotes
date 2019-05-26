@@ -8,6 +8,16 @@ JSON的全名JavaScript Object Notation（从名字上就能看出和JavaScript�
 
 作者参考：https://cloud.tencent.com/developer/article/1080320
 
+## 2 历史
+### 2.2 json5
+json5支持写注释了
+
+```json5
+{
+    "name":"Tom"       // 你好
+}
+```
+
 # 三 基础
 ## 2 yaml
 ### 2.1 嵌套
