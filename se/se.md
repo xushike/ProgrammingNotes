@@ -126,6 +126,17 @@ ASCII码： 00110101 00110110 00110111 00111000
 ### 1.20 Host OS 和 Guest OS 是什麼
 Host (或是叫做 Host OS )指的是用來安裝虛擬機器軟體的作業系統，而 Guest ( 也叫做 Guest OS) 則是指安裝在虛擬機器上的作業系統，舉例來說，阿舍在筆電上裝了 Winodws 7，然後在 Windows 7 上安裝了 VirtualBox 或 VMWare，接著，再把 Ubuntu 或 Windows XP 裝在 由 VirtualBox 或是 VMWare 建立的虛擬機器上，那麼，這個裝在 VirtualBox 或是 VMWare 虛擬機器的 Ubuntu 或是 Windows XP 就叫做 Guest OS，而阿舍原本筆電上安裝的 Windows 7 就是 Host OS
 
+### 1.12 方法签名（method signature）
+编程语言中的方法签名是什么：方法声明的两个组件构成了方法签名 - 方法的名称和参数类型。（Two of the components of a method declaration comprise the method signature—the method's name and the parameter types.）
+
+比如，对于例子1的golang的方法，它的方法签名就是`func Add(int64,int64) bool`
+```go
+// 例子1
+func Add(a int64, b int64) bool{
+    return true
+}
+```
+
 # 四 高级
 ## 1 未来方向
 ### 无服务器

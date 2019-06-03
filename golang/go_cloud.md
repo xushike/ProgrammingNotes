@@ -25,6 +25,8 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 
 参考：https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
 
+但有时候可能不生效，比如有内敛优化的时候，此时可以加上`-gcflags=-l`禁用内敛优化来测试，但也未必会生效。
+
 ## 5 https://github.com/fatih/structs
 go 结构体的一些工具化封装，比如:
 1. 结构体转map（转之后似乎key是字段的名字，不受tag影响）

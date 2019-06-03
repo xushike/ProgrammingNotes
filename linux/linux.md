@@ -391,7 +391,7 @@ Change ...
 4. 打印匹配行`grep`(`Globally search a Regular Expression and Print`)
     很强大的文本搜索工具,用来找到文件中的匹配文本,类似于win中的`FINDSTR`,基本用法`grep pattern [file...]`,支持正则表达式.比如想找目录中文件名包含`xiaoke`的文件,可以这样`ls | grep xiaoke`
     1. 参数`-i`:忽略大小写
-    2. 参数`-v`:只显示不匹配的行
+    2. 参数`-v`:只显示不匹配的行。排除多个可以使用`grep -v 'args1\|args2...'`
 5. 打印文件的开头/结尾部分`head`和`tail`
     `head`默认打印开头10行,`tail`则是结尾10行,`tail`有个选项`-f`允许实时地浏览文件,观察日志文件时很有用.
     1. 参数`-n`:指定打印的行数
@@ -655,6 +655,9 @@ Change ...
 
 判断端口连通性：`curl ip:port`
 1. Connection reset by peer
+
+问题：
+1. 有时候已下载的百分比会变小是什么情况，比如从25%突然跳到17%？
 
 ## 9 wget
 用来从指定的URL下载文件，支持断点续传。
