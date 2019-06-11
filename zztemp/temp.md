@@ -3,8 +3,6 @@
 1. 目录前加zz，目的是能方便的找到该文件夹
 
 # 六 问题
-6. 内连接、左外连接、右外连接、交叉连接区别：https://www.cnblogs.com/Ewin/archive/2009/10/05/1578322.html
-
 17. css（参考mdn的css）
     1. css的设置有先后顺序吗
     2. css的的颜色设置为none和null有什么区别

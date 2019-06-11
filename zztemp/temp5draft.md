@@ -1,1 +1,0 @@
- ✘  ~/go/src/hztl3.com/goods-stocks/models/orders/carts   feature/xushike_20180919_batch_add_carts ●  go test -v index_test.go index.go cart_number.go cart.go check_qty.go type.go list.go list_for_order.go sku_info.go check_perm.go list_test.go cart_test.go

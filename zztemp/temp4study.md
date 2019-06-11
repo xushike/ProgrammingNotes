@@ -78,7 +78,6 @@
     1. values常量表的写法：`(values (1),(2)) as person(id)`
 1. git fetch
 1. session和cookie
-1. 并发
 1. git branch -r或者-a能看到被删除的分支？
     2. 如何查看合并到master的分支
 1. pgsql 插入的时候如果第一个做了类型转换，后面的也会跟着做类型转换,比如这儿的jsonb？
@@ -440,7 +439,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. 挖坑填数，分治法
     1. 快速查找法，比如go中switch的实现
     1. hash是什么
-    1. 深度优先等等
     4. 对两个已排序数组合并后再排序
     5. 互斥，同步，死锁
     6. 动态规划
@@ -497,9 +495,7 @@ package github.com/cweill/gotests/...: exit status 1
 
     1. 注释谢单元测试只能做简单的
     1. golang中实现常见排序用什么数据结构
-    1. type xxx struct{}和type xxx的区别
-        1. type的语法是怎么样的，首字母必须大写？
-    1. 生产者消费者，深度优先
+    1. 生产者消费者
     1. sync包
     1. channel select
     1. type声明的 为什么可以用new初始化

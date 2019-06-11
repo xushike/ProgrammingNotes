@@ -330,7 +330,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 参数说明:
 1. `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
-   1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873
+   1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873。大概是使用`git reflog`找到前面操作的commit id，然后使用`git reset --hard <commit_id>`恢复过去
 2. `-m`：commit message
 
 ### 5.1 git rebase:压制/衍合/变基
