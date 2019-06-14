@@ -139,12 +139,12 @@ img.SetColorIndex(
 `string`和`[]byte`的异同:从源码可知`string`主要是由`[]byte`构成。`string`不可变,每次值改变(重新分配内存空间),指针会指向新的字符串的内存地址,而`[]byte`值改变的时候指针不会移动,所以`[]byte`性能比string高.
 
 使用比较:
- - string可以直接比较，而[]byte不可以，所以[]byte不可以当map的key值。
+ - string可以直接比较，而`[]byte`不可以，所以`[]byte`不可以当map的key值。
  - 因为无法修改string中的某个字符，需要粒度小到操作一个字符时，用[]byte。
  - string值不可为nil，所以如果你想要通过返回nil表达额外的含义，就用[]byte。
- - []byte切片这么灵活，想要用切片的特性就用[]byte。
+ - `[]byte`切片这么灵活，想要用切片的特性就用[]byte。
  - 需要大量字符串处理的时候用[]byte，性能好很多。
- - 
+
 注意他们之间的比较用`bytes.Equal(s1, s2) == 0`而不是`bytes.Compare(s1, s2) == 0`
 
 ### 3.10 字符串、数组和切片
@@ -717,13 +717,18 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
             }
         }
         ```
-    1. 按字符 rune 遍历:每次迭代出两个变量 codepoint 和 runeValue。codepoint 表示字符起始位置，runeValue 表示对应的 unicode 编码（类型是 rune）
+    1. 按字符 rune 遍历:每次迭代出两个变量 codepoint 和 runeValue。codepoint 表示字节起始位置，runeValue 表示对应的 unicode 编码（类型是 rune）
         
         ```golang
         func main() {
             var s = "嘻哈china"
             for codepoint, runeValue := range s {
-                fmt.Printf("%d %d ", codepoint, int32(runeValue)) // 0 22075 3 21704 6 99 7 104 8 105 9 110 10 97
+                fmt.Printf("%d %d ", codepoint, runeValue) // 0 22075 3 21704 6 99 7 104 8 105 9 110 10 97 
+            }
+            fmt.Println()
+
+            for codepoint, runeValue := range s {
+                fmt.Printf("%d %s ", codepoint, string(runeValue)) // 0 嘻 3 哈 6 c 7 h 8 i 9 n 10 a
             }
         }
         ```
@@ -873,7 +878,7 @@ slice := []stirng{}
 6. 切片的长度和容量:`len()`:返回切片的长度，`cap()`:返回切片的容量
 
 #### 2.2.3 映射/字典map
-map是存储无序键值对的集合,map强大的地方在于可以根据键快速检索到值(对集合元素，提供常数时间的存、取或测试操作).go里面map的键可以是任意类型,只要其值可以用"=="比较,最常用的字符串;值则可以是任意类型.从功能和实现上说，Go的map类似于Java语言中的HashMap，Python语言中的dict，Lua语言中的table，他们通常使用hash实现。go的map是线程不安全的，虽然在很多语言里map也是不安全的，但是开协程这么容易的go居然不提供线程安全的map，这点值得吐槽。因为slice、map和channel必须初始化才能使用，所以对于多层map，每层都必须初始化才能使用那一层，比如：
+map是存储无序键值对的集合,map强大的地方在于可以根据键快速检索到值(对集合元素，提供常数时间的存、取或测试操作).go里面map的键可以是任意类型,只要其值可以用"=="比较,最常用的字符串;值则可以是任意类型.从功能和实现上说，Go的map类似于Java语言中的HashMap，Python语言中的dict，Lua语言中的table，他们通常使用hash实现。go的普通map是线程不安全的（在很多语言里map也是不安全的），sync包下提供了并发安全的map。因为slice、map和channel必须初始化才能使用，所以对于多层map，每层都必须初始化才能使用那一层，比如：
 ```golang
 m := make(map[string]map[int]interface{})
 //此时只是第一层被初始化了，要想使用第二层，必须初始化第二层
@@ -884,7 +889,7 @@ m["m1"] = m1
 声明方法:
 1. "零值初始化"声明:`var map1 map[key_type]value_type`,这种声明方式声明后不能直接赋值，因为没有初始化
 2. 初始化为零值的声明`var map1 map[key_type]value_type{}`：似乎等价于`map1 := make(map[key_type]value_type)`
-2. 指定容量的声明:`map2 := make(map[string]float32, 100)`，容量是可选的
+2. 指定容量的声明:`map2 := make(map[string]float32, 100)`，第二个参数是容量，是可选的。和slice不一样，map只能指定容量而不能指定大小，而且只能用`len()`获取大小，不能用`cap()`获取容量。当map达到最大容量的时候，继续添加则每次大小增加1
     ```golang
     // 声明值为func() int类型的map
     mf := map[int]func() int{
