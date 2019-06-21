@@ -131,7 +131,7 @@ golang 团队一直引以为傲的就是这个 M 对 N 的调度器，这种 M �
 常用操作：
 1. 停止协程：`runtime.Goexit()`，协程可以通过调用该方法来停止，但是defer函数还会继续调用。
 
-### 7.2 channel
+### 7.2 channel（管道、信道）
 参考：
 1. https://colobu.com/2016/04/14/Golang-Channels/
 

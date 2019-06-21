@@ -31,6 +31,10 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 go 结构体的一些工具化封装，比如:
 1. 结构体转map（转之后似乎key是字段的名字，不受tag影响）
 
+## 6 拼音 github.com/mozillazg/go-pinyin
+
+Heteronym
+
 # 七 未整理
 ## 2 未整理
 1. Google Cloud Platform是干嘛的

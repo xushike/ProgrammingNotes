@@ -2087,6 +2087,8 @@ jsonStr:=`{"Username":"Tom","Password":"123456","FriendName":["Li","Fei"]}`
 b := []byte(jsonStr)
 ```
 
+go的序列化/反序列化应该是有顺序的（待验证）
+
 ### 4.1 解析JSON`func Unmarshal(data []byte, v interface{}) error`:注意这儿v必须是指针
 可以解析到以下三种数据类型里。如果go类型是`interface{}`，而json类型是数字，解析之后默认会变成科学计数法：
 1. （最推荐）解析到结构体(已知被解析的JSON数据结构)，可以直接使用
@@ -2164,6 +2166,7 @@ b := []byte(jsonStr)
 `MarshalIndent`和`Decode`的选择：
 1. 如果数据来自io.Reader流，或者需要从数据流中解码多个值，请使用json.Decoder。
 2. 如果已经在内存中有JSON数据，请使用json.Unmarshal
+
 
 ## 6 正则表达式（regular expression）和regexp包
 一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准（https://github.com/google/re2）：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
@@ -2704,6 +2707,7 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中
 5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
 6. func SameFile(fi1, fi2 FileInfo) bool　　　　　　//查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
+7. `File.Sync()`:把当前内容持久化，一般就是马上写入到磁盘
 
 操作环境变量：
 1. `func Clearenv()`:清除所有环境变量（慎用）
@@ -2801,6 +2805,8 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 1. 对整数切片排序`sort.Ints(slice []int)`
 2. Float64
 3. Strings
+
+go1.8之前，对一个切片排序，需要以切片为基础定义一个新类型，然后实现sort.Interface接口；go1.8开始，可以直接调用`sort.Slice()`来排序，内部通过反射帮我们做了其他工作，方便很多。
 
 ### strings
 里面的方法主要是字符串的操作
@@ -2921,11 +2927,13 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
 与 rune 相关的函数
 
 ### encoding
-#### json
+#### encoding/json
 参考json部分
 
-#### binary
+#### encoding/binary
 1. `Size()`：返回编码某些类型数据需要的字节数（待补充）
+
+#### encoding/csv
 
 ## 3 go的编译器
 1. 变量的静态类型在编译的时候就确定了
@@ -2988,13 +2996,32 @@ golang查找依赖包路径的顺序如下：
 注意:注意上面的方法都可以获取interface{}的实际类型
 
 ### 1.4 常见错误:err is shadowed during return
-作用域问题,在if等语句内部声明的err覆盖了外面的err,当内部执行完毕之后外部的err并没有变.
+作用域问题，在block（if等语句内部）中声明的err覆盖了外面的err，当内部执行完毕之后外部的err并没有变。可知同时满足以下两个条件就会产生shadowed error：
+1. 在新block中
+2. err在新建语句中
 
 ```golang
 err ：= errors.New("") // shadowed err
 if err := errors.New("xxx"); true {
     fmt.Println(err) // 此处的err覆盖掉了外层的shadowed err，也就是说在这个块里面操作的err都不是外层的shadowed err
 }
+```
+
+```golang
+// 没有shadowed err
+var err error
+fn := func(a int64) (int64, error) { return 12, fmt.Errorf("hello") }
+a, err := fn(10)
+fmt.Println(a, err)
+```
+
+```golang
+err := errors.New("") // shadowed err
+fn := func(a int64) (int64, error) { return 12, fmt.Errorf("hello") }
+if a, err := fn(10); true {
+    fmt.Println(a, err)
+}
+fmt.Println(err)
 ```
 
 ### 1.5 debug.gcstackbarrieroff undefined ...
