@@ -49,6 +49,7 @@
     * [6.compilation_tool编译工具](js/6.compilation_tool/6.compilation_tool.md)
         * [6.1.webpack](js/6.compilation_tool/6.1.webpack.md)
         * [6.2.Parcel](js/6.compilation_tool/6.2.parcel.md)
+        * [6.3.Grunt](js/6.compilation_tool/6.3.grunt.md)
     * [7.utility_library工具库](js/7.utility_library/7.utility_library.md)
         * [7.1.jQuery](js/7.utility_library/7.1.jQuery.md)
         * [7.2.Lodash](js/7.utility_library/7.2.Lodash.md)
