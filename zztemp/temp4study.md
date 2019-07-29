@@ -729,10 +729,8 @@ package github.com/cweill/gotests/...: exit status 1
     note:默认没变应该是输出为空,如果权限变了会显示出来吗?(待测试),为什么看别人网上的可以显示出权限的变化,但是我的没看到权限的变化
 
 106. golang
-    1. `GOROOT/src/builtin/builtin.go`,这个包是干嘛的
     2. errors.New("xxx")
         1. 用该方式生成的相同的error相等吗
-107. 坐标系的转换
 108. webpak热部署
 109. golang
     3. 通过index访问长度为0的数组和切片会报错吗,用`[0:]`呢

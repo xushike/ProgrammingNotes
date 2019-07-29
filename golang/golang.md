@@ -1683,7 +1683,7 @@ if err != nil {
 
 还有`defer`关键字，用于将一个语句“绑定”到函数退出时执行，无论是通过各种途径退出，这可是 C/C++ 里面的大问题。
 1. 任何进行I/O操作的函数都会面临出现错误的可能，只有没有经验的程序员才会相信读写操作不会失败，即使是简单的读写。
-2. 关于内置的error：内置的error是接口类型，可能是nil或者non-nil。nil意味着函数运行成功，non-nil表示失败。可以通过调用error的Error函数或者输出函数获得字符串类型的错误信息，如
+2. 关于内置的error：内置的error是接口类型(定义在builtin包)，可能是nil或者non-nil。nil意味着函数运行成功，non-nil表示失败。可以通过调用error的Error函数或者输出函数获得字符串类型的错误信息，如
 
     ```go
     fmt.Println(err)
@@ -1776,18 +1776,19 @@ func main() {
 1. 释放资源：解锁、释放数据库连接、文件资源释放等
 
     ```golang
-    // 保证解锁
-    var mutex sync.Mutex
-    var count = 0
+    // 1. 保证解锁
+    func demo3() {
+        var mutex sync.Mutex
+        var count = 0
 
-    func increment() {
-        mutex.Lock()
-        defer mutex.Unlock()
-        count++
-    }
-    ```
-    ```golang
-    // 释放文件资源
+        func increment() {
+            mutex.Lock()
+            defer mutex.Unlock()
+            count++
+        }
+    }  
+    
+    // 2. 释放文件资源
     func CopyFile(dstName, srcName string) (written int64, err error) {
         src, err := os.Open(srcName)
         if err != nil {
@@ -1800,6 +1801,20 @@ func main() {
         }
         defer dst.Close()
         return io.Copy(dst, src)
+    }
+    
+    // 3. 输出日志 等收尾工作
+    func demo3() {
+        t1 := time.Now()
+        defer func() {
+            fmt.Printf("耗时: %f s", time.Now().Sub(t1).Seconds())
+        }()
+
+        // todo
+        // ...
+
+        return
+        //defer执行时机
     }
     ```
 2. 执行recover
@@ -2743,6 +2758,27 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 1. `StartProcess()`
 
 #### os/exec
+
+```go
+// 用exec包调用shell命令
+
+// 方法一
+c := "echo hello world"
+cmd := exec.Command("sh", "-c", c)
+out, err := cmd.Output()
+if err != nil {
+    log.Panicln(err)
+}
+fmt.Printf(string(out)) // hello world
+
+// 方法一
+cmd2 := exec.Command("echo", "hello world")
+out2, err := cmd2.Output()
+if err != nil {
+    log.Panicln(err)
+}
+fmt.Printf(string(out2))
+```
 
 ### path
 #### path/filepath
