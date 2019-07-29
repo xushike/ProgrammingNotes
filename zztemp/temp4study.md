@@ -216,16 +216,11 @@
 1. alfred
     1. 别人分享的配置：http://www.alfredworkflow.com/
 1. 前段抓包
-1. vi和vim
 1. bash
     1. set -o vi
 1. db
     1. 通过执行计划（查询计划？）来分析SQL的执行性能
         1. 全表扫描的要调整
-2. csv格式
-2. 听说有不少大牛用vim+vim-go插件开发golang，有空尝试下，还可以省下鼠标钱(笑~)
-    1. https://www.reddit.com/r/golang/comments/8m1usb/what_is_the_best_ide_for_golang/
-2. go的线程模型
 1. http 请求方式
     1. http://www.moonsec.com/post-772.html
     2. application/json
@@ -819,7 +814,6 @@ console.log(view.getFloat32(4))
 1. ajax json
 1. docker的学习:https://steamcn.com/t392743-1-1
 1. 普通项目如何打包
-1. vim
 1. hydra安装方法
 1. linux文件类型:比如d开头是目录,-是啥?
 1. 百度地图精确到小数点后多少位
@@ -838,7 +832,6 @@ console.log(view.getFloat32(4))
     3. 热备
 2. shell脚本(一定要学一下)
     1. exit 0 和 1
-2. vim
 2. linux操作系统日志:var/log/messages
 2. 哨兵
 2. 各种协议

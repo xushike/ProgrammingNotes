@@ -2477,8 +2477,8 @@ fmt.Println(md5str2)
 
 // 生成32位md5字符串
 ```
-### errs
-1. `New(code, msg string) *Error`
+### errors
+1. `New(text string) error`
 
 ### fmt
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
@@ -2912,6 +2912,14 @@ fmt.Println("SH : ", time.Now().In(cstSh).Format("2006-01-02 15:04:05"))
 var cstZone = time.FixedZone("CST", 8*3600)       // 东八
 fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
 ```
+
+golang 提供了下面几种类型：
+- 时间点(Time)
+- 时间段(Duration)
+- 时区(Location)
+- Ticker：ticker只要定义完成，从此刻开始计时，不需要任何其他的操作，每隔固定时间都会触发。当下一次执行到来而当前任务还没有执行结束时，会等待当前任务执行完毕后再执行下一次任务。
+- Timer(定时器)：timer定时器，是到固定时间后会执行一次
+*如果timer定时器要每隔间隔的时间执行，实现ticker的效果，使用 `func (t *Timer) Reset(d Duration) bool`
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.
