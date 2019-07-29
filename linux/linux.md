@@ -181,6 +181,11 @@ non-login shell：取得shell的方法不需要重复登录流程的就是non-lo
 
 注意：linux的shell读取的配置和mac不同。
 
+### 3.17 sh 和 bash
+sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
+
+因为sh是一种规范，并不是实现，所以`/bin/sh`实际上是一个硬链接，链接到某种实现上。大多数情况下，`/bin/sh`会链接到`/bin/bash`。所以你执行`sh xx`等价于执行`bash xx`。但是在一些系统中，/bin/sh并没有指向/bin/bash，比如在一些现代的Debian和Ubuntu系统中，sh指向的是dash。
+
 ## 4 文档资料等
 1. 网友写的Linux工具快速教程，还不错：https://linuxtools-rst.readthedocs.io/zh_CN/latest/index.html
 
@@ -237,7 +242,7 @@ non-login shell：取得shell的方法不需要重复登录流程的就是non-lo
 ### 1.4 查看命令类型:`type`会显示命令的类型:
 1. file为外部指令
 2. alias为别名。如果本来的命令和别名重名，优先使用别名。
-3. builtin为系统內建指令
+3. builtin为系统（shell？）內建指令
 
 ### 1.5 查看可执行程序位置`which`
 有时系统中不止安装了程序的一个版本,虽然在桌面系统中不常见,但在大型系统中却很平常.该命令对只对可执行程序有效，不包括内建命令和命令别名,有点奇特,比如对`cd`就无效
