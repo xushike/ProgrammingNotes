@@ -2922,6 +2922,8 @@ fmt.Println("所有 goroutine 执行结束")
 ### time
 go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
 
+时区：有GMT、UTC、CST，可以简单认为`CST=UTC/GMT + 8 小时`
+
 时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
 
 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
@@ -2930,6 +2932,22 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
 1. `Unix()`:时间戳（秒）：向下取整，默认使用系统的时区。
 
 跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
+
+`2006-01-02 15:04:05 -0700 MST`:在go中它的作用相当于其他语言的"yyyy-MM-dd 。。。"，比较常用的是`2006-01-02 15:04:05`
+
+`LoadLocation`:可以根据时区名创建时区Location，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
+`ParseInLocation`:可以根据时间字符串和指定时区转换Time。
+
+设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置，如
+```go
+// 设置时区1
+var cstSh, _ = time.LoadLocation("Asia/Shanghai") //上海
+fmt.Println("SH : ", time.Now().In(cstSh).Format("2006-01-02 15:04:05"))
+
+// 设置时区2
+var cstZone = time.FixedZone("CST", 8*3600)       // 东八
+fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
+```
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.
@@ -3160,19 +3178,7 @@ Variables in Go are addressable，但return values of function and method calls 
 再深层次一点挖掘，go将函数的返回值放在寄存器（register）中（在寄存器中肯定是not addressable），或者堆栈上（堆栈上可能能取值也可能不能），为了保证可寻址性，go必需将它分配给一个变量，但这个应该coder来做而不是编译器。
 
 ## 2 未解决
-### 2.1 example中尾部的空格无法测试
-gofmt(goimports/goreturns)的bug，参考：
-1. https://github.com/kubernetes/kubernetes/pull/10851，最后似乎是重写了输入输出流来解决这个问题。
-2. https://play.golang.org/p/51D2DYVHTy
-
-用`/*...*/`注释也不行，末尾的空格依然会被忽略。比较简单的解决方案是修改代码，让字符串中的空格尽量放在前面而不是后面。
-
 ### 2.N 其他
-1. 因式分解
-2. 编程范式
-3. Erlang风格的并发模型
-4. go支持Erlang语言为代表的面向消息编程思想
-5. 从源码安装软件怎么操作？二进制发行版和安装版的区别？
 6.  protobuf的获得和使用
 7.  go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？
 8.  一些文章
@@ -3180,33 +3186,12 @@ gofmt(goimports/goreturns)的bug，参考：
 9.  网友:string []byte 的转换是会拷贝的?
 
 # 七 待整理
-1. go源代码的分析
-
-    本来想看go内建函数copy的源代码的,结果点不进去,于是用上网搜了搜,觉得有两种可能:
-    1. 是调用copy()的时候go的编译器将其解析成汇编代码
-
-        如果是这样的话,go的很多方法实现的汇编代码都可以抽空看看,应该值得学习的不少
-    2. 调用了某个文件里声明的copy方法
-
-3. [为什么那么多开发人员用Go语言来构建自己的新项目](http://www.epubit.com.cn/article/942)
-4. [我为什么喜欢Go语言(简洁的Go语言)_Golang](https://edu.aliyun.com/a/12182)
 5. go的unsafe,Pointer,uintptr,funcPC,slicestringcopy,copyany
-
-6. go语言圣经
-    1. 如何写标准测试程序
-
 7. [极客学院的go学习](http://wiki.jikexueyuan.com/project/the-way-to-go/)
-9. 竞态条件
-10. Go语言提供了一些很好用的package，并且这些package是可以扩展的。Go语言社区已经创造并且分享了很多很多。所以Go语言编程大多数情况下就是用已有的package来写我们自己的代码。
-
-    如何扩展?
+9. 竞态条件。
 11. 有空的话应该都看完:[极客学院的go教程](http://wiki.jikexueyuan.com/list/go/)
-
-12. flag包是干嘛的 
-
 14. [用go写一个windows外挂](http://www.ituring.com.cn/article/468550)
 
-15. golang的升级(笔记)
 16. 大量使用 type assertion 代码是非常丑陋的。所以一定要尽量避免使用这个类型
     1.  golang wiki 上面对这个问题的解释 https://github.com/golang/go/wiki/InterfaceSlice golang wiki 是个好东西，有时间建议把内容都过一遍，可以让你少踩好多坑
 
@@ -3216,7 +3201,6 @@ gofmt(goimports/goreturns)的bug，参考：
 18. 学习go的教程:https://github.com/Unknwon/the-way-to-go_ZH_CN
 19. 问题
     1. 合并两个map
-    2. 数组里查找元素
 
 21. go工具链，有空再研究吧：https://blog.csdn.net/phantom_111/article/details/79981579
 22. go的官方博客？：https://blog.golang.org/
