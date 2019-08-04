@@ -89,6 +89,7 @@ ssh 秘钥公钥的原理
 ## 4 文档视频资料
 1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
 2. 网友翻译的linus关于git的演讲：https://v.youku.com/v_show/id_XMzg5MjIzODM3Mg==.html
+3. 网友翻译整理的Git的奇技淫巧：https://github.com/521xueweihan/git-tips
 
 # 二 安装配置
 ## 1 win
@@ -160,8 +161,12 @@ ssh 秘钥公钥的原理
 5. 如果之前用的https协议,此时需要remote origin,然后重新设置origin:`git remote add origin git@github.com:xushike/study.git`
 6. 对于github,可以测试是否成功设置ssh key:`ssh -T git@github.com`
 
-### 1.3 git自身的更新(待补充)
+### 1.3 git自身的更新
+reference from StackOverflow：https://stackoverflow.com/questions/13790592/how-to-upgrade-to-the-latest-version-of-git-on-windows-still-showing-older-vers
 
+大意是：Since Git 2.16.1(2) you can use`git update-git-for-windows`,In versions between 2.14.2 and 2.16.1, the command was`git update`，更早的版本没有提供git update命令，只有去官网下载。
+
+也可以直接github上下载：https://github.com/git-for-windows/git/releases
 ## 2 mac
 ### 2.1 方式一(最简单):用Xcode的Command Line Tools
 ### 2.2 方式二:Homebrew安装
@@ -505,7 +510,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 # 四. 高级
 ## 4 git自带的图形界面工具
 ### 4.1 gitk(常用)
-主要用于查看查看历史,该工具可能需要自己安装
+主要用于查看查看历史,该工具可能需要自己安装。实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
 
 如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
 
