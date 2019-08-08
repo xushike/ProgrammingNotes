@@ -99,6 +99,7 @@
     * [go_crawler](golang/go_crawler.md)
     * [goroutine](golang/goroutine.md)
     * [go_cloud](golang/go_cloud.md)
+* [hardware](hardware/hardware.md)
 * [ios](ios/ios.md)
 * [ssh&ssm](ssh/ssh.md)
     * [1.spring](ssh/spring.md)
