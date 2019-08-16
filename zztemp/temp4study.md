@@ -1937,9 +1937,6 @@ node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-
     声明的数组和赋值的数组好像不一样.
 39.  css选择器和圆角
 40.  Metronic – 响应式后台管理HTML5模板-创客云
-41.  angular NgZone的学习
-    runOutsideAngular
-
 42.  引入类型定义的库@types
 43.  
 chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
