@@ -75,15 +75,21 @@ linux系统的区域设置、本地化策略。其中几个设置的优先级是
 
 2. PATH环境变量修改
     1. **PATH变量决定了shell将到哪些目录中寻找命令或程序**,作为惯例，所有环境变量名都是大写
-    2. 设置变量时直接用名称，但使用时加上$(?):
+    2. 设置变量时直接用名称，但使用时需要加上`$`:
         ```bash
         #设置，比如在原基础上新增变量
         PATH=$PATH:/usr/local/arm/3.4.1/bin
         #使用，比如输出
         echo $PATH
         ```
-        这样设置的新PATH其实是局部变量，在新终端中不会生效（和win似乎是反着的），加上export才是全局，而且加上后只对当前和以后的终端生效
-    3. 为了让修改永久添加到`$PATH`，只要将`export`的那行添加到`.bashrc`或`/etc/bashrc`文件中，然后用`source ~/.bashrc`使其立即生效。（一般会在`.bash_profile`文件中显式调用`.bashrc`，登陆linux启动bash时首先会去读取`~/.bash_profile`文件，这样`~/.bashrc`也就得到执行了，你的个性化设置也就生效了）
+    3. 使用`export`：上面那样设置的新PATH其实是局部变量，在新终端中不会生效（和win似乎是反着的），加上`export`才是全局，而且加上后只对当前和以后的终端生效
+        
+        ```bash 
+        export PATH=$PATH:/usr/local/arm/3.4.1/bin
+        ```
+        
+        资料说`export`可以设置、修改和查看环境变量，但是查看的时候，比如`export $PATH`会提示`export: not valid in this context: ...`（虽然后面会跟着环境变量的内容，但是前面的错误让人不爽），没搞懂，干脆用`echo $PATH`查看。
+    4. 为了让修改永久添加到`$PATH`，只要将`export`的那行添加到`.bashrc`或`/etc/bashrc`文件中，然后用`source ~/.bashrc`使其立即生效。（一般会在`.bash_profile`文件中显式调用`.bashrc`，登陆linux启动bash时首先会去读取`~/.bash_profile`文件，这样`~/.bashrc`也就得到执行了，你的个性化设置也就生效了）
 3. alias别名
     1. 一般在.bashrc或/etc/bashrc文件里有几句话
         ```bash

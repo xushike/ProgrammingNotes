@@ -99,17 +99,27 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 1. 如果网速较慢,可考虑使用代理。brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
 2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`
 
+如果不想设置代理，可以替换源，比如清华、中科大、阿里云...，以清华为例（简单试了下清华比中科大快些）：
+1. 清华：https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
+2. 中科大：
+    1. git remote set-url origin git://mirrors.ustc.edu.cn/brew.git
+    2. ...
+    
+听说换本地源后更新可能不及时，暂时还没遇到这个问题，遇到了再说吧。
+
+
 特性：
 1. 支持断点续传（因为使用curl下载）
 
 常用命令:
 1. 模糊搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
     1. 使用`info`时，没安装的会提示`not installed`
-2. 更新brew自身：`brew update`
+2. 更新brew自身：`brew update`，会同时更新brew cask。brew cask没有单独更新自己的命令，只有更新软件包的命令，比如`brew cask upgrade xxx`，在更新软件包之前会更新brew和brew cask。
+    1. 参数`-v`：显示进度
 3. 更新软件:`brew upgrade name`，不加name则是更新所有可以更新的软件。
-    1. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等
-2. 显示安装的服务：`brew services list`
-3. 安装服务的启动、停止、重启：`brew services start/stop/restart serverName`
+4. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等
+5. 显示安装的服务：`brew services list`
+6. 安装服务的启动、停止、重启：`brew services start/stop/restart serverName`
 
 关于brew cask和brew：brew主要装命令行工具，偏开发，而brew cask主要装带GUI的工具和驱动，偏应用。而且brew cask是brew的一个官方源。两者应该是相辅相成的关系。
 
@@ -122,7 +132,9 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 
 `formula`的意思：应该是指一个完整的软件。
 
-为什么取名homebrew：似乎是作者比较关心酒，而且没想到这个软件会这么火，而且文件夹名称也是用的Cella（地窖）。
+问题：
+1. 为什么取名homebrew：似乎是作者比较关心酒，而且没想到这个软件会这么火，而且文件夹名称也是用的Cella（地窖），预编译的二进制软件包叫bottles(瓶子)
+2. 在更新软件包时，`updating homebrew`总是卡住，这个时候按ctrl+c可以终止更新brew自生，直接调到更新软件包。
 
 ### 2.8 iterm2和on-my-zsh
 两者结合食用，效果不错。
