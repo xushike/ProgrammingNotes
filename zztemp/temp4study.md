@@ -611,10 +611,7 @@ package github.com/cweill/gotests/...: exit status 1
 52. 学习数据结构
 53. 音频流和视频流
 54. 数字钱包
-55. linux中的vscode和chrome等可以用apt-get来更新吗
 56. https://www.cnblogs.com/yaohong/p/6385228.html
-57. slack一款协作办公应用
-    1. qq协同excel
 58. 编程之美
 59. https://mp.weixin.qq.com/s/mz2QuZrE6uMXpAq8HGJe3A
 60. godep那个tool的使用
