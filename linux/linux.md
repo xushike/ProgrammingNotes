@@ -31,23 +31,6 @@ linux系统的区域设置、本地化策略。其中几个设置的优先级是
 现在你在编译代码时调用的gcc，已经不是当初那个c语言编译器了，更确切的说他是一个驱动程序，根据代码的后缀名来判断调用c编译器还是c++编译器 (g++)。比如你的代码后缀是*.c，他会调用c编译器还有linker去链接c的library。如果你的代码后缀是cpp, 他会调用g++编译器，当然library call也是c++版本的。
 当然我说了这么多你可能感到有些混乱，没关系，你就把gcc当成c语言编译器，g++当成c++语言编译器用就是了。
 
-### 1.3 学习linux的一些网站
-1. 查询linux命令：[http://man.linuxde.net/](http://man.linuxde.net/)
-2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
-3. 鸟哥的linux私房菜(推荐)：[http://linux.vbird.org/linux_basic/0320bash.php#bash](http://linux.vbird.org/linux_basic/0320bash.php#bash)
-
-### 1.4 网友推荐的linux书籍(按学习顺序排列)
-1. 某个博客
-    1. 《鸟哥的Linux私房菜：基础学习篇》
-    2. 《Linux Shell 脚本攻略》
-    3. 《UNIX环境高级编程》
-    4. 《Linux系统编程》
-    6. 《Linux内核设计与实现》
-    5. 《Linux内核设计的艺术》
-2. 知乎Han:
-    1. 《The Linux Command Line》(豆瓣 9.3分)，中文名“快乐的linux命令行”,作为入门和手册,中文翻译github地址:[http://billie66.github.io/TLCL/book/](http://billie66.github.io/TLCL/book/)
-    2. 《The Pragmatic Programmer》（豆瓣 8.9分），中文名“程序员修炼之道”
-
 ### 1.5 动态链接和静态链接
 动态链接和静态链接的区别:前者不会把依赖编译进程序里，而后者会；所以前者编译的程序占用更小，在程序有相同依赖时更节约空间，而后者
 
@@ -167,9 +150,12 @@ pbcopy < myFile.txt
 
 ### 1.11 关于命令的选项
 大多数命令使用短选项——一个中划线加一个字符,但是许多命令也支持长选项——两个中划线加一个单词,而且许多命令允许把多个多个短选项合在一起使用,比如`ls -lt`
+
 ### 1.12 关于命令行的参数
 1. 参数可重复:当有三个圆点跟在一个命令的参数后面， 这意味着那个参数可以重复，如`mkdir directory...`,可以使用`mkdir dir1 dir2 dir3`等同时创建多个目录
+
 ### 1.13 关于linux的普通文件(regular file)
+
 ### 1.14 关于linux的元键
 现在键盘上,一般alt代表元键,如果是在终端中,则`esc`也可当做`alt`来用
 
@@ -194,6 +180,20 @@ sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
 
 ## 4 文档资料等
 1. 网友写的Linux工具快速教程，还不错：https://linuxtools-rst.readthedocs.io/zh_CN/latest/index.html
+1. 查询linux命令：[http://man.linuxde.net/](http://man.linuxde.net/)
+2. debian官方：[https://www.debian.org/doc/manuals/debian-faq/](https://www.debian.org/doc/manuals/debian-faq/)
+3. 鸟哥的linux私房菜(推荐)：[http://linux.vbird.org/linux_basic/0320bash.php#bash](http://linux.vbird.org/linux_basic/0320bash.php#bash)
+1. 某博客
+    1. 《鸟哥的Linux私房菜：基础学习篇》
+    2. 《Linux Shell 脚本攻略》
+    3. 《UNIX环境高级编程》
+    4. 《Linux系统编程》
+    6. 《Linux内核设计与实现》
+    5. 《Linux内核设计的艺术》
+2. 知乎Han:
+    1. 《The Linux Command Line》(豆瓣 9.3分)，中文名“快乐的linux命令行”,作为入门和手册,中文翻译github地址:[http://billie66.github.io/TLCL/book/](http://billie66.github.io/TLCL/book/)
+    2. 《The Pragmatic Programmer》（豆瓣 8.9分），中文名“程序员修炼之道”
+
 
 # 二 安装配置
 
@@ -357,6 +357,16 @@ Change ...
         1. 比如指向`../fun`的某个符号链接`fun-sym`,符号链接`fun-sym`文件的长度是6，这是字符串”../fun”所包含的字符数， 而不是符号链接所指向的文件长度
         2. 大多数文件操作是针对链接的对象,而不是链接本身,但是`rm`是个特例,删除链接时就是删除链接本身
         3. gonme中,拖动文件同时按下`ctrl+shift`会创建一个链接(什么链接?)而不是移动或复制文件
+
+#### 挂载
+Linux中的根目录以外的文件要想被访问，需要将其“关联”到根目录下的某个目录来实现，这种关联操作就是“挂载”，这个目录就是“挂载点”，解除关联关系称之为“卸载”。
+
+“挂载点”的目录需要以下几个要求：
+1. 目录事先存在，可以用mkdir命令新建目录；
+2. 挂载点目录不可被其他进程使用到；
+3. 挂载点下原有文件将被隐藏。
+
+`mount`用于挂载Linux系统外的文件，`mount options device dir`
 
 ### 2.4 压缩相关
 ### tar
@@ -706,12 +716,12 @@ xsel -c
 
 |目录|评论|
 |---|:--|
-|/	|根目录，万物起源。|
-|/bin|包含系统启动和运行所必须的二进制程序.|
-|/boot|包含 Linux 内核、初始 RAM 磁盘映像（用于启动时所需的驱动）和 启动加载程序。有趣的文件：/boot/grub/grub.conf or menu.lst， 被用来配置启动加载程序。/boot/vmlinuz，Linux 内核。|
-|/dev|这是一个包含设备结点的特殊目录。“一切都是文件”，也适用于设备。 在这个目录里，内核维护着所有设备的列表。|
+|/	|根目录，Linux文件系统的最上层目录，其他所有目录均是该目录的子目录。万物起源。|
+|/bin|Binary的缩写，包含系统启动和运行所必须的二进制程序，例如cp和mv等；也存放Shell，如bash和csh。不应把该目录放到一个单独的分区中，否则LinuxRescue模式无法使用这些命令。|
+|/boot|包含 Linux 内核、初始 RAM 磁盘映像（用于启动时所需的驱动）和 启动加载程序，包括vmlinuz和initrd.img等，这些文件若损坏常会导致系统无法正常启动，因此最好不要做任意改动。独立挂载/boot的好处是可以让多个Linux共享一个/boot。“/boot”目录的大小通常都很小，20MB左右。可以根据自己的硬盘空间分配一块给/boot分区，但是不要太大，否则是种浪费。|
+|/dev|设备文件目录，包含设备结点的特殊目录。“一切都是文件”，也适用于设备。 在这个目录里，内核维护着所有设备的列表。例如/dev/sda表示第一块SCSI设备，/dev/sdb表示第二块SCSI设备，/dev/hda表示第一块IDE设备，以此类推。另一种表示方法为：hdn或sdn，n为数字，从0开始编号。如IDE接口的硬盘/dev/hda，也可以表示为hd0 ， SCSI 、SATA接口的 /dev/sda 可以表示成sd0。/dev/sda1 就是(sd0,0)。这种方法主要用在grub中。|
 |/etc|这个目录包含所有系统层面的配置文件。它也包含一系列的 shell 脚本， 在系统启动时，这些脚本会开启每个系统服务。这个目录中的任何文件应该是可读的文本文件。有趣的文件：虽然/etc 目录中的任何文件都有趣，但这里只列出了一些我一直喜欢的文件：/etc/crontab， 定义自动运行的任务。/etc/fstab，包含存储设备的列表，以及与他们相关的挂载点。/etc/passwd，包含用户帐号列表。|
-|/home|	在通常的配置环境下，系统会在/home 下，给每个用户分配一个目录。普通用户只能 在自己的目录下写文件。这个限制保护系统免受错误的用户活动破坏。|
+|/home|	普通用户的主目录或FTP站点目录。在通常的配置环境下，系统会在/home 下，给每个用户分配一个目录。普通用户只能 在自己的目录下写文件。这个限制保护系统免受错误的用户活动破坏。重装系统的时候，该分区的文件可以不受影响。|
 |/lib|	包含核心系统程序所使用的共享库文件。这些文件与 Windows 中的动态链接库相似。|
 |/lost+found|	每个使用 Linux 文件系统的格式化分区或设备，例如 ext3文件系统， 都会有这个目录。当部分恢复一个损坏的文件系统时，会用到这个目录。除非文件系统 真正的损坏了，那么这个目录会是个空目录。|
 |/media|	在现在的 Linux 系统中，/media 目录会包含可移动介质的挂载点， 例如 USB 驱动器，CD-ROMs 等等。这些介质连接到计算机之后，会自动地挂载到这个目录结点下。|
@@ -757,6 +767,9 @@ snapcraft：涵盖了 snap 和用来构建它们的命令行工具。
 
 常用操作：`find`,`list`,`install`,`refresh`,`remove`,`revert`
 1. `changes`：更改记录
+
+# 五 经验
+
 
 # 六 问题
 ## 1 已解决
