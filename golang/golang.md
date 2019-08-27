@@ -2771,7 +2771,7 @@ if err != nil {
 }
 fmt.Printf(string(out)) // hello world
 
-// 方法一
+// 方法二
 cmd2 := exec.Command("echo", "hello world")
 out2, err := cmd2.Output()
 if err != nil {
