@@ -97,7 +97,8 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 
 配置代理的几种方法:
 1. 如果网速较慢,可考虑使用代理。brew用curl下载，所以给curl挂上socks5的代理即可。在`~/.curlrc`文件中输入代理地址即可。(待测试)
-2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`
+2. 因为brew走的http协议，所以可以直接设置终端代理，比如`export ALL_PROXY=socks5://127.0.0.1:1080`，取消输入`unset ALL_PROXY`。
+    1. 实测发现使用代理确实快很多，而且不使用代理很容易断开。
 
 如果不想设置代理，可以替换源，比如清华、中科大、阿里云...，以清华为例（简单试了下清华比中科大快些）：
 1. 清华：https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
@@ -177,6 +178,13 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 然后NPM中有个fsevents包,就是用于mac的相关的包.
 
 # 五 经验
+
+## 1 远程桌面控制
+### 1.1 teamview
+### 1.2 mac自带的屏幕共享
+使用跨平台的vnc协议
+
+使用imessage可以实现广域网环境下的屏幕共享，不适用imessage的话似乎只能局域网共享
 
 # 六 问题
 ## 1 已解决

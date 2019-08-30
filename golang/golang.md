@@ -856,9 +856,10 @@ slice := []stirng{}
             //...
         }
         ```
-4. 切片的复制：使用內建的`copy()`是最佳实践，形如`copy(slice1,slice2)`，它会将slice2中的元素复制到slice1中，复制的元素个数取决于两个切片的长度中最小的那个。例子如下：
+4. 切片的复制：使用內建的`copy()`是最佳实践，形如`copy(slice1,slice2)`，它会将slice2中的元素复制到slice1中，复制的元素个数取决于两个切片的长度(`len()`)中最小的那个。例子如下：
 
     ```golang
+    // 例子1
     arraySlice1 := []int{1, 2, 3, 4, 5}
 	arraySlice2 := []int{5, 4, 3}
 	copy(arraySlice2, arraySlice1) // 只会复制arraySlice1的前3个元素到arraySlice2中
@@ -868,7 +869,43 @@ slice := []stirng{}
 	fmt.Println(arraySlice1)
 	fmt.Println(arraySlice2)
 	fmt.Println(arraySlice3)
-	fmt.Println(arraySlice4)
+    fmt.Println(arraySlice4)
+    
+    // 例子2
+    src := []string{`a`, `b`, `c`}
+	dst := make([]string, 0, 1)
+	count := copy(dst, src)
+    fmt.Println(count) // 打印0，因为dst的len()为0，所以不会发生拷贝
+    
+    // 例子3
+    src := []string{`a`, `b`, `c`}
+	dst := make([]string, 1, 1)
+	count := copy(dst, src)
+	fmt.Println(count) // 1
+    fmt.Printf("%+v\n", dst) // [a]
+    
+    // 例子4
+    src := []string{`a`, `b`, `c`}
+	dst := make([]string, 1, 1)
+	copy(dst, src)
+	dst[0] = "d"
+    fmt.Println(src) // [a b c]，内置函数copy()是deep copy，所以src不会因为dst的改变而改变
+    
+    // 例子5
+    a, b, c := "a", "b", "c"
+	src := []*string{&a, &b, &c}
+	dst := make([]*string, 1, 1)
+	copy(dst, src)
+	d := "d"
+	dst[0] = &d
+	for _, s := range src {
+		fmt.Println(&s, s, *s) 
+    }
+    // 0xc42000c028 0xc42000e250 a
+    // 0xc42000c028 0xc42000e260 b
+    // 0xc42000c028 0xc42000e270 c
+    // 因为内置的copy()是deep copy，对指针类型的元素也是一样的
+
     ```
 5. 在函数间传递切片(难点):
     1. 如果入参类型是`s []int`，传递的就是切片本身(可以看作是引用，64位上24字节)，对传入的s整个赋值不会影响原切片，但是对s里的元素进行修改的话，实际是修改的原切片，规则和js里的数组类似。
