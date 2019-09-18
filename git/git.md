@@ -611,6 +611,17 @@ git协议需要配置ssh key并且上传到服务器上
 
 解决办法1：确保文件没问题的情况下，强制恢复`git checkout stash -- .`，参考：https://stackoverflow.com/questions/16606203/force-git-stash-to-overwrite-added-files
 
+### 1.12 WARNING: POSSIBLE DNS SPOOFING DETECTED
+```
+The ECDSA host key for gitlab.hztl3.xyz has changed,
+and the key for the corresponding IP address 124.239.245.251
+is unknown. This could either mean that
+DNS SPOOFING is happening or the IP address for the host
+and its host key have changed at the same time.
+```
+
+服务器迁移了，这个域名对应的IP地址已经变了，需要去`~/.ssh/known_hosts`把原来的删除，然后重新操作git。
+
 ## 2 未解决
 ### 2.N 其他
 2. git 可以只clone分支而不是master吗？

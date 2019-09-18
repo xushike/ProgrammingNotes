@@ -1492,7 +1492,7 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 ### 7.2 Example
 这种写法更加简洁方便，不需要参数。隐式规则似乎是输出标志只能写到末尾，后面不能再插入代码，后面的验证内容不能空行，会以当前测试方法里所有标准输出的内容拿来和验证内容对比（所以要打印错误与信息推荐用log，看官网的例子也是这样做的）。每个function的末尾都可以带输出标志，但是只有当前执行的function末尾的验证内容会拿来作为验证。如果写得不对，测试用例不会被go test识别。
 
-输出标志有两种：`Output:`和`Unordered output:`。后者表示无序,只要能全部匹配上就行，不管顺序。
+输出标志有两种：`Output:`和`Unordered output:`，后者表示无序,只要能全部匹配上就行，不管顺序。两种写法的字母的大小写无所谓，实测写成`output`、`outPut`等也是可以的。
 ```golang
 func ExamplePrint() {
 	a := []int64{1, 2, 3}
@@ -1910,20 +1910,77 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 
 ## 15 注释
 注释有两种形式：
-1. 行注释以`//`开始，至行尾结束。一条行注释视为一个换行符。
-    1. 下一行会在转化时，会作为同一个段落，如果要分段落，插入空行
-    2. 如果需要预格式化（比如示例代码）的部分，只要使用缩进即可
-2. 块注释 以`/*`开始，至`*/`结束。 块注释在包含多行时视为一个换行符，否则视为一个空格。
+1. 行注释：以`//`开始，至行尾结束。一条行注释视为一个换行符（待补充）。行注释比块注释更加通用。
+    1. 下一行会在转化时，会作为同一个段落，如果要分段落，插入以`//`开头的空行
+    2. 如果需要预格式化（比如示例代码）的部分，只要使用缩进即可。比如下面的time包的注释，代码部分前面是tab缩进，说明部分是空格缩进，
+    
+        ```go
+        // For example, this code always computes a positive elapsed time of
+        // approximately 20 milliseconds, even if the wall clock is changed during
+        // the operation being timed:
+        //
+        //	start := time.Now()
+        //	... operation that takes 20 milliseconds ...
+        //	t := time.Now()
+        //	elapsed := t.Sub(start)
+        // ...
+        ```
+    3. 生成的结果呈现时可能不是等宽字体，所以不需要空格对齐（待补充）
+2. 块注释：以`/*`开始，至`*/`结束。 块注释在包含多行时视为一个换行符，否则视为一个空格。块注释主要用于针对包的详细说明或者屏蔽大块的代码。如下摘自go官方包的注释片段，
+    
+    ```go
+    // TODO(dsnet): Re-enable this test when adding sparse support.
+    // See https://golang.org/issue/22735
+    /*
+        }, {
+            file: "testdata/gnu-nil-sparse-data.tar",
+            tests: []testFnc{
+                testHeader{Header{
+                    Typeflag:    TypeGNUSparse,
+                    Name:        "sparse.db",
+                    Size:        1000,
+                    SparseHoles: []sparseEntry{{Offset: 1000, Length: 0}},
+                }, nil},
+                testWrite{strings.Repeat("0123456789", 100), 1000, nil},
+                testClose{},
+            },
+        ...
+    /*
+    ```
 
-注释的最佳实践:`//`之后应该加一个空格.(其他语言也应该这样))
+注释的最佳实践:
+1. `//`之后应该加一个空格.(其他语言也应该这样))
+2. 每个包都应有一个包注解，即 package 前的块注解。对多个文件的包，包注解只需出现在一个文件中，随便哪个。包注解应该介绍此包，并作为一个整体提供此包的对应信息。它首先出现在 godoc 页面，来安排好后续的详细文档。 
+    1. 比如time包的包注释只出现在time.go文件中，但是版权注释则每个文件都有
 
 go注释的规则：
 1. 注释不可嵌套
-2. 版权注释和 Package前面加一个空行，否则版权注释会作为Package的注释。
+2. 版权注释和 Package前面加一个空行，否则版权注释会作为Package的注释。如`time`包的注释，
+    
+    ```go
+    // Copyright 2009 The Go Authors. All rights reserved.
+    // Use of this source code is governed by a BSD-style
+    // license that can be found in the LICENSE file.
+
+    // Package time provides functionality for measuring and displaying time.
+    //
+    // ...
+    ```
 3. 标识不被编译：`// +build generate`
 
+其他：感觉官方包注释的规则并不统一，也出现了下面这种注释，可能官方包也是不同的人写的吧...
+```go
+/*
+ * Normal distribution
+ *
+ * See "The Ziggurat Method for Generating Random Variables"
+ * (Marsaglia & Tsang, 2000)
+ * http://www.jstatsoft.org/v05/i08/paper [pdf]
+ */
+```
+
 ### 15.1 文档注释
-几乎所有全局作用域的类型、常量、变量、函数和被导出的对象都应该有一个合理的注释。如果这种注释（称为文档注释）出现在函数前面，例如函数 Abcd，则要以 "Abcd..." 作为开头。如,
+几乎所有全局作用域的类型、常量、变量、函数和被导出的对象都应该有一个合理的注释。如果这种注释（称为文档注释）出现在函数前面，例如函数 Abcd，则要以 "Abcd..." 作为开头，且首句应该是一句话的总结。如,
 
 ```go
 // enterOrbit causes Superman to fly into low Earth orbit, a position
@@ -2993,6 +3050,30 @@ golang 提供了下面几种类型：
 - Ticker：ticker只要定义完成，从此刻开始计时，不需要任何其他的操作，每隔固定时间都会触发。当下一次执行到来而当前任务还没有执行结束时，会等待当前任务执行完毕后再执行下一次任务。
 - Timer(定时器)：timer定时器，是到固定时间后会执行一次
 *如果timer定时器要每隔间隔的时间执行，实现ticker的效果，使用 `func (t *Timer) Reset(d Duration) bool`
+
+定时器的四种实现和操作：
+1. `time.sleep()`：如果只是想指定时间之后执行，可以用该方法。
+2. `time.after()`
+3. `time.Timer`:需要对通道进行释放才能达到定时的效果，直到使用`<-timer.C`发送一个值，该计时器才会过期。在计时器过期之前,可以停止该计时器。不管过没过期，都可以调用`Reset()`方法重置计时器。
+    
+    ```go
+    // 定义计数器
+	timer := time.NewTimer(time.Second * 1)
+	fmt.Println("after 1 sec:", <-timer.C)
+	// 停止定时器
+	timer.Stop()
+	// 强制的修改timer中规定的时间
+	timer.Reset(time.Second * 5)
+	fmt.Println("after 5 sec:", <-timer.C)
+    ```
+4. `time.Ticker`：周期定时器
+    
+    ```go
+    ticker := time.NewTicker(time.Second)
+	for i := 0; i < 3; i++ {
+		fmt.Println(<-ticker.C)
+	}
+    ```
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.
