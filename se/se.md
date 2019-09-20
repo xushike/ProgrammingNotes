@@ -7,6 +7,7 @@
 我们开发人员开发顺序是从底层（DB）往上面开发
 
 #### 模型-视图-视图模型 (Model-View-ViewModel,MVVM) 
+通俗易懂的解释：https://objccn.io/issue-13-1/
 
 ### 1.2 new,工厂模式和依赖注入的通俗易懂比较
 [http://blog.csdn.net/mrli113/article/details/70792498](http://blog.csdn.net/mrli113/article/details/70792498)

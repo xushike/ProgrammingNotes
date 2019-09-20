@@ -33,6 +33,14 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 ### 3.7 login shell 和 non-login shell，.bash_profile和.bashrc
 为什么会有login shell和non-login shell：会读取不同的配置文件。但mac的shell和linux不同，mac是每个新的bash shell（默认shell）都默认为login shell，而且只加载`.bash_profile`。如果是zsh shell，则只加载`.zshrc`
 
+### 3.8 mac目录使用说明
+通常MacOS下文件存放遵循这个规则(待确认)：
+1. `/usr/local`下一般是你安装软件的目录，这个目录就相当于在windows下的programefiles这个目录
+2. `/usr/local/opt`这个目录是一些大型软件的安装目录，或者是一些服务程序的安装目录;
+
+### 3.9 查看应用程序是32位还是64
+关于本机 -> 系统报告 -> 应用程序
+
 # 二 安装配置
 1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
 
@@ -113,12 +121,35 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 1. 支持断点续传（因为使用curl下载）
 
 常用命令:
-1. 模糊搜索(search)、查看（info）、安装(install)、卸载(remove)软件包,使用形如`brew search <软件名>`
-    1. 使用`info`时，没安装的会提示`not installed`
+1. 模糊搜索(search)、查看（info）使用形如`brew search <软件名>`
+    1. 使用`info`时，没安装的会提示`not installed`。如果安装了多个版本，比如`brew info go`，多个都会列出来：
+        
+        ```
+        /usr/local/Cellar/go/1.10.4 (8,188 files, 336.9MB)
+            Poured from bottle on 2018-09-17 at 20:35:32
+        /usr/local/Cellar/go/1.12.9 (9,819 files, 452.8MB) *
+            Poured from bottle on 2019-09-19 at 12:05:48
+        ```
+2. 安装`install`：安装新版本的时候，默认不会删除旧版本。
+    1. 安装指定版本
+        1. 方法一：对于brew里面同时存在多版本的，直接可以`brew install formula@version`安装对应的版本，比如`berw install go@1.10`。
+        2. 方法二：对于那种只有最新版本的，如果想安装之前的版本，可以去`https://github.com/Homebrew/homebrew-core`库里，找到对应版本的`.rb`文件，使用`brew install xxx.rb`（这里.rb文件可以是网络上的文件也可以是本地的文件）来安装。安装前可能还需要关掉自动更新的配置`export HOMEBREW_NO_AUTO_UPDATE=true`
+3. 切换版本`brew switch formula version`：使用Symlink的方式切换版本，需要先把对应的版本下载下来。比如实现golang多版本切换（参考golang笔记）。
+3. 卸载`remove`
+    1. 显示已安装的包的依赖`brew deps formula`：然后判断哪些包是可以安全删除的，比如`brew deps --installed --tree`:
+    
+        ```
+        git
+        ├── gettext
+        └── pcre2
+        ...
+        ```
 2. 更新brew自身：`brew update`，会同时更新brew cask。brew cask没有单独更新自己的命令，只有更新软件包的命令，比如`brew cask upgrade xxx`，在更新软件包之前会更新brew和brew cask。
     1. 参数`-v`：显示进度
-3. 更新软件:`brew upgrade name`，不加name则是更新所有可以更新的软件。
-4. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等
+3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。
+    1. 显示所有有新版本的软件`brew outdated`
+    2. 锁定包`brew pin formula`：不想更新某个包的时候使用，比如不想更新postgresql。解锁是`unpin`
+4. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等。默认每30天会自动运行一次。
 5. 显示安装的服务：`brew services list`
 6. 安装服务的启动、停止、重启：`brew services start/stop/restart serverName`
 
@@ -131,11 +162,16 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 2. 非cask包的安装位置:`/usr/local/Cellar`，同时会被软链接到`/usr/local/opt`，命令会被软链接到`/usr/local/bin`
 3. cask包安装在`/usr/local/Caskroom`，然后软链接到`~/Applications`
 
-`formula`的意思：应该是指一个完整的软件。
+词语说明：
+1. `formula`的意思：应该是指一个完整的软件的名称，可以直译为包。
+2. `keg-only`：参考：https://stackoverflow.com/questions/17015285/understand-homebrew-and-keg-only-dependencies。个人翻译如下
+    1. 会被安装在`usr/local/Cellar`，不会被链接到其他地方（实际好像会，比如go@1.10）
+    2. 当其他软件依赖它时，其他软件在编译时必须指定依赖路径到它
+    3. 系统库不会依赖它。假如系统依赖了软件A@1，我又安装了一个版本不同的A@2，我的A@2不会对系统造成影响。
 
 问题：
 1. 为什么取名homebrew：似乎是作者比较关心酒，而且没想到这个软件会这么火，而且文件夹名称也是用的Cella（地窖），预编译的二进制软件包叫bottles(瓶子)
-2. 在更新软件包时，`updating homebrew`总是卡住，这个时候按ctrl+c可以终止更新brew自生，直接调到更新软件包。
+2. 在更新软件包时，`updating homebrew`总是卡住，这个时候按ctrl+c可以终止更新brew自生，直接跳到更新软件包的部分。
 
 ### 2.8 iterm2和on-my-zsh
 两者结合食用，效果不错。
