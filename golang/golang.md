@@ -198,8 +198,17 @@ fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
 1. 第一种用于入参（不能用于出参），比如`func myfunc(arg ...int)`，变量arg就是一个int的slice，但是它比直接声明一个切片更加灵活，比如想接收0个或n个int参数，写成切片的话，0个时需要传空切片或者nil，如果用三个点的写法就什么都不用传。
 2. 第二种用于传递时：slice可以被打散进行传递，比如`append()`处。
 
-### 3.16 go源码文件
-Go源码文件包括三种：命令源码文件、库源码文件和测试源码文件
+### 3.16 go源码文件(待补充)
+Go源码文件包括三种：
+1. 命令源码文件：
+    1. 独立程序的入口
+    2. 属于main包，包含无参数和无结果的main函数
+    3. main函数执行的结果意味着当前程序运行的结束
+    4. 同一个代码包中不要放多个命令源码文件，同时命令源码文件和库源码文件也不要放在同一个代码包下。b站的的项目似乎就是这么做的。如果违反此条，`go run`和`go build`分别运行这些文件的时候不会报错，但是`go build`和`go install`运行整个包的时候会报错。
+    5. 可以通过`go run`命令来执行，可接受命令参数
+2. 库源码文件
+3. 测试源码文件
+
 
 ### 3.17 平行赋值
 `i, j = i+1, j-1`
@@ -281,7 +290,7 @@ go的环境变量说明:
     3. `pkg`:包文件路径，包含golang将可执行文件所依赖的各种package编译后的.a(or ?)中间文件
 
 3. `$GOARCH`:表示目标机器的处理器架构，它的值可以是 386、amd64 或 arm。
-4. `$GOBIN`:表示编译器和链接器的安装位置，默认是`$GOROOT/bin`.一般情况下你可以将它的值设置为空，Go 将会使用前面提到的默认值。
+4. `$GOBIN`:表示编译器和链接器的安装位置（执行`go install`安装的路径），默认是空字符串，为空时则遵循“约定优于配置”原则，可执行文件会放在各自GOPATH目录的bin文件夹--`$GOPATH/bin`。
 
 那么多个GOPATH的最佳实践是什么(待补充)
 
@@ -316,6 +325,8 @@ usr/local/Cellar/go
 ```
 
 然后执行`brew switch go 1.12.9`就可以切换版本了。
+
+注意不要轻易执行`brew upgrade`，会把所有旧版本删除。
 
 ## 3 linux
 ### 3.1 安装包（二进制发行版）安装(**推荐**)
@@ -1445,7 +1456,7 @@ if dog,ok := c.(Dog);ok{
 
 轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test或Example开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
 
-对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`
+对文件夹里面的所有测试用例进行测试：`go test -v xxx/...`，默认是用多线程进行测试的，想单线程的话加上后缀`go test -v xxx/... -p 1`。
 
 对多个包进行测试(package tests)：以空格分割多个包的包名。直接写`pkg_name`只会对包里面的内容进行测试，不会递归测试更下层的内容，如果写成`pkg_name/...`则会递归执行更下层的测试内容。
 
@@ -2015,20 +2026,28 @@ Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`�
 写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
 
 ### 1.1 go run
-`go run ...`编译且运行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
+`go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
 ```golang
 go run main.go a.go
 // 或者
 go run *.go
 ```
 
+参数：
+1. `-a`：强制编译，不管编译结果是不是最新的
+2. `-n`：打印编译过程中所需运行的命令，但不真正执行
+2. `-x`：打印编译过程中所需运行的命令，且真正执行
+3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
+4. `-work`:显示编译时临时工作目录的路径，并且不删除它
+
 ### 1.2 go build
-主要用于编译代码。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
-1. 直接执行时`go build`时，默认编译当前目录下的所有`.go`文件，如果有`main.go`文件，那么会生成可执行文件--默认是目录名
-2. 执行`go build a.go b.go ...`，如果文件中有`main.go`，则生成可执行文件`main`，否则只是编译
-3. 执行`go build drectory_a drectory_b ...`，如果目录下有`main.go`，则生成可执行文件--默认是main文件所在的目录名，否则只是编译
+主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在该命令的执行目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
+1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译。
+2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。
+3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。
 
 参数:
+1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
 1. `-o`：指定生成的可执行文件的名字
 2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
     1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
@@ -2050,12 +2069,34 @@ go run *.go
     5. `-S` 输出汇编代码
 
 ### 1.3 go install
-这个命令在内部实际上分成了两步操作：第一步是生成结果文件(可执行文件或者.a包)，第二步会把编译好的结果移到$GOPATH/bin或者$GOPATH/pkg，生成的可执行文件默认是是父级目录名
+用于编译并安装代码包或源码文件。安装代码包会在当前工作区的`pkg`下平台相关目录下生成归档文件，安装命令源码文件会在当前工作区的`bin`目录或`$GOBIN`目录生成可执行文件或`.a`文件。有如下几种执行情况：
+1. 执行`go install`且不加任何参数时，默认会把当前目录作为代码包并安装。
+2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
+3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
 
-### 1.4 go clean
+### 1.4 go get
+通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。
+
+简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
+
+参数说明:
+- `-u`:强制更新已有的代码包及其依赖
+- `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
+- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
+- `...`：在后面加上三个点表示。。。
+- `-d`：只下载，不执行安装动作。
+- `-fix`：下载后执行修正动作再执行安装动作。
+
+注意:
+1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
+
+如果不能编译和安装，还会获取吗？
+
+
+### 1.5 go clean
 清理go编译生成的文件，如`.go`、`.out`、`.a`等
 
-### 1.5 go generate
+### 1.6 go generate
 在执行go generate时将会加入些信息到环境变量，可在命令程序中使用。$GOARCH 架构 (arm, amd64, etc.)、$GOOS OS (linux, windows, etc.)、$GOFILE 当前处理中的文件名$GOLINE 当前命令在文件中的行号、$GOPACKAGE 当前处理文件的包名、$DOLLAR 一个美元符号（？），同时该命令是在所处理文件的目录下执行，故利用上述信息和当前目录，边可获得丰富的DIY功能。
 
 参数：
@@ -2070,22 +2111,6 @@ go run *.go
 
 （待研究）There are already a number of tools available that are designed to be run by the go:generate directive, such as `stringer`, `jsonenums`, and `schematyper`.
 
-### 1.6 go get
-通过源码控制工具(比如git)递归获取代码包及其依赖,并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于go build命令和go install命令的标记。
-
-简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
-
-参数说明:
-- `-u`:强制更新已有的代码包及其依赖
-- `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
-- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
-- `...`：在后面加上三个点表示。。。
-- `-d`：下载包后停止，不要安装。
-
-注意:
-1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
-
-如果不能编译和安装，还会获取吗？
 
 ### 1.7 go vet
 作用是检查Go语言源代码并且报告可疑的代码编写问题,可以捕获一些常见的错误，如格式化字符串等。

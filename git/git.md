@@ -85,6 +85,8 @@ ssh 秘钥公钥的原理
 
 多个秘钥的情况
 
+### 3.12 detached
+
 
 ## 4 文档视频资料
 1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
@@ -229,7 +231,10 @@ mac按以下步骤操作：
 ### 1.2 git clone:克隆仓库
 克隆仓库的所有内容,克隆后当前在默认分支(一般是master分支).
 
-使用:`git clone <远程仓库地址> [本地仓库名称]`:克隆,并将库放到`[本地仓库名称]`文件夹中.例子如`git clone https://github.com/xushike/study.git studyNote`
+`git clone <远程仓库地址> [本地仓库名称]`:克隆,并将库放到`[本地仓库名称]`文件夹中.如`git clone https://github.com/xushike/study.git studyNote`
+
+参数：
+1. `--recursive`:对于含有submodules的仓库，其作用等同于`git clone`+`git submodule init`+`git submodule udpate`，参考git submodule部分的笔记
 
 ### 1.3 git remote:远程仓库相关
 查看远程仓库:
@@ -331,12 +336,14 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 ## 5 git commit
 作动词时表示做一个版本,作名词表示版本.
+
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
 
 参数说明:
 1. `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
    1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873。大概是使用`git reflog`找到前面操作的commit id，然后使用`git reset --hard <commit_id>`恢复过去
-2. `-m`：commit message
+2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
+3. `-m`：commit message
 
 ### 5.1 git rebase:压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
@@ -507,7 +514,58 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 ### 11.1 git fsck:文件系统检测
 `git fsck --lost-found`:找回git add过但是已经不存在文件中的内容(待测试)
 
-# 四. 高级
+# 四 高级
+## 1 git submodules
+参考：
+1. http://www.ayqy.net/blog/%E7%90%86%E8%A7%A3git-submodules/
+
+使用场景：待补充。
+
+添加submodule到主模块：
+`git submodule add path1.git path2`，`path1.git`是submodule的仓库地址，`path2`是当前项目中submodule的路径。可以添加多个submodule，添加完之后会在当前目录生成`.gitmodules`文件，记录了每个submodule的引用信息--在当前项目的位置以及仓库的所在，大概内容如下
+```git
+[submodule "libs/lib1"]
+    path = libs/lib1
+    url = /home/henryyan/submd/repos/lib1.git
+```
+
+然后推送`.gitmodules`和`path2`的改动就算添加完成。注意：
+1. 不要在`.gitignore`文件中ignore 子模块目录，不然会跟踪不到子模块。
+2. 需要同时提交`.gitmodules`文件和子模块的commit修改，不然会导致子模块添加不上。
+
+clone带有submodule的仓库：普通clone下来的时候，里面的submodule只有表示坑位的空目录而没有内容。
+1. `git submodule`：查看submodule的状态，如果显示hash码和文件目录，且文件目录前有减号，表示子模块还没检出.类似
+    
+    ```
+    -c22aff85be91eca442734dcb07115ffe526b13a1 libs/lib1
+    ```
+2. `git submodule init`：初始化，会创建本地配置`.git/config`，记录仓库地址。在clone含有submodules的repo后，需要进行初始化。
+    1. 实测会提示`子模 xxx 未对 路径 xxx 注册`，似乎可以不用管
+3. `git submodule update`：更新子模块
+    1. `--init`：`git submodule update --init`等同与`git submodule init`+`git submodule update`
+    2. `--remote`：会拉取子模块对应分支的最新代码，如有更新，占位目录的git状态会发生变化。不加该参数，则拉取的是当前依赖的版本。每次执行`git submodule update --remote`后，子模块会处于detached状态。
+        1. 官方解释是：It’s also important to realize that a submodule reference within the host repository is not a reference to a specific branch of that submodule’s project, it points directly to a specific commit (or SHA1 reference), it is not a symbolic reference such as a branch or tag. In technical terms, it’s a detached HEAD pointing directly to the latest commit as of the submodule add.大概翻译就是对子模块的引用是引用的特定的提交，而不是特定的分支。
+    3. `--recursive`:递归更新，子模块所依赖的子模块也会更新。
+
+改动子模块的代码：
+1. 可以直接去子模块的项目地址修改，也可以去主模块中子模块的路径修改。如果是在主模块中，要切换到子模块所在路径，此时注意切换分支（通常是detached状态），改动后推送到子模块的远程。
+
+更新主模块所依赖的子模块版本：例子如下
+    
+    ```bash
+    # 在主模块里
+    git add sub_module
+    git commit 
+    git push
+    ```
+
+
+删除子模块:`git submodule deinit`
+
+更新子模块的URL：`git submodule sync [--sub_module]`，根据文档可知，我们需要先更新`.gitmodules`和`.git/config`中的URL配置，然后执行该命令。
+
+当子模块很多时，可以加上`foreach`参数来对每个子模块执行相同的命令。如`git submodule foreach 'git checkout -b featureA'`
+
 ## 4 git自带的图形界面工具
 ### 4.1 gitk(常用)
 主要用于查看查看历史,该工具可能需要自己安装。实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
@@ -621,6 +679,9 @@ and its host key have changed at the same time.
 ```
 
 服务器迁移了，这个域名对应的IP地址已经变了，需要去`~/.ssh/known_hosts`把原来的删除，然后重新操作git。
+
+### 1.13 无法克隆 xxx 到子模组路径 xxx
+`.gitmodules`子模块的路径用的ssh路径，但实际上是https路径，所以需要修改成https路径
 
 ## 2 未解决
 ### 2.N 其他

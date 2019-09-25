@@ -41,6 +41,9 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 ### 3.9 查看应用程序是32位还是64
 关于本机 -> 系统报告 -> 应用程序
 
+### 3.10 环境变量TMPDIR
+`echo $TMPDIR`打印出`/var/folders/_s/h1pf8fk50jqfscpsfh3x7vtw0000gn/T/`，其他操作系统应该也有这个变量
+
 # 二 安装配置
 1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
 
@@ -134,7 +137,8 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
     1. 安装指定版本
         1. 方法一：对于brew里面同时存在多版本的，直接可以`brew install formula@version`安装对应的版本，比如`berw install go@1.10`。
         2. 方法二：对于那种只有最新版本的，如果想安装之前的版本，可以去`https://github.com/Homebrew/homebrew-core`库里，找到对应版本的`.rb`文件，使用`brew install xxx.rb`（这里.rb文件可以是网络上的文件也可以是本地的文件）来安装。安装前可能还需要关掉自动更新的配置`export HOMEBREW_NO_AUTO_UPDATE=true`
-3. 切换版本`brew switch formula version`：使用Symlink的方式切换版本，需要先把对应的版本下载下来。比如实现golang多版本切换（参考golang笔记）。
+3. 切换版本`brew switch formula version`：使用Symlink的方式切换版本，需要先把对应的版本下载下来。
+    1. 例子：实现golang多版本切换（参考golang笔记）。
 3. 卸载`remove`
     1. 显示已安装的包的依赖`brew deps formula`：然后判断哪些包是可以安全删除的，比如`brew deps --installed --tree`:
     
@@ -146,7 +150,7 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
         ```
 2. 更新brew自身：`brew update`，会同时更新brew cask。brew cask没有单独更新自己的命令，只有更新软件包的命令，比如`brew cask upgrade xxx`，在更新软件包之前会更新brew和brew cask。
     1. 参数`-v`：显示进度
-3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。
+3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。似乎会默认删除旧版本。
     1. 显示所有有新版本的软件`brew outdated`
     2. 锁定包`brew pin formula`：不想更新某个包的时候使用，比如不想更新postgresql。解锁是`unpin`
 4. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等。默认每30天会自动运行一次。

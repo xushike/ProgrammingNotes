@@ -26,3 +26,4 @@
 3. 集成测试,单元测试，回归测试（ regression test）
 
 4. progress telerik fiddler web debugger
+5. 冒烟、灰度、蓝绿

@@ -253,6 +253,7 @@ SmartBar
 12. 如何给xml中的属性注释
 
 ## 七 待整理
+1. 临时文件目录是`/data/local/tmp`?
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
 2. 导入项目的几种方式
 3. ADB
