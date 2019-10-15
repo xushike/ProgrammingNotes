@@ -229,7 +229,7 @@ GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name�
 2. unsafe.Pointer：通用指针类型，用于转换不同类型的指针，在Go中可以把它理解成任何指针的父类型，不能进行指针运算。
 3. uintptr：用于指针运算，GC 不把 uintptr 当指针，uintptr 无法持有对象。uintptr 类型的目标会被回收。字节长度和int一样，32位系统中是4字节，64位8字节
 
-三种类型的转换：unsafe.Pointer 可以和 普通指针 进行相互转换，unsafe.Pointer 可以和 uintptr 进行相互转换，也就是说 unsafe.Pointer 是桥梁，可以让任意类型的指针实现相互转换，也可以将任意类型的指针转换为 uintptr 进行指针运算。具体做法是将Pointer类型转换成uintptr类型，做完加减法后，转换成Pointer，通过*操作，取值，修改值...
+三种类型的转换：unsafe.Pointer 可以和 普通指针 进行相互转换，unsafe.Pointer 可以和 uintptr 进行相互转换，也就是说 unsafe.Pointer 是桥梁，可以让任意类型的`指针实现相互转换，也可以将任意类型的指针转换为 uintptr 进行指针运算。具体做法是将Pointer类型转换成uintptr类型，做完加减法后，转换成Pointer，通过*操作，取值，修改值...
 
 ### 3.21 go为什么不推荐使用me, this, self as receiver names
 参考这个回答：https://stackoverflow.com/questions/23482068/in-go-is-naming-the-receiver-variable-self-misleading-or-good-practice
@@ -237,6 +237,16 @@ GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name�
 总结就是：
 1. go里method receiver只是被认为method的第一个参数，不同于OOP里面的对象（虽然我们经常这么认为并且工作良好），所以用这些命名不太合适。
 2. 还有人提到了law of demeter
+
+### 3.22 Golang的相对路径是相对于执行命令时的目录
+
+### 3.23 string()和strconv包
+`string()`会直接把字节或者数字转换为字符的UTF-8表现形式，如果想将byte或者int类型的值转换为数字的字符串表现形式，使用`strconv`包里的方法，比如`strconv.Itoa()`
+
+```golang
+fmt.Println(string(120))    // x 
+fmt.Println(strconv.Itoa(120))  // 120
+```
 
 ## 4 文档网址视频等
 1. golang官方
@@ -754,7 +764,7 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
             }
         }
         ```
-
+        
 #### 2.1.4 布尔bool
 对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
 
@@ -971,6 +981,7 @@ m["m1"] = m1
         fmt.Println(k) // 获取的是key
     }
     ```
+5. 打印map：go1.12之前`fmt`打印map是无序的，go1.12开始`fmt`打印map是有序的。但是`range`依然是无序的。参考:https://golang.org/doc/go1.12
 
 注意：
 1. 如果map是带名字地声明在函数返回值中，还是不能直接使用，还是需要make一下才能用
@@ -1801,7 +1812,7 @@ func main() {
 #### panic
 `panic(string)`
 
-什么情况会panic：数组下标越界或类型断言失败这样的运行错误时，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）抛出一个runtime.Error 接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+什么情况会panic：数组下标越界或类型断言失败这样的运行错误时，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
 
 也可以手动触发panic：`panic("xxx")`，一般是把它作为最后的手段来使用
 
@@ -1809,7 +1820,7 @@ func main() {
 1. 发生严重错误，必需让进程退出。这种情况使用 panic 让进程直接退出将问题暴露反而是更可取的做法：
     1. 断言错误
     2. 程序启动时依赖不存在：比如数据库不存在、依赖的配置无法读取
-2. 想快速对顶层的错误进行处理：有时候函数调用栈很深，逐层返回错误可能需要写很多冗余代码，这个时候可以使用 panic 让程序的控制流直接跳到顶层的 recover 处来处理错误。
+2. 想快速对顶层的错误进行处理：有时候函数调用栈很深，逐层返回错误可能需要写很多冗余代码，这个时候可以使用 panic 让程序的控制流直接跳到顶层的 recover 处来处理错误。(待研究)
 
 #### defer
 `defer func(){...}()`
@@ -1913,6 +1924,8 @@ func test() {
         }
     }()
     panic("bad end")
+    
+    // Panicing bad end
 }
 ```
 
@@ -1989,6 +2002,17 @@ go注释的规则：
     // ...
     ```
 3. 标识不被编译：`// +build generate`
+4. 标识方法被废弃：`// Deprecated`，在支持的开发工具里会看到删除线，比如`github.com/go-gomail/gomail`的`NewPlainDialer()`在goland里会看到删除线。
+    
+    ```golang
+    // NewPlainDialer returns a new SMTP Dialer. The given parameters are used to
+    // connect to the SMTP server.
+    //
+    // Deprecated: Use NewDialer instead.
+    func NewPlainDialer(host string, port int, username, password string) *Dialer {
+        return NewDialer(host, port, username, password)
+    }
+    ```
 
 其他：感觉官方包注释的规则并不统一，也出现了下面这种注释，可能官方包也是不同的人写的吧...
 ```go
@@ -2067,6 +2091,7 @@ go run *.go
     3. `-u` 禁用unsafe代码
     4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析
     5. `-S` 输出汇编代码
+4. `-mod=vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译
 
 ### 1.3 go install
 用于编译并安装代码包或源码文件。安装代码包会在当前工作区的`pkg`下平台相关目录下生成归档文件，安装命令源码文件会在当前工作区的`bin`目录或`$GOBIN`目录生成可执行文件或`.a`文件。有如下几种执行情况：
@@ -2080,7 +2105,7 @@ go run *.go
 简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
 
 参数说明:
-- `-u`:强制更新已有的代码包及其依赖
+- `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
 - `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
 - `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
 - `...`：在后面加上三个点表示。。。
@@ -2092,6 +2117,29 @@ go run *.go
 
 如果不能编译和安装，还会获取吗？
 
+
+#### 1.4.1 用于go mod中
+`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有一下几种用法：
+1. `go get xxx@latest`：拉取最新版本，(如果有的话，优先选择tag，否则选择commit)
+1. `go get xxx@master`：拉取master分支的最新commit
+1. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
+1. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
+
+版本选择:最小版本选择算法”(The minimal version selection algorithm: https://github.com/golang/go/wiki/Modules#version-selection ),算法名字叫“最小版本选择算法”，然而内容却是“最高版本选择算法”。
+1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
+2. 如果您的模块依赖于具有require D v1.0.0的模块A，并且您的模块还依赖于具有require D v1.1.1的模块B，则最小版本选择将会选择D的v1.1.1版本用以构建（使用最高版本）  
+
+可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本
+
+参数：
+1. `-u=patch`将只更新小版本，例如从v1.2.4到v1.2.5   
+2. `go get -u`：只更新主要模块，忽略单元测试
+2. `go get -u ./...`：递归更新所有子目录的所有模块，忽略单元测试
+2. `go get -u -t`：更新主要模块，包括单元测试
+2. `go get -u -t ./...`：递归更新所有子目录的所有模块，包括单元测试
+6. `go get -u all`：更新所有模块（推荐）
+
+除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
 
 ### 1.5 go clean
 清理go编译生成的文件，如`.go`、`.out`、`.a`等
@@ -2136,6 +2184,21 @@ go run *.go
 
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
+
+### 1.11 go env
+go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`$HOME/.config/go/env`（`os.UserConfigDir`）中，该命令不会覆盖系统环境变量。
+
+参数:
+1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
+
+
+### 1.12 go list
+默认列出的是module名
+
+参数：
+1. `-m`：查看主模块的路径
+2. `-m -f={{.Dir}}`:查看主模块的根目录
+2. `-m all`:查看当前的依赖和版本信息
 
 ## 2 其他与go有关的工具
 ### 2.1 Cgo
@@ -2668,8 +2731,14 @@ func main() {
         ```
         
     - `%e`和`%E`:科学计数法
-9. `%s`:对给定字符串进行原样输出.比如字符串有一个空行,输出结果中也会有一个空行
-10. `%q`:安全地转义成单引号or双引号围绕的字符字面值，如`Printf("%q", 0x4E2D) // '中'`
+1. 字符串和字节切片
+    1. `%s`:对给定字符串进行原样输出.比如字符串有一个空行,输出结果中也会有一个空行
+    2. `%q`:安全地转义成单引号or双引号围绕的字符字面值，
+        
+        ```golang
+        fmt.Printf("%q", 0x4E2D) // '中'
+        fmt.Printf("%q", "中") // "中"
+        ```
 11. `%p`:输出指针的值.如`fmt.Printf("%p\n", &p)`，会输出`0xc42000e280`。同一个对象的不同引用的指针是一样的。
 12. 指定输出宽度,使用`[num]`:如`fmt.Printf("|%6s|%6s|\n", "foo", "b")`,会输出`|   foo|     b|`
 
@@ -3170,7 +3239,17 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 ## 5 其他
 1. 有空的时候可以多看看Google的工程师是如何实现的
 
-## 6 vendor
+## 6 依赖管理解决方案
+### 6.1 dep
+和go mod比较：
+1. mod支持代理
+2. mod速度更快
+
+### 6.2 vendor
+go在1.5版本引入了vendor属性(默认关闭，需要设置go环境变量GO15VENDOREXPERIMENT=1)，并在1.6版本中默认开启了vendor属性。
+
+简单来说，vendor属性就是让go编译时，优先从项目源码树根目录下的vendor目录查找代码(可以理解为切了一次GOPATH)，如果vendor中有，则不再去GOPATH中去查找。
+
 为什么用vendor目录：假如多个应用使用一个依赖包的不同版本？这个问题不只是Go应用，其他语言也会有这个问题。vendor目录允许不同的代码库拥有它自己的依赖包，并且不同于其他代码库的版本，这就很好的做到了工程的隔离。
 
 golang查找依赖包路径的顺序如下：
@@ -3178,6 +3257,120 @@ golang查找依赖包路径的顺序如下：
 2. 向上级目录查找，直到找到src下的vendor目录。
 3. 在GOPATH下面查找依赖包。
 4. 在GOROOT目录下查找
+
+
+vendor存在的问题：
+1. vendor目录中依赖包没有版本信息。这样依赖包脱离了版本管理，对于升级、问题追溯，会有点困难。
+2. 如何方便的得到本项目依赖了哪些包，并方便的将其拷贝到vendor目录下？依靠人工实在不现实。
+
+### 6.3 glide
+
+### 6.4 vgo
+vgo是go modules的前身。
+
+### 6.5 go modules
+参考：https://github.com/developer-learning/reading-go/issues/468
+
+Go1.11推出了模块（Modules），随着模块一起推出的还有模块代理协议（Module proxy protocol），通过这个协议我们可以实现 Go 模块代理（Go module proxy），aka 依赖镜像。Go 1.11 和 Go 1.12 模块不太完善，那么 Go 1.13 更加完善。Go 1.13 中的 GOPROXY 环境变量拥有了一个在中国大陆无法访问到的默认值 `proxy.golang.org`,最终 Go 核心团队仍然无法为中国开发者提供一个可在中国大陆访问的官方模块代理，可以使用七牛云的`goproxy.cn`
+
+它有几个特点（待补充）：
+1. 相当于是抛弃了GOPATH：Go modules 出现的目的之一就是为了解决 GOPATH 的问题，也就相当于是抛弃 GOPATH 了。
+2. 支持代理，意味着可以使用私有镜像源
+2. global caching: 不同项目的相同模块版本只会在电脑上缓存一份儿
+    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在 $GOPATH/pkg/mod和 ​$GOPATH/pkg/sum 下，未来或将移至 $GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
+
+环境变量:
+1. `GO111MODULE`:控制go modules的开关，有三个参数，默认是未设置(等同于`auto`）
+    1. `auto`：go会根据当前目录启用或禁用模块支持，仅当当前目录位于`$GOPATH/src`之外并且其本身包含`go.mod`文件或位于包含`go.mod`文件的目录下时，才启用模块支持。
+    2. `on`：会忽略 $GOPATH 和 vendor 文件夹，只根据go.mod下载依赖
+    3. `off`：不会使用go modules。它查找vendor 目录和GOPATH
+2. `GOPROXY`:用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用 `goproxy.cn`作为替代`go env -w GOPROXY=https://goproxy.cn,direct`
+    1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
+    2. `direct`：表示直连，用于指示 Go 回源到模块版本的源地址去抓取(比如 GitHub 等)，当值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
+3. `GOSUMDB`：防止出现node.js社区中大量的在使用npm时造成的不经意间引入木马库包的情况而引入的环境变量，用来设置第三方sum database服务器地址。它的值是一个 Go checksum database，用于使 Go 在拉取模块版本时(无论是从源站拉取还是通过 Go module proxy 拉取)保证拉取到的模块版本数据未经篡改。它可以是`off`即禁止Go 在后续操作中校验模块版本。默认值是`https://sum.golang.org`，可惜也被墙了，可被 Go module proxy 代理
+4. `GONOPROXY`、`GONOSUMDB`、`GOPRIVATE`:这三个环境变量都是用在当前项目依赖了私有模块，也就是依赖了由 GOPROXY 指定的 Go module proxy 或由 GOSUMDB 指定 Go checksum database 无法访问到的模块时的场景。它们三个的值都是一个以英文逗号 “,” 分割的模块路径前缀，匹配规则同 path.Match。其中 GOPRIVATE 较为特殊，它的值将作为 GONOPROXY 和 GONOSUMDB 的默认值，所以建议的最佳姿势是只是用 GOPRIVATE。比如`GOPRIVATE=*.corp.example.com`,表示所有模块路径以 corp.example.com 的下一级域名 (如 team1.corp.example.com) 为前缀的模块版本都将不经过 Go module proxy 和 Go checksum database，需要注意的是不包括 corp.example.com 本身
+
+文件:
+1. `go.mod`：现在构建代码时不会自动生成该文件，只能手动生成。`exclude`和`replace`这两个动词只作用于当前主模块，也就是当前项目，它所依赖的那些其他模块版本中如果出现了你待替换的那个模块版本的话，Go modules 还是会为你依赖的那个模块版本去拉取你的这个待替换的模块版本。
+    1. 命令`replace`：该动词的作用是把一个“模块版本”替换为另外一个“模块版本”，比如当我们遇上有些包无法下载（需要外网访问）时，我们可以在mod文件中用replace命令，让程序去GitHub上去找代码，默认下载到`$GOPATH/pkg/mod`，也可以自定义路径
+        
+        ```golang
+        // module：用于定义当前项目的模块路径
+        module example.com/foobar
+
+        // go：用于设置预期的 Go 版本
+        go 1.13
+
+        // require：用于设置一个特定的模块版本
+        require (
+            example.com/apple v0.1.2
+            example.com/banana v1.2.3
+            example.com/banana/v2 v2.3.4
+            example.com/pineapple v0.0.0-20190924185754-1b0db40df49a
+        )
+
+        // exclude：用于从使用中排除一个特定的模块版本
+        exclude example.com/banana v1.2.4
+        
+        // replace: 用于将一个模块版本替换为另外一个模块版本。"另一个版本"是路径，这个路径可以是一个本地磁盘的相对路径，也可以是一个本地磁盘的绝对路径，还可以是一个网络路径，但是这个目标路径并不会在今后你的项目代码中作为你“导入路径（import path）”出现，代码里的“导入路径”还是得以你替换成的这个目标“模块版本”的“模块路径”作为前缀。
+        replace example.com/apple v0.1.2 => example.com/rda v0.1.0 
+        
+        replace (
+            // replace使用例子1：备用下载地址，比如替换require中的特定模块
+            golang.org/x/crypto => github.com/golang/crypto latest
+            golang.org/x/net => github.com/golang/net latest
+            golang.org/x/sync => github.com/golang/sync latest
+            golang.org/x/sys => github.com/golang/sys latest
+            golang.org/x/text => github.com/golang/text latest
+            golang.org/x/tools => github.com/golang/tools latest
+            
+            // replace使用例子2：自定义路径，比如你想使用本地私有模块时
+            github.com/astaxie/beego => /home/mod/astaxie/beego
+            
+           
+        )
+        ```
+    2. `indirect`：的意思是指这个package被子module/package依赖了，但是main module并没有直接import使用，也就是所谓的间接引用
+2. `go.sum`：记录所依赖的项目的版本的锁定，类似于比如 dep 的 Gopkg.lock 的一类文件。它详细罗列了当前项目直接或间接依赖的所有模块版本，并写明了那些模块版本的 SHA-256 哈希值以备 Go 在今后的操作中保证项目所依赖的那些模块版本不会被篡改。
+
+    ```golang
+    // 我们可以看到一个模块路径可能有如下两种：前者为 Go modules 打包整个模块包文件 zip 后再进行 hash 值，而后者为针对 go.mod 的 hash 值。他们两者，要不就是同时存在，要不就是只存在 go.mod hash。那什么情况下会不存在 zip hash 呢，就是当 Go 认为肯定用不到某个模块版本的时候，认为你根本也不会下载该模块的 ZIP 文件，所以就没必要对其作出 Hash 校验保证，只需要对该模块的 go.mod 文件作出 Hash 校验保证即可，因为 go.mod 文件是用得着的，在深入挖取项目依赖的时候要用。就会省略它的 zip hash，就会出现不存在 zip hash，只存在 go.mod hash 的情况。
+    example.com/apple v0.1.2 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ= 
+    example.com/apple v0.1.2/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+    ```
+go mod命令:
+1. `go mod init <project_name>`
+2. `go mod download`: 下载模块到本地缓存，缓存路径是`$GOPATH/pkg/mod/cache`
+2. `go mod tidy`：更新项目里的所有依赖，增加缺少的，去掉无用的
+4. `go mod edit`：编辑go.mod
+    
+    ```golang
+    // 修改版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
+    go mod edit -require=github.com/360EntSecGroup-Skylar/excelize@v1.3.1
+    // 修改引用
+    // 屏蔽包
+    // 删除包
+    ```
+5. `go mod vendor`:将依赖复制到项目路径的vendor文件夹中
+    1. `go run -mod=vendor main.go`（？）
+6. `go clean -modcache`:修复go mod？
+
+
+中国大陆的新项目中使用：
+1. 先修改 `GOPROXY` 和 `GOSUMDB`
+2. `go mod init <project_name>`:包含go.mod文件的目录也被称为模块根，也就是说，go.mod 文件的出现定义了它所在的目录为一个模块
+3. `main.go`如果要引用当前项目的其他包，写法变成`module名/包名`
+    
+    ```golang
+    // 比如引入项目下hell包的方法，在main.go文件中引入包的写法变成
+    import (
+        "project_name/hello"
+        ...
+    )
+    ```
+3. 编译项目，会去拉取当前模块下`main.go`文件里依赖的外部项目，缓存起来并放进`go.mod`文件，如果没有创建`go.sum`文件，会被创建。编译和`go test`只会将`go.mod`中没有的package添加进去，不会覆盖或者改变`go get`引入的规则，所以不用担心他们会冲突
+4. 
+
 
 # 六 问题
 ## 1 已解决

@@ -304,11 +304,19 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 出现错误的时候很有用。
 
 ## 3 拉取
-### 3.1 git fetch:抓取远端
-会将指定分支的更新都抓取下来,但是需要自己手动去合并
+一图胜千言：![git 概念图](../picture/git/git-fetch-and-pull.jpg)
+
+### 3.1 git fetch：拉取远端到本地仓库
+是将远程主机的最新内容拉到本地仓库，用户在检查了以后决定是否合并到工作本机分支中。
+
+`git fetch <远程主机名>`：用于将远程主机的所有更新拉取到本地
+
+`git fetch <远程主机名> <分支名>`：用于将远程主机的指定分支的更新拉取到本地，比如`git fetch origin master`
+
+取回更新后，会返回一个FETCH_HEAD ，指的是某个branch在服务器上的最新状态，我们可以在本地通过它查看刚取回的更新信息:`git log -p FETCH_HEAD`
 
 ### 3.1 git pull:等于执行git fetch和git merge
-快速合并(fast-forward)
+默认是快速合并(fast-forward)，有冲突的话需要手动解决。
 
 拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
 
@@ -325,6 +333,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 - `-u`:暂存所有已关联的文件(新建的文件不受影响)
 - `-f`:如果想暂存的文件被ignore了，加上该命令可以强制暂存
 - `-i`:逐个确认
+- `-p`、`--patch`：只选文档中的部分变更进入stage，会进入Interactive Mode
 
 取消暂存:`git reset HEAD <文件名>...`
 
@@ -405,9 +414,6 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 ## 8 git branch:分支管理(重点)
 Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
-### 8.0 未整理
-1. 工作区的修改和分支不绑定?意思我当前分支有10个修改,创建新分支并push之后,再切回来这10个修改就没了,
-3. git log是显示所有分支的记录?
 
 ### 8.1 创建和查看分支
 查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号.注意才clone完之后只会显示默认分支,实际上其他分支还是存在的.
@@ -459,8 +465,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 删除远程的分支:`git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
 
-删除本地库上失效的远程追踪分支:`git remote prune <远程名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。
-1. 参数`--dry-run`:打印执行信息,但并不真正执行
+删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。
+1. 参数`--dry-run`:打印执行信息,但并不真正执行 
 
 ### 8.4 合并分支
 合并时正确做法是不要修改vi中默认的`Merge branch 'other_branch_name'`，只解决合并相关的冲突，等合并完之后再做其他修改。这样方便后续跟踪分析。
@@ -487,14 +493,19 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 - develop:开发
 - feature:功能分支
 
-## 9 git tag
+## 9 git标签 git tag
 指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
 
 既然有commitid为什么还要git tag：tag可以取有意义的的名字，比commitid更易记住。
 
-查看所有标签：`git tag`，根据tag_name查看标签`git show tag_name`
-创建标签：`git tag v1.0`，在某个commitid上打标签：`git tag tag_name commit_id`
-1. 参数`-m`：指定标签的说明文字。
+
+基本用法：
+1. 查看所有标签:`git tag`
+2. 根据tag_name查看标签:`git show tag_name`
+3. 创建标签：`git tag v1.0`，在某个commitid上打标签：`git tag tag_name commit_id`
+
+参数：   
+1. `-m`：指定标签的说明文字。
 
 ## 10 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
@@ -513,6 +524,9 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 ## 11 不常用命令
 ### 11.1 git fsck:文件系统检测
 `git fsck --lost-found`:找回git add过但是已经不存在文件中的内容(待测试)
+
+### 11.2 git gc
+git gc 将“重复的”松散的对象变成一个单独的包文件，除非以任何方式压缩文件都不会使生成的包文件有显著差异。 
 
 # 四 高级
 ## 1 git submodules
@@ -683,6 +697,20 @@ and its host key have changed at the same time.
 ### 1.13 无法克隆 xxx 到子模组路径 xxx
 `.gitmodules`子模块的路径用的ssh路径，但实际上是https路径，所以需要修改成https路径
 
+
+### 1.14 fatal: early EOFs fatal: index-pack failed
+原因可能是codebase太大，有以下几种解决方法：
+1. 设置`core.compression`为默认值，`git config --add core.compression -1`或者`git config --global --add core.compression -1`，具体可以参考`git config --help`
+    1. zlib压缩对变化显著的二进制文件似乎效果不好。
+2. 不用https的方式，而直接使用ssh的方式。（实测可行）
+3. shallow clone：`git clone --depth depth remote-url`
+4. 网友提供的邪道方法（实测依然有问题）：
+    1. 建立repo的本地存储目录 
+    1. 用`git init`生成`.git`
+    2. `git fetch remote-url`
+    3. `git checkout FETCH_HEAD`
+    4. 此时处于游离状态，需要设置`git remote add <远程分支名> <远程分支地址>`，然后`git fetch`
+
 ## 2 未解决
 ### 2.N 其他
 2. git 可以只clone分支而不是master吗？
@@ -706,7 +734,6 @@ and its host key have changed at the same time.
     --system              使用系统级配置文件
     --local               使用仓库级配置文件
 
-14. 为什么我 mac上的git config user.name等没有配置但是不输入密码 就可以提交，因为sshkey？ 
 15. 可以绑定多个远程仓库吗？
 16. Pull Request 的命令行管理:[http://www.ruanyifeng.com/blog/2017/07/pull_request.html](http://www.ruanyifeng.com/blog/2017/07/pull_request.html)
 
@@ -745,3 +772,5 @@ RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 
 10. 网友的一些总结,感觉写的不错:[http://classfoo.com/ccby/article/j4HZbSN](http://classfoo.com/ccby/article/j4HZbSN)
 11. Git的奇技淫巧🙈：http://www.cnblogs.com/xueweihan/p/5703144.html
 12. https://blog.csdn.net/mrleeapple/article/details/50488455
+1. 工作区的修改和分支不绑定?意思我当前分支有10个修改,创建新分支并push之后,再切回来这10个修改就没了,
+3. git log是显示所有分支的记录?

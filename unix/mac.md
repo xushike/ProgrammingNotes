@@ -273,7 +273,7 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 比如WeChat，点击图标的话是不会打开两个的，可以用命令`open -n /Applications/WeChat.app/Contents/MacOS/WeChat`
 
 ### 1.9 提示xxx软件已损坏
-升级到macOS Sierra系统之后任何来源按钮消失了，苹果为了系统的安全禁用了任何来源的按钮。打开`sudo spctl --master-disable`，关闭``。
+升级到macOS Sierra系统之后任何来源按钮消失了，苹果为了系统的安全禁用了任何来源的按钮。打开`sudo spctl --master-disable`。
 
 似乎右键选择打开也行：显示打包内容 > Contents > MacOS 点击 xxx
 

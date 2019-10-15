@@ -664,7 +664,7 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
         `top`虽然也可以,比`top`好的地方是可以自定义显示的字段.
 
 ## 8 curl
-文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等
+文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等。可惜不支持多线程下载。
 参数：
 1. `-X`:指定request method：POST、GET、DELETE等，默认是GET
 2. `-H 'xxx: xxx'`:自定义头信息传递给服务器
@@ -681,13 +681,23 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
 1. 有时候已下载的百分比会变小是什么情况，比如从25%突然跳到17%？
 
 ## 9 wget
-用来从指定的URL下载文件，支持断点续传。
+用来从指定的URL下载文件，支持断点续传。支持FTP和HTTP下载方式。支持代理且设置简单。同样不支持多线程下载。
 
 参数：
-1. `-O`:以不同的文件名保存。wget默认会以最后一个符合/的后面的字符来命令，对于动态链接的下载通常文件名会不正确。比如`wget http://www.linuxde.net/download?id=1`会下载一个文件并以名称"download.aspx?id=1080"保存。
+1. `-O`:以不同的文件名保存。wget默认会以最后一个符合/的后面的字符来命令，对于动态链接的下载通常文件名会不正确。比如`wget http://www.linuxde.net/download?id=1`会下载一个文件并以名称`download.aspx?id=1080`保存。比如`wget -O wordpress.zip http://www.centos.bz/download.php?id=1080`
 2. `-c`：继续执行上次终端的任务，断点续传。
 3. `--spider`：测试下载链接是否有效。
+4. `--limit-rate=RATE`:限制下载速度。因为它默认以全部带宽去下载，所以可能需要限速，比如`wget –limit-rate=300k http://cn.wordpress.org/wordpress-3.1-zh_CN.zip`
+5. `-b`：后台下载。一般文件特别大的时候可以使用该参数，会输出如下内容，可以使用`tail -f wget-log`查看下载进度。
 
+    ```
+    Continuing in background, pid 1840.
+    Output will be written to `wget-log’.`
+    ```
+6. `-user-agent=代理`：伪装代理，默认是`wget/VERSION`。有些网站会根据代理名称而不是浏览器来拒绝下载请求。比如`wget –user-agent="Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.204 Safari/534.16" ...`
+7. `–tries=xxx`：修改重试次数，默认是20。
+8. `-i`：下载本地或外部文件中的URL。可以把多个URL放在文件中，然后下载。
+    
 ## 10 执行命令
 ### 10.1 exec
 用于调用并执行指令的命令。exec命令通常用在shell脚本程序中，可以调用其他的命令。如果在当前终端中使用命令，则当指定的命令执行完毕后会立即退出终端。
