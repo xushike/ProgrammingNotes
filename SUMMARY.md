@@ -93,6 +93,7 @@
     * [1.gitbook](git/1.gitbook.md)
     * [2.svn](git/2.svn.md)
     * [3.github](git/3.github.md)
+    * [4.travis_ci](git/4.travis_ci.md)
 * [gastrology烹饪学](gastrology/gastrology.md)
 * [golang](golang/golang.md)
     * [hydra](golang/hydra.md)

@@ -2,27 +2,23 @@
 [TOC]
 # 一 概述
 
-## 1.2 java的一些常识
-1. java为工具类命令的习惯是添加一个字母s
-2. 关于clazz、Klass、JavaClass、ClassMirror等：
-RednaxelaFX大神的解释说是C++里class是关键字，所以要避开，就用这几个代替成习惯吧
-3. 迭代和遍历的异同：
-迭代按照某种顺序逐个访问集合或数组的每一项，遍历是按某种规则访问树形结构中的每个节点，两者都不能对执行代码进行迭代或遍历。个人觉得，比如访问数组中的每一项，这个叫迭代；访问数组中长度大于3的项，这个叫遍历。
+## 1 简介
 
-## 1.4 java工具和进程
-### 1.4.1 jar（Java Archive File）
-意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
+## 2 历史
+### 2.1 java8
+2014年3月27日——甲骨文公司日前举办Java 8网络直播发布会，发布甲骨文迄今为止最重要的Java技术Java 8。甲骨文宣布推出了Java平台标准版8（Java SE 8）、Java平台微型版8（Java ME 8）以及Oracle Java Embedded产品（为中到高端嵌入式系统进行了优化）的有关版本。JDK 8是Java SE 8平台规范的生产就绪版本，不久前获得Java社区进程（JCP）批准。JDK 8包括自该平台1996年推出以来最重大的Java编程模型升级。JDK 8经甲骨文与OpenJDK社区合作开发而成。
 
-### 1.4.2 jusched
-jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
-
-### 1.4.3 javac
-参数-d后面跟目录名，代表编译后的class文件的根目录(相当于src目录)。如果java文件在src/demo下,然后我在src/demo下运行.如`javac -d . xxx.java`,那么class文件的目录会变成src/demo/demo/xxx.class，这样就有问题 ，所以最好把-d的参数设置为src目录
-
-### 1.4.3 java
+JDK 8的重要性能包括Project Lambda（JSR 335）、Nashorn JavaScript引擎、一个新的日期与时间API（JSR 310）、一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。
 
 ## 3 常识
-### 3.1 父类和子类的初始化顺序是什么？(待测试)
+### 3.1 命令习惯
+1. java为工具类命令的习惯是添加一个字母s
+2. 关于clazz、Klass、JavaClass、ClassMirror等：RednaxelaFX大神的解释说是C++里class是关键字，所以要避开，就用这几个代替成习惯吧
+
+### 3.2 迭代和遍历的异同
+迭代按照某种顺序逐个访问集合或数组的每一项，遍历是按某种规则访问树形结构中的每个节点，两者都不能对执行代码进行迭代或遍历。个人觉得，比如访问数组中的每一项，这个叫迭代；访问数组中长度大于3的项，这个叫遍历。（待确认）
+
+### 3.3 父类和子类的初始化顺序是什么？(待测试)
 先父类，后子类，不管子类里有没有调用super(args);来初始化父类。
 
 顺序如下:
@@ -37,10 +33,10 @@ jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此�
 1. 如果B extend A，但是只是调用了A的静态域，那么也只会初始化A类，B类当做没看见。btw，这就是个坑。 
 2. 如果实例初始化块在实例成员之前，并且都赋值了实例成员，那么实例最终的值是实例成员定义时赋的值。可以这么理解，实例成员先声明，然后将初始化块和声明时的赋值，按顺序执行。
 
-### 3.2 什么是绑定？什么是前期绑定，什么是后期绑定？
+### 3.4 什么是绑定？什么是前期绑定，什么是后期绑定？
 将方法调用和方法主题关联起来。像C语言这种在编译时期即确定关联关系的叫做前期绑定；java等语言支持在运行时确定关联关系，叫做后期绑定、动态绑定、运行时绑定。
 
-### 3.3 接口中可以嵌套接口吗？若可以，新接口可以是什么访问权限？
+### 3.5 接口中可以嵌套接口吗？若可以，新接口可以是什么访问权限？
 可以嵌套。由于接口内所有元素都是public的，所以新接口也是public的。注意，不需要特意加一个public关键字来修饰新接口。
 
 # 二 安装配置
@@ -214,6 +210,8 @@ System.out.println(in3 == in2);//输出true
 4. 关于何时使用继承
     1. 子类需要额外增加的属性，而不仅仅是属性值的改变
     2. 子类需要增加自己独有的行为方式(包括增加新的方法或重写父类的方法)
+    
+问题：java 父类中私有变量能被子类继承吗？能被继承但是不能被访问。
 
 ##### 1.2.2.1 override（重写）
 子类包含与父类同名方法的现象称为方法的重写（override）
@@ -540,7 +538,9 @@ jdk5之后又了foreach循环。使用foreach循环无需获取数组长度和�
 java.util.Arrays里包含了一些static方法，可以直接操作数组（待补充）:
 1. int binarySearch(type[] a,type key)：用二分法查询元素key在数组a中的索引，如果没有则返回负数，要求a已经按升序排列。
 还提供了利用多cpu的工具方法（待补充）：
+
 ## 5 java基础类库
+
 ### 5.1 Object类
 
 #### 5.1.1 clone()
@@ -752,7 +752,7 @@ public class A extends Apple{} //这样是对的
 public class A extends Apple<String>{} //这样也是对的
 ```
 5. java泛型的设计原则是：编译时没提出“[unchecked]未经检查的转换”警告，就不会遇到运行时ClassCastException异常。
-6. 与习惯认知不同的是，如果Foo是Bar的一个子类型(子类或者子接口)，而G是具有泛型声明的类或接口，那么G<Foo>并不是G<Bar>的子类型；但是数组却不一样，如果Foo是Bar的一个子类型(子类或者子接口)，那么Foo[]是Bar[]的子类型
+6. 与习惯认知不同的是，如果Foo是Bar的一个子类型(子类或者子接口)，而G是具有泛型声明的类或接口，那么G<Foo>并不是G<Bar>的子类型；但是数组却不一样，如果Foo是Bar的一个子类型(子类或者子接口)，那么`Foo[]`是`Bar[]`的子类型
 
 
 ### 8.1 泛型语法
@@ -763,14 +763,15 @@ List<String> strList = new ArrList<String>();
 List<String> strList = new ArrList<>();
 ```
 ### 8.2 常见泛型字母含义
-> Java泛型中的标记符含义： 
- E - Element (在集合中使用，因为集合中存放的是元素)
- T - Type（Java 类）
- K - Key（键）
- V - Value（值）
- N - Number（数值类型）
-？ -  表示不确定的java类型
- S、U、V  - 2nd、3rd、4th types
+- E - Element (在集合中使用，因为集合中存放的是元素)、entry （实体）、enum(枚举)
+- T - Type（Java 类）
+- K - Key（键）
+- V - Value（值）
+- N - Number（数值类型）
+- ？-  表示不确定的java类型
+- S、U、V  - 2nd、3rd、4th types
+
+不是固定的写法，jdk这样写主要是为了可读性。
 
 ### 8.3 类型通配符？
 ### 8.4 泛型方法
@@ -826,6 +827,19 @@ catch(NullPointerException ne){//编译会报错，因为因为RuntimeException�
 ## 11 输入/输出
 ## 12 JDBC
 1. 可以认为JDBC模仿了ODBC，前者安全性更高、更易部署，后者更复杂。
+
+# 四 高级
+## 1 工具链
+### 1.1 jar（Java Archive File）
+意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
+
+### 1.2 jusched
+jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
+
+### 1.3 javac
+参数-d后面跟目录名，代表编译后的class文件的根目录(相当于src目录)。如果java文件在src/demo下,然后我在src/demo下运行.如`javac -d . xxx.java`,那么class文件的目录会变成src/demo/demo/xxx.class，这样就有问题 ，所以最好把-d的参数设置为src目录
+
+### 1.4 java
 
 # 六 问题
 ## 1 已解决
