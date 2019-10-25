@@ -101,7 +101,6 @@
 49. js标准的注释怎么写
 50. redux
 51. 状态机
-52. yarn
 53. js的设计模式
 54. you-get和mpv
 55. web worker是啥,类似的还有哪些

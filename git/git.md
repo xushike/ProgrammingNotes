@@ -315,8 +315,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 取回更新后，会返回一个FETCH_HEAD ，指的是某个branch在服务器上的最新状态，我们可以在本地通过它查看刚取回的更新信息:`git log -p FETCH_HEAD`
 
-### 3.1 git pull:等于执行git fetch和git merge
-默认是快速合并(fast-forward)，有冲突的话需要手动解决。
+### 3.1 git pull = git fetch + git merge
+默认是快速合并(fast-forward)，有冲突的话需要手动解决。实测似乎默认是拉取所有分支的代码，但是只会自动合并当前分支，其他分支需要自己去合并。
 
 拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
 
@@ -408,6 +408,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 该命令和`reset`不同的地方在于:`revert`不是让指针移回去,而是新增一个表示撤销的commit,该commit的内容是对`<HEAD~n>`的撤销.
 
 ### 7.2 丢弃(discard)工作区的修改:git checkout -- <文件名>
+实测不需要加`--`也可以：`git checkout <文件名>`
+
 会将文件工作区的修改全部丢弃(不影响暂存区),慎用!
 
 还有一种情况,就是误删了某个文件,可以用该命令恢复,但是会丢失该文件上所有未提交的修改.
@@ -753,24 +755,15 @@ and its host key have changed at the same time.
 1. 关于ssh的配置,可参考官方文档:[https://help.github.com/articles/connecting-to-github-with-ssh/](https://help.github.com/articles/connecting-to-github-with-ssh/)
 2. 有时项目会对特性分支的命名有特定要求。例如，如果一个分支将要解决错误修复，那么许多项目会要求添加一个 bugfix- 前缀。回到我们处理登录表单错误的分支，它得被命名为 bugfix-login-form。
 
-3. mac上是我github账户下的所有项目的提交都不需要输入账号密码吗?
-
-    原因是什么,为什么win我没配置对?
-
 4. RawGit 作为一个缓存代理，提供的功能是缓存 GitHub 中 raw 文件并添加上正确的 Content-Type header，从而使文件能被浏览器正确渲染。
 
 RawGit 对未开通 GitHub Pages 的项目中的任意 HTML/CSS/JS 文件以及 Gist 代码的渲染展示提供了方便。
 
 使用方法：https://rawgit.com/ 或 https://raw.githack.com/
 
-5. 保存了ssh之后不要了怎么清除?
 6. 如何查看其他人提交的更新
 7. gitlab的clone需要权限吗
 8. feature分支和普通分支的区别是啥?
-
-9. [廖雪峰的git](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001375840202368c74be33fbd884e71b570f2cc3c0d1dcf000),有空整理完
 10. 网友的一些总结,感觉写的不错:[http://classfoo.com/ccby/article/j4HZbSN](http://classfoo.com/ccby/article/j4HZbSN)
 11. Git的奇技淫巧🙈：http://www.cnblogs.com/xueweihan/p/5703144.html
 12. https://blog.csdn.net/mrleeapple/article/details/50488455
-1. 工作区的修改和分支不绑定?意思我当前分支有10个修改,创建新分支并push之后,再切回来这10个修改就没了,
-3. git log是显示所有分支的记录?

@@ -5,44 +5,11 @@
 4. 置顶：坚持阅读英文资料
 5. 置顶：解决问题时，先解决核心问题，不要一开始就追求所有细节，否则效率很难提升
 
-1. linux挂起和恢复
-1. sql批量模拟数据
-    1. on的条件写到where里会不会有什么区别
-1. linux -gt -f test
-1. sql支持多行注释 吗
-    1. 顺序扫描很慢？所以应该尽量避免？update的时候只能顺序扫描
-1. 触发器和存储过程
-1. 周末解决死锁的问题
-    1. 如何手动实现死锁
-    2. 死锁的原因分析
-    3. 是procedure的原因吗
-
-1. golang字符编码的问题
-    1. sync.Mutex
-    1. 给定一个utf8字符，如何在各种格式间转换
-
-1. differences between a and an
-1. pg 导出表和库的数据练习
-    1. pg_advisory_unlock,pg_try_advisory_lock
-    2. idle in transaction
-1. pg查看历史命令
-1. 隔离级别串行化和普通的有什么区别
-    1. 单元测试非常友好？
-1. vscode的方法提示，居然不支持大小写和中间的？怎么修改
-1. 数据库死锁的问题
-1. go cloud 和google cloud
-1. git查看这行代码是谁创建的
 1. 依赖注入和普通方法调用的区别
 1. session、cookie、context等
     1. 主动T用户下线
-1. go
-    2. go build相关的问题
-1. 三表查询时的问题
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
-    1. 如何让psql查询出来的结果美观排版
     1. pgsql 未使用order时的默认顺序，函数的默认顺序
-    1. limit对count不生效
-    3. 切换到前一个数据库的快捷写法有吗。实测用`-`还是当前
     4. 锁的种类级别，查询的时候会锁吗
     5. set transaction isolation level serializable
     6. exist的写法
@@ -60,8 +27,6 @@
     8. `update table_name t set xxx`中，即时设置了别名，xxx也不能写成`t.xxx`
     9. 视图
 1. go
-    1. go vendor的使用：https://github.com/kardianos/govendor
-        1. go官方出的依赖管理叫什么，好用的话后面要切到官方的
     2. go的嵌入：还有种区分内嵌与子类的重要手段。当内嵌一个类型时，该类型的方法会成为外部类型的方法，但当它们被调用时，该方法的接收者是内部类型，而非外部的。
         1. 上面这句话怎么理解。有相同方法时，优先调用外面的方法？方法的接收者是内部的？
         1. 和java或者c++的继承有什么区别
@@ -74,10 +39,6 @@
     5. go 自带的 interface+ auto generate VS 泛型
     6. string []byte 的转换是会拷贝的吗
 
-1. psql的left join等的各种写法
-    1. values常量表的写法：`(values (1),(2)) as person(id)`
-1. git fetch
-1. session和cookie
 1. git branch -r或者-a能看到被删除的分支？
     2. 如何查看合并到master的分支
 1. pgsql 插入的时候如果第一个做了类型转换，后面的也会跟着做类型转换,比如这儿的jsonb？
@@ -87,16 +48,7 @@
     (3, '{"31":{"102":0,"110":0,"101":0}}'::jsonb, 12, '正常'),
     (4, '{"31":{"102":0,"110":0,"101":0}}', 12, '无包装'),
     ```
-1. 详细研究下vscode里面go的设置，使其更好用。
-1. go test -race 的竞争检车到底是干嘛 的，对电商通知那个有用吗
 1. https://blog.csdn.net/erlib/article/details/52703165
-1. full join，inner join
-1. golang range的顺序
-1. go test启动的协程会在什么时候退出？
-1. 印象笔记支持md了？
-1. 导出xxx.sql，xxx.csv，xxx.dump,xxx.tar,二进制文件和普通文件的区别
-1. 数据库修改记录？
-1. 将复制那个写成脚本
 1. golang查看进程号、线程号？
 1. 行级锁 for udpate
 1. 防御性编程指的是什么，把用户想象成恶意用户？限制各种边界条件？
@@ -109,8 +61,6 @@
     1. 如何查看mac是几核几CPU
 1. golang里有相同底层数据类型的算是同一个数据类型吗
 1. 各数据类型在各种情况下的初始值
-1. 结构体中的切片，map等默认是nil吗
-1. &结构体.字段名
 1. url.Query()
 1. 消息队列的原理
     1. 和锁的区别
@@ -122,13 +72,8 @@
 1. git checkout origin会怎么样？
 1. 对git的理解还是不够啊
 1. 数据库的垃圾回收：
-1. git如何 批量清除本地存在，但远程已经被删了的分支
+1. git如何 批量清除本地存在，但远程 已经被删了的分支
     1. git如何查看二进制文件的创建者
-1. go test 会使用缓存吗
-    1. slice，map等声明在返回数据类型里是怎么初始化的，nil还是？
-1. go
-    1. []struct和[]*struct
-1. 读取文字生成markdown格式的表格
 2. EXTRACT(epoch FROM sku.time)::bigint
 1. goroutine，channel，实现通知
     1. select
@@ -143,9 +88,6 @@
 1. golang如何判断两个方法相等
 1. golang对引用，&和值类型的修改
     1. 传指针和传引用的区别，只有细节上的不同？
-1. golang imports那个问题
-1. golang 包引用成一个点
-1. alias后新开shell又没了
 1. go test的t.fail()
 2. 网友：用 interface ，多态算啥～建议你读读官方的 io.Reader 模块
 1. go test里加tags
@@ -562,9 +504,6 @@ package github.com/cweill/gotests/...: exit status 1
 22. Node.baseURI和document.url,element的url的区别
 23. window.location.href和document的url的区别
 24. hasAttributes()有参数和无参数的区别
-25. angular中获取dom的比较好的做法是什么,使用querySelector呢?
-26. http协议
-
 27. html embeds是干嘛的
 28. 那些节点不允许子节点?
 
@@ -1710,11 +1649,7 @@ for (let [i, item] of arr.entries()) {
     1. 三表查询
 
 402. 用来展示demo的网站:stackblitz.com/
-403. 普通的sql中可以声明变量吗
-404. yarn 和 angular的关系
-405. angularUI库的研究:[https://segmentfault.com/q/1010000009405513]
 406. 什么样的查询会使表锁住
-407. windows ng serve & npm start
 408. 析构函数
 409. 三大运营商是怎么算短信长度的,中英文一样吗?一条短信最大长度是多少?
 410. qq消息是自动同步的吗?还是不同电脑上有不同的记录?
@@ -2053,24 +1988,15 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 54.  insert into () select
 
 55.  js计算中文和英文字符长度
-
-56.  select里面内容过多的优化方案
-
 57.  go判断是否中文字符的 
 58.  存数据库时,对于有默认值的有哪几种生效方式
-
-59.  创建已有商户时 的 904错误
-
 60.  git pull是拉取所有分支信息,还是仅当前分支
-
 61.  created a lockfile as package-lock.json. You should commit this file.
 
 62.  css studying :https://segmentfault.com/q/1010000000193129
 63.  感觉input list值得了解一下
 
 64.  浏览器打断点
-65.  jquery的使用
-66.  var _this = this;
 67.  js类的写法
 68.  vue每次刷新的时候是只刷新页面?
 
@@ -2078,8 +2004,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 70.  chrome标签很多时的内存优化方法
 71.  深入研究js func的prototype
-
-72.  git pull和git push是只影响当前分支吗?如果是影响多分支怎么办?
 73.  浏览器调试js怎么弄,console.log太恼火
 74.  mqtt协议
 

@@ -248,6 +248,11 @@ fmt.Println(string(120))    // x
 fmt.Println(strconv.Itoa(120))  // 120
 ```
 
+### 3.24 查看汇编代码
+查看编译过程中的汇编代码：
+1. `go build -gcflags -S xxx.go`：
+2. `go tool compile`
+
 ## 4 文档网址视频等
 1. golang官方
     1. 博客：https://blog.golang.org/
@@ -282,6 +287,7 @@ fmt.Println(strconv.Itoa(120))  // 120
 5. gRPC
 6. etcd
 7. 高性能json库：https://github.com/json-iterator/go
+8. gitea（https://gitea.io/zh-cn/）：开源社区驱动的轻量级代码托管解决方案，后端采用 Go 编写，采用 MIT 许可证
 
 # 二 安装配置
 go的环境变量说明:
@@ -302,9 +308,10 @@ go的环境变量说明:
 3. `$GOARCH`:表示目标机器的处理器架构，它的值可以是 386、amd64 或 arm。
 4. `$GOBIN`:表示编译器和链接器的安装位置（执行`go install`安装的路径），默认是空字符串，为空时则遵循“约定优于配置”原则，可执行文件会放在各自GOPATH目录的bin文件夹--`$GOPATH/bin`。
 
-那么多个GOPATH的最佳实践是什么(待补充)
-
 除了设置上面的几个环境变量，还需要将`$GOPATH/bin`路径添加到系统PATH里，这样在任意目录都可以直接执行路径里的可执行文件。
+
+go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
+
 ## 1 windows
 1. 下载安装
 
@@ -651,8 +658,8 @@ Go语言将数据类型分为四类：
 
 不过有的地方将其分为三类,还可以有自定义类型,而且函数也可以是一个确定的类型.总之有空再整理吧.
 
-类型转换(难点)(待补充)：
-1. 显式转换,语法形如`var a typeA = typeA(b)`,这种方式适合以下几种情况
+类型转换(难点)(待补充)：**Go作为一个强类型语言，不同类型之前必须要显示的转换（而且必须是基础类型相同）。 这样可以回避很多类似C语言中因为隐式类型转换引入的bug。但是，Go中interface是一个例外：type到interface和interface之间可能是隐式转换的。**
+1. 语法形如`var a typeA = typeA(b)`,这种方式适合以下几种情况
 
     1. 一个取值范围较小的类型转换到一个取值范围较大的类型，一定会成功；一个取值范围较大的类型转换到范围较小的类型，没有溢出的话才会成功。
         1. int和int64之间的相互转换
@@ -1404,8 +1411,9 @@ s,ok := i.(string)
 var _ []interface{} = []string{`tom`} // 编译不过
 var _ interface{} = []string{`tom`}
 ```
-
 接口类型的变量总是有着相同的静态类型。
+
+参考：https://my.oschina.net/chai2010/blog/117923
 
 ### 6.2 接口
 作为接口时interface是一种具有一组方法的类型，这些方法定义了 interface 的行为。如果一个类型实现了一个 interface 中所有方法，我们说类型实现了该interface（即`Structural Typing`，有的人称为静态的`Duck Typing`），编译器在**编译时**就判断是否实现了某个接口。go 允许不带任何方法的 interface ，这种类型的 interface 叫 empty interface。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
@@ -2098,6 +2106,24 @@ go run *.go
 1. 执行`go install`且不加任何参数时，默认会把当前目录作为代码包并安装。
 2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
 3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
+
+
+静态库的编译和使用例子如下：（待补充）
+1. 假设代码目录如下
+    
+    ```
+    studyGo/go_cloud
+    ├── cmd
+    │   └── main.go
+    └── lovego_demo
+        ├── err.go
+        └── init.go
+    ```
+
+2. 进入studyGo目录
+    1. 执行`go install ./go_cloud/lovego_demo`，会在`$GOROOT/pkg/$GOOS_$GOARCH`目录下生成`studyGo/go_cloud/lovego_demo.a`静态库文件
+    2. 执行`go tool compile -I $GOPATH/pkg/darwin_amd64 go_cloud/cmd/main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
+3. TODO
 
 ### 1.4 go get
 通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。
@@ -2832,8 +2858,6 @@ func writeFile(path string, b []byte) {
 其他的功能很多似乎都比较鸡肋。
 
 ### log
-参考：http://blog.51cto.com/gotaly/1405754
-
 log相比fmt的优点：
 1. 默认添加了输出时间，而时间对于排查问题非常重要。还可以添加文件名和行号。
 2. 线程安全
@@ -2884,6 +2908,8 @@ func GetPulicIP() string {
 #### net/url
 1. 将字符串转成url类型:`Parse()`
 2. 获取:`Scheme`、`User`（包含所有认证信息）、`User.Username()`、`User.Password()`、`Host`（包括主机名和端口信息）、`Path`（Host后面的）、`Fragment`、`RawQuery`（将查询参数解析成map）
+3. `QueryEscape`：同js的`encodeURI`
+4. `QueryUnescape`:可以解码js的`escape`，`encodeURI`和`encodeURIComponent`
 
 <!-- 1. `ParseRequestURI()`：解析绝对URL到一个URL结构体中
 2. `ParseQuery()`：将query解析成Values结构体，传入的参数必须是url问号后的path
@@ -3013,13 +3039,16 @@ func getFilelist(r string) {
 
 ### runtime
 runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
-1. `Caller(skip int)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（代码文件绝对路径，这个路径不会因为编译成可执行文件而改变，也不会因为go run的位置而改变）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 `Caller()` 的调用者。由于历史原因, 该参数和`Callers` 中的 skip 含义并不相同。
-    1. 网友实测, Go的普通程序的启动顺序如下:
-        1. runtime.goexit 为真正的函数入口(并不是main.main)
-        2. 然后 runtime.goexit 调用 runtime.main 函数
-        3. 最终 runtime.main 调用用户编写的 main.main 函数
-2. `Callers()`
-3. `FuncForPC(pc uintptr)`:返回包含给定 pc 地址的函数, 如果是无效 pc 则返回 nil。可以用来获取函数名。
+1. `Caller(skip int)(pc uintptr, file string, line int, ok bool)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（代码文件绝对路径，这个路径不会因为编译成可执行文件而改变，也不会因为go run的位置而改变）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 `Caller()` 的调用者。由于历史原因, 该参数和`Callers` 中的 skip 含义并不相同。
+    1. 实测，Go的普通程序的启动顺序如下:
+        1. `runtime.goexit()`为真正的函数入口(并不是main.main)
+        2. 然后`runtime.goexit`调用 runtime.main 函数
+        3. 最终`runtime.main`调用用户编写的 main.main 函数
+2. `Callers(skip int, pc []uintptr) int `:和上面方法名字类似，但意义区别很大。把调用它的函数Go程栈上的程序计数器填入切片 pc 中. 参数 skip 为开始在 pc 中记录之前所要跳过的栈帧数, 若为 0 则表示 runtime.Callers 自身的栈帧, 若为 1 则表示调用者的栈帧. 该函数返回写入到 pc 切片中的项数(受切片的容量限制).
+3. `FuncForPC(pc uintptr)`:返回包含给定 pc 地址的函数, 如果是无效 pc 则返回 nil。可以用来获取函数名。实测该方法获取的函数名命名规则是:
+    - 全局变量的初始化调用者为`包名.init`
+    - 自定义的 init 函数有一个数字后缀, 根据出现的顺序进编号. 比如 `main.init1` 和 `main.init2` 等.
+    - 闭包函数采用 main.func1 格式命名,按照闭包定义结束的位置顺序进编号。比如`main.func1`和`main.demo.func2`。
 
 基于上面几个方法，可以做一个获取调用者的函数名/文件名/行号等用户友好的信息的简单函数：
 ```golang

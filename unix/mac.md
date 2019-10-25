@@ -44,6 +44,9 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 ### 3.10 环境变量TMPDIR
 `echo $TMPDIR`打印出`/var/folders/_s/h1pf8fk50jqfscpsfh3x7vtw0000gn/T/`，其他操作系统应该也有这个变量
 
+### 3.11 关于文件的创建时间
+可以通过`stat`命令查看，其中的`Birthtimespec`就是创建时间，实测发现似乎和linux一样会因为文件的改变而更新，并不是真正的创建时间。
+
 # 二 安装配置
 1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
 
