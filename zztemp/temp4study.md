@@ -919,9 +919,6 @@ angualr 表单中:#,name等的区别
     1. https://blog.csdn.net/fengziyun/article/details/7889262
 
 2. 路由策略
-3. <meta name="viewport" content="width=device-width, initial-scale=1">
-3. 富文本编辑器
-3. 渐进式和函数式
 2. linux 文件名带反斜杠的bug
 2. 防止重复点击
 3. 复制粘贴会触发onkeyup等吗
@@ -1705,10 +1702,6 @@ for (let [i, item] of arr.entries()) {
 423. 如何系统学习css
     1. mdn的css
     2. vscode上的css插件
-
-424. 为什么需要框架
-    3. angular的特性
-    4. 渐进式应用
 425. 自连接用于什么样的查询?
     5. 里面的表名可以和外面一样吗
     6. 如果id是在自增的,那么按id排序和按时间排序效果是一样的,而且比较数字的话更快?
@@ -1764,39 +1757,6 @@ for (let [i, item] of arr.entries()) {
 15.  管理系统的api如何设计比较好
 
 16.  https://www.cnblogs.com/wl0000-03/p/6050108.html
-
-
-17.  temp
-```
- 95% emitting
-<--- Last few GCs --->
-
-[85140:0x34bdd50]   162509 ms: Mark-sweep 1513.3 (1850.0) -> 1250.6 (1531.5) MB, 909.2 / 0.0 ms  allocation failure GC in old space requested
-[85140:0x34bdd50]   163239 ms: Mark-sweep 1250.6 (1531.5) -> 1250.4 (1481.0) MB, 730.0 / 0.0 ms  last resort GC in old space requested
-[85140:0x34bdd50]   163992 ms: Mark-sweep 1250.4 (1481.0) -> 1250.4 (1462.0) MB, 752.1 / 0.0 ms  last resort GC in old space requested
-
-
-<--- JS stacktrace --->
-
-==== JS stack trace =========================================
-
-Security context: 0x6fbde525529 <JSObject>
-    1: DoJoin(aka DoJoin) [native array.js:~94] [pc=0x11055b3354cc](this=0x2411468022d1 <undefined>,o=0x3a1cf975e389 <JSArray[13]>,p=13,D=0x241146802371 <true>,z=0x1a618cf79961 <String[2]\: \n\n>,y=0x2411468023e1 <false>)
-    2: Join(aka Join) [native array.js:~119] [pc=0x11055c230ede](this=0x2411468022d1 <undefined>,o=0x3a1cf975e389 <JSArray[13]>,p=13,z=0x1a618cf79961 <String[2]\: \n\n>,y=0x2411...
-
-FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
- 1: node::Abort() [@angular/cli]
- 2: 0x8cea7c [@angular/cli]
- 3: v8::Utils::ReportOOMFailure(char const*, bool) [@angular/cli]
- 4: v8::internal::V8::FatalProcessOutOfMemory(char const*, bool) [@angular/cli]
- 5: v8::internal::Factory::NewRawTwoByteString(int, v8::internal::PretenureFlag) [@angular/cli]
- 6: v8::internal::Runtime_StringBuilderJoin(int, v8::internal::Object**, v8::internal::Isolate*) [@angular/cli]
- 7: 0x11055af842fd
-已放弃 (核心已转储)
-```
-
-node --max_old_space_size=5048 "%~dp0/../@angular/cli/bin/ng" build --prod --no-extract-license
-
 1.   依赖注入和import的区别是啥,为什么项目中的登录弹框用的import而不是依赖注入
     1. 以及angular的路由
 
@@ -2140,8 +2100,6 @@ worker.cancel();
 83. Web前端单元测试、自动化测试和压力测试程序的开发 
 84. 如何模拟网络状况
 85. async 和await
-86. angular的脏检查和zone
-    1. angular通过脏检查实现MVVM
 87. vue lavas
 88. 路由策略:RouteReuseStrategy
     1. 路由复用策略

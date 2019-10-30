@@ -140,6 +140,10 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
     1. 安装指定版本
         1. 方法一：对于brew里面同时存在多版本的，直接可以`brew install formula@version`安装对应的版本，比如`berw install go@1.10`。
         2. 方法二：对于那种只有最新版本的，如果想安装之前的版本，可以去`https://github.com/Homebrew/homebrew-core`库里，找到对应版本的`.rb`文件，使用`brew install xxx.rb`（这里.rb文件可以是网络上的文件也可以是本地的文件）来安装。安装前可能还需要关掉自动更新的配置`export HOMEBREW_NO_AUTO_UPDATE=true`
+    2. brew 将按照下面的顺序去查找哪个formula(tap)将被使用:
+        1. pinned taps
+        2. core formulae
+        3. other taps
 3. 切换版本`brew switch formula version`：使用Symlink的方式切换版本，需要先把对应的版本下载下来。
     1. 例子：实现golang多版本切换（参考golang笔记）。
 3. 卸载`remove`
@@ -153,6 +157,16 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
         ```
 2. 更新brew自身：`brew update`，会同时更新brew cask。brew cask没有单独更新自己的命令，只有更新软件包的命令，比如`brew cask upgrade xxx`，在更新软件包之前会更新brew和brew cask。
     1. 参数`-v`：显示进度
+3. `brew tap`:tap可以理解为在github的仓库上做了一个浅度的克隆，完成之后brew就可以在这个仓库包含的formulae上工作,好比就在Homebrew规范的仓库,你可使用brew install 或者brew uninstall 安装或者卸载这个仓库上的软件。当你执行brew update这个命令时，tap 和 formulae 就会自定更新。该命令可以为brew的软件的 跟踪,更新,安装添加更多的的tap formulae。tap命令的仓库源默认来至于Github，但是这个命令也不限制于这一个地方。
+    1. 不带参数直接使用：会列出所有已tapped的仓库，比如
+        
+        ```
+        homebrew/cask
+        homebrew/cask-versions
+        homebrew/core
+        homebrew/services
+        ```
+    2. `brew tap repo_name`:shallow copy一个仓库。比如`brew tap adoptopenjdk/openjdk`
 3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。似乎会默认删除旧版本。
     1. 显示所有有新版本的软件`brew outdated`
     2. 锁定包`brew pin formula`：不想更新某个包的时候使用，比如不想更新postgresql。解锁是`unpin`

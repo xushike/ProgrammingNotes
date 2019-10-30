@@ -11,8 +11,6 @@
     3. 如果判断是多条无关的语句，则解析成多条
 1. 简书，关于go env能看到新的gopath，但是运行时却找不到.go文件：https://www.jianshu.com/p/4e699ff478a5#comment-27768847
 2. Github Page搭建个人博客或个人建站
-1. go
-    2. golang设计模式
 2. 持续集成，持续交付，持续部署
 1. golang 写爬虫
 1. js进阶:
@@ -95,7 +93,6 @@
 #### 43. rpc和http
 44. 关于签名和修改签名
 45. 增量编译
-46. 响应式编程
 47. [http://blog.jobbole.com/tag/jeff-atwood/](http://blog.jobbole.com/tag/jeff-atwood/)以及stackoverflow作者的博客
 48. 观察者模式,发布订阅
 49. js标准的注释怎么写

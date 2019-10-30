@@ -2713,6 +2713,9 @@ fmt.Println(md5str2)
 ```
 ### errors
 1. `New(text string) error`
+2. `Unwrap(error) error`:go1.13新增，用于获得被嵌套的error。每次调用解开最外面的一层，如果想获取更里面的，需要调用多次`errors.Unwrap`函数。最终如果一个error不是warpping error，那么返回的是nil。
+3. `Is(err, target error) bool`：是同一个会返回true；如果err是一个wrap error,target也包含在这个嵌套error链中的话，那么也返回true
+4. `As(err error, target interface{}) bool`：实现类型的错误断言，支持wrapping error
 
 ### fmt
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
@@ -2734,7 +2737,7 @@ func main() {
 
 1. `%v`:是打开任意类型的默认格式.
 2. `%+v`:如果值是一个结构体，输出内容将包括结构体的字段名.如`{x:1 y:2}`
-3. `%#v`:输出这个值的 Go 语法表示(包括字段和限定类型名称在内的实例的完整信息).如`main.point{x:1, y:2}`
+3. `%#v`:输出这个值的 Go 语法表示(包括字段和限定类型名称在内的实例的完整信息).如`main.point{x:1, y:2}`。实测可以打印出一些特殊字符，比如退格符`\b`，而`%+v`不行
 4. `%T`:打印值的类型.例如,
 
     ```go
@@ -2794,7 +2797,8 @@ func main() {
 1. [https://studygolang.com/articles/2644](https://studygolang.com/articles/2644)
 3. `Printf()`:支持格式化输出
 5. `Sprintf()`:格式化并返回一个字符串而不带任何输出
-2. `fmt.Errorf`函数使用`fmt.Sprintf`处理错误信息
+2. `Errorf`函数使用`fmt.Sprintf`处理错误信息
+    1. 动词`%w`：go1.13中新增的，用来生成一个wrapping error。
 3. `Fprintf()`：重定向打印。第一参数必须实现了 io.Writer 接口。`Fprintf()` 能够写入任何类型，只要其实现了 Write 方法，包括标准输出、标准错误输出(os.Stdout、os.Stderr),文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入（适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入）。
 
 ### httputil
@@ -2875,7 +2879,6 @@ log相比fmt的优点：
 rand.Seed(time.Now().UnixNano()) // 指定种子
 fmt.Println(rand.Intn(100))
 ```
-
 
 ### net
 简单的获取 IP：

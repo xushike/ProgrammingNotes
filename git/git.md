@@ -269,6 +269,9 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 查看具体某个文件的提交日志:`git log -- <文件名>`
 
 参数说明:
+- `--oneline`:压缩模式，在每个提交的旁边显示经过精简的提交哈希码和提交信息，以一行显示
+- `--graph`:图形模式，使用该选项会在输出的左边绘制一张基于文本格式的历史信息表示图。如果你查看的是单个分支的历史记录的话，该选项无效
+- `--all`:显示所有分支的历史记录
 - `--oneline --graph --decorate --all`:查看所有的提交
 - `--pretty=oneline`:只看commit的`-m`信息
 
@@ -477,11 +480,12 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 撤销上次的分支合并：`git merge ---abort`
 
-`cherry-pick`：只merge部分commit到当前分支上，`git cherry-pick commit_id`。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。
+`cherry-pick`：非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。
 1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
 2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，可以和上面的混用。
 
-如果有冲突：可以解决冲突之后使用`git cherry-pick --continue`继续，也可以取消合并`git cherry-pick --abort`
+
+如果有冲突：可以解决冲突之后使用`git cherry-pick --continue`继续，也可以取消合并`git cherry-pick --abort`。
 
 
 ### 8.5 分支命名
@@ -525,7 +529,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 ## 11 不常用命令
 ### 11.1 git fsck:文件系统检测
-`git fsck --lost-found`:找回git add过但是已经不存在文件中的内容(待测试)
+`git fsck --lost-found`:找回git add过但是已经不存在文件中的内容。可以通过运行 `git show commit_hash`查看提交之后的改变或者运行`git merge commit_hash`来恢复到之前的提交。git fsck 相对reflog是有优势的，比方说你删除一个远程的分支然后关闭仓库，用fsck 你可以搜索和恢复已删除的远程分支。
 
 ### 11.2 git gc
 git gc 将“重复的”松散的对象变成一个单独的包文件，除非以任何方式压缩文件都不会使生成的包文件有显著差异。 

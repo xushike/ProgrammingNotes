@@ -9,6 +9,8 @@
 #### 模型-视图-视图模型 (Model-View-ViewModel,MVVM) 
 通俗易懂的解释：https://objccn.io/issue-13-1/
 
+MVVM核心的思想就是视图是状态的函数：View = ViewModel(Model)，所以当Model发生改变时，ViewModel会来操作View来怎么做，而非是自己写代码来做。Model 层代表数据模型，也可以在Model中定义数据修改和操作的业务逻辑；View 代表UI 组件，它负责将数据模型转化成UI 展现出来，ViewModel 是一个同步View 和 Model的对象。
+
 ### 1.2 new,工厂模式和依赖注入的通俗易懂比较
 [http://blog.csdn.net/mrli113/article/details/70792498](http://blog.csdn.net/mrli113/article/details/70792498)
 
@@ -148,6 +150,57 @@ func Add(a int64, b int64) bool{
     return true
 }
 ```
+
+
+### 1.21 柯里化(currying)
+参考：
+1. http://www.ruanyifeng.com/blog/2017/02/fp-tutorial.html
+
+
+所谓"柯里化"，就是把一个多参数的函数，转化为单参数函数。
+
+一般来讲优化代码有两个目的：
+1. 提高性能
+2. 使代码模块化，减少耦合增强其可维护性
+
+柯里化的作用的就是第二种(?)。比如
+```javascript
+// 举个例子，你有一家商店，然后你想给你的优惠顾客10%的折扣：
+function discount (price, discount) {
+  return price * discount
+}
+// 当一个顾客消费了500元
+const price = discount(500, 0.1) // $50
+
+// 将这个函数柯里化，然后我们就不用每次都写那0.1了
+function discount (discount) {
+  return (price) => {
+    return price * discount
+  }
+}
+const tenPercentDiscount = discount(0.1)
+
+// 现在，我们只需用商品价格来计算就可以了：
+tenPercentDiscount(500) // $50
+
+// 接下来，有些优惠顾客越来越重要，让我们称为vip顾客，然后我们要给20%的折扣，我们这样来使用柯里化了的discount函数：
+const twentyPercentDiscount = discount(0.2)
+
+// 我们为vip顾客使用0.2调用柯里化discount函数来配置了一个新的函数。这个twentyPercentDiscount函数会被用来计算vip顾客的折扣：
+twentyPercentDiscount(500) // $100
+```
+
+柯里化的其他作用：（待补充）
+
+我们很可能日常编码中已经用到了柯里化，只是自己没注意。
+
+### 1.22 同步和异步（待补充）
+在异步编程模式中，有两种获得上一个任务执行结果的方式，一个就是主动轮训，我们把它称为 Proactive 方式。另一个就是被动接收反馈，我们称为 Reactive。
+
+
+依赖链（Dependency chain）：假定我们有一个事件依赖链是这样：睡觉 -> 吃饭 -> 饿了，很直觉的是，在这个依赖链中，只有满足了后面的条件，前面的才会执行。
+
+这种依赖链是这个世界普遍的一种场景，一种正向的处理模式是，每隔一段时间就轮训检测是否满足睡觉的条件，在检查是否能睡觉的时候，会先检查是否已经吃饭，检查是否已经吃饭的时候，又会先检查是否饿了。那么这就是 Proactive 模式！而 Reactive 模式则反过来，先有事件的触发，然后事件来到响应方，响应方进行处理，这种方式也叫 Pub/Sub 模式。我们在 OOP 语言中，也会用到同样的概念和逻辑，我们把之叫做 Observer 模式。
 
 # 四 高级
 ## 1 未来方向
