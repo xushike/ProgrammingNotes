@@ -14,6 +14,10 @@
 ## 4 他人评价
 1. Rust 更像是一个“实用的 Haskell (pragmatic Haskell)”，而不是“更安全的 C (safer C)”.
 2. rust更像C++
+3. 亚马逊的 AWS 也在博客上发文表示赞助 Rust 语言，至于选择 Rust 的原因，其表示(https://amazonaws-china.com/cn/blogs/opensource/aws-sponsorship-of-the-rust-project/):
+    1. 性能。Rust 非常快且内存效率高：没有运行时或垃圾收集器，它可以为关键性能服务提供支持，可以在嵌入式设备上运行，并且可以轻松地与其他语言集成；
+    2. 可靠性。Rust 的丰富类型系统和所有权模型保证了内存安全性和线程安全性，并能使开发者在编译时消除许多类的错误。
+    3. 生产率。Rust 拥有出色的文档，友好的编译器以及有用的错误消息以及一流的工具——集成的软件包管理器和构建工具，具有自动完成和类型检查的智能多编辑器支持，自动格式化程序等。
 
 ## 3 常识
 
@@ -21,8 +25,10 @@
 模式匹配：多出现在函数式编程语言之中，为其复杂的类型系统提供一个简单轻松的解构能力。比如从enum等数据结构中取出数据等等。
 
 ## 4 文档等
-1. 在线练习场：play.rust-lang.org
-3. https://www.rust-lang.org/
+1. 官方
+    3. https://www.rust-lang.org/
+    1. start：https://www.rust-lang.org/learn
+    1. 在线练习场：play.rust-lang.org
 2. https://rustlang-cn.org/
 3. 大牛写的：https://rustcc.gitbooks.io/rustprimer/content/
 
@@ -33,3 +39,17 @@
 match的功能仅仅是匹配，和其他编程语言的switch类似，要想发挥出它全部的威力，需要结合"模式匹配"来使用，从而实现解构等。和switch有两点不同：
 1. match所罗列的匹配，必须穷举出其所有可能。当然，你也可以用 _ 这个符号来代表其余的所有可能性情况，就类似于switch中的default语句。
 2. match的每一个分支都必须是一个表达式，并且，除非一个分支一定会触发panic，这些分支的所有表达式的最终返回值类型必须相同。可以简单理解为整个match是一个表达式，既然是一个表达式，那么它的结果就一定是某个类型的变量。
+
+# 五 经验
+## 1. 常用标准库
+### Rayon
+for writing parallel & data race-free code.
+
+### serializing
+for serializing and deserializing data.
+
+### Tokio/async-std
+for writing non-blocking, low-latency network services.
+
+### tracing
+for instrumenting Rust programs to collect structured, event-based diagnostic information.

@@ -86,7 +86,10 @@ ssh 秘钥公钥的原理
 多个秘钥的情况
 
 ### 3.12 detached
+### 3.13 分支状态：active（活动）、stale（过时的）、traced
+Active branches（活动分支）：表示过去三个月内任何人提交的所有分支，按最近的提交最先显示的顺序排序分支。
 
+Stale branches（过时的分支）：过去三个月内没有人提交的所有分支，按最早的提交最先显示的顺序排序分支。
 
 ## 4 文档视频资料
 1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
@@ -417,6 +420,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 还有一种情况,就是误删了某个文件,可以用该命令恢复,但是会丢失该文件上所有未提交的修改.
 
+丢弃所有工作区的内容：项目目录下执行`git checkout .`
+
 ## 8 git branch:分支管理(重点)
 Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
 
@@ -431,9 +436,10 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 查看远程所有现在还存在的分支：`git ls-remote`
 
-新建分支:`git branch <分支名>`:通过复制当前分支的所有commit和暂存区来生成一个新分支,不会复制工作区的文件
-
-创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
+新建分支:
+1. `git branch <分支名>`:通过复制当前分支的所有commit和暂存区来生成一个新分支,不会复制工作区的文件
+2. 创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
+3. 从指定的commit创建分支:`git checkout -b <分支名> <commit_id>`
 
 更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
 
@@ -470,7 +476,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 删除远程的分支:`git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
 
-删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。
+删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。也不会删除未追踪的本地分支。
 1. 参数`--dry-run`:打印执行信息,但并不真正执行 
 
 ### 8.4 合并分支
@@ -484,20 +490,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
 2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，可以和上面的混用。
 
-
 如果有冲突：可以解决冲突之后使用`git cherry-pick --continue`继续，也可以取消合并`git cherry-pick --abort`。
-
-
-### 8.5 分支命名
-大概围绕以下几种来命名
-
-![](../picture/git/git-branch-name.jpg)
-
-- master:主分支
-- hotfix:热修复
-- release:发布分支
-- develop:开发
-- feature:功能分支
 
 ## 9 git标签 git tag
 指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
@@ -585,6 +578,41 @@ clone带有submodule的仓库：普通clone下来的时候，里面的submodule�
 更新子模块的URL：`git submodule sync [--sub_module]`，根据文档可知，我们需要先更新`.gitmodules`和`.git/config`中的URL配置，然后执行该命令。
 
 当子模块很多时，可以加上`foreach`参数来对每个子模块执行相同的命令。如`git submodule foreach 'git checkout -b featureA'`
+
+## 2 git flow
+git flow是git的扩展，基于Vincent Driessen的https://nvie.com/posts/a-successful-git-branching-model，
+
+### 2.1 分支命名参考
+大概围绕以下几种来命名
+
+![](../picture/git/git-branch-name.jpg)
+
+- master:主分支
+- hotfix:热修复
+- release:发布分支
+    - stable：稳定的发布分支
+- develop:开发
+- feature:功能分支
+
+### 2.2 分支详解
+master分支：master分支上存放的应该是随时可供在生产环境中部署的代码。 当开发产生了一份新的可供部署的代码时，master分支上的代码会被更新。同时，每一次更新，添加对应的版本号标签（TAG）。
+1. master分支是保护分支，不可直接push到远程仓master分支
+2. master分支代码只能被release分支或hotfix分支合并
+
+develop分支：用作平时开发的主分支，并一直存在，永远是功能最新最全的分支。 feature，release分支都是基于develop分支建立的。feature，release，hotfix分支最终都要合并到该分支，保证该分支拥有最全的代码。
+1. develop分支是保护分支，不可直接push到远程仓库develop分支。
+2. develop分支不能与master分支直接交互。
+
+feature分支：用于开发新功能。都是基于develop分支建立。如果该分支需要多人协作，那么需要将该分支push到远程，否则保留在本地即可。功能开发完成之后要合并到develop，并且将该分支进行删除，防止分支爆炸。
+1. 每个feature颗粒要尽量小，因为它需要我们能尽早merge回develop分支，否则冲突解决起来就没完没了。
+
+release分支：用于发布准备的专门分支。要发版本的时候建立该分支并且指定版本号。该分支将用来测试以及改bug。 release 分支上的代码要合并到master 分支和 develop 分支。合并到master分支要打tag。分别合并后，可以选择是否删掉release分支，如果不删，也不能再在此分支上进行后续开发。
+1. release分支可以从develop分支上指定commit派生出
+1. release分支一旦建立就将独立，不可再从其他分支pull代码
+
+stable：个人理解是长期的release分支，比如软件同时存在多个版本就可以用stable分支。
+
+hotfix分支：用于修复线上代码的bug。基于master 分支建立，完成之后打上 tag 合并到 master 和develop 分支。
 
 ## 4 git自带的图形界面工具
 ### 4.1 gitk(常用)

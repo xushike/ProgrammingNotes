@@ -482,8 +482,6 @@ package github.com/cweill/gotests/...: exit status 1
 2. SQL注入
 2. 回归最优解
 1. js date对象
-1. font-size的相对单位em
-2. git flow
 3. apply和call
 4. session和jwt
 5. utf16,unicode,base64
@@ -842,13 +840,7 @@ angualr 表单中:#,name等的区别
 1. blob,dataview,轮询
 1. js有类型的概念吗
     1. js引擎能区分不同的基本数据类型吗
-
-1. angular2-cookie@1.2.6 requires a peer of @angular/core@^2.0.0 but none is installed
-1. SKIPPING OPTIONAL DEPENDENCY: node-sass@4.9.0
-1. 从gitlab克隆的时候,如果是git协议就要输入密码(而且输入正确的密码后好像还是不对), 如果是http协议就不用,why?
-1. node_modules的文件vscode 会跟追吗
 1. guid的生成
-1. goalng中""是null吗
 1. vscode 中go怎么自动导包
 1. tslint
     1. while statements must be braced (curly)
@@ -1964,7 +1956,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 70.  chrome标签很多时的内存优化方法
 71.  深入研究js func的prototype
-73.  浏览器调试js怎么弄,console.log太恼火
 74.  mqtt协议
 
 75. websocket主题和队列名字???

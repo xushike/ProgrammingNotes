@@ -248,10 +248,15 @@ fmt.Println(string(120))    // x
 fmt.Println(strconv.Itoa(120))  // 120
 ```
 
-### 3.24 查看汇编代码
+### 3.24 查看汇编代码(待整理)
 查看编译过程中的汇编代码：
 1. `go build -gcflags -S xxx.go`：
 2. `go tool compile`
+
+### 3.25 赋值并不是原子操作
+包括`i++`也不是原子操作。其他很多语言也是这样。
+
+参考goroutine的数据竞争部分笔记。
 
 ## 4 文档网址视频等
 1. golang官方
@@ -551,7 +556,7 @@ fmt.Println(c == Celsius(f)) // "true"!
     - 为该类型的值定义新的行为
 
 ### 1.9 包
-一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.(?)
+一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.
 
 1. 网友推荐的包目录结构如下：
 ```bash
@@ -618,12 +623,13 @@ dir
     5. 目录下同级的go文件package必须和包名一样,比如,
 
         ```bash
-        --config
-            -- file.go    #假设config目录下有config.go文件
+        -- config
+        -- file.go    #假设config目录下有config.go文件
         ```
         file.go中的package名称~~必须~~最好是`config`，而文件名可以随便。
 
-        注意:最外层的go文件的package必须是main,最外层的go文件有多个,但方法名为main只能有一个.
+        1. 最外层的go文件的package必须是main,最外层的go文件有多个,但方法名为main只能有一个.
+        2. 实测，`*test.go`文件的包名可以和同目录下的非测试文件的包名不一致。(why)
 
     6. GOPATH和GOPATH下的src目录不应该添加到源代码管理中
 
@@ -638,7 +644,7 @@ A.go 依赖 B.go，而 B.go 又依赖 C.go：
 
 4. 关于包的初始化
     1. 每个包在解决依赖的前提下，以导入声明的顺序初始化，每个包只会被初始化一次。因此，如果一个p包导入了q包，那么在p包初始化的时候可以认为q包必然已经初始化过了。初始化工作是自下而上进行的，main包最后被初始化。以这种方式，可以确保在main函数执行之前，所有依赖的包都已经完成初始化工作了
-    2. 可以用一个特殊的init初始化函数来简化初始化工作。每个文件都可以包含多个init初始化函数(但有的地方说只能一个?)
+    2. 可以用一个特殊的init初始化函数来简化初始化工作。每个文件都可以包含多个init初始化函数
 
 5. 可见性规则
 
@@ -1400,10 +1406,16 @@ interface{}有两种用法，一种是只作为类型，另一种是作为接口
 
 `interface{}`类型的变量包含两种类型信息：interface type和concrete type。
 
-concrete type（具体类型），比如如下例子，其中i的concrete type就是string：
-```go
+concrete type（具体类型），比如如下例子
+```golang
+// 其中i的concrete type就是string
 var i interface{} = "hello"
 s,ok := i.(string)
+
+// 其中i的concrete type就是[]string
+var i interface{} = []string{"hi"}
+s, ok := i.([]string)
+
 ```
 
 空`interface{}`和`interface{}`类型的slice：空interface对于描述起不到任何的作用(因为它不包含任何的method），但是空interface在我们需要存储任意类型的数值的时候相当有用，因为它可以存储任意类型的数值。类似于C语言的void*类型。但golang不会自动把一般的slice转换成interface{} 类型的 slice，具体参考:https://github.com/golang/go/wiki/InterfaceSlice。例子如下：
@@ -2097,7 +2109,15 @@ go run *.go
     1. `-N` 禁用优化
     2. `-l` disable inlinin，禁用函数内联
     3. `-u` 禁用unsafe代码
-    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析
+    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析。比如
+        
+        ```bash
+        go build -gcflags -m concurrent_demo/cmd/main.go
+        
+        # command-line-arguments
+        concurrent_demo/cmd/main.go:5:6: can inline main 
+        concurrent_demo/cmd/main.go:7:21: inlining call to goroutine_demo.Init # 表示内联调用了
+        ```
     5. `-S` 输出汇编代码
 4. `-mod=vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译
 
@@ -2572,6 +2592,11 @@ func Double(a, b int) int {
 	return 2 * Max(a, b)
 }
 ```
+
+为什么需要内联：每次调用函数都会有时间的开支，内联主要是针对那些快速执行和足够小的函数，对于那些能够快速执行的函数，在这种情况下函数调用的时间消耗显得更为突出，对于很小的函数也有空间上的益处。内联是程序占用空间和程序执行效率之间进行的权衡。
+
+内联的缺点：
+1. 程序编译后的代码变大。
 
 #### 死码消除（dead code elimination）
 内联使其他优化成为了可能：比如下面例子，编译的时候就知道`getBool()`返回false，内联后就知道`if xxx {}`里面的代码不会被执行，代码就不会编译进去，即死码消除。
@@ -3066,6 +3091,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 ```
 4. `NumCPU() int`：获取系统的逻辑CPU数量
 5. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量），从1.5开始成为默认设置（之前默认是1）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
+6. `Gosched()`:用于让出CPU时间片，让出当前goroutine的执行权限，调度器安排其它等待的任务运行，并在下次某个时候从该位置恢复执行。这就像跑接力赛，A跑了一会碰到代码`runtime.Gosched()`就把接力棒交给B了，A歇着了，B继续跑。
 
 ### sort
 排序相关算法,原理待补充：
@@ -3148,7 +3174,7 @@ fmt.Println("所有 goroutine 执行结束")
 #### sync/atomic
 提供一些原子操作，比如：
 1. 增或减：`AddUint32(x,x)`
-2. 以‘CompareAndSwap’为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
+2. 以`CompareAndSwap`为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
 
 ### syscall
 
@@ -3565,6 +3591,9 @@ func (a *Vector3) Normalize() Vector3 {
 Variables in Go are addressable，但return values of function and method calls are not addressable。
 
 再深层次一点挖掘，go将函数的返回值放在寄存器（register）中（在寄存器中肯定是not addressable），或者堆栈上（堆栈上可能能取值也可能不能），为了保证可寻址性，go必需将它分配给一个变量，但这个应该coder来做而不是编译器。
+
+### 1.18 reflect: indirection through nil pointer to embedded struct
+出现原因：指针类型的结构体的字段也是指针类型，在把数据库的查询的内容插入进去的时候，如果查询的内容为空，就会报这个错。
 
 ## 2 未解决
 ### 2.N 其他

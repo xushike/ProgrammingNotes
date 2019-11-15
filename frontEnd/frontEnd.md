@@ -188,6 +188,9 @@ PWA带来的影响:
 ### 1.1 浏览器未响应
 原因可能有很多,但是最先应该考虑的是js代码:在浏览器环境中，一些代价高昂的计算会导致糟糕的用户体验，因为一个页面的用户界面无响应多数是由于在运行js代码.
 
+### 1.2 chrome的控制台执行console.log没有打印输出，只有undefined
+因为开了多个网页，怀疑是某个页面把console赋值了。
+
 ## 2 未解决
 1. [http://www.uisdc.com/material-motion-design-guideline-2](http://www.uisdc.com/material-motion-design-guideline-2)
 2. [https://baike.baidu.com/item/SPA/17536313#viewPageContent](https://baike.baidu.com/item/SPA/17536313#viewPageContent)
