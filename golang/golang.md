@@ -136,6 +136,8 @@ img.SetColorIndex(
 
 简单总结就是:rune 能操作 任何字符,byte 不支持中文的操作.
 
+`rune`:rune在golang中是int32的别名，在各个方面都与int32相同。rune理解为一个可以表示unicode编码的值int的值，称为码点（code point）。只不过go语言把这个码点抽象为rune。
+
 `string`和`[]byte`的异同:从源码可知`string`主要是由`[]byte`构成。`string`不可变,每次值改变(重新分配内存空间),指针会指向新的字符串的内存地址,而`[]byte`值改变的时候指针不会移动,所以`[]byte`性能比string高.
 
 使用比较:
@@ -287,6 +289,7 @@ fmt.Println(strconv.Itoa(120))  // 120
 ## 6 相关项目
 1. 基于web的postgresql数据库GUI工具：https://github.com/sosedoff/pgweb
 2. swarm
+    1. 2019年Swarm 的份额下降幅度很大
 3. docker
 4. k8s
 5. gRPC
@@ -3092,6 +3095,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 4. `NumCPU() int`：获取系统的逻辑CPU数量
 5. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量），从1.5开始成为默认设置（之前默认是1）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
 6. `Gosched()`:用于让出CPU时间片，让出当前goroutine的执行权限，调度器安排其它等待的任务运行，并在下次某个时候从该位置恢复执行。这就像跑接力赛，A跑了一会碰到代码`runtime.Gosched()`就把接力棒交给B了，A歇着了，B继续跑。
+7. `Goexit()`:会立即使当前的goroutine的运行终止（终止协程），而其它的goroutine并不会受此影响。runtime.Goexit在终止当前goroutine前会先执行此goroutine的还未执行的defer语句。请注意千万别在主函数调用runtime.Goexit，因为会引发panic。
 
 ### sort
 排序相关算法,原理待补充：

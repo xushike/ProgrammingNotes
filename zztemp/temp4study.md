@@ -1400,8 +1400,6 @@ for (let [i, item] of arr.entries()) {
     2. 当有外链接其他表的时候不要用`&`这种写法,因为两个表可能会有相同名字的字段,这样就识别不出来了.
     3. ''和null相等吗,is null判断''呢?
     4. 连接查询的时候,把连接查询的条件放在where前面和后面有区别吗?
-
-295. js的isNaN()对于''
 296. `ng-container`和`ng-template`的区别
     1. 默认情况前者里面的内容会被渲染出来,后者不会
     2. 前者可用*指令,后者不行?
@@ -1598,8 +1596,6 @@ for (let [i, item] of arr.entries()) {
 376. element-ui,echarts,charts;推荐前两者,文档比较完善
 
     [https://naver.github.io/billboard.js/](https://naver.github.io/billboard.js/)
-
-377. js `isNaN`
 378. line-height
 379. 文字放在图片的右边的总结
 380. svg的使用
@@ -1716,8 +1712,6 @@ for (let [i, item] of arr.entries()) {
 433.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
 `Your local changes to the following files would be overwritten by checkout`
     `Please, commit your changes or stash them before you can switch branches. Aborting
-1.   git stash之后变成九十多为啥
-
 2.   测试普通的类可以注册为服务然后依赖注入吗
 
 3.    insert select

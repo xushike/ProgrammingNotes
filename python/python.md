@@ -32,6 +32,10 @@ python(意思是蟒蛇)，因为作者喜欢一个叫MontyPython的喜剧团体
 2. 阮一峰python教程:https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000
 3. Google Colab：练习python的好地方，直接云端跑代码。似乎连国外的老师都推荐。
    1. 参考：https://sspai.com/post/52980
+4. 《The Zen of Python》(python的禅宗)
+    1. Beautiful is better than ugly.（美丽胜于丑陋）
+    2. Explicit is better than implicit.（明了胜于晦涩）
+    3. 。。。
 
 # 二 安装配置
 ## 3 mac

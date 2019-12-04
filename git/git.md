@@ -472,7 +472,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 ### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
 
-删除本地分支:`git branch -d <分支名>`，如果想强制删除需要用`git branch -D <分支名>`。删除的时候可以先切换到master分支，如果被删的分支没有合并到master则会有警告，比如“xxx is not fully merged”，此时需要使用强制删除。
+删除本地分支:`git branch -d <分支名>`，删除的时候可以先切换到其他分支，如果被删的分支没有合并到master会有警告，如“xxx is not fully merged”，没有推送到关联的远程分支则会有警告，这两种情况想继续删除可以先处理了该分支或者使用强制删除`git branch -D <分支名>`。
 
 删除远程的分支:`git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
 
@@ -484,7 +484,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 合并目标分支到当前分支:`git merge <目标分支名>`,默认是快进模式(Fast-forward)
 
-撤销上次的分支合并：`git merge ---abort`
+撤销上次的分支合并：`git merge --abort`
 
 `cherry-pick`：非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。
 1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
