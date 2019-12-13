@@ -3,6 +3,7 @@
 ### 1 简介
 #### 1.1 较明显的优点
 dead-simple functional component model.
+
 ### 2 历史
 
 #### 2.1 解决了什么问题

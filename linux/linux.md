@@ -200,7 +200,7 @@ sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
 
 # 二 安装配置
 
-# 三 基础（命令）
+# 三 基础（常用工具或命令）
 
 ## 1 查看相关命令
 ### 1.1 查看文件信息
@@ -223,6 +223,12 @@ sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
 1. https://www.ibm.com/developerworks/cn/aix/library/au-lsof.html#listing2
 
 参数：
+1. `-c<进程名>`：列出指定进程所打开的文件，如
+
+    ```ssh
+    lsof -c ssh 
+    ```
+1. `-i`:列出符合条件的进程,比如`4、6、协议、:端口、 @ip`等
 
 简单使用（待补充）：
 1. 恢复被删除的文件
@@ -746,7 +752,18 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
 
 `man exec`可知，
 
-## 11 其他
+## 11 ssh 
+ssh命令是openssh套件中的客户端连接工具，可以给予ssh加密协议实现安全的远程登录服务器。
+
+使用说明：
+1. 端口转发：端口转发功能可以加密 Client 和 Server之间的通讯数据，还可以突破防火墙的限制。
+    1. `-L [bind_address:]port:host:hostport`：本地端口转发，将远程的端口转发到本地，实现正向端口代理。可以指定TCP port或者unix socket，`bind_address`如果是"localhost"则只能本地使用，如果是空或者"*"的话则所有接口都能使用。具体用法参考man。
+    2. `-R`:远程端口转发，把本地的端口转发到远程机器上，实现反向端口转发。
+    3. `-D`:动态端口转发
+
+TODO：动态端口转发
+
+## N 其他
 1. 别名`alias`
     1. 基本用法是`alias [name]=[string]`,比如想把`cd /usr; ls; cd -`三个命令合在一起取个别名,可以使用`alias foo='cd /usr; ls; cd -'`
     2. 删除别名`unalias [name]`
@@ -756,17 +773,17 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
     1. 不带参数使用,则是读取标准输入到标准输出,此时可以`ctrl+d`给它一个EOF结束.
         1. 也可以`cat > xxx.txt`实现世界上最低能的文字处理器
 3. 计算器`bc`(Binary Calculator)
-        
-## N 剪切板xsel
-```bash
-cat README.TXT | xsel  
-# 如有问题可以试试-b选项
-cat README.TXT | xsel -b 
-# 将readme.txt的文本放入剪贴板
-xsel < README.TXT  
-# 清空剪贴板
-xsel -c  
-```
+4. 剪切板xsel
+
+    ```bash
+    cat README.TXT | xsel  
+    # 如有问题可以试试-b选项
+    cat README.TXT | xsel -b 
+    # 将readme.txt的文本放入剪贴板
+    xsel < README.TXT  
+    # 清空剪贴板
+    xsel -c  
+    ```
 
 
 # 四 高级
