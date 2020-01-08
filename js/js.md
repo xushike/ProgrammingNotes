@@ -191,6 +191,9 @@ const nums = [2, ...odd, 4 , 6]; // [2,1,3,5,4,6]
 2. 宿主对象:由ECMAScript实现的宿主环境提供的对象.比如浏览器提供的宿主对象--所有的BOM和DOM都是宿主对象。
 3. 本地对象:独立于宿主环境的 ECMAScript 实现提供的对象.比如Object、Function、Array、String、Boolean、Number、Date、RegExp、Error等.
     1. 内置对象:由 ECMAScript 实现提供的、独立于宿主环境的所有对象，在 ECMAScript 程序开始执行时出现。每个内置对象都是本地对象.这意味着开发者不必明确实例化内置对象，它已被实例化了。比如Global 和 Math.
+    
+### 3.11 VanillaJS
+使用VanillaJS意味着使用纯JavaScript而不使用jQuery之类的任何其他库。人们以此为笑话来提醒其他开发人员，如今无需其他JavaScript库即可完成许多工作，提醒世人并不是所有的网页都需要框架，第三方框架的大量引入是网页性能江河日下的罪魁祸首。所以它其实是"PlainJS"--原生JS。
 
 ## 4 文档
 ## 5 相关网址
@@ -438,7 +441,7 @@ delete 操作符用于删除对象中不是继承而来的属性(区别于原型
 一般情况都会返回true(属性不存在也返回true),除非属性是自己不可设置的值,比如`Math.PI`
 
 使用场景:
-1. 删除数组元素:删除的元素不属于该数组,数组长度不受影响.两个例子如下
+1. 删除数组元素:删除的元素不再属于该数组,数组长度不受影响.两个例子如下
 
     ```JavaScript
     var trees = ["redwood","bay","cedar","oak","maple"];
@@ -447,6 +450,7 @@ delete 操作符用于删除对象中不是继承而来的属性(区别于原型
     // 这里不会执行
     }
     console.log(trees) //["redwood","bay","cedar",,"maple"]
+    console.log(trees[3]) // undefined
     console.log(trees.length)//5
     ```
 
@@ -457,6 +461,7 @@ delete 操作符用于删除对象中不是继承而来的属性(区别于原型
     // 这里会执行
     }
     console.log(trees) //["redwood","bay","cedar",,"maple"]
+    console.log(trees[3]) // undefined
     console.log(trees.length)//5
     ```
 
@@ -613,8 +618,6 @@ document.write("解码后的" + uridc);
 1. 数组和字符串的转换
     1. `string1.split(string2)`
     2. `array.join(string)`
-
-
 2. `splice()`：从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
     1. 在头部添加元素可以用:`arr.splice(0,0,xxx)`；删除头部的元素可以使用`arr.splice(0,1)`等等
 3. 在数组头/末尾添加或删除项目
@@ -622,8 +625,7 @@ document.write("解码后的" + uridc);
     2. `pop()`:删除并返回数组的最后一个元素。
     3. `unshift()`
     4. `shift()`
-
-1. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
+4. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
 
     ```JavaScript
     obj = {divisor: 10}
@@ -653,11 +655,13 @@ document.write("解码后的" + uridc);
     })
 
     ```
-
 4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
 5. `array.slice(start?,end?)`:从数组中切割出新数组,该方法不会改变原数组.如果不带参数,则是整个复制.start和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
+
+注意：
+1. 查看`map()`方法的文档：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
 
 ### 4.4 Math
 操作：

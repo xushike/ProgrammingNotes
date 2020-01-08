@@ -273,10 +273,16 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 参数说明:
 - `--oneline`:压缩模式，在每个提交的旁边显示经过精简的提交哈希码和提交信息，以一行显示
+    1. 查看最近三次提交:`git log --oneline -3`
 - `--graph`:图形模式，使用该选项会在输出的左边绘制一张基于文本格式的历史信息表示图。如果你查看的是单个分支的历史记录的话，该选项无效
 - `--all`:显示所有分支的历史记录
 - `--oneline --graph --decorate --all`:查看所有的提交
 - `--pretty=oneline`:只看commit的`-m`信息
+- 过滤
+    - `--grep=<xxx>`或`--grep "<xxx>"`：按提交信息过滤，支持正则
+    - `--author="<xxx>"`：按提交人过滤
+    - `-- <file_path>`或`<file_path>`：按文件过滤
+    - 按修改内容过滤
 
 ### 2.3 git config --list:查看配置文件
 - 查看项目的配置文件`git config --local --list`
@@ -392,7 +398,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 ## 7 撤销和回滚(难点)
 ### 7.1 git reset
-分为已push和未push两种情况。一般情况下git revert是生成一个新的提交来撤销某次提交，此次提交之前的commit都会被保留; git reset是回到某次提交，提交及之前的commit都会被保留，但是此次之后的修改都会被退回到暂存区
+分为已push和未push两种情况。
 
 #### 未push
 参数说明:
@@ -404,14 +410,13 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 - `--hard`:重置暂存区、工作区及版本库,也就是说工作区和暂存区以及某个commit之后的所有修改都会丢失,慎用!
 
-注意成功执行`git reset`并push后会创建一个新的commit.(似乎不会)
-
 `git reset`似乎可以作用于单个文件,如果是作用域单个文件,则HEAD不会移动,其他和上面一样.(待验证)
 
 #### 已push
-对于已经push到远程的,调用上面的`reset`命令可以本地回滚,但是push的时候会被拒绝.这个时候就要用`git revert <HEAD~n>`命令.
+首先看下`git revert`和`git reset`的区别：
+一般情况下，`git revert`是生成一个新的提交来撤销某次提交，此次提交之前的commit都会被保留，`revert`不是让指针移回去,而是新增一个表示撤销的commit; 而`git reset`是回到某次提交，某次提交及之前的commit都会被保留，但是某次之后的修改都会被退回到暂存区。推送到远程的话，`git revert`是追加commit(会保留所有原来的commit)，而`git reset`只能强制推送，会覆盖掉原来的commit。
 
-该命令和`reset`不同的地方在于:`revert`不是让指针移回去,而是新增一个表示撤销的commit,该commit的内容是对`<HEAD~n>`的撤销.
+对于已经push到远程的，使用`reset`命令可以本地回滚，但是push的时候会被拒绝，必需使用强制推送，如果是多人合作的话，强制推送可能导致别人的本地和远程不一致的问题。这种情况推荐用`git revert <HEAD~n>`，具体自己斟酌。
 
 ### 7.2 丢弃(discard)工作区的修改:git checkout -- <文件名>
 实测不需要加`--`也可以：`git checkout <文件名>`
@@ -429,8 +434,15 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号.注意才clone完之后只会显示默认分支,实际上其他分支还是存在的.
 
 参数说明:
-- `-r`:列出所有远程分支（包括已被删除的）
-- `-a`:列出所有远程分支（包括已被删除的）和所有本地分支
+- 不带任何参数：列出所有本地分支
+- `--list <pattern>`:不带`<pattern>`的话是列出所有本地分支。
+    
+    ```git
+    git branch --list "*zhangsan*"
+    ```
+    
+- `-r`:列出所有远程分支（包括已被删除但缓存还在的）
+- `-a`:列出所有远程分支（包括已被删除但缓存还在的）和所有本地分支
 - `-v`:查看所有分支最后一次commit信息;`-vv`:同时还能查看对应的远程分支
 - `-m old_name new_name`：重命名分支
 
@@ -488,17 +500,34 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 撤销上次的分支合并：`git merge --abort`
 
-`cherry-pick`：非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。
-1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
-2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，可以和上面的混用。
+#### cherry-pick
+非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。
 
-如果有冲突：可以解决冲突之后使用`git cherry-pick --continue`继续，也可以取消合并`git cherry-pick --abort`。
+用法：
+1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
+2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，则是合并`(A, B]`（左开右闭）的内容，如果想合并闭区间的内容，可以使用`cherry-pick A^..B`，即是合并`[A, B]`的内容。该命令可以和上面的命令混用。
+3. 合并另外一个分支的最后一次提交到当前分支：`git cherry-pick branchName`
+4. 合并另外一个分支的所有不同提交到当前分支：`git cherry-pick ..branchName`或者`git cherry-pick ^HEAD branchname`
+
+参数：
+1. `-continue`
+1. `-abort`:取消这次cherry-pick,这种情况下当前分支恢复到cherry-pick前的状态，没有改变.
+1. `-quit`:中断这次cherry-pick,这种情况下当前分支中未冲突的内容状态将为modified
+1. `-n`（`--no-commit`）:不自动提交
+2. `-e`(`--edit`):编辑提交信息
+
+如果有冲突，有两种解决冲突的方式：
+1. 解决冲突，然后`git commit`
+1. 解决冲突，然后`git add`，然后`git cherry-pick --continue`
+
+也可以取消合并`git cherry-pick --abort`。
 
 ## 9 git标签 git tag
 指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
 
 既然有commitid为什么还要git tag：tag可以取有意义的的名字，比commitid更易记住。
 
+使用两种主要类型的标签：轻量标签（lightweight）与附注标签（annotated）
 
 基本用法：
 1. 查看所有标签:`git tag`
@@ -624,7 +653,10 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 
 以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
 
+显示其它分支的修改记录：查阅文档后以为`gitk --branches`可以，结果试了下似乎不行，最后换成`gitk <branch_name>`来解决的，似乎会列出所有和该分支有关联的分支的记录。
+
 注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
+
 ### 4.1 git gui
 主要用于制作提交
 
@@ -746,6 +778,9 @@ and its host key have changed at the same time.
     2. `git fetch remote-url`
     3. `git checkout FETCH_HEAD`
     4. 此时处于游离状态，需要设置`git remote add <远程分支名> <远程分支地址>`，然后`git fetch`
+    
+### 1.15 Unable to create 'XXXXXX/.git/index.lock': File exists.
+解决方法：找到index.lock 删除即可
 
 ## 2 未解决
 ### 2.N 其他

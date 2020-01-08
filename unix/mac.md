@@ -167,6 +167,7 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
         homebrew/services
         ```
     2. `brew tap repo_name`:shallow copy一个仓库。比如`brew tap adoptopenjdk/openjdk`
+    3. 安装未shallow copy的仓库里的formulae，也会自动shallow copy该仓库
 3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。似乎会默认删除旧版本。
     1. 显示所有有新版本的软件`brew outdated`
     2. 锁定包`brew pin formula`：不想更新某个包的时候使用，比如不想更新postgresql。解锁是`unpin`

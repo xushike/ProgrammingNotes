@@ -196,9 +196,12 @@ fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
 ```
 
 ### 3.15 三个点...
-它是语法糖，有两种用法:
-1. 第一种用于入参（不能用于出参），比如`func myfunc(arg ...int)`，变量arg就是一个int的slice，但是它比直接声明一个切片更加灵活，比如想接收0个或n个int参数，写成切片的话，0个时需要传空切片或者nil，如果用三个点的写法就什么都不用传。
-2. 第二种用于传递时：slice可以被打散进行传递，比如`append()`处。
+
+有两种用法:
+1. 作为语法糖
+    1. 用于入参（不能用于出参），比如`func myfunc(arg ...int)`，变量arg就是一个int的slice，但是它比直接声明一个切片更加灵活，比如想接收0个或n个int参数，写成切片的话，0个时需要传空切片或者nil，如果用三个点的写法就什么都不用传。
+    2. 用于传递时：slice可以被打散进行传递，比如`append()`处。
+2. 作为命令行参数:一般放在目录后，表示递归，比如`golangci-lint run dir`，只会检查dir下面的文件，不会递归更下面一层，但是`golangci-lint run dir/...`会一直递归下去
 
 ### 3.16 go源码文件(待补充)
 Go源码文件包括三种：
@@ -260,6 +263,17 @@ fmt.Println(strconv.Itoa(120))  // 120
 
 参考goroutine的数据竞争部分笔记。
 
+### 3.26 关于golang的ID和id
+参考：https://github.com/golang/go/wiki/CodeReviewComments#initialisms；大意就是说golint认为ID才是正确的并且暂时不会改变这个规则。有以下解决方法
+1. （推荐）切换go lint tool，比如使用vscode的[golangci-lint](https://github.com/golangci/golangci-lint#editor-integration)
+    1. 想忽略某个检查，可以用
+        
+        ```
+        h := sha256.New()
+        h.Write([]byte("hello world\n")) //nolint: errcheck
+        ```
+2. 自己维护一个golint版本来忽略该提示。
+
 ## 4 文档网址视频等
 1. golang官方
     1. 博客：https://blog.golang.org/
@@ -268,6 +282,8 @@ fmt.Println(strconv.Itoa(120))  // 120
     4. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
     5. github的wiki：https://github.com/golang/go/wiki
        1. 代码评审注释：https://github.com/golang/go/wiki/CodeReviewComments#receiver-names
+    6. 专为中国开发者建立的（原因你懂的）
+        1. https://golang.google.cn/
 2.  _Effective Go_(中文名《高效Go编程》)
 3.  Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
 4.  go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
@@ -1277,7 +1293,7 @@ for index,ele := range xxx {
 1. 所有go函数以`func`开头，函数外的每个语句都必须以关键字开始(也就意味着简短声明表达式不能在函数外使用)
 2. 支持多返回值，返回值名称可作为文档使用，且可以像变量一样直接使用
 
-函数的命名:返回某个对象的函数或方法的名称一般都是使用名词，没有`Get...`之类的字符，如果是用于修改某个对象，则使用`SetName`
+函数的命名:返回某个对象的函数或方法的名称一般都是使用名词，没有`Get...`之类的字符（当然也可以加上），如果是用于修改某个对象，则使用`SetName`。
 
 go函数的大概结构:Go中大部分函数的代码结构几乎相同，首先是一系列的初始检查，防止错误发生，之后是函数的实际逻辑。
 
@@ -2424,9 +2440,8 @@ go的序列化/反序列化应该是有顺序的（待验证）
 1. 如果数据来自io.Reader流，或者需要从数据流中解码多个值，请使用json.Decoder。
 2. 如果已经在内存中有JSON数据，请使用json.Unmarshal
 
-
 ## 6 正则表达式（regular expression）和regexp包
-一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准（https://github.com/google/re2）：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
+一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准[https://github.com/google/re2](https://github.com/google/re2)：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
 
 然后我看了下，支持`\014`这种（utf8?），但是还不支持直接通过unicode码来匹配unicode字符。
 
@@ -3098,10 +3113,11 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 7. `Goexit()`:会立即使当前的goroutine的运行终止（终止协程），而其它的goroutine并不会受此影响。runtime.Goexit在终止当前goroutine前会先执行此goroutine的还未执行的defer语句。请注意千万别在主函数调用runtime.Goexit，因为会引发panic。
 
 ### sort
-排序相关算法,原理待补充：
+排序（相关算法,原理待补充）:
+
 1. 对整数切片排序`sort.Ints(slice []int)`
 2. Float64
-3. Strings
+3. Strings：`sort.Strings`排序默认是按照Unicode码点的顺序的, 如果需要按照拼音排序, 可以通过GBK转换实现, 自定义一个排序接口
 
 go1.8之前，对一个切片排序，需要以切片为基础定义一个新类型，然后实现sort.Interface接口；go1.8开始，可以直接调用`sort.Slice()`来排序，内部通过反射帮我们做了其他工作，方便很多。
 
@@ -3599,6 +3615,11 @@ Variables in Go are addressable，但return values of function and method calls 
 ### 1.18 reflect: indirection through nil pointer to embedded struct
 出现原因：指针类型的结构体的字段也是指针类型，在把数据库的查询的内容插入进去的时候，如果查询的内容为空，就会报这个错。
 
+### 1.19 Running error: context loading failed: failed to load program with go/packages ...
+背景：go版本1.10，使用brew安装的golangci-lint（版本1.22），结果运行`golangci-lint run xxx`就报了这个错，然后切换go的版本到1.13就没有报错
+
+可能原因：golangci-lint只支持go1.11+的版本？
+
 ## 2 未解决
 ### 2.N 其他
 6.  protobuf的获得和使用
@@ -3631,10 +3652,6 @@ Variables in Go are addressable，但return values of function and method calls 
     crypto/x509
     crypto/rsa
     crypto/sha256
-
-26. 关于golang的ID和id，参考：https://github.com/golang/go/wiki/CodeReviewComments#initialisms；大意就是说golint认为ID才是正确的并且暂时不会改变这个规则，所以只有自己维护一个golint版本来忽略该提示。
-    1. 还有网友推荐了这个东西：https://github.com/alecthomas/gometalinter
-        1. allows you to configure which warnings are displayed (including those from golint).
 
 27. 高并发的死锁：https://blog.golang.org/race-detector
 28. https://github.com/happyer/distributed-computing

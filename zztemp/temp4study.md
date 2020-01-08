@@ -152,7 +152,6 @@
 2. 如何ssh连接其他mac，比如连接家里的mac
 2. 测试端口通不通：https://www.jb51.net/article/78082.htm
 2. 将各种设置同步到一个地方，切换环境的时候直接从里面拉取就行了
-2. vscode snippet:https://blog.csdn.net/aggresss/article/details/79791291
 2. pg: https://yq.aliyun.com/articles/174262
 2. 如何查看psql函数的源码
 1. alfred
