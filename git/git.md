@@ -19,7 +19,7 @@ git是linus用c写的
 
 从git的官方中文book来看,三棵树是:
 - 工作目录/工作区(Working Directory或work space)
-- 暂存区(Stage或Index)
+- 暂存区(Index文件或Stage)
 - HEAD(当前分支所在的commit).
 
 ### 3.3 git支持多种协议:https,git和ssh
@@ -291,11 +291,15 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.它会显示包括上面三个配置在内的所有配置(如果有的话)
 
-### 2.5 git diff:查看变更(主要用于查看冲突)
+### 2.5 git diff 查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改.
 
 `git diff HEAD`:对比workspace与最后一次commit
+
 `git diff <分支1> <分支2>`:对比差异。比如对比本地和远程的差异`git diff master origin/master`
+
+参数:
+1. `-p`:Generate patch (see section on generating patches). 默认参数.
 
 ### 2.6 git blame（查看文件的每个部分是谁修改的）
 `git blame <filename>`
@@ -419,6 +423,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 对于已经push到远程的，使用`reset`命令可以本地回滚，但是push的时候会被拒绝，必需使用强制推送，如果是多人合作的话，强制推送可能导致别人的本地和远程不一致的问题。这种情况推荐用`git revert <HEAD~n>`，具体自己斟酌。
 
 ### 7.2 丢弃(discard)工作区的修改:git checkout -- <文件名>
+（似乎只对已tracked的文件有效，待确认？）
+
 实测不需要加`--`也可以：`git checkout <文件名>`
 
 会将文件工作区的修改全部丢弃(不影响暂存区),慎用!
@@ -460,28 +466,33 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 所以对于新增的文件,如果目标分支没有该文件,切换成功;有该文件,切换失败.
 
-### 8.3 git stash:储藏修改
+### 8.3 git stash 储藏修改
 当某个分支改到一半需要切换到另一个分支时,有些文件只更改到一半,这个时候有两种解决方法:commit和stash,使用stash最好.注意新增的文件不受影响.
 
-创建储藏:`git stash`会将上一个commit之后的所有已跟踪的内容储藏起来并生成一个hash版本值,或者使用`git stash save <"修改的信息">`储藏版本,其中"修改的信息"就是版本值.
+创建储藏:
+1. 默认，`git stash`：会将上一个commit之后的**所有已跟踪的内容**储藏起来并生成一个hash版本值，此时该stash的说明信息默认是commit message。
+    1. 没有在git 版本控制中的文件，是不能被git stash 存起来的。想要存起来有两种方法
+        1. 可以先将这些文件`git add`，然后储藏
+        2. `git stash -u`:也会储藏未跟踪文件
+    2. 不储藏暂存区的内容，`git stash --keep-index`
+2. 同时修改stash的说明信息
+    2. (不推荐)`git stash save "save_remark"`：不支持带路径的写法，也就是会忽略掉后面的路径，将项目下的所有能储藏的都储藏起来，
+    1. (推荐)`git stash push -m "save_remark"`:优点如下
+        1. 支持路径，后面如果跟上路径，只会储藏该路径下所有能储藏的。如`git stash push subDir/subDir.txt`
+        2. 支持多种参数。比如想储藏部分文件，同时修改说明信息，可以`git stash push -p -m "xxx"`
+3. 只储藏为跟踪文件中的部分文件，`git stash -p`，进入交互式命令界面选择要储藏的文件
 
-查看储藏:使用`git stash list`可以查看储藏版本信息.
+查看储藏:
+1. 查看stash列表`git stash list`，可以查看储藏版本信息.
+2. 查看具体stash里的内容：`git stash show xxx`，支持所有`git diff`的参数
 
-恢复储藏:`git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)
+恢复储藏:
+1. `git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)。
+2. 恢复并删除最前面的储藏(`stash@{0}`)，`git stash pop`：如果恢复的时候产生了冲突，不会删除该储藏，需要自己手动去删除。
 
-恢复并删除最前面的储藏:`git stash pop`.
-
-删除暂存:
+删除储藏:删除之后，其他储藏名字的号码会自动更新。
 1. 按名字删除储藏:`git stash drop <储藏的名字>`,比如`git stash drop stash@{0}`
 2. 删除所有储藏:`git stash clear`
-
-几个有用的变种储藏:
-- `git stash --keep-index`:不储藏暂存区的内容
-- `git stash -u`:也会储藏创建的未跟踪文件
-
-注意:不带参数的`git stash`对新增的文件不生效
-
-查看stash里的内容：`git stash show`，支持所有`git diff`的参数
 
 ### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
@@ -501,7 +512,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 撤销上次的分支合并：`git merge --abort`
 
 #### cherry-pick
-非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。
+非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
 
 用法：
 1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
@@ -510,17 +521,17 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 4. 合并另外一个分支的所有不同提交到当前分支：`git cherry-pick ..branchName`或者`git cherry-pick ^HEAD branchname`
 
 参数：
-1. `-continue`
-1. `-abort`:取消这次cherry-pick,这种情况下当前分支恢复到cherry-pick前的状态，没有改变.
-1. `-quit`:中断这次cherry-pick,这种情况下当前分支中未冲突的内容状态将为modified
+1. `--continue`：参考解决冲突的步骤
+1. `--abort`:取消这次cherry-pick,这种情况下当前分支恢复到cherry-pick前的状态，没有改变.
+1. `--quit`:中断这次cherry-pick,这种情况下当前分支中未冲突的内容状态将为modified
 1. `-n`（`--no-commit`）:不自动提交
 2. `-e`(`--edit`):编辑提交信息
 
-如果有冲突，有两种解决冲突的方式：
-1. 解决冲突，然后`git commit`
-1. 解决冲突，然后`git add`，然后`git cherry-pick --continue`
+解决冲突的步骤：pick多个时如果有冲突，需要用显示冲突的文件，解决冲突之后(解决冲突后执行了`git commit`或`git add`)如果还有冲突，似乎需要再执行这个命令来解决下一个冲突。
 
-也可以取消合并`git cherry-pick --abort`。
+经验：
+1. 重复pick：pick过的commit_id,再次pick时，不会像Fast-forward那样做智能判断，依然是按顺序来判断是否有冲突。比如A和B对同一个文件有修改，B时间在后面，先执行一次`git cherry-pick A B`，然后在执行`git cherry-pick A`，那么需要再解决一次冲突。如果重复pick没有冲突的话，会提示空提交，可以使用`git reset`来跳过这个pick或者`git commit --allow-empty`强行提交这个空pick。
+2. 非纯净pick：假如当前分支在branchA，合并branchB时如果有冲突并解决了冲突然后提交生成了commitA，那么branchC在pick commitA的时候，实际上会引入branchB里面冲突的那部分代码。
 
 ## 9 git标签 git tag
 指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。

@@ -2117,6 +2117,7 @@ worker.cancel();
 108. study later:elasticsearch
 109. IO多路复用
 110. 服务编排
+    1. apache camel
 
 # problem but ignore
 1. 用mac的默认shell切换到分支下的某个目录，然后切换分支再切换回来，这个时候ls显示为空，但是目录下是有文件的，而且其他命令可以访问到目录下的文件。然后用`cd ../current_path`切换到当前目录，ls又能显示里面的文件了。

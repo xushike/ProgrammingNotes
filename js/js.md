@@ -84,7 +84,7 @@ console.log(color2)//['red','green','black'] 因为操作的是地址,也就是�
 - 浅拷贝:只是复制引用类型的地址,就是只复制一层引用类型的属性,不会递归复制所有层级,比如有a的浅拷贝b,修改b.x的时候,a.x也会改变
 - 深拷贝:递归复制所有层级,不会出现上面a.x和b.x指向同一引用类型的情况.缺点是会有性能问题(上面那个只复制地址当然很快),特别是层级很多的时候.
 
-#### 3.2.1 实现深拷贝的几种方式
+#### 实现深拷贝的几种方式
 - `Object.assign(target, ...source)`(es6)
 
     第一个参数target为拷贝目标，剩余参数...source是拷贝源。此方法可以将...source中的属性复制到target中,然后返回target.同名属性会进行覆盖，缺点是只实现了第一层属性的深拷贝,也就是说对后面的嵌套属性还是浅拷贝.
@@ -272,14 +272,18 @@ Objects包含:
 使用索引可访问字符串中的字符,如`var character=carname[7];`
 
 属性:
-1. 字符串长度：`length`，返回字符串长度,实测中文英文都是算的一个单位的长度
+1. 字符串长度：`length`，返回字符串长度。实测中文英文都是算的一个单位的长度，所以它返回的其实是字符数而不是字节数。
 
 方法:
-1. 根据下标访问字符：`charAt(idx)`:返回idx位置的字符.
-1. 子字符串在字符串中首次出现的位置：`indexOf(string[,fromIndex])`，返回字符在字符串中首次出现的位置,没有则返回-1
-    1. `fromIndex`:可选,表示字符串中开始查找的位置.
+1. 位置:下标从0开始，每个单位表示一个字符，不是字节。
+    1. 根据下标访问字符：`charAt(idx)`:返回idx位置的字符.
+    2. 子字符串在字符串中首次出现的位置：`indexOf(string[,fromIndex])`，返回字符在字符串中首次出现的位置,没有则返回-1
+        1. `fromIndex`:可选,表示字符串中开始查找的位置.
 2. `match()`:里面的参数可为string或RegExp,前者用于返回包含指定字符串等信息的数组,没有则返回null;更常用的是后者,用于返回正则匹配的数组,没有则返回null.
-3. 截取字符串：`stirng.slice(fromIndex[,endIndex])`，左闭右开，不改变原字符串。
+3. 截取字符串
+    1. `stirng.slice(fromIndex[,endIndex])`，左闭右开，不改变原字符串。
+    2. `substr(start[,length])`：ES未标准化该方法，暂不推荐使用
+    2. `substring(start[,stop])`：左闭右开
 3. 字符替换：`replace(regexp|substr, newSubStr|function)`，不改变原字符串。接收两个参数，第一个参数称为模式（pattern），表示所有将要被替换的字符串，可以字符串字面量或者正则表达式；第二个参数称为替换值（replacement），可以是字符串字面量或者函数。第二个参数还有更多细节，具体参考：[replace MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
     1. 如果第一个参数是字符串字面量，则仅仅是第一个匹配的会被替换。
     2. 如果第二个参数是函数，则函数的返回值作为替换值，多个匹配值则函数执行多次。
