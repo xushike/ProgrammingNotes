@@ -91,6 +91,9 @@ Active branches（活动分支）：表示过去三个月内任何人提交的�
 
 Stale branches（过时的分支）：过去三个月内没有人提交的所有分支，按最早的提交最先显示的顺序排序分支。
 
+### 3.13 Delta
+在git中经常能看到delta这个词，比如克隆仓库或者拉取远程更新。它来自于Delta encoding(增量编码)。增量编码（delta coding）通过维护增量的方式，保存数据，这样能够达到更好的压缩比，对于保存连续的或者数据段在一个稳定范围内出现的场景，效果更好。
+
 ## 4 文档视频资料
 1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
 2. 网友翻译的linus关于git的演讲：https://v.youku.com/v_show/id_XMzg5MjIzODM3Mg==.html
@@ -257,7 +260,9 @@ git remote set-url origin https://github.com/xushike/ProgrammingNotes
 git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git 
 ```
 
-重命名远程仓库:`git remote rename <原名称> <新名称>`
+重命名远程仓库:
+1. （不推荐，可能导致问题？待测试）`git remote rename <原名称> <新名称>`
+2. （推荐？）先删除远程分支，再推送本地新分支
 
 取消远程仓库:`git remote rm <远程仓库名>`,注意每次取消再重新关联远程仓库之后,都需要重新推送并关联分支.
 
@@ -292,11 +297,11 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.它会显示包括上面三个配置在内的所有配置(如果有的话)
 
 ### 2.5 git diff 查看变更(主要用于查看冲突)
-`git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名,不跟的话就默认列出当前目录的所有更改.
+`git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名或commit_id,不跟的话就默认列出当前工作区的所有更改.
 
-`git diff HEAD`:对比workspace与最后一次commit
+`git diff HEAD`:对比workspace与最后一次commit。以此类推，`git diff HEAD~1`是比较最后一次commit_id和倒数第二次commit_id。
 
-`git diff <分支1> <分支2>`:对比差异。比如对比本地和远程的差异`git diff master origin/master`
+对比本地和远程分支间的差异：`git diff <branch_name> <origin_name>/<origin_branch_name>`。比如对比本地master和远程master的差异`git diff master origin/master`
 
 参数:
 1. `-p`:Generate patch (see section on generating patches). 默认参数.
@@ -325,16 +330,19 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ### 3.1 git fetch：拉取远端到本地仓库
 是将远程主机的最新内容拉到本地仓库，用户在检查了以后决定是否合并到工作本机分支中。
 
-`git fetch <远程主机名>`：用于将远程主机的所有更新拉取到本地
+拉取远程主机的**所有更新**到本地:`git fetch <远程主机名>`、`git fetch <远程主机名>`
+拉取远程主机的指定分支的更新到本地`git fetch <远程主机名> <分支名>`，比如`git fetch origin master`
 
-`git fetch <远程主机名> <分支名>`：用于将远程主机的指定分支的更新拉取到本地，比如`git fetch origin master`
-
-取回更新后，会返回一个FETCH_HEAD ，指的是某个branch在服务器上的最新状态，我们可以在本地通过它查看刚取回的更新信息:`git log -p FETCH_HEAD`
+取回更新后，会返回一个FETCH_HEAD ，指的是某个branch在服务器上的最新状态，我们可以在本地通过它查看刚取回的更新信息:`git log -p FETCH_HEAD`，然后可以选择是否执行`git merge FETCH_HEAD`来合并到当前分支。
 
 ### 3.1 git pull = git fetch + git merge
-默认是快速合并(fast-forward)，有冲突的话需要手动解决。实测似乎默认是拉取所有分支的代码，但是只会自动合并当前分支，其他分支需要自己去合并。
+默认是快速合并(fast-forward)，有冲突的话需要手动解决。
 
-拉取指定分支的更新:`git pull <远程仓库名> <分支名>`,注意拉取这个命令似乎不能像`git push`那样关联.也就是说只有等push命令关联之后才可以使用简化的`git pull`
+拉取远程主机所有更新,但只merge当前分支跟踪的远程到当前分支：`git pull`。个人猜测是`git fetch`所有远程更新，然后`git meget`当前分支跟踪的远程到当前分支。如果当前分支没有跟踪的远程分支，该命令不会生效，会出现警告。
+
+拉取指定分支的更新:
+1. `git pull <远程仓库名> <分支名>:<本地分支名>`。这样不会拉取远程主机的所有更新，也就是说如果有人新增了分支branchA并推送到远程，使用该命令不会拉取到新分支branchA的信息，用`git branch -r`也看不到新分支。
+2. 对于上面的命令，如果远程分支是与当前分支合并，则冒号后面的部分可以省略，可以简写为`git pull <远程仓库名> <分支名>`
 
 ## 4 git add:暂存(stage)
 工作目录的文件只有两种状态:已跟踪(tracked)和未跟踪(untracked),加入过暂存的都是已跟踪文件,初次clone后的所有文件都是已跟踪的.
@@ -433,7 +441,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 丢弃所有工作区的内容：项目目录下执行`git checkout .`
 
-## 8 git branch:分支管理(重点)
+## 8 git branch:分支管理
 Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
 
 ### 8.1 创建和查看分支
@@ -444,7 +452,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 - `--list <pattern>`:不带`<pattern>`的话是列出所有本地分支。
     
     ```git
-    git branch --list "*zhangsan*"
+    git branch --list "*zhangsan*" 或者 git branch --list *zhangsan*
     ```
     
 - `-r`:列出所有远程分支（包括已被删除但缓存还在的）
@@ -497,9 +505,11 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 ### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
 
-删除本地分支:`git branch -d <分支名>`，删除的时候可以先切换到其他分支，如果被删的分支没有合并到master会有警告，如“xxx is not fully merged”，没有推送到关联的远程分支则会有警告，这两种情况想继续删除可以先处理了该分支或者使用强制删除`git branch -D <分支名>`。
+删除本地分支:
+1. `git branch -d <分支名>`，删除的时候可以先切换到其他分支，如果被删的分支没有合并到master会有警告，如“xxx is not fully merged”，没有推送到关联的远程分支则会有警告，这两种情况想继续删除可以先处理了该分支或者使用强制删除`git branch -D <分支名>`。
 
-删除远程的分支:`git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
+删除远程的分支:
+1. `git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
 
 删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。也不会删除未追踪的本地分支。
 1. 参数`--dry-run`:打印执行信息,但并不真正执行 
@@ -508,8 +518,9 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 合并时正确做法是不要修改vi中默认的`Merge branch 'other_branch_name'`，只解决合并相关的冲突，等合并完之后再做其他修改。这样方便后续跟踪分析。
 
 合并目标分支到当前分支:`git merge <目标分支名>`,默认是快进模式(Fast-forward)
-
 撤销上次的分支合并：`git merge --abort`
+
+合并远程的其他分支到当前分支：
 
 #### cherry-pick
 非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
@@ -562,12 +573,17 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 ### 10.1 规范
 1. 多人协作时，不要各自在自己的 Git 分支开发，然后发文件合并。正确的方法应该是开一个远程分支，然后一起在远程分支里协作。不然，容易出现代码回溯（即别人的代码被覆盖的情况）
 
-## 11 不常用命令
-### 11.1 git fsck:文件系统检测
+## 其他命令
+### git fsck:文件系统检测
 `git fsck --lost-found`:找回git add过但是已经不存在文件中的内容。可以通过运行 `git show commit_hash`查看提交之后的改变或者运行`git merge commit_hash`来恢复到之前的提交。git fsck 相对reflog是有优势的，比方说你删除一个远程的分支然后关闭仓库，用fsck 你可以搜索和恢复已删除的远程分支。
 
-### 11.2 git gc
+### git gc
 git gc 将“重复的”松散的对象变成一个单独的包文件，除非以任何方式压缩文件都不会使生成的包文件有显著差异。 
+
+### git bundle
+参考：https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E6%89%93%E5%8C%85
+
+bundle 命令会将 git push 命令所传输的所有内容打包成一个二进制文件，你可以将这个文件通过邮件或者闪存传给其他人，然后解包到其他的仓库中。
 
 # 四 高级
 ## 1 git submodules
@@ -697,6 +713,7 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 4. stackoverflow大牛说的多人合作注意事项:
     - 不要用强制推送
     - 不要破坏commit history和别人的pull
+5. 只想获取远程仓库的所有变动信息，而不想合并任何分支：使用`git fetch`，而不是`git pull`，后者会做`git merge`。
 
 ## 2 推送的正确做法
 1. 先commit

@@ -130,12 +130,12 @@ new Promise(
 
 Promise的三种状态：
 1. `pending`（初始状态,也称为未定状态）:初始化Promise后，调用executor执行器函数后的状态,表示进行中.
-2. `fulfilled`（已成功）:异步操作成功，则可以调用resolve()来将该实例的状态置为fulfilled
-3. `rejected`（已失败）:异步操作失败，则可以调用reject()来将该实例的状态置为rejected
+2. `fulfilled`（已成功）:异步操作成功，则可以调用`resolve()`来将该实例的状态置为fulfilled
+3. `rejected`（已失败）:异步操作失败，则可以调用`reject()`来将该实例的状态置为rejected
 
 
 Promise对象的两个特点:
-1. 对象的状态不受外界影响:.只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是Promise这个名字的由来，它的英语意思就是“承诺”.
+1. 对象的状态不受外界影响:只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是Promise这个名字的由来，它的英语意思就是“承诺”.
 2. 一旦状态改变，就不会再变，任何时候都可以得到这个结果.Promise的状态改变只有两种可能,而且都是单向的:`pending`=>`fulfilled`和`pending`=>`rejected`.改变后称为resolved（已定型）.这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。(个人疑问:什么情况下事件会错过?)
 
 Promise的优缺点:
@@ -148,7 +148,28 @@ Promise的优缺点:
 关于stream和Promise的选择:如果某些事件不断地反复发生，一般来说，使用 Stream 模式是比部署Promise更好的选择
 
 Promise常用方法:
-1. `Promise.prototype.then(<成功调用的方法>,<失败调用的方法>)`:调用后返回一个Promise对象,意味着可以进行链式调用.
+1. `Promise.prototype.then(<成功调用的方法>,<失败调用的方法>)`:调用后返回一个Promise对象,意味着可以进行链式调用。then 方法将返回一个 resolved 或 rejected 状态的 Promise 对象用于链式调用，且 Promise 对象的值就是这个返回值。
+  
+    ```JavaScript
+    const p = new Promise(function(resolve,reject){
+      resolve(1);
+    }).then(function(value){ // 第一个then // 1
+      console.log(value);
+      return value * 2;
+    }).then(function(value){ // 第二个then // 2
+      console.log(value);
+    }).then(function(value){ // 第三个then // undefined
+      console.log(value);
+      return Promise.resolve('resolve');
+    }).then(function(value){ // 第四个then // resolve
+      console.log(value);
+      return Promise.reject('reject');
+    }).then(function(value){ // 第五个then //reject:reject
+      console.log('resolve:' + value);
+    }, function(err) {
+      console.log('reject:' + err);
+    });
+    ```
 2. `Promise.prototype.catch()`:用于处理异步操作出现的异常(所有非成功都算作异常?),返回一个Pormise对象.用了它的话就可以省略`then()`方法的第二个参数，把错误处理控制权转交给其后面的`catch()`,一般只需要在链式调用的最末尾加上一个`catch()`方法就行了.
 
     ```JavaScript
