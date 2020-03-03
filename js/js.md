@@ -2,7 +2,6 @@
 [TOC]
 
 # 一 概述
-
 ## 1 简介
 js为什么是单线程:与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征，将来也不会改变。
 
@@ -102,7 +101,7 @@ console.log(color2)//['red','green','black'] 因为操作的是地址,也就是�
 3. 发布订阅模式
 4. Promise对象
 
-### 3.4 js的作用域,var let和const,以及变量提升
+### 3.4 js的作用域,var let和const,变量提升，以及TDZ
 #### 3.4.1 作用域
 js中默认只有全局作用域和函数作用域,没有块级作用域(虽然能通过一些方式实现),这点和java,go等是不一样,比如下面这个例子,在js里会输出10:
 
@@ -133,8 +132,12 @@ let和const是es5为了弥补var的不足而设计出来的。
 
 注意:只有声明的变量会提升，初始化的不会。
 
+#### 3.4.4 TDZ
+暂死区
+
+
 ### 3.5 关于`{ [native code] }`
-网上看到的解释是:浏览器内核中的js引擎是C++写的,有些js方法已经用C或C++重写了,所以显示的native code
+网上看到的解释是:打印自定义的对象，会显示出源码，但是打印全局对象，因为这些全局对象是程序自带的，是二进制编译的（c\c++），所以无法显示出来源代码，只能显示的native code
 
 ### 3.6 a标签中的`href="javascript:;"`和`href="javascript:void(0)"`
 这两者在非IE环境下可以认为效果是一样的.
@@ -151,8 +154,10 @@ let和const是es5为了弥补var的不足而设计出来的。
 ### 3.8 The fps that JavaScript can detect doesn't always relate to number of frames displayed
 (待验证)
 
-### 3.9 Spread Operator和rest操作符
-rest操作符:主要用于获得传递给函数的参数列表.如,
+### 3.9 Spread syntax（展开语法）和Rest syntax(剩余语法)
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Spread_syntax
+（待整理）
+rest operator（rest操作符）:主要用于获得传递给函数的参数列表.如,
 
 ```javascript
 function countArguments(...args) {  
@@ -165,13 +170,14 @@ countArguments('welcome', 'to', 'Earth'); // 3
 1. 语法糖
 2. 表示箭头函数中的arguments.具体参考:https://segmentfault.com/q/1010000008720963?_ea=1724154
 
-spread操作符:主要用于数组构造和解构，在调用时将数组填入函数参数.如
+spread operator（spread操作符）:主要用于数组构造和解构，在调用时将数组填入函数参数。展开语法和 Object.assign() 行为一致, 执行的都是浅拷贝(只遍历一层)。
 
 ```javascript
-//数组构造
+// 例子
+// 数组构造
 const odd = [1, 3, 5 ];
 const nums = [2, ...odd, 4 , 6]; // [2,1,3,5,4,6]
-//解构数组
+// 解构数组
 [a,...otherArr] = nums; // otherArr的值是[1,3,5,4,6]
 ```
 有几个作用:
@@ -186,14 +192,43 @@ const nums = [2, ...odd, 4 , 6]; // [2,1,3,5,4,6]
 
 注意:任何实现了Iterator接口的对象，都可以用展开运算符转为真正的数组.其他的似乎不行.
 
-### 3.10 js的宿主对象,本地对象和内置对象
-1. 宿主环境:与大多数编程语言不相同的，JavaScript 语言并没有输入/输出的概念。它被设计成在一个宿主环境下运行的脚本语言，它帮助给宿主环境提供与外界交流的机制。那么，最普遍的宿主环境就是浏览器.还可能是桌面系统等.
-2. 宿主对象:由ECMAScript实现的宿主环境提供的对象.比如浏览器提供的宿主对象--所有的BOM和DOM都是宿主对象。
-3. 本地对象:独立于宿主环境的 ECMAScript 实现提供的对象.比如Object、Function、Array、String、Boolean、Number、Date、RegExp、Error等.
-    1. 内置对象:由 ECMAScript 实现提供的、独立于宿主环境的所有对象，在 ECMAScript 程序开始执行时出现。每个内置对象都是本地对象.这意味着开发者不必明确实例化内置对象，它已被实例化了。比如Global 和 Math.
-    
+### 3.10 宿主对象（host objects）、本地对象（native objects）、内置对象（Build-in objects）和全局对象(global object)
+宿主环境:与大多数编程语言不相同的，JavaScript 语言并没有输入/输出的概念。它被设计成在一个宿主环境下运行的脚本语言，它帮助给宿主环境提供与外界交流的机制。宿主环境有浏览器、操作系统等.
+
+宿主对象（host objects）:由ECMAScript实现的宿主环境提供的对象。包含两大类，一个是宿主提供，一个是自定义类对象，ECMAScript官方未定义的对象都属于宿主对象,**所有非本地对象都是宿主对象**。宿主提供对象原理--->由宿主框架通过某种机制注册到ECscript引擎中的对象。比如宿主浏览器（以远景为参考）会向ECscript注入window对象，构建其实现javascript。同理还有浏览器提供的所有的BOM和DOM都是宿主对象。
+
+本地对象（native objects）:独立于宿主环境的 ECMAScript 实现提供的对象。比如Object、Function、Array、String、Boolean、Number、Date、RegExp、Error等。可以简单理解为本地对象就是ECMAScript定义的类（引用类型），在运行过程中动态创建的对象，需要new。
+
+内置对象（Build-in objects）:又称内部对象、标准内置对象(standard built-in objects)，由 ECMAScript 实现提供的、独立于宿主环境的所有对象。内置对象在 ECMAScript 程序开始执行时就被创建，即在引擎初始化阶段就被创建好的对象。这意味着开发者不必明确实例化内置对象，它已被实例化了。每个内置对象都是本地对象。ECMA-262 只定义了两个内置对象：`Global`和`Math`。`Math`对象我们经常用到，但`Global`对象很特别，它实际上根本不存在(无法直接访问)，在ECMAScript中，不存在独立的函数，所有函数都必须是某个对象的方法，任何不属于其他对象的方法和属性都是`Global`这个对象的方法和属性，所以事实上并不存在什么全局属性和全局函数，因为一切全局的函数和属性都是这个Global对象的方法和属性。比如`isNaN()`、`parseInt()`和`parseFloat()`方法等，看起来都是函数，而实际上，它们都是Global对象的方法。并且ECMAScript也没有定义怎样定义和调用这个对象，故所有`Global.`属性和`Global.()`都是无效的，但是在WEB浏览器中中把Global对象作为window对象的一部分实现了，故一切的所谓的全局属性和方法都是window对象的方法和属性。
+```JavaScript
+// 所以在web浏览器中，以下几种写法效果是一样的(假设this指向全局对象)
+window.parseFloat("2.3");
+this.window.parseFloat("2.3")
+this.parseFloat("2.3") 
+parseFloat("2.3")
+// 以及
+this == this.window // true
+this === this.window // true
+```
+
+全局对象：包含两种理解，一是宿主对象里的全局对象和根据ECMAScript语法自定义的全局对象，比如`var objA = xxx`，在非严格模式下能通过`this.objA`来访问；二就是上面的本地对象或者宿主环境提供的全局对象，比如浏览器里面的window、Node.js的global，参考:[Standard built-in objects
+](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects)。两种理解都是可以的，两种都是在全局作用域下，全局作用域包含了全局对象的属性，包括继承来的属性，这个属性包含值属性(Value properties)和方法属性(Function properties)。
+
 ### 3.11 VanillaJS
 使用VanillaJS意味着使用纯JavaScript而不使用jQuery之类的任何其他库。人们以此为笑话来提醒其他开发人员，如今无需其他JavaScript库即可完成许多工作，提醒世人并不是所有的网页都需要框架，第三方框架的大量引入是网页性能江河日下的罪魁祸首。所以它其实是"PlainJS"--原生JS。
+
+### 3.12 naming convention 命名规范
+最开始的时候方法名比较混乱，有驼峰比如`getClass()`、`toString()`，也有非驼峰比如`fontsize()`、`fontsize()`等，不过后面的版本已经被规范了，其中`fontsize()`、`fontsize()`等已经被Deprecated。
+
+推荐命名规范：
+- 构造函数和类名是大写开头驼峰式命名，如Array, Object, Number, String。
+- 变量名、全局函数和类方法是小写开头驼峰式命名，如Array.prototype.findIndex()，String.prototype.fromCharCode()
+- 常数是全大写+下划线命名，如Number.MAX_SAFE_INTEGER
+
+### 3.13 严格模式
+```JavaScript
+'use strict';
+```
 
 ## 4 文档
 ## 5 相关网址
@@ -247,9 +282,9 @@ age="hello";
 - 声明并赋值:`var age=1,mood="sad"`
 
 ### 1.2 数据的类型
-最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,Null,Undefined,以及ES6的Symbol)和Objects.
+最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,Null,Undefined,以及ES6的Symbol)和Object（这个Object是广义的，指代所有其他类型）.
 
-Objects包含:
+Object包含:
 1. 标准对象("Normal" objects)
 2. 函数(functions)
 3. 有续集(Indexed collections):Arrays和typed Arrays
@@ -258,13 +293,32 @@ Objects包含:
 6. java标准库的內建对象,如日期(Dates),字符串(String),Math等
 
 判断数据的类型用`typeof xxx`or`typeof (xxx)`,返回字符串,内容是xxx的类型,一般有一下几种类型:
-1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol,除了null.
-    1. 对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,因为历史一直没有修复.参考[typeof MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof).所以判断变量是不是对象的时候一般会排除它为null的情况,如`typeof foo == 'object' && foo !== null`
-3. 对于函数是function
-4. 对于宿主对象（由JS环境提供）,是Implementation-dependent
-5. 对于任何其他对象是object
+1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol,除了null。对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,因为历史一直没有修复.参考[typeof MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof).所以判断变量是不是对象的时候一般会排除它为null的情况,如`typeof foo == 'object' && foo !== null`
+
+    ```js
+     // 1. typeof()
+    console.log(typeof (null)); // object
+    console.log(typeof (undefined)); // undefined
+    console.log(typeof ("abc"));// string
+    console.log(typeof (123));// number
+    console.log(typeof (true));// boolean
+    // 2. 用Object.prototype.toString
+    console.log(Object.prototype.toString.call(null)); // [object Null]
+    console.log(Object.prototype.toString.call(undefined)); // [object Undefined]
+    console.log(Object.prototype.toString.call("abc"));// [object String]
+    console.log(Object.prototype.toString.call(123));// [object Number]
+    console.log(Object.prototype.toString.call(true));// [object Boolean]
+    ```
+2. 对于函数是function
+3. 对于宿主对象（由JS环境提供）,是`Implementation-dependent`
+4. **对于任何其他对象(Object、Array、Function等)是object**，此时可以使用`Object.prototype.toString.call()`，如
+
+    ```js
+    ```
 
 注意:`typeof Number(1)`是number,但是`typeof new Number(1)`是object,这两种写法都不推荐使用,String,Boolean也一样.
+
+primitive values(原始值):除 Object 以外的所有类型都是不可变的（值本身无法被改变）。与 C 语言不同，JavaScript 中字符串是不可变的。JavaScript 中对字符串的操作一定返回了一个新字符串，原始字符串并没有被改变。我们称这些类型的值为“原始值”。
 
 #### 1.2.1 字符串
 单双引号都可以,可以根据需要包含的字符来确定:如果字符含单引号则用双引号包,如果含双引号就用单引号来包,这样不容易引起歧义.否则就要用转义字符`\`,如`var mood = 'don\'t ask';`。最佳实践是两种引号只选其一
@@ -517,15 +571,12 @@ for (var i = 0, item; item = a[i]; i++) {
 }
 ```
 
-#### 3.4.2 for ... in
-可以遍历任何数据类型,但最适合的是遍历对象的属性,默认以字符串的形式遍历出对象的所有属性.
+#### 3.4.2 for in
+可以遍历任何数据类型，但最适合的是遍历对象的属性，如果是对象，该方法依次访问这个对象及其原型链中所有可枚举的属性，默认以字符串的形式遍历出对象的所有属性.
 
 如果遍历Array对象,循环的是数组的索引,而且也是字符串类型,不是数值.
 
 关于遍历的顺序:遍历顺序依赖于环境,所以该方法并不能保证顺序.但是约定成俗的顺序应该是:先遍历属性名是数值的(从0升序),然后属性名不是数值的则是按定义时的顺序遍历.
-
-属性和方法:
-1. `object.hasOwnProperty() boolean`:判断是否是对象自身的属性,如果是继承的属性则返回false.
 
 注意:
 1. 该方法遍历时最好不要动态修改属性,因为不能保证后面的遍历是否能访问到.
@@ -535,11 +586,22 @@ for (var i = 0, item; item = a[i]; i++) {
 
 ### 3.5 三目（三元）运算符
 
-## 4 JS标准库
-包含全局方法和常用对象
+## 4 JS本地对象
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects
 
-### 4.1 常用全局方法
-#### 4.1.1 decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
+### 4.1 Global
+包含值属性和方法属性
+
+#### 4.1.1 值属性
+有以下值属性，它们都是simple value, 它们have no properties or methods。也称为全局变量。
+- Infinity：是一个数值，表示无穷大。初始值是Number.POSITIVE_INFINITY。
+- NaN:全局属性 NaN 的值表示不是一个数字（Not-A-Number），和`Number.NaN`相同。编码中很少直接使用到 NaN。通常都是在计算失败时，作为 Math 的某个方法的返回值出现的（例如：Math.sqrt(-1)）或者尝试将一个字符串解析成数字但失败了的时候（例如：parseInt("blabla")）。**NaN自身永不相等于自身**
+- undefined
+- null literal
+- globalThis
+
+#### 4.1.2 方法属性
+##### decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
 有效的URI中不能包含某些字符，例如空格、中文。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`）替换所有无效的字符，从而让浏览器能够接受和理解。
 
 ```JavaScript
@@ -556,69 +618,114 @@ document.write("解码后的" + uridc);
 1. `encodeURIComponent()`和`decodeURIComponent()`:转义除了字母、数字、`(`、`)`、`.`、`!`、`~`、`*`、`'`、`-`和`_`（共71个）之外的所有字符。可知它不适合用于对整个URI进行编码，因为冒号、正斜杠、问号和井字号也会被编码，所以它主要用于对URI中的某一段(比如URI里的查询字符串)进行编码。
 2. `encodeURI()`和`decodeURI()`:不能转义的字符比上面两个方法多，除了上面的两个方法不能转义的，还包括`;`、`/`、`?`、`:`、`@`、`&`、`=`、`+`、`$`和`#`（共82个）。可知它不会对本身属于URI的特殊字符进行编码，例如冒号、正斜杠、问号和井字号，所以`encodeURI()`主要用于整个URI的编码。
 
-#### 4.1.N 其他
-1. `parseInt()`:将字符串转换为整型,第二个参数表示数值的进制，可选填.例子如,
+##### 其他
+`parseInt()`:将字符串转换为整型,第二个参数表示数值的进制，可选填。（待整理）例子如,
+```javascript
+parseInt("123", 10)
+123
+parseInt("010", 10)
+10
+parseInt("010")
+// 此处未指定进制,该函数根据开头的0来决定将那个字符串转换为八进制数字,所以结果是8
+```
 
-    ```javascript
-    parseInt("123", 10)
-    123
-    parseInt("010", 10)
-    10
-    parseInt("010")
-    // 此处未指定进制,该函数根据开头的0来决定将那个字符串转换为八进制数字,所以结果是8
+`isNaN`:NaN不能通过相等操作符（== 和 ===）来判断 ，因为 NaN == NaN 和 NaN === NaN 都会返回 false。 因此，isNaN()就很有必要了。该方法还是有瑕疵的，所以更推荐用ES6的`Number.isNaN()`，后者更可靠。
+
+`eval()`（不推荐使用）:函数会将传入的字符串当做js代码执行，然后返回结果，类似于一个js解析器。它只接受一个参数，多余的参数会被忽略。如果传入的字符串是表达式，它会对表达式求值；如果...在`eval(`)中创建的任何变量以及函数都不会被提升，只有执行到`eval()`时才创建
+```JavaScript
+// 1. 传入的字符串是表达式
+console.log(eval('2 + 2')); // 4
+// 2. 传入的参数不是字符串
+console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包含"2 + 2"的字符串对象
+```
+
+### 4.2 Math
+操作：
+1. 取近似值
+    1. 四舍五入：`Math.round()`，返回一个数字四舍五入后最接近的整数。但是在对小数部分的0.5处理上该方法和其他语言不同，其他语言一般是舍入到远离0的方向，但是该方法是上舍入。比如`Math.round(3.5)`是4，但`Math.round(-3.5)`是-3.
+    2. 向下舍入：`Math.floor()`
+    3. 向上取整：`Math.ceil()`
+2. 取最大值`Math.max()`:如果没有参数，则结果为`-Infinity`,如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
+
+### 4.3 Object
+**几乎所有的 JavaScript 对象都是 Object 的实例**
+
+#### 4.3.1 值
+1. `Object.prototype`:表示Object的原型对象
+2. `Object.prototype.constructor`:对象的构造函数
+
+#### 4.3.2 方法
+1. `Object.toString()`：每个对象都有一个`toString()`方法，当该对象被表示为一个文本值时，或者一个对象以预期的字符串方式引用时自动调用（和其他语言类似）。默认情况下，toString() 方法被每个 Object 对象继承。如果此方法在自定义对象中未被覆盖，`toString()`返回 "[object obj_type]"，特别的`toString()`调用 null 返回[object Null]，undefined 返回 [object Undefined]。
+    ```JavaScript
+    var o = new Object();
+    o.toString(); // [object Object]
+    ```
+2. `Object.assign()`:通过复制一个或多个对象来创建一个新的对象。
+3. `Object.getPrototypeOf()`
+3. `Object.setPrototypeOf(objA, objB)`：设置一个指定对象的原型到另一个对象。该方法性能较差，更推荐用`Object.create()创建新对象的方式代替`它是ES6新增的方法，有个旧方法是`Object.prototype.__proto__`。
+    
+    ```js
+    // Polyfill
+    // 仅适用于Chrome和FireFox，在IE中不工作：
+    Object.setPrototypeOf = Object.setPrototypeOf || function (obj, proto) {
+    obj.__proto__ = proto;
+    return obj; 
+    }
     ```
 
-### 4.2 Object对象
-常用方法:
-1. `Object.assign()`:通过复制一个或多个对象来创建一个新的对象。
-2. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象.该方法是数据双向绑定实现的基石.
+4. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。该方法是数据双向绑定实现的基石.
 
-    例子1如下
     ```JavaScript
+    // 1.
     // 这个例子展示使用getter和setter方法扩展 Date原型
+    var d = Date.prototype;
     Object.defineProperty(d, "year", {
-    get: function() { return this.getFullYear() },
-    set: function(y) { this.setFullYear(y) }
+        get: function () { return this.getFullYear() },
+        set: function (y) { this.setFullYear(y) }
     });
     var now = new Date();
-    console.log(now.year); 
-    // 2000
+    console.log(now.year);  // 2000
     now.year = 2001; 
-    // 987617605170
-    console.log(now);
+    console.log(now); // 987617605170
     // Wed Apr 18 11:13:25 GMT-0700 (Pacific Daylight Time) 2001
-    ```
-
-    例子2如下:
-    ```JavaScript
+    // 2.
     var o = { a:0 }
-
     Object.defineProperties(o, {
         "b": { get: function () { return this.a + 1; } },
         "c": { set: function (x) { this.a = x / 2; } }
     });
     ```
-3. `Object.getOwnPropertyNames()`:返回对象自身属性组成的数组
-4. `Object.freeze()`:冻结对象，使其不能被修改。使用场景一般是const声明对象时会用到（还可以使用ts的readonly）。当然这里面有很多细节需要注意，具体参考：[Object.freeze() MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+5. `Object.getOwnPropertyNames()`:该方法返回一个数组，它包含了对象 o 所有拥有的属性（无论是否可枚举）的名称。
+6. `object.hasOwnProperty() boolean`:判断是否是对象自身的属性,如果是继承的属性则返回false.
+7. `Object.freeze()`:冻结对象，使其不能被修改。使用场景一般是const声明对象时会用到（还可以使用ts的readonly）。当然这里面有很多细节需要注意，具体参考：[Object.freeze() MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
     1. 该操作不可逆
     2. 该方法只影响对象本身的属性,不影响原型属性
+8. `Object.keys(o)`:该方法返回一个对象 o 自身包含（不包括原型中）的所有属性的名称的数组。
+    
+#### 4.3.x 原型链
+一个实例的`__proto__`属性，指向它的原型对象
 
-### 4.3 数组Array
+### 4.4 Array
 优点:存储的对象能动态增多和减少，并且可以存储任何类型的JavaScript值
 
-定义方法。有三种普通创建方法,以及通过函数(`split`,`match`等)创建：
-1. `new Array(length)`：创建指定长度的空数组
-    1. 注意是空数组,而不是值为undefined的数组,虽然打印其中的值时为undefined.
+有以下几种创建方法：
+1. `new Array(length)`：创建指定长度的空数组(可以理解为只有length，没有值和索引)
+    1. **注意是空数组,而不是值为undefined的数组**,虽然打印其中的值时可能为undefined.
     2. 如果想创建值为单个数字的数组呢?可用js6新增的`Array.of(element...)`,element可以是任意类型
+2. `Array()`:等同于`new Array()`。
 2. `new Array(element0, element1, ..., elementN)`
-3. `[element0, element1, ..., elementN]`
+3. literal syntax(字面量):`[element0, element1, ..., elementN]`
+4. 通过函数`split()`,`match()`等创建
 
 还有一种额外的但不推荐的定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
 
-属性：
+几种创建方法的对比：
+1. 在初始化大数组的时候，`new Array()`(以及`Array()`)性能更好。（待验证）
+
+#### 4.4.1 属性
 1. 长度`length`
 
-方法:
+#### 4.4.2 方法
 1. 数组和字符串的转换
     1. `string1.split(string2)`
     2. `array.join(string)`
@@ -660,21 +767,17 @@ document.write("解码后的" + uridc);
 
     ```
 4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
-5. `array.slice(start?,end?)`:从数组中切割出新数组,该方法不会改变原数组.如果不带参数,则是整个复制.start和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
+5. `Array.prototype.slice([begin[,end]])`:从数组或类数组中拷贝出新的数组，这个拷贝是对原数组元素的浅拷贝，该方法不会改变原数组。如果不带参数,则是整个复制。begin和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
 
 array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
 
 注意：
 1. 查看`map()`方法的文档：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
 
-### 4.4 Math
-操作：
-1. 取近似值
-    1. 四舍五入：`Math.round()`，返回一个数字四舍五入后最接近的整数。但是在对小数部分的0.5处理上该方法和其他语言不同，其他语言一般是舍入到远离0的方向，但是该方法是上舍入。比如`Math.round(3.5)`是4，但`Math.round(-3.5)`是-3.
-    2. 向下舍入：`Math.floor()`
-    3. 向上取整：`Math.ceil()`
+#### 4.4.3 类数组（Like Array、Array-Like)
+**只要有一个 length 属性和(0..length-1)范围的整数属性都认为是类数组对象**。比如宿主浏览器提供的HTMLCollection类型、NodeList对象，`{'length': 2, '0': 'eat', '1': 'bananas'}`，方法实例的arguments等。
 
-### 4.5 RegExp对象
+### 4.5 RegExp
 字符模式对象,用于正则表达式
 1. 两种语法如下,其中pattern表示模式,modifiers(修饰符) 用于指定全局匹配、区分大小写的匹配和多行匹配:
 
@@ -692,12 +795,78 @@ array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`ma
     1. `test()`:搜索字符串指定的值，根据结果返回真或假
     2. `exec()`返回字符串中检索到的指定值,没有则返回null
 
+
+### 4.6 Function
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function
+
+#### 4.6.1 属性
+1. `Function.length`:函数签名中入参(形参)的数量。
+
+#### 4.6.2 方法
+1. `Function.prototype.bind()`：该方法创建一个新的函数(称为Bound Function,BF)，在新函数被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
+2. `Function.prototype.call(thisArg, arg1, arg2, ...)`：该方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。简单概括它的作用就是允许其他对象调用某个对象的函数/方法，并且能被继承。
+    1. `thisArg`:在非严格模式下，如果没有指定`thisArg`或者指定为 null 或 undefined 时会自动替换为指向全局对象，原始值会被包装；在严格模式下，不指定`thisArg`则`this`的值是undefined
+    
+    ```js
+    // 例子
+    // 1. 
+    Math.max.call(null, ...[1,2]])
+    Math.max.call(...[1,2]])
+    // 2. 在web浏览器中
+    var forEach = Array.prototype.forEach;
+    var divs = document.getElementsByTagName( 'div' );
+    var firstDiv = divs[ 0 ];
+    forEach.call(firstDiv.childNodes, function( divChild ){ // 将某个宿主对象 （如 NodeList） 作为 this 传递给原生方法 （如 forEach） 不能保证在所有浏览器中工作，已知在一些浏览器中会失败
+        divChild.parentNode.style.color = '#0F0';
+    });
+    ```
+3. `Function.prototype.apply(thisArg, [argsArray])`:该方法调用一个指定的this值，以及一个数组（或类似数组对象（比如数组字面量或Function.arguments））提供的参数。该方法和`call`只有一个区别。
+
+    ```JavaScript
+    // 例子
+    // 1. 可以使用arguments对象作为argsArray来把所有的参数传递给被调用对象，这样在使用apply函数的时候就不需要知道被调用对象的所有参数。
+    ...
+    // 2. 
+    Array.prototype.slice.apply([1,2]) /
+    Math.max.apply(null, [1,2]) // 对于静态方法，thisArgs需要指定为null，因为没有对象去调用
+    Array.apply(null, Array(2))
+    ```
+`call()`和`apply()`异同：
+1. 相同之处：两个函数的作用是相同的。
+2. 不同之处：
+    1. thisArg后面的参数不同：`call()`方法的接受的是多个参数，而`apply()`方法接受的是一个包含多个参数的数组。
+
+#### 4.6.3 arguments
+见arguments部分
+
+### 4.7 Number
+JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
+
+#### 4.7.1 属性
+1. `Number.POSITIVE_INFINITY`:正无穷大
+2. `Number.NEGATIVE_INFINITY`:负无穷大
+3. `Number.NaN`:
+
+### 4.8 JSON
+包含两个方法: 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，以及将对象/值转换为 JSON字符串的 `stringify()`方法。除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
+
+#### 4.8.1 方法
+1. `JSON.stringify(value[, replacer [, space]]) string`:replacer可以是函数、数组、null或省略，space用于指定缩进的字符串，用于美化输出（pretty-print）
+
+### 4.9 ArrayBuffer
+见arraybuffer部分笔记
+
+### 4.10 
+参考：
+2. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+
 ## 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
 
 个人感觉js的函数可以分为普通函数和生成器函数,一般讨论的都是普通函数.
 
 注意:函数体`{}`内不使用var定义的变量是全局变量(待测试)
+
 
 ### 5.1 定义普通函数(三种方法)
 1. 函数声明(function declaration),函数声明有提升.语法是以`function`开头,如
@@ -823,6 +992,18 @@ MDN上说的似乎只针对浏览器环境,然后本人在NodeJS环境中测试�
 
 ### 5.3 默认参数
 ### 5.4 arguments
+arguments 是一个函数的局部变量，它表示被调用对象的所有未指定的参数。arguments对象不是一个 Array 。它类似于Array，但除了length属性和索引元素之外没有任何Array属性。例如，它没有 pop 方法。但是它可以被转换为一个真正的Array：
+```js
+var args = Array.prototype.slice.call(arguments);
+var args = [].slice.call(arguments);
+// ES2015
+const args = Array.from(arguments);
+const args = [...arguments];
+ ```
+
+属性：
+1. `arguments.length`:实际传递给函数参数的个数，区别于`Function.length`。
+
 ### 5.5 剩余参数(rest parameters)
 剩余参数和 arguments对象之间的区别主要有三个：
 1. 剩余参数只包含那些没有对应形参的实参，而 arguments 对象包含了传给函数的所有实参。
@@ -1040,6 +1221,8 @@ js是单线程,也就意味着所有任务需要排队.event loop是js运行时�
 
 ### 5.2 定时器
 
+## 6 js引擎
+SpiderMonkey：https://developer.mozilla.org/zh-CN/docs/Mozilla/Projects/SpiderMonkey
 
 # 五 经验
 ## 1 已整理

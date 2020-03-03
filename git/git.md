@@ -22,6 +22,8 @@ git是linus用c写的
 - 暂存区(Index文件或Stage)
 - HEAD(当前分支所在的commit).
 
+个人：储藏区算不算第四棵树？
+
 ### 3.3 git支持多种协议:https,git和ssh
 git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 
@@ -93,6 +95,25 @@ Stale branches（过时的分支）：过去三个月内没有人提交的所有
 
 ### 3.13 Delta
 在git中经常能看到delta这个词，比如克隆仓库或者拉取远程更新。它来自于Delta encoding(增量编码)。增量编码（delta coding）通过维护增量的方式，保存数据，这样能够达到更好的压缩比，对于保存连续的或者数据段在一个稳定范围内出现的场景，效果更好。
+
+### 3.14 游离状态
+(待整理)状态下的提交不能被引用关联到，从而可能丢失
+
+### 3.15 git ref
+参考：https://developer.github.com/v3/git/refs/
+
+git ref的前缀有：`refs/heads/`，`refs/tags/`，`refs/remotes/`
+
+### 3.16 图谱
+看懂图谱：
+- 每一个点代表一次提交记录
+- 支线不一定代表分支，但是创建一个新分支（并合并后）必然会产生一条新的支线
+- 颜色不会固定代表某个分支
+- 一般而言最左边那条是主干
+
+括号里分支名含义：形如`HEAD -> feature/aaa`、`origin/feature/aaa`、`HEAD -> feature/aaa, origin/feature/aaa`等，表示的是这个commit是这些分支最新的commit。
+
+parent、child的意思？
 
 ## 4 文档视频资料
 1. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
@@ -229,12 +250,12 @@ mac按以下步骤操作：
 
 # 三 基础
 ## 1 开始
-### 1.1 git init:初始化仓库
+### 1.1 git init 初始化仓库
 官网说的初始化命令默认会创建master分支,但实践发现,在第一次commit之前很多命令都报错(比如`git branch`,`git checkout`,远程仓库的命令等),所以最佳实践是第一次commit之后再去操作分支和远程仓库。
 
 注意:如果在Windows系统，请确保目录名（包括父目录）不包含中文
 
-### 1.2 git clone:克隆仓库
+### 1.2 git clone 克隆仓库
 克隆仓库的所有内容,克隆后当前在默认分支(一般是master分支).
 
 `git clone <远程仓库地址> [本地仓库名称]`:克隆,并将库放到`[本地仓库名称]`文件夹中.如`git clone https://github.com/xushike/study.git studyNote`
@@ -270,7 +291,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ### 2.1 git status:检查更新和工作区状态
 
 ### 2.2 git log:查看提交日志
-直接使用是查看当前分支的本地提交日志.
+直接使用是查看当前分支的本地提交日志，默认reverse chronological order排列。
 
 查看远程分支的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
 
@@ -279,16 +300,21 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 参数说明:
 - `--oneline`:压缩模式，在每个提交的旁边显示经过精简的提交哈希码和提交信息，以一行显示
     1. 查看最近三次提交:`git log --oneline -3`
-- `--graph`:图形模式，使用该选项会在输出的左边绘制一张基于文本格式的历史信息表示图。如果你查看的是单个分支的历史记录的话，该选项无效
+- `--graph`:图形模式，使用该选项会在输出的左边绘制一张基于文本格式的历史信息表示图。如果你查看的是单个分支的历史记录的话，该选项无效（具体参考图谱部分）
 - `--all`:显示所有分支的历史记录
+- `--decorate`:查询`git log --help`，解释是：打印commit的refs信息（分支名称、tag名称等）。并没有说需要什么条件才会显示这些。实测是：如果某个commit上有tag或者该commit是某个分支最新的commit才会显示。
+- `--simplify-by-decoration`:"Commits that are referred by some branch or tag are selected."，也就是说只显示被合并或者打了tag的commit，当然，最新的一次提交是永远存在的，所以也会包括在内。一般在想知道commit关键的变化信息，比如分支关系的时候使用。
 - `--oneline --graph --decorate --all`:查看所有的提交
 - `--pretty=oneline`:只看commit的`-m`信息
-- 过滤
+- `--stat`:显示变动文件数和行数
+- `--patch`、`-p`、`-u`：查看具体变更内容。
+- 搜索、过滤
     - `--grep=<xxx>`或`--grep "<xxx>"`：按提交信息过滤，支持正则
     - `--author="<xxx>"`：按提交人过滤
     - `-- <file_path>`或`<file_path>`：按文件过滤
-    - 按修改内容过滤
-
+    - 按修改的文本内容过滤
+        - `git log -G <pattern>`：支持正则查找。如`git log -G '配件编码'`，会搜索所有改动文本包含"配件编码"的commit
+    
 ### 2.3 git config --list:查看配置文件
 - 查看项目的配置文件`git config --local --list`
 - 查看用户的配置文件`git config --global --list`
@@ -309,12 +335,12 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ### 2.6 git blame（查看文件的每个部分是谁修改的）
 `git blame <filename>`
 
-### 2.6 git show:查看提交的内容
-直接使用是查看当前commit的内容
+### 2.6 git show 查看提交的内容
+直接使用是查看当前分支最新commit的内容
 
-查看某次commit的内容:`git show <commit id>`
+查看某个commit的内容（与分支无关）:`git show <commit id>`
 
-查看某次commit中某个文件的变化:`git show <commit id> <文件名>`
+查看某个commit中某个文件的变化（与分支无关）:`git show <commit id> <文件名>`
 
 ### 2.7 查看命令帮助信息
 查看所有命令：`git --help`
@@ -359,7 +385,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 - `-i`:逐个确认
 - `-p`、`--patch`：只选文档中的部分变更进入stage，会进入Interactive Mode
 
-取消暂存:`git reset HEAD <文件名>...`
+取消暂存:`git reset HEAD <文件名>`，具体参考git reset部分
 
 删除文件并添加到暂存:`git rm <文件名>`,等价于:直接删除文件+添加到暂存(即`git add <文件名>`)
 
@@ -368,7 +394,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 `git rm --cached <file_path>`:删除暂存区或分支上的文件, 但本地又需要使用, 只是不希望这个文件被版本控制
 
 ## 5 git commit
-作动词时表示做一个版本,作名词表示版本.
+作动词时表示做一个版本，作名词表示版本。Git每次提交操作保存的提交对象包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针（首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象，而由多个分支合并产生的提交对象有多个父对象，父对象可以简单理解为父commit）
 
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
 
@@ -378,7 +404,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
 3. `-m`：commit message
 
-### 5.1 git rebase:压制/衍合/变基
+### 5.1 git rebase 压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
 1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
@@ -408,12 +434,13 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 - 分支关联:`git branch --track <本地分支名> <远程仓库名>/<远程分支名>` or `git branch --set-upstream-to=origin/<branch> feature/xushike_20180918_dont_checkout_qty`(待测试)
 - 关联并推送:`git push -u/--track/--set-upstream-to <远程仓库名> <远程分支名>`.
 
-## 7 撤销和回滚(难点)
+## 7 撤销和回滚
+
 ### 7.1 git reset
 分为已push和未push两种情况。
 
 #### 未push
-参数说明:
+参数说明（待整理）:
 - `--mixed`(不带参数时的默认参数):
     - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD从当前commit指向某个commit,**仅仅重置暂存区**,即丢弃当前暂存区,然后将当前commit到某个commit之间的所有修改移动到暂存区,工作区的内容保持不变
     <!-- 也意味着可以直接`git commit`重新提交对本地代码的修改. -->
@@ -422,7 +449,12 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 - `--hard`:重置暂存区、工作区及版本库,也就是说工作区和暂存区以及某个commit之后的所有修改都会丢失,慎用!
 
-`git reset`似乎可以作用于单个文件,如果是作用域单个文件,则HEAD不会移动,其他和上面一样.(待验证)
+看概念有点晕，其实结合图片和使用场景来理解就很容易，参考：https://segmentfault.com/a/1190000009658888：
+- soft就是只动repo：比如我对这次提价不满意，可以使用`git reset --soft HEAD`让HEAD指针回退，而暂存区和工作区可以不用动
+- mixed就是动repo还有staging(这个是默认参数):比如我想让工作区不改变，而暂存区和引用（HEAD指针）回退一次，使用`git reset --mixed HEAD^`
+- hard就是动repo还有staging还有working
+
+`git reset`可以作用于单个文件：作用于单个文件的时候不能指定上面的三个参数(`--mixed`、`--soft`、`--hard`)，虽然此时也是默认使用的`--mixed`，写法是`git reset -- file_name`或`git reset commid_id file_name`，如果作用于单个文件，则HEAD不会移动，其他和上面一样。
 
 #### 已push
 首先看下`git revert`和`git reset`的区别：
@@ -430,16 +462,30 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 对于已经push到远程的，使用`reset`命令可以本地回滚，但是push的时候会被拒绝，必需使用强制推送，如果是多人合作的话，强制推送可能导致别人的本地和远程不一致的问题。这种情况推荐用`git revert <HEAD~n>`，具体自己斟酌。
 
-### 7.2 丢弃(discard)工作区的修改:git checkout -- <文件名>
-（似乎只对已tracked的文件有效，待确认？）
+### 7.2 git checkout 检出（该目录待移动）
+有如下多种用法
 
-实测不需要加`--`也可以：`git checkout <文件名>`
+#### git checkout 
+后面不带任何参数，相当于检查工作区，暂存区，HEAD间的差别。等于`git status`?
 
-会将文件工作区的修改全部丢弃(不影响暂存区),慎用!
+#### git checkout -- file_name
+用暂存区的文件覆盖工作区中的文件，即只撤销工作区的文件修改，对没有暂存过（tracked）的文件是不生效的。
 
-还有一种情况,就是误删了某个文件,可以用该命令恢复,但是会丢失该文件上所有未提交的修改.
+写法:`git checkout -- file_name`，省略`--`(double hyphen)也可以，`git checkout file_name`，`--`是为了避免路径、分支名和引用（或者提交ID）同名而发生冲突，如果冲突就必须用`-- HEAD`而不是只用`HEAD`。如果写成`git checkout .`，会在当前目录下用暂存区的文件覆盖工作区中的所有文件，即将文件工作区的修改全部丢弃(不包括没暂存过的文件)，慎用!
 
-丢弃所有工作区的内容：项目目录下执行`git checkout .`
+还有一种情况,就是误删了某个文件,可以用该命令恢复,但是会丢失该文件上所有未提交的修改。
+
+#### git checkout commit_id file_name
+和`git checkout -- file_name`类似，用指定提交中的文件覆盖暂存区和工作区中的文件
+
+#### git checkout branch_name
+切换分支
+
+#### git checkout commit_id
+根据这个commit生成一个暂时的branch，现在的确在一个branch上，只是这个branch没有名字，我们可以马上`checkout -b`生成一个新的branch，也可以在这个没有名字的branch上面做修改、提交等像正常branch一样的操作（还有说是进入了游离状态，待验证）
+
+#### git checkout branch_name file_name
+将其他分支repo的文件覆盖到当前分支，即将其对应文件覆盖到工作区和暂存区(注意是覆盖，不是合并）。可以使用参数`-p`
 
 ## 8 git branch:分支管理
 Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
@@ -485,14 +531,14 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
     2. 不储藏暂存区的内容，`git stash --keep-index`
 2. 同时修改stash的说明信息
     2. (不推荐)`git stash save "save_remark"`：不支持带路径的写法，也就是会忽略掉后面的路径，将项目下的所有能储藏的都储藏起来，
-    1. (推荐)`git stash push -m "save_remark"`:优点如下
+    1. (推荐)`git stash push -m "save_remark"`，优点如下
         1. 支持路径，后面如果跟上路径，只会储藏该路径下所有能储藏的。如`git stash push subDir/subDir.txt`
         2. 支持多种参数。比如想储藏部分文件，同时修改说明信息，可以`git stash push -p -m "xxx"`
 3. 只储藏为跟踪文件中的部分文件，`git stash -p`，进入交互式命令界面选择要储藏的文件
 
 查看储藏:
 1. 查看stash列表`git stash list`，可以查看储藏版本信息.
-2. 查看具体stash里的内容：`git stash show xxx`，支持所有`git diff`的参数
+2. 查看具体stash里的内容：`git stash show xxx`，支持所有`git diff`的参数，比如`-p`
 
 恢复储藏:
 1. `git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)。
@@ -543,6 +589,10 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 经验：
 1. 重复pick：pick过的commit_id,再次pick时，不会像Fast-forward那样做智能判断，依然是按顺序来判断是否有冲突。比如A和B对同一个文件有修改，B时间在后面，先执行一次`git cherry-pick A B`，然后在执行`git cherry-pick A`，那么需要再解决一次冲突。如果重复pick没有冲突的话，会提示空提交，可以使用`git reset`来跳过这个pick或者`git commit --allow-empty`强行提交这个空pick。
 2. 非纯净pick：假如当前分支在branchA，合并branchB时如果有冲突并解决了冲突然后提交生成了commitA，那么branchC在pick commitA的时候，实际上会引入branchB里面冲突的那部分代码。
+
+
+#### 只合并部分文件
+参考`git checkout branch_name file_name`部分
 
 ## 9 git标签 git tag
 指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
@@ -680,7 +730,17 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 
 以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
 
-显示其它分支的修改记录：查阅文档后以为`gitk --branches`可以，结果试了下似乎不行，最后换成`gitk <branch_name>`来解决的，似乎会列出所有和该分支有关联的分支的记录。
+显示其它分支的修改记录：查阅文档后以为`gitk --branches`可以，结果试了下似乎不行，最后换成`gitk <branch_name>`来解决的，似乎会列出所有和该分支有关联的分支的记录。（待整理）
+
+参数：
+- `--simplify-by-decoration`
+- `--all`
+
+图形界面说明：
+1. `Parent`：父commit，如果在commit1的基础上做了修改（也可以不做修改）然后提交生成了commit2，那么commit1就是commit2的parent，commit1的hash值会被记录在commit2里面，但commit1里面不会记录commit2的hash值。如果commit是多个分支合并的（称为octopus merge），则有多个父commit。
+2. `Child`：子commit，可以理解为下一个commit，如果被合并到了多个分支，则有多个
+3. `branches`:所有包含这个commit的分支
+4. `Follows`:前一个tag名称
 
 注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
 
@@ -702,7 +762,7 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 
 此外，git 对于 .ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
 
-## 5 github pages
+## 6 github pages
 用来做网站的 
 
 # 五 经验
@@ -730,9 +790,6 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 ## 1 已解决
 ### 1.1 git pull 时`cannot lock ref ...`
 1. 第一种可能:就是我经常遇到的,网络或者什么不太重要原因,会出现这个,再git pull一下就好了.
-
-### 1.2 `git log`未按时间顺序排序?
-默认是按时间顺序排序,但我实测pull下来的时候调用该命令发现并没有按时间顺序排，过了一段时间再去看发现又按时间排了(也可能是我几个提交的用户名密码不一样看错了，待补充)
 
 ### 1.3 You have not concluded your merge (MERGE_HEAD exists)
 原因可能有多种.我当时大概是先push了一次,然后使用修改了一些文件然后使用`git commit --amend`并且修改了commit信息,然后push,然后pull下来有冲突,然后我合并并且解决了冲突,但这个时候就出问题了,我把解决完的那个文件加入暂存区,结果暂存区里没有那个文件,然后不管执行pull还是push都提示这个错误.重新试了一次还是这样,估计不是冲突的原因,而是`git commit --amend`相关操作出错了.
@@ -809,6 +866,12 @@ and its host key have changed at the same time.
     
 ### 1.15 Unable to create 'XXXXXX/.git/index.lock': File exists.
 解决方法：找到index.lock 删除即可
+
+### 1.16 fatal: 您位于一个尚未初始化的分支
+待解决
+
+### 1.17 查看某个commit包含在哪些分支里
+`git branch -r --contains COMMIT_ID`
 
 ## 2 未解决
 ### 2.N 其他

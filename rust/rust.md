@@ -53,3 +53,8 @@ for writing non-blocking, low-latency network services.
 
 ### tracing
 for instrumenting Rust programs to collect structured, event-based diagnostic information.
+
+
+# 七 未整理
+1. 使用region式内存管理？
+2. 没有runtime？

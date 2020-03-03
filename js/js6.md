@@ -3,17 +3,24 @@
 ## 1 简介
 该笔记主要记录es6新特性,以后可能会和js笔记合并
 ## 2 历史
-## 3 常识
-### 3.1 ECMAScript 2015(ES2015),ES6和JS6的区别
+
+### 2.1 ECMAScript 5、ECMAScript 5.1
+JS5
+
+### 2.2 ECMAScript 2015(ES2015)、ES6、JS6的区别
 一般来讲,可以把这三个看成一个东西.
 
 2015年6月17日，ECMA国际组织发布了 ECMAScript 的第六版，该版本正式名称为 ECMAScript 2015，但通常被称为 ECMAScript 6 或者 ES6
+
+## 3 常识
 
 ## 4 文档
 ## 5 网站
 1. 阮一峰es6:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)
 # 三 基础
 ## 1 对象
+所有的 JavaScript 对象继承于至少一个对象。被继承的对象被称作原型，并且继承的属性可通过构造函数的 prototype 对象找到
+
 ### 1.1 不定参数和展开运算符
 不定参数:语法是在参数前加三个点,如
 ```javascript
@@ -70,10 +77,8 @@ var obj = {
 };
 ```
 
-### 3.3 setter和getter
-为什么需要setter和getter:虽然可以直接操作对象的属性,但有时我们还需要一些额外操作而不是直接获取或修改,此时可以用这两个方法.
-
-个人感觉这两个定义上像方法,但使用时像属性.
+### 3.3 为对象的属性定义setter和getter
+为什么需要setter和getter:虽然可以直接操作对象的属性,但有时我们还需要一些额外操作而不是直接获取或修改,此时可以用这两个方法。
 
 #### 3.3.1 getter
 基本使用如下
@@ -87,7 +92,7 @@ var obj = {
 }
 ```
 
-注意:getter是lazy getter,每次调用的时候才回去计算值.
+注意:getter是lazy getter,每次调用的时候才会去计算值.
 
 #### 3.3.2 setter
 基本使用如
@@ -202,7 +207,7 @@ Promise常用方法:
     ```
 
 ## 5 类
-ES2015的类,实质上是 JavaScript 现有的基于原型的继承的语法糖,也就是说本质仍然是基于原型.mdn:JavaScript 是一种基于原型而不是基于类的面向对象语言.
+ES2015的类,实质上是 JavaScript 现有的基于原型的继承的语法糖,也就是说本质仍然是基于原型.mdn:JavaScript 是一种基于原型而不是基于类的面向对象语言。使用`class`关键字定义的类，必需使用`new xxx()`来创建，否则报错。
 
 类声明:使用class关键字,形如,
 ```JavaScript

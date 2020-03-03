@@ -1759,6 +1759,99 @@ go的`TCPConn`类型可以用来作为客户端和服务器端交互的通道，
 
 socket是全双工的，所以两边的读写都有缓冲区，没有指定缓冲区大小的时候，默认是使用的系统内核宏所设置的socke缓冲区大小（似乎接收缓冲区默认是1M，最大值是8M，发送默认是512Kb，最大是16M，具体参考`SO_SNDBUF`、`SO_RCVBUF`等）。
 
+## 10 Context
+参考：
+1. blog.golang.org/context
+
+在go1.7之前还是非编制的，然后golang团队发现context这个东西挺好用，1.7开始进入标准库。
+
+goroutine的上下文，用来跟踪一系列的goroutine。它就像一个控制器一样，按下开关后，所有基于这个Context或者衍生的子Context（不管多少层）都会收到通知，这时就可以进行清理操作了，最终释放goroutine，这就优雅的解决了goroutine启动后不可控的问题。比如在go服务器程序中，请求超时或者被取消后，所有的goroutine都应该马上退出并且释放相关的资源，Context包就是专门用来解决这个问题。Context是线程安全的，可以放心的在多个goroutine中传递。
+
+为什么需要Context：
+1. 一个请求对应多个goroutine之间的数据交互
+2. 超时控制。
+    1. 不仅仅 是超时，你还需要有能力去结束那些不再需要操作的行为
+    2. 每一个 RPC 调用都应该有超时退出的能力，这是比较合理的 API 设计
+    3. 任何函数可能被阻塞，或者需要很长时间来完成的，都应该有个 context.Context
+3. 上下文控制
+4. context.Context 是 Go 标准的解决方案（雾）
+
+Context接口只定义了如下四个方法：3个方法（`Done()`、`Err()`、`Deadline()`）用于限定什么时候你的子节点退出，1个方法(`Value()`)用于设置请求范畴的变量。
+```go
+type Context interface {
+	Deadline() (deadline time.Time, ok bool)
+	Done() <-chan struct{}
+	Err() error
+	Value(key interface{}) interface{}
+}
+```
+
+1. `Done()`方法返回一个关闭的只读chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号(signal)后，就应该做清理操作，然后退出goroutine，释放资源。这个channel有点像广播通知，告诉给context相关的函数要停止当前工作然后返回。
+2. `Err()`：当Done方法关闭以后，Err方法返回取消的错误原因（因为什么Context被取消）--非nil的错误值。目前该方法之定义了两个返回值：Canceled和DeadlineExceeded
+3. `Deadline()`方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
+4. `Value()`方法获取该Context上绑定的值，是一个键值对，所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
+
+以上四个方法中常用的是`Done()`，如果Context取消的时候，我们就可以得到一个关闭的只读chan，**关闭的chan是可以读取的**，所以只要可以读取的时候，就意味着收到Context取消的信号了。
+
+go已经帮我们实现了两个Context：background和todo，这两个都是emptyCtx结构体类型，且不可取消（删除）、没有设置截止时间、没有携带任何值的Context。
+
+1. `Background()`：返回一个空的Context，这个空的Context一般用于整个Context树的根节点。使用场景包括main函数、初始化以及测试代码。然后我们使用`context.WithCancel(parent)`函数，创建一个可取消的子Context，然后当作参数传给goroutine使用，这样就可以使用这个子Context跟踪这个goroutine。
+2. `TODO()`:如果你没有 context，却需要调用一个 context 的函数的话，就用这个。
+3. `cancel()`:
+
+```go
+ctx, cancel := context.WithCancel(context.Background())
+go func(ctx context.Context) {
+    for {
+        select {
+        case <-ctx.Done():
+            fmt.Println("监控退出，停止了...")
+            return
+        default:
+            fmt.Println("goroutine监控中...")
+            time.Sleep(2 * time.Second)
+        }
+    }
+}(ctx)
+
+time.Sleep(10 * time.Second)
+fmt.Println("可以了，通知监控停止")
+cancel()
+//为了检测监控过是否停止，如果没有监控输出，就表示停止了
+time.Sleep(5 * time.Second)
+```
+
+```go
+// context的创建方法和场景
+// 1. 一般每个请求基于单独的context.Background()创建，而不是所有请求基于一个context.Background()，所有的Context是树的结构，Background是树的根
+// 2. 如果你没有 context，却需要调用一个 context 的函数的话，用 context.TODO()
+// 3. 如果某步操作需要自己的超时之类的设置，给它一个独立的 sub-context
+```
+
+```go
+ctx, cancel := context.WithTimeout(parentCtx, time.Second * 2)
+defer cancel() // 养成关闭 Context 的习惯
+```
+
+Context的细节：
+1. 是不可变的(immutable)树节点(有什么用？)
+2. Cancel 一个节点，会连带 Cancel 其所有子节点 （从上到下）
+3. Context values 是一个节点
+4. Value 查找是回溯树的方式 （从下到上）
+
+Context使用原则(context很容易被滥用)：
+1. 不要把Context放在结构体中，要以参数的方式传递，放在第一个参数。
+2. 给一个函数方法传递Context的时候，不要传递nil，如果不知道传递什么，就使用context.TODO。
+
+### Derived Context
+Context提供了派生（继承、衍生？）机制，也就是我们可以从一个context再派生出子context，这些context组成一个树。一个context删除后，所有派生自它的context也会被删除。所以我们一般在请求处理结束后，就应该马上删除该请求的context。
+
+go使用三个`With`前缀的函数来派生子context。
+1. `func WithCancel(parent Context) (ctx Context, cancel CancelFunc)`,传入父Context，返回子Context，以及一个取消函数用来取消Context。
+2. `WithDeadline()`：传递截止时间，到了该时间点自动取消Context，也可以主动提前取消。
+3. `WithTimeout()`：和上面类似，传入时间，超过这个时间自动取消。使用 Timeout 会导致内部使用 time.AfterFunc，从而会导致 context 在计时器到时之前都不会被垃圾回收。所以在建立之后，立即 defer cancel() 是一个好习惯
+4. `WithValue()`：生成一个绑定了一个键值对数据的Context，虽然key的类型是interface{}，但是key必需具有可比性，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
+
 ## 12 底层编程
 主要指C语言相关
 
@@ -2676,62 +2769,7 @@ go的list的特点：
 环形链表
 
 ### context
-goroutine的上下文，用来跟踪一系列的goroutine。它就像一个控制器一样，按下开关后，所有基于这个Context或者衍生的子Context（不管多少层）都会收到通知，这时就可以进行清理操作了，最终释放goroutine，这就优雅的解决了goroutine启动后不可控的问题。Context是线程安全的，可以放心的在多个goroutine中传递。
-
-Context接口：
-```go
-type Context interface {
-	Deadline() (deadline time.Time, ok bool)
-	Done() <-chan struct{}
-	Err() error
-	Value(key interface{}) interface{}
-}
-```
-
-1. `Deadline()`方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
-2. `Done()`方法返回一个只读的chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号后，就应该做清理操作，然后退出goroutine，释放资源。
-3. `Err()`方法返回取消的错误原因，因为什么Context被取消。
-4. `Value()`方法获取该Context上绑定的值，是一个键值对，所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
-
-以上四个方法中常用的就是Done了，如果Context取消的时候，我们就可以得到一个关闭的chan，关闭的chan是可以读取的，所以只要可以读取的时候，就意味着收到Context取消的信号了。
-
-go已经帮我们实现了两个Context：background和todo，这两个都是emptyCtx结构体类型，且不可取消、没有设置截止时间、没有携带任何值的Context。
-
-1. `Background()`：返回一个空的Context，这个空的Context一般用于整个Context树的根节点。使用场景包括main函数、初始化以及测试代码。然后我们使用`context.WithCancel(parent)`函数，创建一个可取消的子Context，然后当作参数传给goroutine使用，这样就可以使用这个子Context跟踪这个goroutine。
-2. `TODO()`:它目前还不知道具体的使用场景，如果我们不知道该使用什么Context的时候，可以使用这个。
-3. `cancel()`:
-
-```go
-ctx, cancel := context.WithCancel(context.Background())
-go func(ctx context.Context) {
-    for {
-        select {
-        case <-ctx.Done():
-            fmt.Println("监控退出，停止了...")
-            return
-        default:
-            fmt.Println("goroutine监控中...")
-            time.Sleep(2 * time.Second)
-        }
-    }
-}(ctx)
-
-time.Sleep(10 * time.Second)
-fmt.Println("可以了，通知监控停止")
-cancel()
-//为了检测监控过是否停止，如果没有监控输出，就表示停止了
-time.Sleep(5 * time.Second)
-```
-
-Context的继承衍生：使用`With`系列函数。
-1. `func WithCancel(parent Context) (ctx Context, cancel CancelFunc)`,传入父Context，返回子Context，以及一个取消函数用来取消Context。
-2. `WithDeadline()`：传递截止时间，到了该时间点自动取消Context，也可以主动提前取消。
-3. `WithTimeout()`：和上面类似，传入时间，超过这个时间自动取消。
-4. `WithValue()`：生成一个绑定了一个键值对数据的Context，其中key必需具有可比性，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
-
-Context使用原则：
-1. 不要把Context放在结构体中，要以参数的方式传递，放在第一个参数。
-2. 给一个函数方法传递Context的时候，不要传递nil，如果不知道传递什么，就使用context.TODO。（why）
+参考context部分
 
 ### crypto
 #### crypto/md5
@@ -2868,10 +2906,10 @@ func main() {
 1. `Copy`
 
 以及不常用的接口：
-2. `io.Pipe()`提供了 线程安全 的管道服务，“Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”，适合于产生了一条数据，紧接着就要处理掉这条数据的场景。因为其内部是一把大锁，因此是线程安全的
+1. `io.Pipe()`提供了 线程安全 的管道服务，“Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”，适合于产生了一条数据，紧接着就要处理掉这条数据的场景。因为其内部是一把大锁，因此是线程安全的
 
-读取文件的例子：
 ```go
+// 读取文件的例子
 f, err := os.Open("/test.txt")
 if err != nil {
     panic(err)
@@ -2884,8 +2922,8 @@ if err != nil {
 fmt.Println(string(fd))
 ```
 
-写文件的例子：
 ```go
+// 写文件的例子
 func writeFile(path string, b []byte) {
     file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
     defer file.Close()
@@ -2969,7 +3007,7 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 
 1. `Args[xxx]`：返回路径和命令行参数，其中`Arsg[0]`是文件执行时的相对路径，`Args[1]`开始才是命令行参数，比如`go run xxx.go p1 p2 ...`中的p1、p2...
 2. 操作系统架构:`runtime.GOARCH`
-3. func Getpagesize() int　　　//获取底层系统内存页的数量
+3. `Getpagesize() int`:获取底层系统内存页的数量
 
 
 操作目录：
@@ -3164,8 +3202,8 @@ go1.10开始新增了builder类型，用于提高字符串拼接性能，用法�
 2. `Done()`
 3. `Wait()`
 
-例子
 ```go
+// 例子1
 var wg sync.WaitGroup
 for i := 0; i < 5; i++ {
     // 计数加 1
@@ -3177,7 +3215,6 @@ for i := 0; i < 5; i++ {
         fmt.Printf("goroutine%d 结束\n", i)
     }(i)
 }
-
 // 等待执行结束
 wg.Wait()
 fmt.Println("所有 goroutine 执行结束")
@@ -3316,9 +3353,6 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 
 比如编译windows平台下的exe文件：`CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build test.go`，交叉编译不支持CGO所以要禁用它
 
-## 5 其他
-1. 有空的时候可以多看看Google的工程师是如何实现的
-
 ## 6 依赖管理解决方案
 ### 6.1 dep
 和go mod比较：
@@ -3449,7 +3483,15 @@ go mod命令:
     )
     ```
 3. 编译项目，会去拉取当前模块下`main.go`文件里依赖的外部项目，缓存起来并放进`go.mod`文件，如果没有创建`go.sum`文件，会被创建。编译和`go test`只会将`go.mod`中没有的package添加进去，不会覆盖或者改变`go get`引入的规则，所以不用担心他们会冲突
-4. 
+
+## 7 代码管理
+不同的管理方式各有优劣，个人更倾向于放在一个Repository里，优点如下：
+1. 公有库升级的时候所有人都升级，不会存在有的人的服务没有升级的情况
+2. 避免重复造轮子
+3. 方便依赖管理
+
+## N 其他
+1. 有空的时候可以多看看Google的工程师是如何实现的
 
 
 # 六 问题
@@ -3619,6 +3661,9 @@ Variables in Go are addressable，但return values of function and method calls 
 背景：go版本1.10，使用brew安装的golangci-lint（版本1.22），结果运行`golangci-lint run xxx`就报了这个错，然后切换go的版本到1.13就没有报错
 
 可能原因：golangci-lint只支持go1.11+的版本？
+
+### 1.20 found packages pkgA(xxx.go) and pkgB(yyy.go) in path_zzz
+可能原因：同一个folder存在多个package
 
 ## 2 未解决
 ### 2.N 其他

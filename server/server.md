@@ -14,7 +14,7 @@
 - Apache软件基金会的Apache HTTP服务器
 - Microsoft的Internet Information Server（IIS）
 - Google的Google Web Server
-- Nginx公司的nginx
+- Nginx公司的nginx：比apache并发能力更强
     - 淘宝从nginx改良的Tengine
 - lighttpd公司的lighttpd
 - Cherokee_(Web服务器)

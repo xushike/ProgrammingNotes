@@ -114,8 +114,7 @@ pbcopy < myFile.txt
     - 只能看不能动
 
     于是linux引入了两种机制:输入/输出重定向和管道
-2. 重定向(即I/O重定向
-    I/O重定向允许我们更改输出位置和输入来源
+2. 重定向(即I/O重定向)I/O重定向允许我们更改输出位置和输入来源
     1. 标准输入重定向:把标准输入重定向到指定的文件中,即可以不来自键盘
         1. 直接跟文件名,如`wc hello.txt`
         2. 输入重定向:`[命令] < [文件名]`
@@ -140,7 +139,7 @@ pbcopy < myFile.txt
     5. 重定向到黑洞`/dev/null`
         `/dev/null`是一个特殊文件,叫位存储桶,位存储桶是个古老的Unix概念.
 3. 管道
-    对于把一个命令的输出作为另一个命令的输入,管道比重定向更加好用,可以通过`|`一直连下去,最后显示最后一个的输出,如`ls ~ | wc -w`
+    对于把**一个命令的输出作为另一个命令的输入**,管道比重定向更加好用,可以通过`|`一直连下去,最后显示最后一个的输出,如`ls ~ | wc -w`
     1. 管道仅能处理标准输出的数据,对标准错误输出没有能力处理
     2. 管道后所接的命令必须能够接受标准输入才行,否则无效,比如`ls`,`mv`,`cp`这些管道就没用,但是这些命令可以用命令替换
 4. 其他:命令替换
@@ -720,7 +719,13 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
 4. `-F 'xxx'`:模拟http表单提交数据
 5. `-I`(`--head`)：只显示头信息
 
-例子如：`curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
+```bash
+# 例子
+# 1
+curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
+# 2
+curl -XPOST 'https://xxx/companies/search'
+```
 
 判断端口连通性：`curl ip:port`
 1. Connection reset by peer
