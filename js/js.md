@@ -850,6 +850,8 @@ JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
 ### 4.8 JSON
 包含两个方法: 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，以及将对象/值转换为 JSON字符串的 `stringify()`方法。除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
 
+关于JSON的其他知识参考JSON笔记
+
 #### 4.8.1 方法
 1. `JSON.stringify(value[, replacer [, space]]) string`:replacer可以是函数、数组、null或省略，space用于指定缩进的字符串，用于美化输出（pretty-print）
 
@@ -1141,7 +1143,8 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 与 ArrayBuffer 不同的是,SharedArrayBuffers不能被分离.但是因为安全漏洞,SharedArrayBuffers将会被禁用,所以简单了解就行了.
 
 ## 4 js模块化
-首先要弄清楚为什么js需要模块化:开发中,我们需要引入其他软件,新旧代码之间就会存在依赖关系,由于这些软件需要一起工作,因此它们之间不存在冲突是非常重要的.封装可以防止模块之间相互冲突,这也是C语言库中元素通常带有前缀的原因之一.
+为什么需要模块化:开发中,我们需要引入其他软件,新旧代码之间就会存在依赖关系,由于这些软件需要一起工作,因此它们之间不存在冲突是非常重要的.封装可以防止模块之间相互冲突,这也是C语言库中元素通常带有前缀的原因之一.
+
 随着js越来越复杂,依赖管理可能会变得麻烦,重构也受到影响:如何维护加载链的正确顺序?
 
 主流的几个方案:
@@ -1165,7 +1168,7 @@ CommonJS是用于开发服务器端的JS项目.同步加载模块.NodeJS采用�
 
 
 ### 4.3 ES2015
-import和export指令的静态特性允许静态分析器在不运行代码的情况下构建完整的依赖关系树。
+`import`和`export`指令的静态特性允许静态分析器在不运行代码的情况下构建完整的依赖关系树。
 
 优点:
 1. 支持同步和异步加载。
@@ -1181,13 +1184,24 @@ import和export指令的静态特性允许静态分析器在不运行代码的�
 5. 导入某模块的所有导出:`import * as xxx from "module-name"`:可以用别名`xxx`来使用模块.此时如果模块里有多个导出,就可以使用xxx.yyy来使用对应的导出.
 
 #### 4.3.2 导出export
-1. 命名导出:形如`export { myFunction }`(存在名为myFunction的方法)或者直接写在方法方法上`export function diag(xxx) {...}`,还可以导出成常量`export const foo = Math.sqrt(2)`
+1. 命名导出:命名导出对导出多个值很有用。在导入时,必须使用相同名称。
 
-    命名导出对导出多个值很有用。在导入时,必须使用相同名称。
-2. 默认导出:导出函数`export default function() {}`,导出类`export default class {}`
-
-    对于默认导出,在导入的时候可以使用任意名字接收,如`import abc from 'module-name'`
-
+    ```js
+    // 导出方法
+    export { myFunction } // 存在名为myFunction的方法
+    export function diag(xxx) {...} 
+    // 导出成常量
+    export const foo = Math.sqrt(2)
+    ```
+2. 默认导出:对于默认导出,在导入的时候可以使用任意名字接收。语法形如`export default xxx`
+    ```js
+    // 导出函数
+    export default function() {}
+    // 导出类
+    export default class {}
+    // 使用任意名字接收
+    import abc from 'module-name'
+    ````
 
 ### 4.4 AMD / CMD
 支持异步加载模块,意味着启动更快.兼容`require`,`exports`和`define`
@@ -1203,6 +1217,8 @@ import和export指令的静态特性允许静态分析器在不运行代码的�
 目前最流行的AMD实现是:require.js和Dojo
 
 ## 5 event loop(重点和难点)
+首先说说异步，异步准确的说应该叫浏览器的event loops或者说是javaScript运行环境的event loops，因为ECMAScript中没有event loops，event loops是在[HTML Standard](https://html.spec.whatwg.org/#event-loops)定义的。
+
 js是单线程,也就意味着所有任务需要排队.event loop是js运行时概念,所有任务可以分为两种:同步和异步.同步任务在主线程上执行,所有同步任务形成一个执行栈,前一个执行完才会执行后一个;异步任务不进入主线程,而是进入任务队列中
 
 执行过程:

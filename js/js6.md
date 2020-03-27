@@ -7,10 +7,19 @@
 ### 2.1 ECMAScript 5、ECMAScript 5.1
 JS5
 
-### 2.2 ECMAScript 2015(ES2015)、ES6、JS6的区别
+### 2.2 ECMAScript 2015(ES2015)、ES6、JS6
 一般来讲,可以把这三个看成一个东西.
 
-2015年6月17日，ECMA国际组织发布了 ECMAScript 的第六版，该版本正式名称为 ECMAScript 2015，但通常被称为 ECMAScript 6 或者 ES6
+2015年6月17日，ECMA国际组织发布了 ECMAScript 的第六版，该版本正式名称为 ECMAScript 2015，但通常被称为 ECMAScript 6 或者 ES6。
+
+ES6的新特性有：
+1. const与let变量
+2. 模板字符串
+3. 扩展运算符
+4. 箭头函数
+5. 类和继承
+6. promise
+...
 
 ## 3 常识
 

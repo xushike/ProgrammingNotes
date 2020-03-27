@@ -7,6 +7,8 @@ JSON的全名JavaScript Object Notation（从名字上就能看出和JavaScript�
 
 作者参考：https://cloud.tencent.com/developer/article/1080320
 
+RFC 7159关于JSON的定义：https://tools.ietf.org/html/rfc7159
+
 ## 2 历史
 ### 2.2 json5
 json5支持写注释了

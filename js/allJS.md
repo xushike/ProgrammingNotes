@@ -31,7 +31,6 @@ bootstrap-vue、vue-material、Element UI、Mint UI 等
 和js很像,由google开发,影响比较多,用到再补充吧
 ## 10 meteor
 ## 11 Gatsbyjs
-## 12 jQuery
 ## 13 mock
 在前后端分离开发中，一般在功能开发前，前端人员与服务端会制定相关的api，制定好它返回数据格式，定好后我们就可以快速的建立一个内存服务器了。
 ### json-server.js
