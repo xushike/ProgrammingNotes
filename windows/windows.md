@@ -27,6 +27,11 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 ### 3.6 自带的远程控制
 似乎只对两种情况生效：使用公网的 IP 地址或者两者在同一个内网内。
 
+### 3.7 Hyper-V
+网友：最早支持Hyper-V的Windows是Windows Server 2008。说起Hyper-V的历史，也是有一定渊源的。最早有一家公司，名叫Connectix，它有一款产品就是大家熟悉的Connectix Virtual PC，一款硬件虚拟化产品，后来Connectix把Virtual PC产品卖给了微软，成为了Microsoft Virtual PC，之后Connectix于2003年宣布解体，微软把Virtual PC精神发扬光大，成就了现在的Hyper-V。从Windows 10开始，Professional/Enterprise版本的Windows 10都能够支持Hyper-V了。大家可以直接在Windows 10中创建虚拟机，而不需要额外安装vmware player、Oracle VirtualBox等这些第三方的虚拟机服务。
+
+在开始菜单中输入Hyper-V作为关键字，Hyper-V Manager菜单项就会显示出来，点击Hyper-V Manager的菜单项，即可打开Hyper-V的管理界面。在Hyper-V Manager中，可以非常方便地创建并管理虚拟机，虚拟机的操作系统可以是Windows的，也可以是Linux的，用户只需要下载所需操作系统的ISO镜像即可完成安装，非常方便。可参考微软官网Hyper-V的教程。
+
 # 二 安装配置
 # 三 基础
 ## 1 DOS
