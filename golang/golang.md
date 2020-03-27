@@ -3665,6 +3665,9 @@ Variables in Go are addressable，但return values of function and method calls 
 ### 1.20 found packages pkgA(xxx.go) and pkgB(yyy.go) in path_zzz
 可能原因：同一个folder存在多个package
 
+### 1.21 assignment to entry in nil map
+可能原因：map赋值前需要初始化，即使这个map在出参里
+
 ## 2 未解决
 ### 2.N 其他
 6.  protobuf的获得和使用

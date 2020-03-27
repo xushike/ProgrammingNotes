@@ -248,6 +248,8 @@ mac按以下步骤操作：
 
 然后就可以使用git的自动补全了，比如输入`git co`，然后按两次tab键，就会出现提示`commit config`,输入`git checkout`按两次tab就会出现所有分支名等。
 
+## 5 清除本地账号密码
+
 # 三 基础
 ## 1 开始
 ### 1.1 git init 初始化仓库
@@ -309,11 +311,11 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 - `--stat`:显示变动文件数和行数
 - `--patch`、`-p`、`-u`：查看具体变更内容。
 - 搜索、过滤
-    - `--grep=<xxx>`或`--grep "<xxx>"`：按提交信息过滤，支持正则
+    - `--grep=<xxx>`或`--grep "<xxx>"`：按提交信息过滤，支持正则。如`git log --grep="first"`
     - `--author="<xxx>"`：按提交人过滤
     - `-- <file_path>`或`<file_path>`：按文件过滤
     - 按修改的文本内容过滤
-        - `git log -G <pattern>`：支持正则查找。如`git log -G '配件编码'`，会搜索所有改动文本包含"配件编码"的commit
+        - `git log -G <pattern>`：支持正则查找。如`git log -G '配件编码'`，会搜索所有改动文本包含"配件编码"的commit。如`git log -G "fmt.Println"`
     
 ### 2.3 git config --list:查看配置文件
 - 查看项目的配置文件`git config --local --list`
@@ -461,6 +463,21 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 一般情况下，`git revert`是生成一个新的提交来撤销某次提交，此次提交之前的commit都会被保留，`revert`不是让指针移回去,而是新增一个表示撤销的commit; 而`git reset`是回到某次提交，某次提交及之前的commit都会被保留，但是某次之后的修改都会被退回到暂存区。推送到远程的话，`git revert`是追加commit(会保留所有原来的commit)，而`git reset`只能强制推送，会覆盖掉原来的commit。
 
 对于已经push到远程的，使用`reset`命令可以本地回滚，但是push的时候会被拒绝，必需使用强制推送，如果是多人合作的话，强制推送可能导致别人的本地和远程不一致的问题。这种情况推荐用`git revert <HEAD~n>`，具体自己斟酌。
+
+然后看下`git revert`的用法:
+1. 撤销指定的版本
+    1. ` git revert HEAD`撤销前一次commit
+    1. ` git revert HEAD~1`撤销前前次commit。比如提交了版本一、版本二、版本三，想撤销版本二但是又想保留版本三，就可以用这个。
+    1. ` git revert commit_id`撤销指定的版本
+    1. ` git revert -n commit_id`撤销指定的版本
+2. 撤销merge
+    1. 可以像撤销指定版本那样来撤销merge（待实践）
+    2. `git revert commit_id -m num`：假设当前分支(分支A)的最新commit_id是commitA，分支B的最新commit_id是commitB,把分支B合并到分支A之后生成的新的commit_id是commitC，则`git revert commitC -m 1`是撤销到commitA，`git revert commitC -m 2`是撤销到commitB。如果不指定`-m`参数会报错"... 是一个合并提交但未提供 -m"
+    
+撤销时的冲突解决：撤销时如果有冲突，需要解决冲突，否则需要取消这次撤销，使用`git revert --abort`
+
+如何解决撤销后再merge部分代码消失的问题：在日后继续merge以前的老版本时，因为`git revert`是用一次逆向的commit“中和”之前的提交，因此日后合并老的branch时，导致这部分改变不会再次出现。
+1. 把之前那个revert再revert掉(待实践)：找到之前revert对应的commit_id，然后按指定版本的撤销方式来撤销，这样第一次revert掉的这部分代码就会恢复回来，但这部分代码对应的commit记录不会显示出来。
 
 ### 7.2 git checkout 检出（该目录待移动）
 有如下多种用法
@@ -760,7 +777,9 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 - 以方括号“[]”包含单个字符的匹配列表；
 - 以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
 
-此外，git 对于 .ignore 配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
+规范顺序和范围：git 对于`.gitignore`配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
+
+里面可以写注释，使用`#`
 
 ## 6 github pages
 用来做网站的 
