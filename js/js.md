@@ -262,7 +262,7 @@ this === this.window // true
         使用b的话，则函数的值和调用函数都会报错`ReferenceError`
         3. 函数声明（Function Declaration）提升提升create、init、assign
 
-## 1 数据类型
+## 1 变量和数据类型
 ### 1.1 变量的声明
 弱类型(动态类型):js是弱类型(loosely typed)或者说动态(dynamic)语言,意味着可以不用提前声明(declare)变量的类型,在程序运行时会被自动确定,而且同一个变量可以保存不同类型的数据.如:
 ```javascript
@@ -422,7 +422,7 @@ js默认把Date序列化从1970年1月1日0点0分0秒的毫秒数。但JavaScri
 
 最开始只有null,undefined是作为补充设计出来的.要理解两者的区别,最好理解两者语义上的不同.
 
-`null`表示一个值被定义了，定义为“空值”.出现场景:
+`null`是js基本类型之一，同时也是字面量，它表示一个值被定义了，只不过是定义为“空值”。出现场景:
 1. 作为函数的参数，表示该函数的参数不是对象。
 2. 作为对象原型链的终点。
 
@@ -463,11 +463,23 @@ x // undefined
     null  == undefined // true
     ```
 
-### 1.3 局部变量
-### 1.4 全局变量
+判断一个值是否为null或者是否为undefined：同时判断是否属于两者之一比较简单，方法较多，单独判断的方法如下。
+```js
+// 判断一个值是否为null：稍微有些复杂，一般不会用到，因为很少会有需要单独判断null的场景
+!exp && typeof(exp)!="undefined" && exp!=0
+
+// 判断一个值是否为undefined
+typeof(xxx) == "undefined"
+```
+
+### 1.3 类型转换(Type conversion)
+js的类型转换包含Type conversion和Type coercion(类型强制转换)，两者的区别是：前者可以是隐式的也可以是显式的，后者是隐式的。
+
+### 1.4 局部变量
+### 1.5 全局变量
 1. 如果您把值赋给尚未声明的变量，该变量将被自动作为全局变量声明
 
-### 1.5 变量的零值
+### 1.6 变量的零值
 js声明变量但是没赋初值(包括ts中声明的任意类型变量?),那么变量的值和类型都是undefined
 
 ## 2 运算符,比较符,逻辑操作符
@@ -525,13 +537,23 @@ delete 操作符用于删除对象中不是继承而来的属性(区别于原型
 
 2. 删除`setter`和`getter`设置的属性
 
-### 2.3 比较操作符`==`和`===`
+### 2.3 比较操作符==(也称标准相等操作符)、===(Identity/ strict/triple equality)、!=(Inequality)、>(Greater than operator)
 `==`并不是严格相等,而且判断的是值是否相等,而不是布尔值是否相等.js中0、""、''、null、false、undefined、NaN的**布尔值**(可通过`Boolean(xxx)`查看)都是false，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.(具体的==比较待补充)
 
-`===`严格相等.
+`!=`:如果两操作数不是同一类型，JavaScript会尝试将其**转为一个合适的类型，然后进行比较**。
+```js
+1 !=   2     // true
+1 !=  "1"    // false
+1 !=  '1'    // false
+1 !=  true   // false
+0 !=  false  // false
+```
 
-`==`和`===`的区别（待补充）：
-1. `==`比较的时候会先转换成相同类型再比较，而`===`在类型不同时直接返回false
+`===`严格相等，不会做type conversion(类型转换)
+
+`==`和`===`的区别和总结（待补充）：
+1. `==`比较的时候会**先转换成相同类型再比较**，当两个操作数都是对象时，JavaScript会比较其内部引用，当且仅当他们的引用指向内存中的相同对象（区域）时才相等，即他们在栈内存中的引用地址相同。而`===`在类型不同时直接返回false
+2. 当需要明确操作数的类型和值的时候，或者操作数的确切类型非常重要时，应使用严格相等操作符。否则，当你允许操作数在比较前进行类型转换时，可以使用标准相等操作符来比较。
 
 ### 2.4 js的逻辑操作符`||`和`&&`(即短路求值,Short-circuit Evaluation)(难点)
 这两个逻辑操作符判断的是布尔值而不是值.
@@ -769,7 +791,13 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
 4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
 5. `Array.prototype.slice([begin[,end]])`:从数组或类数组中拷贝出新的数组，这个拷贝是对原数组元素的浅拷贝，该方法不会改变原数组。如果不带参数,则是整个复制。begin和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
 
-array常用方法的总结:过滤用`filter()`,需要对元素进行处理用`map()`
+array常用操作总结
+1. 过滤用`filter()`,需要对元素进行处理用`map()`
+2. 判断数组为空(待补充):
+
+    ```js
+    arr.length == 0
+    ```
 
 注意：
 1. 查看`map()`方法的文档：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
@@ -1266,9 +1294,9 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 # 六 问题
 ## 1 已解决
 ### 1.1  在浏览器直接输出window.a和a，前者的值是undefined，后者是`ReferenceError`
-网友的解释是，因为所有的全局变量都是window的属性，所以在window中有`var 一切=undefined`.但是只有在调用window.xxx的时候js引擎才会去声明xxx，如果没有调用window.a而是直接调用就不行了.
+网友的解释是，因为所有的全局变量都是window的属性，所以在window中有`var 一切=undefined`.但是只有在调用window.xxx的时候js引擎才会去声明xxx，如果没有调用window.a而是直接调用就不行了。同理在NodeJS中输出`global.a`和`a`也是一样。
 
-同理在NodeJS中输出`global.a`和`a`也是一样.
+从mdn官网可知，如果xxx没有被定义过且没有初始化过,就会出现`ReferenceError: xxx is not defined`这个错误。而调用`window.xxx`的时候，js会去声明xxx，所以不会抛出这个错误。
 
 ### 1.2 数字,字符串之间的比较
 纯数字与纯数字比较:以正常的数学运算方式比较
