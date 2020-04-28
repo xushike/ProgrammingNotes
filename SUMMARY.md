@@ -112,6 +112,7 @@
 * [dorado](dorado.md)
 * [windows](windows/windows.md)
     * [windows10](windows/windows10.md)
+    * [Wine](windows/Wine.md)
     * [DOS](windows/DOS.md)
 * [unix](unix/unix.md)
     * [mac](unix/mac.md)
