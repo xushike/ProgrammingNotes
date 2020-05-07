@@ -1,6 +1,6 @@
 # mac
 [TOC]
-# 一. 概述
+# 一 概述
 ## 3 常识
 ### 3.1 ipad读作...,ipod读作...（总是混淆）
 
@@ -47,6 +47,19 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 ### 3.11 关于文件的创建时间
 可以通过`stat`命令查看，其中的`Birthtimespec`就是创建时间，实测发现似乎和linux一样会因为文件的改变而更新，并不是真正的创建时间。
 
+### 3.12 System Intregrity Protection(SIP, mac的系统完整性保护)
+什么是SIP：是 OS X El Capitan 及更高版本所采用的一项安全技术，旨在帮助防止潜在恶意软件修改 Mac 上受保护的文件和文件夹。系统完整性保护可以限制 root 用户帐户，以及 root 用户能够在 Mac 操作系统的受保护部分执行的操作。
+
+有些操作会出现这个提示:"Operation not permitted while System Integrity Protection is engaged"，这就是因为SIP。
+
+查看SIP状态:`csrutil status`，如果显式`System Integrity Protection status: enabled.`表示开启
+
+启用/禁用SIP:
+1. 重启电脑，按住Command+R(直到出现苹果标志)进入Recovery Mode(恢复模式)
+2. 左上角菜单里找到实用工具 -> 终端
+3. 输入`csrutil disable`禁用，或者输入`csrutil enable`启用
+4. 重启Mac
+
 # 二 安装配置
 1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
 
@@ -67,22 +80,45 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
 8. 复制粘贴剪切：复制`cmd+c`、粘贴`cmd+v`。实测，`cmd+x`似乎总是不生效，但是可以先`cmd+c`复制，然后`cmd+option+v`实现剪切。
 
 ## 2 命令行工具
-1. open命令打开
-    1. 对于文件,会使用关联程序打开;对于目录是finder打开,比如`open .`打开当前目录
-    2. `-a`指定用什么打开,`-e`强制用textedit编辑
-    3. 把文件拖入终端,等于把文件的路径复制到终端
+### open
+打开
+1. 对于文件,会使用关联程序打开;对于目录是finder打开,比如`open .`打开当前目录
+2. `-a`指定用什么打开,`-e`强制用textedit编辑
+3. 把文件拖入终端,等于把文件的路径复制到终端
 
-2. pbcopy和pbpaste
-    前者允许将stdin或者文件复制到剪切板中,后者用于将剪切板的内容输出,如,
-    1. `ls ~ | pbcopy`:将home目录文件列表复制到剪切板
-    2. 将任意文件内容读入剪切板,如`pbcopy < hello.txt`
-    3. 重定向剪切板的内容到文件:`pbpaste >> a.file`
+### pbcopy和pbpaste`
+前者允许将stdin或者文件复制到剪切板中,后者用于将剪切板的内容输出,如,
+1. `ls ~ | pbcopy`:将home目录文件列表复制到剪切板
+2. 将任意文件内容读入剪切板,如`pbcopy < hello.txt`
+3. 重定向剪切板的内容到文件:`pbpaste >> a.file`
 
-3. 文本转语音（TTS）的工具:`say`
+### 文本转语音（TTS）的工具:say
+### locate(和linux上的locate有所区别)
+功能和find类似，不过`locate`是在自己维护的数据库中查文件，而`find`是直接遍历目录中所有的文件进行匹配，所以它比find高效很多。默认一天更新一次文件的索引，所以它的缺点是新增的文件可能因为没加到索引中导致查不出来。
+
+首次使用，比如`locate xxx`会提示：
+> WARNING: The locate database (/var/db/locate.database) does not exist.  
+To create the database, run the following command:  
+sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist  
+Please be aware that the database can take some time to generate; once the database has been created, this message will no longer appear.
+
+然后执行`sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist`
+
+常用操作：
+1. 主动更新:`/usr/libexec/locate.updatedb`
+
+常用参数:
+
+### spotlight的命令行工具:mdfind
+默认是查找所有允许查找的目录
+
+常用参数:
+1. `-name`:按名称查找，和find类似
+2. `-onlyin pathA`:在指定路径下查找
 
 ## 2 mac上好用的软件
 ### 2.1 spotlight
-mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。
+mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。它对应的命令行工具是`mdfind`
 
 操作：
 1. 查看文件位置：`cmd`
@@ -312,17 +348,33 @@ qq截图之后或者command+c复制了自己想要的excel之后，打开预览a
 mac会对图标进行缓存，图标缓存包括finder和dock，一次执行下面的命令：
 
 `sudo find /private/var/folders/ \( -name com.apple.dock.iconcache -or -name com.apple.iconservices \) -exec rm -rfv {} \;`
-
+ 
 `sudo rm -rf /Library/Caches/com.apple.iconservices.store;`
 
 `killall Dock`
 
 `killall Finder`
 
+### 1.13 "Your disk is almost full"("您的磁盘几乎已满")(待研究)
+系统版本是Sierra的话:
+1. 关闭该提示:通过禁用该提示的守护程序来关闭：`sudo launchctl unload -w /System/Library/LaunchAgents/com.apple.diskspaced.plist`
+    1. 如果提示"Operation not permitted while System Integrity Protection is engaged"，表示启用了SIP,此时可以使用`launchctl stop com.apple.diskspaced`来关闭
+        2. `launchctl list com.apple.diskspaced`来查看相关信息，如果显示`"LastExitStatus" = numA`表示已经关闭了，如果显示`"PID" = numB`表示启用中
+        3. `launchctl start com.apple.diskspaced`来重新启用
+2. 修改参数：因为守护程序仅在启动时读取其首选项，所以修改后需要重新启动它。
+    ```bash
+    # 查看参数
+    sudo defaults read com.apple.diskspaced
+    # 提醒阈值:比如改成不足5G再提示
+    sudo defaults write com.apple.diskspaced minFreeSpace 5
+    # 提醒周期
+    sudo defaults write com.apple.diskspaced warningInterval 3600
+    ```
+    
+系统版本是Mojave的话:
+1. google了一圈，似乎只有禁用所有通知`defaults write com.apple.diskspaced removeAllNotifications -bool true`是有效的，想单独禁用该通知却没法。最好的办法还是清理硬盘吧。
+
 ## 2 未解决
-1. 装了oh-my-zsh的iterm2，在psql中粘贴超过一千五百多字符时会出现错位，但在bash中就没问题，目前还未找到原因
-      1. 因为没将tab换成space？
 2. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
-3. 网友说的：强大的第三方神级软件：Homebrew / Alfred / iTerm2 ...
 4. 合上盖子是什么状态?每隔一段时间就会自动联网?
 5. sbin

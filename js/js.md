@@ -101,14 +101,14 @@ console.log(color2)//['red','green','black'] 因为操作的是地址,也就是�
 3. 发布订阅模式
 4. Promise对象
 
-### 3.4 js的作用域,var let和const,变量提升，以及TDZ
+### 3.4 js的作用域(scope,action scope),var let和const,变量提升，以及TDZ
 #### 3.4.1 作用域
 js中默认只有全局作用域和函数作用域,没有块级作用域(虽然能通过一些方式实现),这点和java,go等是不一样,比如下面这个例子,在js里会输出10:
 
 ```JavaScript
 for(var i =0;i<10;i++){
 }
-console.log(i)
+console.log(i) // 10
 ```
 还有一个地方需要注意，函数内部声明变量的时候，一定要使用var或let命令。如果不用的话，你实际上声明了一个全局变量,如
 
@@ -230,8 +230,10 @@ this === this.window // true
 'use strict';
 ```
 
-## 4 文档
-## 5 相关网址
+### 3.14 falsy和truthy
+js中**只有0、""、''、null、false、undefined、NaN这七个的布尔值(可通过`Boolean(xxx)`查看)是false**，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.
+
+## 4 文档网址等
 1. 廖雪峰的js标准参考教程:[http://javascript.ruanyifeng.com/](http://javascript.ruanyifeng.com/)
 2. 廖雪峰的es6入门:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)
 3. 网友自制的:[js中文网](https://www.javascriptcn.com/)
@@ -282,7 +284,7 @@ age="hello";
 - 声明并赋值:`var age=1,mood="sad"`
 
 ### 1.2 数据的类型
-最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,Null,Undefined,以及ES6的Symbol)和Object（这个Object是广义的，指代所有其他类型）.
+最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,null,undefined,以及ES6的Symbol)和Object（这个Object是广义的，指代所有其他类型）.
 
 Object包含:
 1. 标准对象("Normal" objects)
@@ -320,7 +322,7 @@ Object包含:
 
 primitive values(原始值):除 Object 以外的所有类型都是不可变的（值本身无法被改变）。与 C 语言不同，JavaScript 中字符串是不可变的。JavaScript 中对字符串的操作一定返回了一个新字符串，原始字符串并没有被改变。我们称这些类型的值为“原始值”。
 
-#### 1.2.1 字符串
+#### 1.2.1 字符串和String对象
 单双引号都可以,可以根据需要包含的字符来确定:如果字符含单引号则用双引号包,如果含双引号就用单引号来包,这样不容易引起歧义.否则就要用转义字符`\`,如`var mood = 'don\'t ask';`。最佳实践是两种引号只选其一
 
 使用索引可访问字符串中的字符,如`var character=carname[7];`
@@ -538,7 +540,7 @@ delete 操作符用于删除对象中不是继承而来的属性(区别于原型
 2. 删除`setter`和`getter`设置的属性
 
 ### 2.3 比较操作符==(也称标准相等操作符)、===(Identity/ strict/triple equality)、!=(Inequality)、>(Greater than operator)
-`==`并不是严格相等,而且判断的是值是否相等,而不是布尔值是否相等.js中0、""、''、null、false、undefined、NaN的**布尔值**(可通过`Boolean(xxx)`查看)都是false，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.(具体的==比较待补充)
+`==`并不是严格相等，会先转换成相同类型，然后判断值是否相等，而不是布尔值是否相等.(具体的==比较待补充)
 
 `!=`:如果两操作数不是同一类型，JavaScript会尝试将其**转为一个合适的类型，然后进行比较**。
 ```js
@@ -728,7 +730,10 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
 一个实例的`__proto__`属性，指向它的原型对象
 
 ### 4.4 Array
-优点:存储的对象能动态增多和减少，并且可以存储任何类型的JavaScript值
+特点:
+1. 无类型：可以存储任何类型的JavaScript值
+2. 动态：可根据需要增长或缩减
+3. 可能是稀疏的：数组元素的索引不一定是连续的，意味着稀疏数组length属性值大于元素的个数
 
 有以下几种创建方法：
 1. `new Array(length)`：创建指定长度的空数组(可以理解为只有length，没有值和索引)
@@ -748,16 +753,28 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
 1. 长度`length`
 
 #### 4.4.2 方法
+1. 读取：
+    1. 下标，JS数组的下标是字符串类型的，所以以下几种方法都可以获得对应的数据，是因为Javascript自动将数字转化为字符串。
+        ```js
+        let arr = [100, 12.3, "red", "blue", "green"];
+        arr[arr.length] = "black";
+        console.log(arr.length);    // 6
+        console.log(arr[5]);  //black
+        console.log(arr['5']);  //black
+        console.log(arr["5"]);  //black
+        ```
 1. 数组和字符串的转换
     1. `string1.split(string2)`
     2. `array.join(string)`
 2. `splice()`：从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
     1. 在头部添加元素可以用:`arr.splice(0,0,xxx)`；删除头部的元素可以使用`arr.splice(0,1)`等等
 3. 在数组头/末尾添加或删除项目
-    1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。
-    2. `pop()`:删除并返回数组的最后一个元素。
-    3. `unshift()`
-    4. `shift()`
+    1. 这两个方法使它表现得像栈一样
+        1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。
+        2. `pop()`:删除并返回数组的最后一个元素。
+    2. 这两个方法使它表现得像队列一样
+        1. `unshift()`：头部添加
+        2. `shift()`：头部删除
 4. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
 
     ```JavaScript
@@ -821,7 +838,8 @@ array常用操作总结
     ```
 2. 常用方法
     1. `test()`:搜索字符串指定的值，根据结果返回真或假
-    2. `exec()`返回字符串中检索到的指定值,没有则返回null
+    2. 以下方法都是返回匹配结果形成的数组，该数组和普通数组稍有不同，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array
+        1. `exec()`返回字符串中检索到的指定值形成的数组,没有则返回null
 
 
 ### 4.6 Function
@@ -886,9 +904,74 @@ JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
 ### 4.9 ArrayBuffer
 见arraybuffer部分笔记
 
-### 4.10 
+### 4.10 Proxy
 参考：
 2. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+
+### 4.11 Symbol
+为什么需要Symbol:ES5对象属性名等都是字符串，如果使用了别人提供的对象，想给这个对象加上新的方法(mixin模式)，而新方法名字可能和原方法相同，很容易冲突。所以ES6引入Symbol来解决这个问题。
+
+什么是Symbol:ES6新引入的原始数据类型，表示一个独一无二的值。
+
+Symbol的使用
+1. 创建:通过`Symbol(descriptionA)`函数生成，不能用`new`命令，因为Symbol是原始类型，不是对象
+    ```js
+    // 1. 字面量创建:descriptionA是描述性的字符串，不影响Symbol的唯一性
+    let s1 = Symbol('foo');
+    let s2 = Symbol('foo');
+    s1.toString() // "Symbol(foo)"
+    s1 === s2 // false
+    // 2. Symbol.for(descriptionA):从已经登记到全局的Symbol中搜索是否已经有该descriptionA的Symbol，如果有就返回该Symbol，否则就创建一个，并将其登记到全局。注意这个登记是全局环境的，不管有没有在全局环境运行，意味着在不同的iframe或 service worker中可以取到同一个值
+    let s1 = Symbol.for('foo');
+    let s2 = Symbol.for('foo');
+    s1 === s2 // true
+    ```
+
+2. 关于descriptionA参数:descriptionA是描述性的字符串，主要是方便我们区分Symbol。
+3. 类型:`typeof symbolA`是"symbol"，所以可以理解Symbol是一个独一无二的类似字符串的一个东西。
+4. 运算：Symbol 值不能与其他类型的值进行运算，会报错。但是可以显式转为字符串(`symbolA.toString()`)和布尔值(默认为true)
+5. 主要使用场景
+    1. 用作对象的属性名
+        1. 注意写法，应该永远用方括号，不能使用点运算符，如果使用了点运算符，因为点运算符后面只能跟字符串，此时用的就是字符串，而不是这个Symbol。
+            ```js
+            // 下面三种写法作用一样
+            let mySymbol = Symbol();
+            // 第一种写法
+            let a = {};
+            a[mySymbol] = 'Hello!';
+            // 第二种写法
+            let a = {
+            [mySymbol]: 'Hello!'
+            };
+            // 第三种写法
+            let a = {};
+            Object.defineProperty(a, mySymbol, { value: 'Hello!' });
+            ```
+            
+            ```js
+            // 点运算符的例子
+            const mySymbol = Symbol();
+            const a = {};
+            
+            a.name = 'Tom';
+            a.mySymbol = 'foo'; // 这里点运算符后的mySymbol是一个字符串，和Symbol类型的mySymbol没有关系
+            a[mySymbol] = 'bar'; // 正确写法
+            console.log(a.mySymbol, a['mySymbol'] == a.mySymbol); // foo true
+            console.log(a[mySymbol]); // bar
+            console.log(a); // { name: 'Tom', mySymbol: 'foo', [Symbol()]: 'bar' }
+            ```
+        2. Symbol作为属性名时，该属性是公开属性，不是私有属性
+        3. 遍历对象的Symbol属性:遍历对象的时候，Symbol属性不会被`for...in`、`for...of`、`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`这些常规方法遍历到，可以通过`Object.getOwnPropertySymbols()`和`Reflect.ownKeys()`方法遍历到。利用这个特性，可以用Symbol定义一些只用于内部的方法。
+            1. `Object.getOwnPropertySymbols()`方法，可以获取指定对象的所有 Symbol 属性名。该方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
+            2. 新的API`Reflect.ownKeys()`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
+    2. 用作常量:可以用来定义一组常量，保证这组常量的值都是不相等的。
+
+Symbol的属性:
+1. `description`(ES2019)
+
+Symbol的方法:
+1. `Symbol.keyFor(symbolA)`:方法返回一个已登记的Symbol类型的key(即descriptionA)。如果Symbol没有被登记，返回undefined
+
 
 ## 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
@@ -1086,7 +1169,12 @@ console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 tru
 ## 7 模块
 js中，每个文件是一个模块，文件中定义的所有对象都从属于那个模块。 通过`export`关键字，模块可以把它的某些对象声明为公共的。 其它js模块可以使用`import`语句来访问这些公共对象。
 
-## 8 注释
+## 9 定时器(难点)
+参考网友的文章:https://www.cnblogs.com/wangying731/p/5164780.html
+
+详见DOM笔记的window部分.
+
+## 15 注释
 有两种，跟java一样：
 1. `//`:单行注释
 2. `/**/`:多行注释，多行注释书写在字符串 `/*` 和 `*/` 之间，如，
@@ -1097,11 +1185,6 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
         a comment
     */
     ```
-
-## 9 定时器(难点)
-参考网友的文章:https://www.cnblogs.com/wangying731/p/5164780.html
-
-详见DOM笔记的window部分.
 
 # 四 高级
 ## 1 闭包(closure)(重点,难点)

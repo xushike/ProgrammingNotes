@@ -1,11 +1,11 @@
 # android
 [TOC]
-## 一 概述
-### 1 简介
+# 一 概述
+## 1 简介
 Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是Android系统的命名都是以点心来命名的.
 
-### 3 常识
-#### xml文件开头的声明
+## 3 常识
+### xml文件开头的声明
 形如`xmlns:xxx="..."`:因为XML文件不仅仅用于Android,还可以用于很多地方,所以这句声明表示该XML文件用于Android的开发和布局(这也就是所有属性前都加了`android:`的原因),也可以理解为命名空间(?)
 1. 而且,所有的布局文件中都需要加入xmlns开头的两个声明,否则不能正确运行.
 2. 更多信息(待研究):[What does “xmlns” in XML mean?](https://stackoverflow.com/questions/1181888/what-does-xmlns-in-xml-mean)
@@ -13,7 +13,7 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
 
     比如`tools:text`,相当于占位符,在预览的时候不会显示,而是用于动态展示.
 
-#### 代码的`@`
+### 代码的`@`
 一般表示指定某种资源
 
 - 指定id:`android:id = " @+id/ben_text_view"`
@@ -24,18 +24,18 @@ Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是An
     1. 值`@android:color/[color_name]`:指定Android标准颜色,比较有限
     2. 十六进制,支持所有颜色
 
-#### Android Go
+### Android Go
 谷歌推出的专为低配手机用的系统,相当于Android8的精简版
 
-#### Android Instant Apps和微信小程序
+### Android Instant Apps和微信小程序
 两者都是免安装的应用.只不过 Instant Apps 是基于 Android 操作系统的，微信小程序是基于微信 App 生态的，但本质上还是不一样的，Instant Apps 本质上还是原生 App，只不过允许你在下载安装之前，先体验下 App 部分模块的功能，觉得不错，适合你，那么你可以再下载安装，而微信小程序本质上不是原生应用，他是基于一种类似 React Native 的框架来达到原生的体验，而且只能在微信内部运行。
 Instant Apps 体验更好，功能更强大，可以独立运行在手机上，而微信小程序没法独立运行，是基于微信生态下的应用，而且技术上也有一些限制。
 1. Instant Apps的缺点
     1. Instant Apps 深度链接的识别需要依赖 Google Play(但是国内需要梯子)
     2. 只支持 Android 平台，iOS 不支持
 
-### 4 文档
-### 5 网站
+## 4 文档
+## 5 网站
 1. 菜鸟教程for Android:[Android 基础入门教程](http://www.runoob.com/w3cnote/android-tutorial-android-studio.html)
 2. 关于设计规范(排版,文字大小,颜色,布局等),可以参考google的:[Material Design](https://material.io/guidelines/style/typography.html#)
 
@@ -52,10 +52,10 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 3. 某机构收集的android学习资料:[Android 学习资料收集](https://github.com/Freelander/Android_Data)
 
 
-## 二 安装配置
-### 1 win
-### 2 mac
-#### 新建项目
+# 二 安装配置
+## 1 win
+## 2 mac
+### 新建项目
 1. Company Domain:应用的唯一标识符,看起来像一个网址,一般填入的是`[my_name].com`,这个值反转后就是应用发布后的包名(package name)(google app和手机会根据这个来识别你的应用?),所以必须是在全世界发布的app中都是唯一的才行.
 3. project location:AS会创建一个默认位置,一般用它就好.
 4. 选择设备和版本
@@ -80,16 +80,16 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 
     第一次运行模拟器的时候可能会不正常,大部分问题都可以解决,但更推荐使用真机.
 
-## 三 基础
-### 1 未整理
+# 三 基础
+## 1 未整理
 1. Android应用的界面使用布局（ViewGroup 对象）和微件（View 对象）层次结构构建。布局是一种不可见的容器，用于控制其子视图在屏幕上的位置。微件是界面组件，例如按钮和文本框。
 2. 嵌套布局会增加绘制界面所需的时间。
 3. 您还可以使用顶部或底部边缘创建水平对齐，不过，按钮在其图像周围包含内边距，因此如果您按照这种方式对齐这些视图，视觉对齐将是错误的。
 4. 关于接口,抽象类和具体类
     接口是完全没有实现,抽象类是部分实现,具体类是完全实现;编写代码的时候具体用哪个要看情况.
 
-### 2 文件结构
-#### 2.1 android视图模式
+## 2 文件结构
+### 2.1 android视图模式
 该视图模式也是google官方推荐的模式,app目录里的文件大概如下
 1. mainfests
     - AndroidManifest.xml
@@ -105,13 +105,13 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
     3. mipmap:放置应用图标
     4. values
 
-### 3 Intent
+## 3 Intent
 分为隐式和显式Intent,显式就是指定具体的Intent,隐式就是不知道具体的,比如打开一个网页,不管哪个浏览器app,只要能打开网页就行.
-#### 3.1 隐式Intent
+### 3.1 隐式Intent
 可以设置更具体的一些信息,同时还要对没有可选的情况进行处理
 
-### 4 布局
-#### 4.1 ViewGroups
+## 4 布局
+### 4.1 ViewGroups
 类似于视图的容器,分类如下
 
 - 线性布局（LinearLayout）
@@ -131,25 +131,29 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 
     Android Studio默认使用约束布局
 
-### 5 日志
+## 5 日志
 根据日志的严重情况分为五个类别,分别是xxx,都接受两个参数,第一个是消息来自何处,一般填类名,第二个参数就是消息内容.
 
-### 6 可回收的视图
-#### 6.1 ListView
+## 6 可回收的视图
+### 6.1 ListView
 1. 视图回收
 3. ArrayAdapter
 
-#### GridView
-#### RecyclcerView
+### GridView
+### RecyclcerView
 
-### 7 Activity
+## 7 Activity
 
+## 15 注释
 
-## 四 高级
-### 1 真机调试
+### 其他注释
+`.nomedia`:作用是告诉系统和其他程序不要索引当前目录下的媒体文件。当然它只是一个约定，而不是强制性的，其他APP依然可以不遵守这个约定。
+
+# 四 高级
+## 1 真机调试
 [http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/](http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/)
 
-### 2 Udacity的google Android课程
+## 2 Udacity的google Android课程
 整个纳米学位免费的课程如下
 - Android 基础：用户界面
 - Android 基础：用户输入
@@ -157,8 +161,8 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 - Android 基础：网络
 - Android 基础：数据存储
 
-#### 课程1 入门课程
-##### 课程1A:视图VIEWS
+### 课程1 入门课程
+#### 课程1A:视图VIEWS
 使用大驼峰写法
 1. 显示文字的叫TextView
 
@@ -177,14 +181,14 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
     2. 
 3. 按钮=>Button
 4. others
-##### XML语法
+#### XML语法
 1. 一般这样写:`<xxx ... />`;有子元素的时候,这样写阅读体验更好:`<xxx ... > /xxx>`
 2. 属性
 
     因为是XML,所以属性要用引号(双引号)包裹
 
 3. [XML可视化工具链接](http://labs.udacity.com/android-visualizer/#/android/xml-syntax-errors)
-##### 更改TextView
+#### 更改TextView
 1. 推荐使用dp单位,这样在不同分辨率的手机上看到的大小是一样的;如果用px就不一样.
 2. 推荐所有可触摸的目标,比如button的宽高最少为48dp
 3. 关于文字外观(待阅读):[Text appearance and theme attributes on Android](http://discussions.youdaxue.com/t/text-appearance-and-theme-attributes-on-android/6947)
@@ -192,10 +196,10 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 
     Android自带的颜色是一个有限集,比如`blue`就没有,但是支持十六进制的所有颜色(Hex color).写法是`#xxxxxx`
 
-##### 解决错误
+#### 解决错误
 1. [常见视图备忘单](http://cn-static.udacity.com/nd801/Common_Android_Views_Cheat_Sheet.pdf)
 
-#### 课程1B:打造布局
+### 课程1B:打造布局
 一些概念如下
 - 视图组（ViewGroups）
 - 根视图（Root View）
@@ -203,39 +207,39 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 - 子（Child）
 - 兄弟姐妹（Sibling）
 
-##### 宽度和高度
+#### 宽度和高度
 "子视图的高宽和位置是由父视图决定的"这句话如何理解
-##### 内外边距
+#### 内外边距
 内外边距可用于所有视图,padding和margin的默认值是0;设置了margin之后就像在视图的周围有一道防护,阻止其他元素进入.
-##### 课程1C:课程实践
-#### 课程2 用户输入
-##### 课程2A:制作一款交互性应用
-##### 课程3B:面向对象编程
-###### intent
+#### 课程1C:课程实践
+### 课程2 用户输入
+#### 课程2A:制作一款交互性应用
+#### 课程3B:面向对象编程
+##### intent
 android框架的重点之一,调用其他应用.comment intents.
 
 
-### 3 Android官网的培训
+## 3 Android官网的培训
 [https://developer.android.com/training](https://developer.android.com/training)
 
-### 4 ARCore 
-### 5 Google Lens
+## 4 ARCore 
+## 5 Google Lens
 能实时识别用智能手机相机所拍摄的物品并提供与之相关的内容，都是通过利用强大的计算机视觉算法实现的
 
-## 五 经验
-### 1 app推荐
+# 五 经验
+## 1 app推荐
 洋葱数学
 
-### 2 各机型的一些笔记
-#### 2.1 魅族
+## 2 各机型的一些笔记
+### 2.1 魅族
 SmartBar
 
-#### 2.2 小米
+### 2.2 小米
 
 
 
-## 六 问题
-### 2 未解决
+# 六 问题
+## 2 未解决
 1. android framwork和anfroid sdk
 2. 统一推送联盟
 3. Hybrid App（混合模式移动应用）是指介于web-app、native-app这两者之间的app，兼具“Native App良好用户交互体验的优势”和“Web App跨平台开发的优势”。
@@ -252,7 +256,7 @@ SmartBar
 11. logcat
 12. 如何给xml中的属性注释
 
-## 七 待整理
+# 七 待整理
 1. 临时文件目录是`/data/local/tmp`?
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
 2. 导入项目的几种方式

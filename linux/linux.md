@@ -258,9 +258,6 @@ sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
 2. alias为别名。如果本来的命令和别名重名，优先使用别名。
 3. builtin为系统（shell？）內建指令
 
-### 1.5 查看可执行程序位置`which`
-有时系统中不止安装了程序的一个版本,虽然在桌面系统中不常见,但在大型系统中却很平常.该命令对只对可执行程序有效，不包括内建命令和命令别名,有点奇特,比如对`cd`就无效
-
 ### 1.6 查看內建命令的帮助文档`help`
 该命令是bash的內建的帮助工具,用法是`help [命令名]`,实例如
 ```bash
@@ -313,9 +310,9 @@ Change ...
     3. 跳到某个用户的目录:`cd ~[uerName]`
     4. 注意,跳转时路径中间必须都是目录,不能包含文件,比如`cd ./xxx.txt`就不行
 ### 2.2 文件创建
-#### 创建文件:`touch`
+#### 创建文件 touch
 
-#### 创建目录:`mkdir`
+#### 创建目录 mkdir
 可跟多个参数,如`mkdir dir1 dir2 dir3`
 
 参数说明
@@ -343,7 +340,7 @@ Change ...
 2. `-r`:递归复制整个目录
 
 #### 移动或重命名文件 mv
-使用方法和`cp`很像,但是不用加`-r`,操作成功后原来的文件或文件名不再存在
+使用方法和`cp`很像,但是不用加`-r`,操作成功后原来的文件或文件夹不再存在
 1. 移动或重命名单个文件或目录:`mv item1 item2`
     1. 对于`mv file1 file2`,如果file2存在,则被重写为file1;如果file2不存在,则创建file2.每种情况下file1都不会存在
     2. 对于`mv dir1 dir2`,如果dir2存在,移动dir1及它的内容到dir2中;如果dir2不存在,创建dir2,将dir1的内容移到dir2.
@@ -382,7 +379,104 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
 
 `mount`用于挂载Linux系统外的文件，`mount options device dir`
 
-### 2.4 压缩相关
+### 2.4 查找
+查找命令多种多样，但用途不一样。大致有:
+- 查找文件：`find`、`locate`，
+- 在$PATH环境变量里的路径(可通过`echo $PATH`查看，基本都是`.../bin`和`.../sbin`)中查找可执行文件
+    1. `which`
+        ```bash
+        which go 
+        /usr/local/bin/go
+        
+        which java
+        /usr/bin/java
+        
+        which ls
+        /usr/bin/java
+        ```
+- 在任意目录中查找可执行文件(待整理)
+    1. `whereis`
+        ```bash
+        whereis java
+        /usr/bin/java
+        ```
+- 查找文本
+    1. `grep`
+    
+#### find
+递归查询目录及其子目录下的目标
+
+语法是`find path -option xxx command {} \`，如果未指定path则默认以当前路径为path，`command {} \;`表示对查询后的所有结果进行command操作，花括号代表前面find查找出来的目标，分号似乎加不加都行，比如`rm {} \`、`ls -l {} \`，注意这个command操作是对结果一行一行的进行，不是所有行一起进行，比如打包的时候会有区别。
+
+常用参数：
+2. ``-name xxx`或`-name "xxx"`:查找文件名称符合xxx的目标，xxx中`*`通配任意个字符，`?`通配单个字符
+    ```bash
+    # 名称是.dbeaver的目标
+    find . -name .dbeaver
+    find . -name ".dbeaver"
+    # 文件类型是".c"的目标
+    find / -name "*.c"
+    # 将当前目录下所有最近20天内更新过的目标的完整路径列出
+    find . -ctime -20 ls -l {} \
+    ```
+3. `-iname`：忽略大小写，其他和`-name`一样。
+4. `-type xxx`:按文件类型查找，类型大概有
+    - `f`:一般文件
+    - `d`:目录
+    - `l`:符号链接
+    - `s`:socket
+    - ...
+5. 时间相关
+    1. `-atime`:访问时间:
+        ```bash
+        # 访问时间距现在5天及以上的文件
+        find /usr -atime +4
+        # 访问时间距现在小于等于4天的文件
+        find /usr -atime -4
+        ```
+    1. `-mtime`:修改时间
+    1. `-ctime`:状态改动时间
+6. `-size`:文件大小，比如`find / -size +10M`表示大于10M的文件
+7. 条件参数
+    1. `-a`、`-and`:而且，不写的话默认会带上。
+    1. `-o`:或者
+    1. `-not`:相反。比如查找/var/log目录下内容更改时间为30天前并且不属于root群组的文件，`find /var/log -type f -a  -mtime  +30 -not -group root`
+
+command位置常用参数：
+1. `-print`:即使不写也会默认带上的参数，写在command的位置，作用是把找到的目标的路径打印到std output
+2. `-exec`：任意形式的命令可以在它后面执行，比如
+    ```bash
+    # 查找/var/log目录下内容更改时间为40天前并且大于100K的文件，并列出他们的路径
+    find /var/log -mtime +40 -a -size +100k -exec ls -lh {} \
+    # 所有文件名为“passwd”的文件,然后执行 grep 命令查看这些文件中是否存在一个 root 用户
+    find /etc  -name "passwd"  -exec  grep  "root" {} \;
+    # 查找文件并移动到指定目录pathA
+    find  .  -name  "*.log"  -exec  mv {} pathA \;　　　
+    ```
+3. `-ok`:和-exec的作用相同，只不过以一种更为安全的模式来执行该参数所给出的shell命令，在执行每一个命令之前，都会给出提示，让用户来确定是否执行。比如可以`... -ok rm -rf {} \`
+    
+#### locate(与unix的locate有些不同，待补充)
+功能和find类似，不过`locate`是在自己维护的数据库中查文件，而`find`是直接遍历目录中所有的文件进行匹配，所以它比find高效很多。默认一天更新一次文件的索引，所以它的缺点是新增的文件可能因为没加到索引中导致查不出来。
+
+首次使用，比如`locate xxx`会提示：
+
+常用操作：
+1. 主动更新:
+
+常用参数:
+
+#### which
+有时系统中不止安装了程序的一个版本,虽然在桌面系统中不常见,但在大型系统中却很平常.该命令对只对可执行程序有效，不包括内建命令和命令别名,有点奇特,比如对`cd`就无效
+
+#### whereis（感觉不怎么好用，待补充）
+#### grep
+基本语法`grep [选项] 查找内容 源文件`，和ls结合使用的时候可以起到按文件名等方式查找的作用
+
+常用参数:
+1. `-i`:忽略字母大小写
+1. `-n`:显示匹配行及行号
+
+### 2.5 压缩相关
 #### tar
 1. 首先明确linux中打包和压缩是不同的，打包是把多个文件变成一个总的文件；因为linux中很多压缩程序只能对一个文件压缩，所以一般是先打包再压缩,参考:["为什么linux的包都是.tar.gz？要解压两次"](https://www.zhihu.com/question/37019479?sort=created)
 2. tar
@@ -623,6 +717,11 @@ Linux中的根目录以外的文件要想被访问，需要将其“关联”到
             ```bash
             User xushike may run the following commands on xushikedeMacBook-Pro-2:
                 (ALL) ALL
+            ```
+        7. 可以运行管道命令
+            ```bash
+            # sudo管道命令的写法
+            sudo sh -c "echo hello"
             ```
 5. 其他
 

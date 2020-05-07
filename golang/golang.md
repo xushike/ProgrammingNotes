@@ -4,18 +4,22 @@
 
 # 一 概述
 ## 1 简介
-### 1.1 优点
+### 1.1 特点(按优秀程序从大到小排序)
+1. 编译成无依赖二进制: 意味着
+    1. 易于部署/分发: copy部署很方便,拷贝就能跑了.(这也是很多人选go的最大理由)
+    2. 方便交叉编译：比如说你可以在运行 Linux 系统的计算机上开发运行下 Windows 下运行的应用程序。
+        1. 网友：利用 docker 实现跨平台编译, Mac 上开发好后直接用 docker 进行编译, 然后扔到服务器就好.（待验证）
+        2. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行（待测试）
+2. 介于偏底层的系统语言（就像 C 或 C++ 语言）和基于运行时的语言（比如 Java 或 Python）之间，但更适用于系统编程领域。
+3. 高性能高并发
+    1. goroutine+channel
+1. 工具:go提供了软件生命周期各个环节的工具(开发,测试,部署,维护等)，目前是够用但还不够强大。
 1. Go语言的标准库强大（难以置信的强大）且完善，常被称为语言自带的电池（Batteries Included）
 1. Go语言在语言层面解决软件工程问题的设计哲学（比如？）
-1. 编译成无依赖二进制:copy部署很方便,拷贝就能跑了.(这也是很多人选go的最大理由)
-1. 协程
-1. 稳定性:go提供了软件生命周期各个环节的工具(开发,测试,部署,维护等)
-5. Go 语言支持交叉编译.比如说你可以在运行 Linux 系统的计算机上开发运行下 Windows 下运行的应用程序。
-    1. 网友：利用 docker 实现跨平台编译, Mac 上开发好后直接用 docker 进行编译, 然后扔到服务器就好.（带验证）
-    2. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行（待测试）
 6. 它是第一门完全支持 UTF-8 的编程语言.这不仅体现在它可以处理使用 UTF-8 编码的字符串，就连它的源码文件格式都是使用的 UTF-8 编码。Go 语言做到了真正的国际化。原生支持Unicode，它可以处理全世界任何语言的文本。
 8. 有C基础，学Golang非常轻松
 9. 内存排列：Go的任何变量在内存中都是紧密连续排列的，对于内存的访问速度来说，亲和度是很高的，而且CPU缓存也更加容易命中
+10. 发布周期:有些规律但依然是一个黑匣子；核心团队之外没有人真正知道何时发布新版本，而且通常是通过一篇博客就宣布发布了。在 Gerrit/GitHub 上以 issue 形式存在的文档很多，不够完善和透明。
 
 ### 1.2 缺点
 以下列出了go不支持的其他语言的一些特性和缺点,不过在未来的版本可能改善:
@@ -37,10 +41,6 @@
 1. 因为垃圾回收和自动内存分配的原因，Go 语言不适合用来开发对实时性要求很高的软件。
 
 ### 1.4 他人评价
-更好的 c
-
-go + java是不错的实践
-
 深技术专栏作家 Matt Asay 在外媒上发文表示:究其原因，应该是经验的问题，在你拥有了老语言的使用经验后，使用新语言会变得更清晰明了。换句话说，如果你已经花了数年的时间去了解 Java ，那么应该会更容易理解 Go 有多优秀。
 
 HackerRank 近日对约 4 万名开发者进行了调查，并发布了名为“2018 年开发者技能报告”:Go 虽然是一种很酷的语言，但它只占据了一个小小的位置，似乎并没有成为某种基础设施的最擅长的代码。也因此，它没有真正抓住年轻工程师的想象力。
@@ -49,7 +49,12 @@ Pike说:
 1. 它至少在强度上比JavaScript高一级。Google自建Chrome浏览器，部分原因就是加速JavaScript和网页表现，而Google已经融合了本身的技术，如Native Client和Gears。
 2. 我不认为我们能取代任何东西。我们只是创造出这个领域的另一个角色。
 
-网友：Go语言标准库难以置信的强大，值得你花时间阅读它的代码，学习它实现的模式。
+网友：
+1. 更好的 c
+2. go + java是不错的实践
+3. Go语言标准库难以置信的强大，值得你花时间阅读它的代码，学习它实现的模式。
+4. "更友好的C语言"
+5. Go 可能是 Java 的更好继承者，因为它适合构建大型分布式系统。这也是你看到的像 Kubernetes 和 Docker 使用 Go 编写的原因。
 
 云风博客:我发现我花了四年时间锤炼自己用 C 语言构建系统的能力，试图找到一个规范，可以更好的编写软件。结果发现只是对 Go 的模仿。缺乏语言层面的支持，只能是一个拙劣的模仿。
 
@@ -752,7 +757,7 @@ go func() {
 你应该尽可能地使用 float64，因为 math 包中所有有关数学运算的函数都会要求接收这个类型。
 
 #### 2.1.3 字符串
-golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和raw字符串,raw字符串和js6中的模板字符串有点像，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。
+golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和raw字符串,raw字符串和js6中的模板字符串有点像，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。golang的字符串是不可变的，
 
 操作：
 1. 字符串截取:可以用类似切片的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
@@ -769,7 +774,7 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
    2. `fmt.Sprintf()`:内部使用 []byte 实现
    3. `strings.Join()`：效率比`+`高
    4. `buffer.WriteString()`：不需要复制，只需要将添加的字符串放在缓存末尾即可，所以性能理论上最好，不过和java的StringBuilder一样是线程不安全的
-   5. go1.10开始新增了builder类型
+   5. go1.10开始新增了Builder类型
 4. 遍历
    1. 按字节遍历 
         
@@ -871,14 +876,14 @@ slice := []string{"a","b","c"}//长度和容量都是3
 //3.使用索引声明切片
 slice := []stirng{99:"hello"}//长度和容量是100
 
-//4.使用切片创建切片，有几个地方需要注意：选择范围不能超过oldSlice的容量，否则报错；newSlice的容量大小是oldSlice的容量大小减去复制时的起始角标，和终止角标无关，比如下面这个newSlice的容量就是5-1=4
+// 4. 使用切片创建切片 slice[start:end]，有几个地方需要注意：选择范围不能超过oldSlice的容量，否则报错；newSlice的容量大小是oldSlice的容量大小减去复制时的起始角标，和终止角标无关，比如下面这个newSlice的容量就是5-1=4
 oldSlice := []int{10,20,30,40,50}
 newSlice := oldSlice[1:3]// newlice的长度为2，容量为4，且和slice同一截数组。这种通过下标截取生成切片的方式称为Slicing，也称为re-slice，即切片重组。
 
-//5.使用三个索引创建切片，第三个参数表示容量，是可选的，其值不能比新len小，不能比旧的cap大，不写则大小跟新len一样。
+// 5. 使用三个索引创建切片 slice[start:end:cap]，第三个参数表示容量，是可选的，其值不能比新len小，不能比旧的cap大，不写则大小跟新len一样。
 slice := []string{"a","b","c","d","e"}
-newSlice := slice[1:3:4] //newSlice的长度2，容量为3
-newSlice2 := slice[5:] //特别的，如果indexA是slice的长度，那么newSlice2是长度为0的非nil切片
+newSlice := slice[1:3:4] // newSlice的长度2，容量为3
+newSlice2 := slice[5:] // 特别的，如果start是slice的长度，那么newSlice2是长度为0的非nil切片
 
 //6.基于数组创建切片，也就是说通过下标截取的方式得到的一定是切片类型？
 array := [...]int{1,2,3}
@@ -920,20 +925,22 @@ slice := []stirng{}
             //...
         }
         ```
-4. 切片的复制：使用內建的`copy()`是最佳实践，形如`copy(slice1,slice2)`，它会将slice2中的元素复制到slice1中，复制的元素个数取决于两个切片的长度(`len()`)中最小的那个。例子如下：
+4. 切片的复制:
+    1. 如果想要deep copy，使用內建的`copy()`是最佳实践，形如`copy(dst, src)`，它会将src中的元素复制到dst中，复制的元素个数取决于两个切片的长度(`len()`)中最小的那个。例子如下：
 
     ```golang
     // 例子1
     arraySlice1 := []int{1, 2, 3, 4, 5}
 	arraySlice2 := []int{5, 4, 3}
 	copy(arraySlice2, arraySlice1) // 只会复制arraySlice1的前3个元素到arraySlice2中
+	fmt.Println(arraySlice1) // [1 2 3 4 5]
+    fmt.Println(arraySlice2) // [1 2 3]
+
 	arraySlice3 := []int{1, 2, 3, 4, 5}
 	arraySlice4 := []int{5, 4, 3}
 	copy(arraySlice3, arraySlice4) // 只会复制arraySlice4的3个元素到arraySlice3的前3个位置
-	fmt.Println(arraySlice1)
-	fmt.Println(arraySlice2)
-	fmt.Println(arraySlice3)
-    fmt.Println(arraySlice4)
+	fmt.Println(arraySlice3) // [5 4 3 4 5]
+    fmt.Println(arraySlice4) // [5 4 3]
     
     // 例子2
     src := []string{`a`, `b`, `c`}
@@ -3532,7 +3539,7 @@ go mod命令:
 2. err在新建语句中
 
 ```golang
-err ：= errors.New("") // shadowed err
+err := errors.New("") // shadowed err
 if err := errors.New("xxx"); true {
     fmt.Println(err) // 此处的err覆盖掉了外层的shadowed err，也就是说在这个块里面操作的err都不是外层的shadowed err
 }

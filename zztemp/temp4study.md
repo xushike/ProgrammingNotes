@@ -156,8 +156,6 @@
 2. 将各种设置同步到一个地方，切换环境的时候直接从里面拉取就行了
 2. pg: https://yq.aliyun.com/articles/174262
 2. 如何查看psql函数的源码
-1. alfred
-    1. 别人分享的配置：http://www.alfredworkflow.com/
 1. 前段抓包
 1. bash
     1. set -o vi
