@@ -15,6 +15,9 @@
 
 JDK 8的重要性能包括Project Lambda（JSR 335）、Nashorn JavaScript引擎、一个新的日期与时间API（JSR 310）、一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。
 
+### 2.9 java9
+lombak的val/var(待整理)
+
 ### jdk和openjdk的区别
 授权协议的不同：OpenJDK采用GPL V2协议发布，而JDK则采用JRL协议发布。两个协议虽然都是开放源代码的，但是在使用上的不同在于GPL V2允许在商业上使用，而JRL只允许个人研究使用（个人使用和非商业使用）。 
 
@@ -569,19 +572,24 @@ str="world";
 ```
 字符串"hello"被创建后不可变，但是str作为引用可以指向别的字符串
 
+### 6.1 string interning
+string interning，即字符串驻留，可以理解为一个常量池，在新建string的时候会查找有没有相同的unicode，有就把指针指过去。在java中interning是一个默认的模式。
+
 ### 6.1 字符串的创建
-#### 6.1.1 字面量创建
+#### 字面量创建
 ```java
 String str1="aaaa";
 ```
 JVM首先会对这个字面量进行检查，如果字符串常量池中存在相同内容（用equels()比较）的字符串对象的引用，则将这个引用返回，否则新的字符串对象被创建，然后将这个引用放入字符串常量池，并返回该引用
-#### 6.1.2 使用new创建
+
+#### 使用new创建
 ```java
 String str1=new String("aaaa");
 ```
 使用new来构造字符串对象的时候，JVM首先会去常量池对这个字面量进行检查，如果没有，就创建字面量，然后放入常量池。然后调用String类的构造器来创建一个新的String对象，保存在堆内存中。对于非"宏替换"生成的字符串，不会去常量池中生成字面量，此时想将这个对象的引用(字面量？)加入到字符串常量池，可以使用intern方法。调用intern后，首先检查字符串常量池中是否有该对象的引用（字面量？），如果存在，则将这个引用返回给变量，否则将引用加入并返回给变量。
-##### 6.1.2.1 关于new创建了几个对象
-注意这里的new指的直接new，和用"+"连接的new表达式是不一样的。答案是创建了一个或两个：在类加载时，如果常量池有该字符串，则不创建，如果没有，则在常量池中创建一个该字符串；然后在类执行时，会从常量池复制一个对象到堆中(还有另外一种说法：在执行的时候先在常量池中中创建"aaaa"字面量，然后创建new String（"aaaa"）对象。两种说法的区别只是创建字面量和对象的时间描述不一致)
+
+关于new创建了几个对象：注意这里的new指的直接new，和用"+"连接的new表达式是不一样的。答案是创建了一个或两个：在类加载时，如果常量池有该字符串，则不创建，如果没有，则在常量池中创建一个该字符串；然后在类执行时，会从常量池复制一个对象到堆中(还有另外一种说法：在执行的时候先在常量池中中创建"aaaa"字面量，然后创建new String（"aaaa"）对象。两种说法的区别只是创建字面量和对象的时间描述不一致)
+
 #### 6.1.3 使用+创建(难点)
 1. 只有使用引号包含文本的方式或者加上final的变量创建的String对象之间使用“+”连接产生的新对象才会被加入字符串池中。（涉及到"宏替换"，待补充）
 2. 对于所有包含new方式新建对象（包括null）的“+”连接表达式，它所产生的新对象都不会被加入字符串池中。（根本原因在于它的值在编译期无法确定，只有在程序运行期调用方法后才能知道，类似的还有通过函数获取的字符串值）
@@ -665,6 +673,7 @@ Iterator中的几个主要方法:
 ### 7.3 Set集合
 类似"罐子"，无须且不重复，当想把两个相同元素放入Set时，会放入失败。Set最常用的是HashSet和TreeSet。Set下的HashSet、TreeSet、EnumSet都是线程不安全的。
 1. Set实现类的效率比较：EnumSet性能最好，但
+
 #### 7.3.1 HashSet
 1. HashSet按Hash算法(hash算法，它能保证快速查找被检索的对象)来存储集合中的元素，因此具有很好的存取(插入)和查找性能。同时具有以下特点：
     1. 无序
@@ -674,12 +683,14 @@ Iterator中的几个主要方法:
 2. HashSet集合判断两个元素是否相等时通过equals()和hashCode()两个方法来判断，只有两者都相等才算相等。如果两个对象通过equals返回true但hashCode不同，会导致两个对象添加成功(从逻辑上来讲是不应该的),这和Set集合的规则冲突了；如果两个对象的hashCode相同但equals返回false会更麻烦，HashSet将试图把他们放在一个位置，用链式结构来保存多个对象，会导致HashSet的性能下降。所以在重写HashSet方法时，应该尽量保证两个对象equals()返回true时，他们的hashCode返回值也相等。
 3. HashSet中每个能存储元素的"槽位"(slot)通常称为"桶"(bucket)。
 4. 向hashSet中添加可变对象时必须十分小心，因为修改某个对象后可能导致和另外一个对象相等，从而使HashSet无法准确访问该对象。
-##### 7.3.1.1 LindkedHashSet
+
+##### LindkedHashSet
 是HashSet的子类，也是根据元素的hashCode值来决定元素的存储位置，但它同时用链表维护元素的次序(和添加顺序一致），所以性能略低于HashSet，但在迭代访问Set里的全部元素时有很好的性能。
 
 #### 7.3.2 TreeSet
 是SortedSet的实现类，如名所示，TreeSet可以确保集合元素处理排序状态(本质是红黑树？)。默认情况下是自然排序(按元素的实际值大小排序，不是插入顺序)，也支持定制排序。
 #### 7.3.3 EnumSet
+
 ### 7.4 List集合
 List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
 
@@ -698,7 +709,7 @@ List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
 #### 7.5.1 PriorityQueue实现类
 #### 7.5.2 Deque接口
 代表"双端队列"，即可当队列使用，也可当栈使用。
-##### 7.5.2.1 ArrayDeque实现类
+##### ArrayDeque实现类
 基于数组实现，创建时可以指定一个numElements参数来指定数组的大小，默认16
 ### 7.6 java8增强的Map集合
 1. Map和Set的关系非常密切，从java源码来看，java显示显示了Map，然后包装一个所有value为null的Map就实现了Set。而且Map的实现类的命名方式跟Set也很类似。
@@ -797,36 +808,54 @@ System.out.println(list3.get(0).getClass());//编译时不报错，仅仅提示"
 ### 8.7 泛型和数组
 java不支持创建泛型数组，除非是无上限的类型通配符(即？)
 
-## 9 异常处理
-java把所有的非正常情况分为两种，异常(Exception)和错误(Error)，都继承了Throwable类；后者一般是虚拟机相关的问题，比如系统崩溃、虚拟机错误、动态链接失败等，这种错误无法回复或不能捕捉，将导致app中断，通常app无法处理这些错误，因此不应该用catch捕捉error，也无须抛出error。
-java将异常分为两种;Checked异常和Runtime异常，前者是在编译阶段可以被处理的异常，它强制程序处理所有的Checked异常(要么要么显式抛出，要么显式捕获并处理)，而后者无需处理。前者可以很好地提醒我们，但是也带来一些繁琐之处，所以Checked异常是java领域备受争议的话题。
->因为大部分的方法总是不能明确知道如何处理异常，因此只能声明抛出异常，这种情况很普遍，所以Checked异常降低了开发的生产率和代码的执行效率
+## 13 错误/异常处理
+java把所有的非正常情况分为两种,两种都继承了Throwable类:
+2. 错误(Error)：一般是虚拟机相关的问题，比如系统崩溃、虚拟机错误、动态链接失败、语法错误(代码少了一个分号等)等，这种错误是程序无法处理的错误，无法恢复或不能捕捉，将导致app中断，因此不应该用catch捕捉error，也无须抛出error。
+1. 异常(Exception)：程序本身可以捕获并且可以处理的异常
+
+java将异常分为两种:
+1. 受检异常：Checked异常(IOException)，在编译阶段可以被处理的异常，它强制程序处理所有的Checked异常(要么要么显式抛出，要么显式捕获并处理)。java的这种异处理方式属于可靠性驱动(reliability-driven)。它可以很好地提醒我们，但是也带来一些繁琐之处，所以Checked异常是java领域备受争议的话题。
+    1. 优缺点：好处是，显式抛出让代码显得更具安全性与可控性，坏处是，需要写大量异常处理的代码逻辑，降低了开发的生产率和代码的执行效率。而且实际情况是大部分的方法总是不能明确知道如何处理异常，因此只能声明抛出异常，这种情况很普遍。
+2. 不受检异常:Runtime异常(RuntimeException)，无需处理
+
+异常处理语法：
 1. try块和catch块后的花括号不可以省略；try块里声明的变量时代码块内局部变量，也就是说catch块块中不能访问该变量；多个catch块无须使用if、switch判断异常类型，系统会自动去判断，但依然可以在在块中提供细致的处理。
 2. 如果try块被执行一次，那么try块后只有一个catch块会被执行，除非用了continue导致进入了下一次的try块。所以应该先处理小异常(子类)再处理大异常(父类)，如下
 
-```java
-try{
-    statements...
-}
-catch(RuntimeException e){
-System.out.println("运行时异常");
-}
-catch(NullPointerException ne){//编译会报错，因为因为RuntimeException包含NullPointException，所以此处的代码永远不会获得执行机会
-    System.out.println("空指针异常");
-}
-```
+    ```java
+    try{
+        statements...
+        
+        return;
+    } catch(RuntimeException e){
+    System.out.println("运行时异常");
+    } catch(NullPointerException ne){// 编译会报错，因为因为RuntimeException包含NullPointException，所以此处的代码永远不会获得执行机会
+        System.out.println("空指针异常");
+    } finally {
+        
+    }
+    return;
+    ```
+3. 通过throws抛出异常：定义一个方法的时候可以使用throws关键字声明。使用throws关键字声明的方法表示此方法不处理异常，而交给方法调用处进行处理。
+4. throw关键字抛出异常：throw关键字作用是抛出一个异常，抛出的时候是抛出的是一个异常类的实例化对象，在异常处理中，try语句要捕获的是一个异常对象，那么此异常对象也可以自己抛出。
 
 
-### 9.2 常见的异常
-1. ClassCastException
-2. IndexOutOfBoundsException数组越界异常
-3. ArrayIndexOutOfBoundsException等
-3. NumberFormatException数字格式异常
-4. ArithmeticException除0异常
-5. FileNotFoundException
-6. UnsupportedOperationException
+### 13.1 自定义异常
+除了JDK定义好的异常类外，在开发过程中根据业务的异常情况自定义异常类。
 
-### 9.3 他人关于对异常处理
+### 13.2 常见的异常
+- ArithmeticException除0异常：用0做了除数就会出现，比如`System.out.println(100/0)`
+- NullPointerException：空指针异常
+- ClassCastException：类型强制转换异常
+- SQLException：操作数据库异常
+- FileNotFoundException：文件未找到
+- IndexOutOfBoundsException数组越界异常
+- ArrayIndexOutOfBoundsException等
+- NumberFormatException数字格式异常:字符串转换为数字异常
+- EOFException：文件已结束异常
+- UnsupportedOperationException
+
+### 13.3 他人关于对异常处理
 1. 异常处理是一种哲学，当碰到的异常导致程序无法往下运行的时候推荐抛出runtimeexception
 
 ## 15 注释

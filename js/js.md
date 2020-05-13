@@ -731,7 +731,10 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
 
 ### 4.4 Array
 特点:
-1. 无类型：可以存储任何类型的JavaScript值
+1. 无类型：可以存储任何类型的JavaScript值。
+    1. 扒开V8里数组的C++源码可以看到，数组JSArray继承自JSObject，也就是说，数组是一个特殊的对象，既然是对象，内部也是key-value的存储形式，所以可以存放不同的数据类型。从注释上还可以看到数组有fast和slow两种模式。
+        1. fast数组：低层结构是FixedArray
+        1. slow数组：低层结构是HashTable
 2. 动态：可根据需要增长或缩减
 3. 可能是稀疏的：数组元素的索引不一定是连续的，意味着稀疏数组length属性值大于元素的个数
 
@@ -807,6 +810,15 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
     ```
 4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
 5. `Array.prototype.slice([begin[,end]])`:从数组或类数组中拷贝出新的数组，这个拷贝是对原数组元素的浅拷贝，该方法不会改变原数组。如果不带参数,则是整个复制。begin和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
+6. 排序`sort(sortby)`：对数组进行排序，然后返回对数组的引用。排序是在原数组上进行，不生成副本。sortby参数是可选的，如果没提供，则默认按字符编码的顺序进行排序，如果提供了，则必须是函数。V8版本7.0开始使用Timsort实现。
+    
+    ```js
+    // 例子1 提供了sortby
+    function sortNumber(a,b){
+        return a - b
+    }
+    arr.sort(sortNumber)
+    ```
 
 array常用操作总结
 1. 过滤用`filter()`,需要对元素进行处理用`map()`
@@ -1173,6 +1185,8 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 参考网友的文章:https://www.cnblogs.com/wangying731/p/5164780.html
 
 详见DOM笔记的window部分.
+
+## 13 错误/异常处理
 
 ## 15 注释
 有两种，跟java一样：

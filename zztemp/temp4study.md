@@ -522,7 +522,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. HTML5标准规定了setTimeout()的第二个参数的最小值（最短间隔），不得低于4毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为10毫秒。另外，对于那些DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。这时使用requestAnimationFrame()的效果要好于setTimeout()。
 
 33. 深复制对原型链有什么影响?
-34. 打印字符和控制字符
 35. js call和apply参考:https://www.jianshu.com/p/a9990162d698
 36. 页面重定向和window.location的关系
 37. 浏览器跨域,iframe,跨域加载js

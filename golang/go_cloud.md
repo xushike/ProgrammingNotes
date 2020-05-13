@@ -35,6 +35,11 @@ go 结构体的一些工具化封装，比如:
 
 Heteronym
 
+## 7 go-spew
+https://github.com/davecgh/go-spew
+
+为go数据结构实现了一个深漂亮的打印机来帮助调试，是变量数据结构调试的利器
+
 # 七 未整理
 ## 2 未整理
 1. Google Cloud Platform是干嘛的

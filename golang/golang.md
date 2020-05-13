@@ -104,7 +104,7 @@ img.SetColorIndex(
 
 ### 3.5 关于go的作者
 1. Robert Griesemer：曾协助实现 Java 的 HotSpot 编译器和 JavaScript V8 引擎。
-2. Rob Pike：曾是贝尔实验室的 Unix 团队和 Plan9 操作系统成员，与 Thompson 一起创造了 UTF-8 字符编码。
+2. Rob Pike：曾是贝尔实验室的 Unix 团队和 Plan9 操作系统成员，与Ken Thompson 一起创造了 UTF-8 字符编码。
 3. Ken Thompson，不用多说了，技术圣殿的人物，创造了 C 语言和 Unix，获得了 1983 年图灵奖和 1988 国家技术奖
 
 ### 3.6 空标识符（blank identifier）
@@ -136,14 +136,22 @@ img.SetColorIndex(
     sum：= func（a，b int）int {return a + b}（3,4）
     ```
 
-### 3.9 rune,byte和string的关系
+### 3.9 go的unicode和uft8，rune、byte和string
+#### unicode和uft8
+unicode和uft8的关系可以参考：http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html
+
+#### rune、byte和string
 在Go当中 string底层是用byte数组存的，并且是不可以改变的。例如 `s:="Go编程" fmt.Println(len(s)) `输出结果应该是8因为中文字符是用3个字节存的。`len(string(rune('编')))`的结果是3.如果想要获得我们想要的情况的话，需要先转换为rune切片再使用内置的len函数,`fmt.Println(len([]rune(s)))`,结果就是4了。所以用string存储unicode的话，如果有中文，按下标是访问不到的，因为你只能得到一个byte。 要想访问中文的话，还是要用rune切片，这样就能下标表访问。
 
-简单总结就是:rune 能操作 任何字符,byte 不支持中文的操作.
+rune能操作任何字符，包括中文，而byte不支持中文的操作。
 
-`rune`:rune在golang中是int32的别名，在各个方面都与int32相同。rune理解为一个可以表示unicode编码的值int的值，称为码点（code point）。只不过go语言把这个码点抽象为rune。
+`byte`:byte 类型是 uint8 的别名，只占用 1 个字节。
+1. 用于字符串的时候，它可以表示一个ASCII字符。
 
-`string`和`[]byte`的异同:从源码可知`string`主要是由`[]byte`构成。`string`不可变,每次值改变(重新分配内存空间),指针会指向新的字符串的内存地址,而`[]byte`值改变的时候指针不会移动,所以`[]byte`性能比string高.
+`rune`:rune在golang中是int32的别名，在各个方面都与int32相同。rune是一个可以表示unicode编码的值int的值，称为码点（code point）--go把这个码点抽象为rune。
+1. 用于字符串的时候，它可以表示一个UTF8字符。
+
+`string`和`[]byte`的异同:从源码可知`string`主要是由`[]byte`构成。`string`不可变,每次值改变(重新分配内存空间),指针会指向新的字符串的内存地址,而`[]byte`值改变的时候指针不一定会移动(扩容时会移动，不扩容时不会移动),所以`[]byte`性能比string高.
 
 使用比较:
  - string可以直接比较，而`[]byte`不可以，所以`[]byte`不可以当map的key值。
@@ -182,7 +190,7 @@ fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]
 以下为详细区别：
 - `var`:没加等号的话称为“零值初始化”，虽然带有“初始化”三个字，但对三个特殊的引用类型（slice、map、channel）并没有初始化，只是赋值为nil，对其他类型则是正常赋值为对对应的零值并初始化。
 - `new(type)`：为变量分配内存，将内存置零（注意不是将变量置零，不要混淆了），但不初始化该内存，返回指针。对于值类型，它是零值初始化，和var一样；对于引用类型,此时变量等于nil（注意和其他语言不同，有点难理解）。
-- `make(type,args)`：为变量分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。
+- `make(type,args)`：为变量分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。还有个细节是`make()`是在运行时处理（特殊状态下会做编译器优化）(这就是go的数组不能make声明的原因之一?)。
 
 
 ```go
@@ -283,6 +291,7 @@ fmt.Println(strconv.Itoa(120))  // 120
 1. golang官方
     1. 博客：https://blog.golang.org/
     2. playground：https://play.golang.org/
+        1. studygoalng也做了一个国内版的:https://play.studygolang.com/
     3. https://golang.org/doc/effective_go.html
     4. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
     5. github的wiki：https://github.com/golang/go/wiki
@@ -757,7 +766,27 @@ go func() {
 你应该尽可能地使用 float64，因为 math 包中所有有关数学运算的函数都会要求接收这个类型。
 
 #### 2.1.3 字符串
-golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和raw字符串,raw字符串和js6中的模板字符串有点像，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。golang的字符串是不可变的，
+golang中字符串是以 UTF-8 为格式进行存储。语法分为普通字符串和raw字符串:raw字符串和js6中的模板字符串有点像，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。golang的字符串是不可变的，源码定义在src/runtime/string.go
+
+```go
+// src/runtime/string.go
+// 可以看出string其实是个结构体
+type stringStruct struct {
+    str unsafe.Pointer
+    len int
+}
+```
+
+```go
+// go字符串内容的三种写法
+// 1. 字面值
+var s = "中国人"
+// 2. 码点表示法
+var s1 = "\u4e2d\u56fd\u4eba"
+var s2 = "\U00004e2d\U000056fd\U00004eba"
+// 3. 字节序列表示法（二进制表示法）
+var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
+```
 
 操作：
 1. 字符串截取:可以用类似切片的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
@@ -775,33 +804,40 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
    3. `strings.Join()`：效率比`+`高
    4. `buffer.WriteString()`：不需要复制，只需要将添加的字符串放在缓存末尾即可，所以性能理论上最好，不过和java的StringBuilder一样是线程不安全的
    5. go1.10开始新增了Builder类型
-4. 遍历
+4. 遍历字符串
    1. 按字节遍历 
         
         ```golang
-        func main() {
-            var s = "嘻哈china"
-            for i:=0;i<len(s);i++ {
-                fmt.Printf("%x ", s[i]) // e5 98 bb e5 93 88 63 68 69 6e 61
-            }
+        var s = "嘻哈china"
+        for i:=0;i<len(s);i++ {
+            fmt.Printf("%x ", s[i]) // e5 98 bb e5 93 88 63 68 69 6e 61
         }
         ```
-    1. 按字符 rune 遍历:每次迭代出两个变量 codepoint 和 runeValue。codepoint 表示字节起始位置，runeValue 表示对应的 unicode 编码（类型是 rune）
+    2. 按字符 rune 遍历:每次迭代出两个变量 codepoint 和 runeValue。codepoint 表示字节起始位置，runeValue 表示对应的 unicode 编码（类型是 rune）。如果字符串中有非法utf8字节序列，那么runeValue将返回0xFFFD这个特殊值(很多其他程序似乎会将这个值显示为特殊的问号)，并且在接下来一轮循环中，runeValue将仅前进一个字节。
         
         ```golang
-        func main() {
-            var s = "嘻哈china"
-            for codepoint, runeValue := range s {
-                fmt.Printf("%d %d ", codepoint, runeValue) // 0 22075 3 21704 6 99 7 104 8 105 9 110 10 97 
-            }
-            fmt.Println()
-
-            for codepoint, runeValue := range s {
-                fmt.Printf("%d %s ", codepoint, string(runeValue)) // 0 嘻 3 哈 6 c 7 h 8 i 9 n 10 a
-            }
+        var s = "嘻哈china"
+        for codepoint, runeValue := range s {
+            fmt.Printf("%d %d ", codepoint, runeValue) // 0 22075 3 21704 6 99 7 104 8 105 9 110 10 97 
         }
-        ```
+        fmt.Println()
+        for codepoint, runeValue := range s {
+            fmt.Printf("%d %s ", codepoint, string(runeValue)) // 0 嘻 3 哈 6 c 7 h 8 i 9 n 10 a
+        }
         
+        // 非法字节的列子
+        // TODO
+        ```
+5. 字符串的比较
+    ```go
+    // 有三种方法：==、strings.Compare()、strings.EqualFold
+    // 1. ==
+    // 2. Compare()比较,区分大小写,返回int 0时相同，1时不同，效率高于==
+    // 3. EqualFold ()比较，比较utf-8编码小写的条件下是否相等，不区分大小写
+    ```
+    
+go有字符串常量池吗：没有。
+
 #### 2.1.4 布尔bool
 对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
 
@@ -812,7 +848,7 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
 特点：
 1. 元素占用内存相同且连续，所以访问元素速度很快。
 2. go数组的元素必须是同一个类型,没有指定值的元素默认是零值初始化。
-3. 注意go的数组是值类型，虽然数组的元素可以被修改，但是数组本身的赋值、函数传参都是以整体复制的方式处理的（**值传递**），也就是说修改dst不会影响src。（这点和不少编程语言不一样，比如js/C/C++中是指向首元素的指针）
+3. 注意**go的数组是值类型**，不同于C语言或者其他语言的数组，C语言的数组变量是指向数组第一个元素的指针，而Go语言的数组是一个值。虽然数组的元素可以被修改，但是数组本身的赋值、函数传参都是以整体复制的方式处理的（**值传递**），也就是说修改dst不会影响src。（这点和不少编程语言不一样，比如js/C/C++中是指向首元素的指针）
 4. An array's size is fixed; its length is part of its type ([4]int and [5]int are distinct, incompatible types).
     
     ```go
@@ -823,12 +859,13 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
     fmt.Println("b is ", b) // [Singapore China India Germany France]
     ```
 
-数组声明:
+数组的创建/声明:
 1. 使用字面量:`arr := [5]int{1,2,,5,5,6}`
     1. 声明空数组（零值初始化）：形如`var arr [5]int`或者`arr := [3]int{}`,声明了一个长度为5的int类型的空数组,所有元素被初始化为0
 2. 自动计算长度，注意三个点必须要有，否则就是切片了:如`arr := [...]int{1,3,5}`，或者`arr := [...]int{2:5,3:6}`
 3. 指定特定元素的值:`arr := [5]int{2:5,3:6}`，或者`arr := [...]int{2:5,3:6}`
 4. 使用`new()`：如`arr := new([5]int)`，注意此时arr的类型是`*[5]int`
+5. 从切片生成数组:(待整理)
 
 数组的操作：
 1. 数组的读写/存取:
@@ -842,8 +879,9 @@ golang中字符串是以 UTF-8 为格式进行存储。分为普通字符串和r
 #### 2.2.2 切片
 参考：
 1. https://blog.golang.org/go-slices-usage-and-internals
+2. 源码在标准库runtime/slice.go
 
-切片可看作go对数组抽象后的类似动态数组的集合.是对数组一个连续片段的引用（该数组我们称之为相关数组，通常是匿名的），所以切片是引用类型（因此更类似于 C/C++ 中的数组类型，或者 Python 中的 list 类型）.多个切片如果表示同一个数组的片段，它们可以共享数据,因此一个切片和相关数组的其他切片是共享存储的，如果修改该数组，所以关联该数组的切片都会受影响。但切片的容量发生变化时，会重新分配地址，此时切片和原底级数组的关联就会断开。例子如下：
+切片从设计上可看作go对数组抽象后的类似动态数组的集合，但**切片本身并不是动态数据或者数组指针**。它是对数组一个连续片段的引用（该数组我们称之为相关数组，通常是匿名的，**这个数组的长度就是切片的容量cap()**），所以切片是引用类型（因此更类似于 C/C++ 中的数组类型，或者 Python 中的 list 类型）.多个切片如果表示同一个数组的片段，它们可以共享数据,因此一个切片和相关数组的其他切片是共享存储的，如果修改该数组，所以关联该数组的切片都会受影响。但切片的容量发生变化时，会重新分配地址，此时切片和原底级数组的关联就会断开。例子如下：
 
 ```golang
 a := [...]int{1, 2, 3, 4, 5}
@@ -860,6 +898,16 @@ fmt.Println(s1)   // [100,2,3,4,5,6,7]
 fmt.Println(a[:]) //[20,2,3,4,5]
 fmt.Println(s2)   //[20,2,3,4,5]
 ```
+
+切片的数据结构如下:
+```go
+type slice struct {  
+    array unsafe.Pointer // 指向底层数组的指针
+    len   int
+    cap   int
+}
+```
+
 
 切片的存储能力（capacity）：可以理解为最大容纳元素个数，与数组不同，切片的存储能力是可以大于它的长度的，最大容纳元素个数减去当前容纳元素个数剩下的空间是隐藏的，不能直接使用。如果要往隐藏空间中新增元素，使用`append()`函数。
 
@@ -885,7 +933,7 @@ slice := []string{"a","b","c","d","e"}
 newSlice := slice[1:3:4] // newSlice的长度2，容量为3
 newSlice2 := slice[5:] // 特别的，如果start是slice的长度，那么newSlice2是长度为0的非nil切片
 
-//6.基于数组创建切片，也就是说通过下标截取的方式得到的一定是切片类型？
+// 6.基于数组创建切片。貌似不能指定容量
 array := [...]int{1,2,3}
 newSlice := array[m:n]
 
@@ -895,12 +943,22 @@ slice := []stirng{}
 ```
 注意:
 1. 使用切片字面量的时候，只要`[]`里有值，就不是切片而是数组了
-2. 声明空的slice应该使用`var t []string`而不是`t := []string{}`,前者声明了一个nil slice而后者是一个长度为0的非nil的slice
+2. 声明nil slice应该使用`var t []string`而不是`t := []string{}`,前者声明了一个nil slice而后者是一个长度为0的非nil的slice。空切片的数组指针指向的地址不是nil，指向的是一个内存地址，但是它没有分配任何内存空间，即底层元素包含0个元素，而nil slice的数组指针是nil，没有指向任何内存地址。
+    ```go
+    // nil slice的内部是:arr指针 = nil, len = 0, cap = 0
+    var s []int
+
+    // 空 slice的内部是:arr指针 = 0x..., len = 0, cap = 0
+    slice := make([]string,0)
+    slice := []stirng{}
+    ```
 
 切片的操作：
 1. 往切片末尾追加元素或切片，使用内置的`append()`，该函数会自动处理存储空间不足的问题。追加元素使用内置的`append(slice,ele1,ele2,...,eleN)`函数，追加切片要写成`append(slice1,slice2...)`，这三个点的意思是把slice2所有元素打散后传递给`append()`，这是由于`append()`从第二个参数起的所有参数都必须是待附加的单个元素。:
     1. 当每次容量不够的时候，`append()`就会分配一个新的数组，所以可以通过设置长度和容量一样的切片来保证第一次`append()`分配的是新数组
-    2. 扩容策略：容量<1024时，每次扩容是容量翻倍；超过1000，则每次增加25%。扩容会涉及数组拷贝，产生额外性能开销。
+    2. 扩容策略：有两种策略
+        1. 容量<1024时，每次扩容是容量翻倍；超过1024，则每次增加25%，即每次扩容四分之一。扩容会涉及数组拷贝，产生额外性能开销。
+        2. 批量添加元素，当新的容量高于旧容量的两倍，就会分配比新容量稍大一些，并不会按上面第一条的规则扩容。
 2. 切片中元素的插入、删除和替换，go没有提供直接在切片中间插入/删除元素的方法，所以只有使用子切片的方法来实现，而且切片这种数据结构本身也不适合频繁的插入和删除：
     1. 删除元素：可以使用：`s2=append(s1[:index],s1[index+1:]...)`，注意有坑。
     2. 插入元素：创建临时切片保存后面的部分，然后类似上面那样。。。
@@ -1241,10 +1299,55 @@ for index,ele := range xxx {
 1. for后面的三个语句(initialization; condition; post)都可以省略，此时可以看做go的`while`
 2. 和其它语言中的`break`以及`continue`一样，`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会中跳过当前循环，并开始执行下一次循环。
 3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map。
-
-优化：因为index后面的ele是元素的副本而不是指针，元素很大的话开销会比较大，有两种优化思路。
-1. 声明成这样`xxx := make([]*ele,0)`，这样的话传递的虽然还是值，但是是指针的值了，开销更小。
-2. 直接用下标更新：`xxx[index]`
+4. for range中，index后面的ele是元素的副本而不是指针，元素很大的话开销会比较大，有两种优化思路。
+    1. 声明成这样`xxx := make([]*ele,0)`，这样的话传递的虽然还是值，但是是指针的值了，开销更小。
+    2. 直接用下标更新：`xxx[index]`
+5. for range中，**xxx是原变量的一个副本**，例子如下
+    
+    ```go
+    //  例子1 xxx是数组
+    var arr = [5]int{1, 2, 3, 4, 5}
+	var r [5]int
+	fmt.Println(arr, r) // [1 2 3 4 5] [0 0 0 0 0]
+	for i, v := range arr {
+		if i == 0 {
+			arr[1], arr[2] = 10, 20
+		}
+		r[i] = v
+    }
+    // 如果for range的arr不是副本，那么下面应该输出[1 10 20 4 5] [10 20 3 4 5]，但并没有这样输出
+    fmt.Println(arr, r) // [1 10 20 4 5] [1 2 3 4 5]
+    
+    // 例子2 xxx是切片，循环时改变元素的值
+    // 获取到的是新的值，因为切片的副本指向的还是
+    s := []int64{1, 2, 3, 4, 5}
+    for _, v := range s {
+        if v == 2 {
+            s[3] = 30
+        }
+        fmt.Printf("%d", v) // 123305
+    }
+    fmt.Println()
+    fmt.Println(s) // [1 2 3 30 5]
+    
+    // 例子3 xxx是切片，循环时改变切片的内容
+    s := []int64{1, 2, 3, 4, 5}
+    for i, v := range s {
+        if i == 1 {
+            s = append(s[:i], s[i+1:]...)
+            // 此时s1的长度变成了4，容量还是5
+        }
+        // s[4]会index out of range
+        fmt.Printf("i:%d, v:%d, len:%d, cap:%d\n", i, v, len(s), cap(s))
+    }
+    fmt.Println(s)
+    // i:0, v:1, len:5, cap:5
+    // i:1, v:2, len:4, cap:5
+    // i:2, v:4, len:4, cap:5
+    // i:3, v:5, len:4, cap:5
+    // i:4, v:5, len:4, cap:5
+    // [1 3 4 5]
+    ```
 
 ### 3.2 if else
 
@@ -1316,19 +1419,8 @@ go函数的大概结构:Go中大部分函数的代码结构几乎相同，首先
 ### 4.2 参数传递
 值传递：go 中函数都是按值传递即 passed by value，对于引用类型，这个值指的标头值。每个引用类型创建的标头值是包含一个指向底层数据结构的指针。因为标头值是为复制而设计的，所以永远不需要共享一个引用类型的值。标头值里包含一个指针，因此通过复制来传递一个引用类型的值的副本，本质上就是在共享底层数据结构。
 ```go
-// 打印这个切片变量传参前后的指针地址，和传参前后切片中元素的指针地址
-
-slice1 := []string{"zhang", "san"}
-fmt.Printf("&slice1:%p\n", &slice1)
-fmt.Printf("&slice1[1]:%p\n", &slice1[1])
-modify := func(data []string) {
-    fmt.Printf("&data:%p\n", &data)
-    fmt.Printf("&data[1]:%p\n", &data[1])
-    data[1] = "si"
-}
-modify(slice1)
-fmt.Println(slice1)
-
+// 代码参考studyGo项目
+...
 // 证明了切片传递的不是指针地址，因为变量前后地址不同。
 // 也证明了切片的参数传递的是传值的形式，具体是传标头值的拷贝，因为指向元素的指针地址相同。
 ```
@@ -1401,8 +1493,32 @@ func main() {
 1. 要由接收者类型的本质来决定,感觉有点复杂,简单说就是看使用情况:对于内置类型,基本都是值接收者(?),对于结构类型就要看情况了
 2. 例外是需要让类型值符合某个接口的时候
 
-回调的简单例子，感觉像是提供一个接口让外部去实现：
+
+Method Type、Method Set、Method Expression、Method Value是什么：见下面这个例子
+```go
+var t T
+// 下面这两种function形式被称为Method Type，也可以称为Method的signature
+func (t T) Get() int {...} // 这个Get方法就属于T的Method Set
+func (t *T) Set(a int) {...} // 这个Set方法就属于*T的Method Set
+t.Get() // Method Value
+t.Set(1) // Method Value
+// 不过我们也可以像普通方法那样去用它
+// 下面两种直接以类型名T调用它Method Set中的方法的的表达方法称为Method Expression
+T.Get(t)
+(*T).Set(&t, 1)
+// 另外Method Expression自身的类型是一个普通的function，所以可以赋值给一个函数类型的变量
+fn1 := T.Get // 函数类型是: func (t T) int
+fn2 := (*T).Set
+
+// 如果一个实例对象foo具有静态类型Foo，M是Foo的Method Set的方法，那么foo.M就是Method Value
+// Method Value绑定了Foo类型的实例foo，Method Value的函数原型中并不包含Method Expression函数原型中的第一个参数
+fn3 := t.Get // 函数类型是： func () int
+```
+所以Method Type、Method Set、Method Expression、Method Value本质上都是在说同一个东西，只是表现形式不一样而已。
+
+
 ```golang
+// 回调的简单例子，感觉像是提供一个接口让外部去实现(TODO)：
 package main 
 import "fmt" 
 type Callback func (x, y int) int 
@@ -1862,8 +1978,10 @@ go使用三个`With`前缀的函数来派生子context。
 ## 12 底层编程
 主要指C语言相关
 
-## 13 错误处理
-Golang 没有传统的异常机制:对于非致命的错误，Golang 使用返回值来报告;对于致命的错误，Golang 直接选择“崩溃”掉(当然也有恢复机制), 不过按照 Golang 的哲学，既然是致命错误，就应当挂掉。
+## 13 错误/异常处理
+Golang 没有传统的异常机制:
+1. 对于非致命的错误，Golang 使用返回值来接受。golang的这种异常处理方式属于典型的可维护性驱动(maintenance-driven)，他不建议使用其他语言抛出异常外层捕获处理的方式来进行异常情况的恢复和处理(比如java的可靠性驱动)，而是通过返回参数判断。因为异常堆栈中的大量信息通常并不是使用者所关心的，而对于错误的恢复也并不会起到什么作用。
+2. 对于致命的错误，Golang 直接选择panic掉(当然也有恢复机制), 不过按照 Golang 的哲学，既然是致命错误，就应当挂掉。
 
 golang 中的错误处理的哲学和 C 语言一样，函数通过返回错误类型(error)或者 bool 类型(不需要区分多种错误状态时)表明函数的执行结果，调用检查返回的错误类型值是否是 nil 来判断调用结果。 错误值一般作为返回值列表的最后一个，其他返回值是成功执行时需要返回的信息。
 
@@ -1903,11 +2021,23 @@ if err != nil {
 1. 为了编写强壮的代码，不用使用`_`忽略错误，而是要处理每一个错误，尽管代码写起来可能有些繁琐。
 2. 尽量不要使用panic。
 
-### 13.1 错误处理策略(5种？)
-1. 传播错误（最常用的方式）:由于错误信息经常是以链式组合在一起的，所以错误信息中应避免大写和换行符。最终的错误信息可能很长，我们可以通过类似grep的工具处理错误信息
-
+### 13.1 错误处理策略
+通常有以下几种错误处理策略：
+1. 继续传递错误（最常用的方式）：可以直接返回，直接返回时最简单的处理方式；也可以追加信息后返回。由于错误信息经常是以链式组合在一起的，所以错误信息中应避免大写(因为可能有多层嵌套)和换行符(更好地定位报错信息)。最终的错误信息可能很长，我们可以通过类似grep的工具处理错误信息。
+    
+    ```golang
+    // 例子1 直接返回
+    datas, err := http.Get(url)
+    if err != nil {
+            return nil, err
+    }
+    // 例子2 追加信息后返回
+    datas, err := http.Get(url)
+    if err != nil {
+        return nil, fmt.Errorf("parsing %s error: %v", url, err)
+    }
+    ```
 2. 重试:如果错误的发生是偶然性的，或由不可预知的问题导致的。一个明智的选择是重新尝试失败的操作。在重试时，我们需要限制重试的时间间隔或重试的次数，防止无限制的重试。
-
 3. 输出错误信息并结束程序:用于错误发生后，程序无法继续运行。这种策略只应在main中执行。对库函数而言，应仅向上传播错误，除非遇到了bug，才能在库函数中结束程序
     1. 关于错误信息的时间：log.Fatalf可以更简洁的代码达到与上文相同的效果。log中的所有函数，都默认会在错误信息之前输出时间信息。
 
@@ -1916,17 +2046,36 @@ if err != nil {
             log.Fatalf("Site is down: %v\n", err)
         }
         ```
+4. 只输出错误信息，同时继续执行:对于非关键异常，仅记录异常发生，不做任何处理有时是正确的处理方式。典型的例子是文件读取，我们必须检测 error 参数，判断是否读取到了文件的末尾，从而判断是否需要中止继续进行读写
 
-4. 只输出错误信息:
-```go
-//log包(log包中的所有函数会为没有换行符的字符串增加换行符)提供函数:log.Printf
-//或者标准错误流输出错误信息:fmt.Fprintf
-```
+    ```go
+    //log包(log包中的所有函数会为没有换行符的字符串增加换行符)提供函数:log.Printf
+    //或者标准错误流输出错误信息:fmt.Fprintf
+    
+    if err := Ping(); err != nil {
+        fmt.Fprintf(os.Stderr, "ping failed: %v", err)
+    }
+    
+    // 例子2 文件读取
+    in := bufio.NewReader(os.Stdin)
+    for {
+            r, _, err := in.ReadRune()
+            if err == io.EOF {
+                    break
+            }
+            if err != nil {
+                    return fmt.Errorf("read file failed: %v", err)
+            }
+    }
+    ```
+5. 忽略掉错误：通常不建议这样
+    
+    ```golang
+    resposne, _ := http.Get(url)
+    ```
 
-5. 忽略掉错误
 
-### 13.2 go的错误处理方法
-检查某个子函数是否失败后，我们通常将处理失败的逻辑代码放在处理成功的代码之前。如果某个错误会导致函数返回，那么成功时的逻辑代码不应放在else语句块中，而应直接放在函数体中。
+注意go的错误处理的写法：检查某个子函数是否失败后，我们通常将处理失败的逻辑代码放在处理成功的代码之前。如果某个错误会导致函数返回，那么成功时的逻辑代码不应放在else语句块中，而应直接放在函数体中。
 
 ### 13.4 关于panic,refer和recover
 
@@ -1949,24 +2098,31 @@ func main() {
 ```
 
 #### panic
-`panic(string)`
+`panic(string)`，俗称宕机
 
-什么情况会panic：数组下标越界或类型断言失败这样的运行错误时，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+什么情况会panic：数组下标越界或类型断言失败等运行错误，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
 
-也可以手动触发panic：`panic("xxx")`，一般是把它作为最后的手段来使用
+也可以手动触发panic：`panic("xxx")`
 
 什么场景适合使用panic（除开这些情况，其他错误错误最好都用error）：
-1. 发生严重错误，必需让进程退出。这种情况使用 panic 让进程直接退出将问题暴露反而是更可取的做法：
-    1. 断言错误
+1. 发生严重错误，必须让进程退出。这种情况使用 panic 让进程直接退出将问题暴露反而是更可取的做法：
+    1. 断言错误：设置断言是一个好的习惯，但这同时会增加一定的维护成本，且在发生时可能造成程序的异常退出，所以还是应该谨慎地考虑
     2. 程序启动时依赖不存在：比如数据库不存在、依赖的配置无法读取
 2. 想快速对顶层的错误进行处理：有时候函数调用栈很深，逐层返回错误可能需要写很多冗余代码，这个时候可以使用 panic 让程序的控制流直接跳到顶层的 recover 处来处理错误。(待研究)
+
+宕机的恢复：内置函数`recover()`会终止当前的宕机状态并返回宕机的值，将`recover()`函数的调用放到 goroutine 的延迟函数中，就可以实现宕机的恢复机制。参考`recover()`
 
 #### defer
 `defer func(){...}()`
 
 deger的定义：Defer is used to ensure that a function call is performed later in a program’s execution, usually for purposes of cleanup. defer is often used where e.g. ensure and finally would be used in other languages.
 
-defer的执行时机：首先要明白`return xxx`这条语句并不是一条原子指令！函数返回的过程是这样的：先给返回值赋值，然后调用defer表达式，最后才是返回到调用函数中。 也就是说defer表达式可能会在设置函数返回值之后，在返回到调用函数之前，修改返回值，使最终的函数返回值与你想象的不一致。第二种情况就是发生panic，这个时候defer也会执行。
+defer的执行时机：首先要明白`return xxx`这条语句并不是一条原子指令！函数返回的过程是这样的：先给返回值赋值，然后调用defer表达式，最后才是返回到调用函数中。 也就是说defer表达式可能会在设置函数返回值之后，在返回到调用函数之前，修改返回值，使最终的函数返回值与你想象的不一致。defer在以下三个时机会被调用：
+1. 包裹 defer 的函数返回时
+2. 包裹 defer 的函数执行到末尾时
+3. 所在的 goroutine 发生 panic 时
+
+但调用`os.Exit()`方法将不会触发 defer 函数的执行
 
 ```golang
 func f1() (r int) {
@@ -2054,7 +2210,7 @@ func main() {
 #### recover
 `recover()`
 
-为什么需要`recover()`：触发panic时，进程会中止，所有goroutine也会中止。而写在defer里的`recover()`可以用来捕捉panic,捕捉后panic就不继续传递，程序就不会因为panic中止了，不过`recover()`之后，程序并不会返回到触发panic那个点继续执行以后的动作,而是执行完所有defer之后退出.可以看出`recover()`只在defer的函数中有效，如果不是在refer上下文中调用，recover会直接返回nil。
+为什么需要`recover()`：触发panic时，进程会中止，所有goroutine也会中止。而写在defer里的`recover()`可以**用来捕捉panic**,捕捉后panic就不继续传递，程序就不会因为panic中止了，不过`recover()`之后，程序并不会返回到触发panic那个点继续执行以后的动作,而是执行完所有defer之后退出.可以看出`recover()`只在defer的函数中有效，如果不是在defer上下文中调用，recover会直接返回nil。
 ```golang
 func test() {
     defer func() {
@@ -2067,6 +2223,8 @@ func test() {
     // Panicing bad end
 }
 ```
+
+`panic()`与`recover()`两个内置函数搭配，看上去就可以实现其他语言中的异常处理机制了，但宕机机制在 GoLang 中并非用于异常情况的报告与恢复，其设计理念在于不可恢复问题或不可能发生情况的报告与程序的中止运行，并不是常见问题的发现与处理，通常情况下，仍然建议通过返回 error 实例来进行执行中问题的返回与处理
 
 ### 13.5 error
 golang 中内置的错误类型 error 是一个接口类型，自定义的错误类型也必须实现为 error 接口，这样调用总是可以通过 Error() 获取到具体的错误信息而不用关心错误的具体类型。标准库的 `fmt.Errorf` 和 `errors.New` 可以方便的创建 error 类型的变量
@@ -2759,18 +2917,21 @@ func test() {
 ## 2 常用包和方法
 
 ### byfio
-封装了带缓存的io操作以及Scanner
+封装了带缓存的io操作以及Scanner，通过包裹 io.Reader 或 io.Writer 函数创建新的 Reader 或 Writer 实例，并且这些新创建的实例提供了缓冲的能力。使用方法非常简单，达到指定缓冲大小，触发写或读操作，如未达到要求，可用 Flush 方法刷新。
 
+### bytes
+主要是关于 byte slice 操作的一些函数。由于 []byte 也可用于表示 string，故其中的函数、方法与 strings 很类似，比如 Join、Split、Trim、 Contains、`Count()`、`Repeat()`、`Runes()`等。
+
+### cmd
 ### container
 #### container/heap
 提供了接口，在实际使用时需要实现
-
 
 #### container/list
 双向链表，并发不安全，频繁的插入和删除建议用它,频繁的遍历查询选slice。
 
 go的list的特点：
-1. 可以插入任意类型，包括nil（可能成为坑）
+1. 无类型：可以插入任意类型，包括nil（可能成为坑）
 
 #### container/ring
 环形链表
@@ -2856,7 +3017,13 @@ func main() {
         fmt.Printf("%q", 0x4E2D) // '中'
         fmt.Printf("%q", "中") // "中"
         ```
-11. `%p`:输出指针的值.如`fmt.Printf("%p\n", &p)`，会输出`0xc42000e280`。同一个对象的不同引用的指针是一样的。
+11. `%p`:输出指针的地址。如`fmt.Printf("%p\n", &p)`，输出类似`0xc42000e280`。
+    
+    ```go
+    // 对于切片，不同引用打印出来的地址是一样的，因为他们指向同一个切片
+    // 对于切片指针，不同引用打印出来的地址是不一样的，因为打印的是变量本身的地址，而不是切片的地址
+    // 具体例子见studyGo项目的切片传递部分
+    ```
 12. 指定输出宽度,使用`[num]`:如`fmt.Printf("|%6s|%6s|\n", "foo", "b")`,会输出`|   foo|     b|`
 
     在有宽度的时候,默认是右对齐
@@ -3156,6 +3323,9 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 5. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量），从1.5开始成为默认设置（之前默认是1）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
 6. `Gosched()`:用于让出CPU时间片，让出当前goroutine的执行权限，调度器安排其它等待的任务运行，并在下次某个时候从该位置恢复执行。这就像跑接力赛，A跑了一会碰到代码`runtime.Gosched()`就把接力棒交给B了，A歇着了，B继续跑。
 7. `Goexit()`:会立即使当前的goroutine的运行终止（终止协程），而其它的goroutine并不会受此影响。runtime.Goexit在终止当前goroutine前会先执行此goroutine的还未执行的defer语句。请注意千万别在主函数调用runtime.Goexit，因为会引发panic。
+8. 不常用方法
+    1. `KeepAlive()`:
+        1. 参考：https://studygolang.com/articles/28442?fr=sidebar
 
 ### sort
 排序（相关算法,原理待补充）:
@@ -3202,7 +3372,7 @@ go1.10开始新增了builder类型，用于提高字符串拼接性能，用法�
 1. `Lock()`：使用Lock()加锁后，便不能再次对其进行加锁，直到利用Unlock()解锁对其解锁后，才能再次加锁。
 2. `UnLock()`：如果在使用Unlock()前未加锁，就会引起一个运行时错误。
 
-`RWMutex`：读写锁，针对读写操作的互斥锁，实际是一种特殊的自旋锁。读写锁与互斥锁最大的不同就是它把对共享资源的访问者划分成读者和写者，可以分别对读、写 进行锁定。这种锁相对于自旋锁而言，能提高并发性，因为在多处理器系统中，它允许同时有多个读者来访问共享资源，最大可能的读者数为实际的逻辑CPU数。写者是排他性的，一个读写锁同时只能有一个写者或多个读者（与CPU数相关），但不能同时既有读者又有写者。**一般用在大量读操作、少量写操作的情况。**
+`RWMutex`：读写锁，针对读写操作的互斥锁，实际是一种特殊的自旋锁。读写锁与互斥锁最大的不同就是它把对共享资源的访问者划分成读者和写者，可以分别对读、写进行锁定。这种锁相对于自旋锁而言，能提高并发性，因为在多处理器系统中，它允许同时有多个读者来访问共享资源，最大可能的读者数为实际的逻辑CPU数。写者是排他性的，一个读写锁同时只能有一个写者或多个读者（与CPU数相关），但不能同时既有读者又有写者。**一般用在大量读操作、少量写操作的情况。**
 
 `WaitGroup`:用于等待一组 goroutine 结束，尤其**适用于多个goroutine协同做一件事情的场景**。Add用来添加 goroutine 的个数（要写在go func前面）。`Done` 执行一次数量减 1。`Wait`用来等待结束
 1. `Add()`
@@ -3241,6 +3411,9 @@ fmt.Println("所有 goroutine 执行结束")
 2. 以`CompareAndSwap`为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
 
 ### syscall
+系统调用，从名字就能知道，这个包很复杂。系统调用是实现应用层和操作底层的接口，不同系统之间的操作常常会有一定的差异，特别是类 Unix 与 Windows 系统之间的差异较大。如果想要寻找 syscall 的使用案例，我们可以看看 net、os、time 这些包的源码。如果要看这部分源码，可以先只看 Linux 的实现，架构的话，如果想看汇编，可以只看 x86 架构。
+
+看源码发现比较晦涩，很正常，再简洁的语言，遇到环境相关，仍然会有很多 tricks，甚至用到 Cgo...
 
 ### time
 go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
@@ -3316,14 +3489,35 @@ golang 提供了下面几种类型：
 
 1. `type ArbitraryType int`:Go中对ArbitraryType赋予特殊的意义。代表一个任意Go表达式类型（比如指针），虽然看起来它是int的别名。
 2. `type Pointer *ArbitraryType`：Go中可以把Pointer类型，理解成任何指针的父类型。
-3. `Sizeof(anyType) uintptr`：官方文档说的返回变量本身占用的空间大小（单位：字节），而不是变量指向的内存的大小。比如字符串string类型内部是由两部分组成，一部分是指向字符串起始地址的指针，另一部分是字符串的长度，两部分各是8字节，所以一共16字节。切片的描述符（descriptor）是24字节。该方法在编译期就进行求值，而不是在运行时，所以`Sizeof()`的返回值可以赋值给常量。数组总是在编译期就指明自己的容量，意味着可以获得数组所占的内存大小。对于结构体类型，不是简单的将各字段的size加起来，因为会有对齐
-
-    ```golang
-    type W struct {
-        a byte
-        b int32
-        c int64
-    }
+3. `Sizeof(anyType) uintptr`：官方文档说的返回变量本身占用的空间大小（单位：字节），而不是变量指向的内存的大小。该方法在编译期就进行求值，而不是在运行时，所以`Sizeof()`的返回值可以赋值给常量。数组总是在编译期就指明自己的容量，意味着可以获得数组所占的内存大小。对于结构体类型，不是简单的将各字段的size加起来，因为会有对齐
+    1. 对应字符串，string标头值类型内部是由两部分组成，一部分是指向字符串起始地址的指针，另一部分是字符串的长度，两部分各是8字节，所以一共16字节
+        
+        ```golang
+        // uintptr + int = 16
+        type StringHeader struct {
+            Data uintptr
+            Len  int
+        }
+        ```
+    2. 对于切片，切片的描述符/标头值（descriptor）在64位系统下是24字节，所以切片一共是24字节
+        
+        ```golang
+        // 切片变量本身的结构如下，其中Data是指向底层数组的指针，uintptr + int + int在32位机器上是12字节，64位机器上是24
+        (reflect.SliceHeader) {
+            Data: (uintptr) 0xc00007fea8,
+            Len: (int) 10,
+            Cap: (int) 10
+        }
+        ```
+    3. 对于数组，因为数组在内存中只存储元素本身，没有存储多余的数据，所以数组变量本身的大小就是其中各元素本身字节之和。
+    4. 结构体
+    
+        ```golang
+        type W struct {
+            a byte
+            b int32
+            c int64
+        }
 
     var w W
     fmt.Println(unsafe.Sizeof(w)) //16，因为发生了对齐

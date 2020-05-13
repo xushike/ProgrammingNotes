@@ -132,11 +132,13 @@ CAS算法（compare and swap）： CAS算法是一种有名的无锁算法。�
 4. 清理（destroy）
 
 ## 5 死锁
-死锁的规范定义：集合中的每一个进程都在等待只能由本集合中的其他进程才能引发的事件，那么该组进程是死锁的。操作系统中的定义：所有的线程或进程都在等待资源的释放。如果只有一个线程也是可以发生死锁的。
+死锁的规范定义：集合中的每一个进程都在等待只能由本集合中的其他进程才能引发的事件，那么该组进程是死锁的。操作系统中的定义：所有的线程或进程都在等待资源的释放。如果只有一个线程也是可以发生死锁的。例子如:
+1. 线程 A 持有资源 2，线程 B 持有资源 1，他们同时都想申请对方的资源，所以这两个线程就会互相等待而进入死锁状态。
+2. 。。。
 
 java里死锁的定义：死锁是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外界作用下，它们都将无法进行下去。此时称系统处于死锁状态或系统产生了死锁，这些永远在互相等待的进程称为死锁进程。
 
-避免死锁的方法：todo
+避免死锁的方法(待整理)：
 
 ## 7 Goroutines和Channels
 ### 未整理
@@ -198,10 +200,288 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
     1. 接收并赋值：如`int1 := <- ch1`
     2. 直接获取通道的（下一个）值：如`<- ch`,可以不用`_`去接收，该值会被丢弃
 
-关闭channel：只有在当需要告诉接收者不会再提供新的值的时候，才需要关闭通道。关闭方法有以下几种：（待补充）
-1. 直接使用`close(ch)`或者加上defer语句：`defer close(ch)`
-2. 使用ok判断：`v, ok := <-ch   // ok is true if v received value`
-3. 可以使用`for range`来遍历通道，它会自动判断通道是否关闭，如果没有关闭且通道为空，继续取的话还是会死锁。
+关闭channel：
+1. 关闭channel的原则：
+    1. go作者说的在golang中可以不用关闭channel，channel在不被任何goroutine使用的时候，最后都会被垃圾回收机制回收，无论channel是否已经关闭。所以一般情况下不需要去关闭它，只有在当需要告诉接收者不会再提供新的值的时候，才需要关闭通道。(比如?)
+    2. 不要在消费端关闭channel，不要在有多个并行的生产者时对channel执行关闭操作。也就是说正常情况下，只应该在唯一或者最后的生产者协程中关闭channel。只要坚持这个原则，就可以确保向一个已经关闭的channel发送数据的情况不可能发生。
+2. 关闭channel的方法:大概有以下几种
+    1. `close()`
+    2. 再用一个chan专门来通知结束
+    3. 从chan传过来一个特定的值来判断结束循环
+3. 关闭channel的实例
+    1. 一个sender，多个receiver：这是最简单的场景，sender关闭channel即可
+    1. 在多个生产者端关闭
+        1. 可以暴力的使用`close()`关闭，额外的需要使用recover机制来上个保险，避免程序因为panic而崩溃。
+    2. 在消费者端关闭:可以较为优雅的使用sync.Once来关闭channel，这样可以确保只会关闭一次
+        ```go
+        // 1. 这种方式较为礼貌，但是once在多sender的情况下，还是会造成其他sender向已经关闭了的channel中塞数据，所以使用一个锁是不错的选择
+        type MyChannel struct {
+            C    chan interface{}
+            once sync.Once
+        }
+        func NewMyChannel() *MyChannel {
+            return &MyChannel{C: make(chan interface{})}
+        }
+        func (mc *MyChannel) SafeClose() {
+            mc.once.Do(func() {
+                close(mc.C)
+            })
+        }
+        
+        // 2. 使用锁
+        type MyChannel struct {
+            C      chan interface{}
+            closed bool
+            mutex  sync.Mutex
+        }
+
+        func NewMyChannel() *MyChannel {
+            return &MyChannel{C: make(chan interface{})}
+        }
+        func (mc *MyChannel) SafeClose() {
+            mc.mutex.Lock()
+            defer mc.mutex.Unlock()
+            if !mc.closed {
+                close(mc.C)
+                mc.closed = true
+            }
+        }
+        func (mc *MyChannel) IsClosed() bool {
+            mc.mutex.Lock()
+            defer mc.mutex.Unlock()
+            return mc.closed
+        }
+        ```
+    4. 一个receiver，多个sender：可以通过关闭额外的一个channel去通知那多个sender
+        ```go
+        func main() {
+            rand.Seed(time.Now().UnixNano())
+            log.SetFlags(0)
+            // ...
+            const MaxRandomNumber = 100000
+            const NumSenders = 1000
+            wgReceivers := sync.WaitGroup{}
+            wgReceivers.Add(1)
+            // ...
+            dataCh := make(chan int, 100)
+            stopCh := make(chan struct{})
+            // stopCh is an additional signal channel.
+            // Its sender is the receiver of channel dataCh.
+            // Its reveivers are the senders of channel dataCh.
+            // senders
+            for i := 0; i < NumSenders; i++ {
+                go func() {
+                    for {
+                        // The first select is to try to exit the goroutine
+                        // as early as possible. In fact, it is not essential
+                        // for this specified example, so it can be omitted.
+                        select {
+                        case <-stopCh:
+                            return
+                        default:
+                        }
+                        // Even if stopCh is closed, the first branch in the
+                        // second select may be still not selected for some
+                        // loops if the send to dataCh is also unblocked.
+                        // But this is acceptable for this example, so the
+                        // first select block above can be omitted.
+                        select {
+                        case <-stopCh:
+                            return
+                        case dataCh <- rand.Intn(MaxRandomNumber):
+                        }
+                    }
+                }()
+            }
+            // the receiver
+            go func() {
+                defer wgReceivers.Done()
+                for value := range dataCh {
+                    if value == MaxRandomNumber-1 {
+                        // The receiver of the dataCh channel is
+                        // also the sender of the stopCh channel.
+                        // It is safe to close the stop channel here.
+                        close(stopCh)
+                        return
+                    }
+                    log.Println(value)
+                }
+            }()
+            // ...
+            wgReceivers.Wait()
+        }
+        ```
+    5. 多个receiver，多个sender
+        
+        ```go
+        func main() {
+            rand.Seed(time.Now().UnixNano())
+            log.SetFlags(0)
+            // ...
+            const MaxRandomNumber = 100000
+            const NumReceivers = 10
+            const NumSenders = 1000
+            wgReceivers := sync.WaitGroup{}
+            wgReceivers.Add(NumReceivers)
+            // ...
+            dataCh := make(chan int, 100)
+            stopCh := make(chan struct{})
+            // stopCh is an additional signal channel.
+            // Its sender is the moderator goroutine shown below.
+            // Its reveivers are all senders and receivers of dataCh.
+            toStop := make(chan string, 1)
+            // The channel toStop is used to notify the moderator
+            // to close the additional signal channel (stopCh).
+            // Its senders are any senders and receivers of dataCh.
+            // Its reveiver is the moderator goroutine shown below.
+            var stoppedBy string
+            // moderator
+            go func() {
+                stoppedBy = <-toStop
+                close(stopCh)
+            }()
+            // senders
+            for i := 0; i < NumSenders; i++ {
+                go func(id string) {
+                    for {
+                        value := rand.Intn(MaxRandomNumber)
+                        if value == 0 {
+                            // Here, a trick is used to notify the moderator
+                            // to close the additional signal channel.
+                            select {
+                            case toStop <- "sender#" + id:
+                            default:
+                            }
+                            return
+                        }
+                        // The first select here is to try to exit the goroutine
+                        // as early as possible. This select blocks with one
+                        // receive operation case and one default branches will
+                        // be specially optimized as a try-receive operation by
+                        // the standard Go compiler.
+                        select {
+                        case <-stopCh:
+                            return
+                        default:
+                        }
+                        // Even if stopCh is closed, the first branch in the
+                        // second select may be still not selected for some
+                        // loops (and for ever in theory) if the send to
+                        // dataCh is also non-blocking.
+                        // This is why the first select block above is needed.
+                        select {
+                        case <-stopCh:
+                            return
+                        case dataCh <- value:
+                        }
+                    }
+                }(strconv.Itoa(i))
+            }
+            // receivers
+            for i := 0; i < NumReceivers; i++ {
+                go func(id string) {
+                    defer wgReceivers.Done()
+                    for {
+                        // Same as the sender goroutine, the first select here
+                        // is to try to exit the goroutine as early as possible.
+                        // This select blocks with one send operation case and
+                        // one default branches will be specially optimized as
+                        // a try-send operation by the standard Go compiler.
+                        select {
+                        case <-stopCh:
+                            return
+                        default:
+                        }
+                        // Even if stopCh is closed, the first branch in the
+                        // second select may be still not selected for some
+                        // loops (and for ever in theory) if the receive from
+                        // dataCh is also non-blocking.
+                        // This is why the first select block is needed.
+                        select {
+                        case <-stopCh:
+                            return
+                        case value := <-dataCh:
+                            if value == MaxRandomNumber-1 {
+                                // The same trick is used to notify
+                                // the moderator to close the
+                                // additional signal channel.
+                                select {
+                                case toStop <- "receiver#" + id:
+                                default:
+                                }
+                                return
+                            }
+                            log.Println(value)
+                        }
+                    }
+                }(strconv.Itoa(i))
+            }
+            // ...
+            wgReceivers.Wait()
+            log.Println("stopped by", stoppedBy)
+        }
+        ```
+3. 如何判断channel是否已经关闭了(待整理):
+    1. `close(ch)`:如果channel已经close了，那么再调用close时就会panic。所以还要做一些额外的工作，如果`close(ch)`没有panic，那么正常关闭；如果`close(ch)`发生panic，说明它已经被关闭了，那么此时截获panic，丢弃这个panic。注意已经close的channel是不会阻塞的，所以继续读取的话还能是获取到对应类型的零值。
+        ```go
+        defer func() {
+            if recover() != nil {
+                // close(ch) panic occur
+            }
+        }()
+
+        close(ch) // panic if ch is closed
+        ```
+    2. 使用ok判断：`v, ok := <-ch`， ok is true if v received value，ok is false if channel closed
+    3. 在确定不会向channel写入信息的前提下，可以写一个这样的函数
+        ```go
+        // 因为如果channel没有关闭，<-ch将不会返回，直到chanel已经被关闭。
+        func IsClosed(ch <-chan interface{}) bool {
+        select {
+            case <-ch:
+                return true
+            default:
+            }
+            
+            return false
+        }
+        ```
+    4. 使用`for range`来遍历通道，虽然`for range`能判断通道是否关闭，但是它不会采取任何措施，如果没有关闭且通道为空，继续取的话还是会死锁。
+        ```go
+        // 1. channel未关闭，继续读取
+        c := make(chan int, 10)
+		c <- 1
+		c <- 2
+		c <- 3
+
+		for i := 0; i < 5; i++ {
+			num, ok := <-c
+			log.Println(num, ok)
+        }
+        // 输出结果:
+		// 1 true
+		// 2 true
+		// 3 true
+        // fatal error: all goroutines are asleep - deadlock!
+        
+        // 2. channel已经关闭，继续读取
+        c := make(chan int, 10)
+		c <- 1
+		c <- 2
+		c <- 3
+		close(c)
+
+		for i := 0; i < 5; i++ {
+			num, ok := <-c
+			log.Println(num, ok)
+        }
+        // 输出结果:
+		// 1 true
+		// 2 true
+		// 3 true
+		// 0 false
+		// 0 false
+        ```
 
 信号量模式：（待补充）
 
@@ -220,8 +500,7 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
     ```
 
 注意：
-1. 如果移除操作channel的协程的go关键字，程序无法运行，运行时会抛出死锁错误，似乎和main中操作channel的死锁错误差不错。
-2. 不要使用打印状态来表明通道的发送和接收顺序，因为fmt不是线程安全的，打印状态和通道实际发生读写的时间延迟会导致和真实发生的顺序不同。
+1. 不要使用打印状态来表明通道的发送和接收顺序，因为fmt不是线程安全的，打印状态和通道实际发生读写的时间延迟会导致和真实发生的顺序不同。
 
     ```golang
     func main() {
@@ -256,10 +535,21 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
     ```
 
 #### 7.2.1 使用select切换协程
-为什么需要它：一个channel的时候很好操作，存在多个channel的时候，我们该如何判断并在其中操作呢，通过select可以监听channel上的数据流动。select也称为通信开关，默认是阻塞的，只有当监听的channel中有发送或接收可以进行时才会运行，当多个channel都准备好的时候，select是随机的选择一个执行的
+源码在/src/runtime/select.go
 
-语法和switch非常相似，如
+为什么需要`select`：一个channel的时候很好操作，存在多个channel的时候，我们该如何判断并在其中操作呢，通过select可以监听channel上的数据流动(或者说select就是用来监听和channel有关的IO操作)。select也称为通信开关，默认是阻塞的，只有当监听的channel中有发送或接收可以进行时才会运行，当多个channel都准备好的时候，select是随机的选择一个执行的。golang引入的select为我们提供了一种在多个channel间实现“多路复用”的一种机制。
+
+`select`的语法:它是go中的一个控制结构，类似于用于通信的switch语句。每个case必须是一个通信操作，要么是发送要么是接收。如果没有case可运行，它将阻塞，直到有case可运行时，如果多个case都可执行时，select随机选一个可运行的case执行。default就是当监听的channel都没有准备好的时候，默认执行的（此时select不再阻塞等待channel）。所以它有如下特点:
+1. 每个 case 都必须是一个通信
+2. 所有channel表达式都会被求值、所有被发送的表达式都会被求值。
+    1. 细节见例子4
+3. 所有被发送的表达式都会被求值
+4. 如果有多个 case 都可以运行，Select 会随机公平地选出一个执行。其他不会执行。否则：
+    1. 如果有 default 子句，则执行该语句。
+    2. 如果没有 default 子句，select 将阻塞，直到某个通信可以运行，Go 不会重新对 channel 或值进行求值。
+
 ```golang
+// 简单使用的例子1
 func fibonacci(c, quit chan int) {
 	x, y := 1, 1
 	for {
@@ -284,14 +574,82 @@ func main() {
 	}()
 	fibonacci(c, quit)
 }
-```
 
-在select里面还有default语法，select其实就是类似switch的功能，default就是当监听的channel都没有准备好的时候，默认执行的（此时select不再阻塞等待channel）
+// 例子2
+// 如果没有case，就单单一个select{}，会panic
+func main() {
+    select {} // panic
+}
 
-基于select可以实现一些有用的操作,比如超时：
-```golang
-case <- time.After(5 * time.Second):
-println("timeout")
+// 例子3
+// select常配合for循环来监听channel有没有传输发生，需要注意在这个场景下，break只是退出当前select而不会退出for，需要用break break、goto或者return的方式。
+ch := make(chan interface{})
+go func() {
+    for {
+        ch <- 1
+    }
+}()
+for {
+    select {
+    case i := <-ch:
+        fmt.Println(i)
+        break
+    }
+    break
+}
+
+// 例子4 
+// 所有channel表达式都会被求值、所有被发送的表达式都会被求值。有两个细节
+// 4.1 select开始执行时，除了赋值等号左边的表达式(比如这里的`(getAStorageArr())[0]`)，其他所有的case expression都会被求值，按语法的先后顺序
+// 4.2 如果选择要执行的case是一个recv channel，那么它的赋值等号左边的表达式会被求值：如例子中当goroutine 3s后向recvchan写入一个int值后，select选择了recv channel执行，此时对=左侧的表达式
+var (
+    takeARecvChannel = func() chan int {
+        fmt.Println("invoke takeARecvChannel")
+        c := make(chan int)
+        go func() {
+            time.Sleep(3 * time.Second)
+            c <- 1
+        }()
+        return c
+    }
+    getAStorageArr = func() *[5]int {
+        fmt.Println("invoke getAStorageArr")
+        var a [5]int
+        return &a
+    }
+
+    takeASendChannel = func() chan int {
+        fmt.Println("invoke takeASendChannel")
+        return make(chan int)
+    }
+
+    getANumToChannel = func() int {
+        fmt.Println("invoke getANumToChannel")
+        return 2
+    }
+)
+select {
+//recv channels
+case (getAStorageArr())[0] = <-takeARecvChannel():
+    fmt.Println("recv something from a recv channel")
+    //send channels
+case takeASendChannel() <- getANumToChannel():
+    fmt.Println("send something to a send channel")
+}
+
+// 运行结果:
+// invoke takeARecvChannel
+// invoke takeASendChannel
+// invoke getANumToChannel
+// invoke getAStorageArr
+// recv something from a recv channel
+
+// 例子5 
+// 基于select可以实现一些有用的操作,比如超时：
+select {
+    case <- time.After(5 * time.Second):
+    println("timeout")
+}
 ```
 
 ## 8 基于共享变量的并发

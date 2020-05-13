@@ -61,7 +61,6 @@
 12. linux包管理器的原理和qiang
 13. .sh
 15. Swagger
-16. 控制字符
 17. KCP
 18. 时区,东八区,cst和utc,时间戳和2038
 19. github.io和github是什么关系,作用,博客?
@@ -121,7 +120,6 @@
 74. Apache Phoenix
 75. asset意味着什么?
 77. youtobe的自动翻译为何这么牛
-78. windows的IOCP
 79. nginx
 80. Dashboards
 82. 关注分离
