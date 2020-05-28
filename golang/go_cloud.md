@@ -13,32 +13,51 @@ Go Cloud Project是一项计划，允许应用程序开发人员在任何云提�
 Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 
 # 四 高级
-## 1 groupcache
+## gin
+https://github.com/gin-gonic/gin
 
-## 2 https://github.com/go-playground/validator/tree/v9.24.0
+Gin的词源是金酒, 又称琴酒, 是来自荷兰的一种烈性酒
+
+## iris
+
+## beego
+
+## groupcache
+
+## 验证工具 validator
+https://github.com/go-playground/validator/tree/v9.24.0
+
 文档地址：https://godoc.org/gopkg.in/go-playground/validator.v9
 
-## 3 github.com/SebastiaanKlippert/go-wkhtmltopdf
+## 页面转pdf go-wkhtmltopdf
+github.com/SebastiaanKlippert/go-wkhtmltopdf
 
-## 4 猴子补丁
+## 猴子补丁
 在测试用例中挺好用的：https://github.com/bouk/monkey。注意下载和引入是`bou.ke/monkey`，github地址只是放的代码，而不是引入用的地址。
 
 参考：https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
 
 但有时候可能不生效，比如有内敛优化的时候，此时可以加上`-gcflags=-l`禁用内敛优化来测试，但也未必会生效。
 
-## 5 https://github.com/fatih/structs
+## 结构体工具 structs
+https://github.com/fatih/structs
+
 go 结构体的一些工具化封装，比如:
 1. 结构体转map（转之后似乎key是字段的名字，不受tag影响）
 
-## 6 拼音 github.com/mozillazg/go-pinyin
+## 拼音 go-pinyin
+https://github.com/mozillazg/go-pinyin
 
 Heteronym
 
-## 7 go-spew
+## 调试 go-spew
 https://github.com/davecgh/go-spew
 
 为go数据结构实现了一个深漂亮的打印机来帮助调试，是变量数据结构调试的利器
+
+# 五 经验
+## 1 为什么需要框架
+对于golang而言，web框架的依赖要远比Python，Java之类的要小。自身的net/http足够简单，性能也非常不错。框架更像是一些常用函数或者工具的集合。借助框架开发，不仅可以省去很多常用的封装带来的时间，也有助于团队的编码风格和形成规范。
 
 # 七 未整理
 ## 2 未整理

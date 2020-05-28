@@ -179,7 +179,7 @@ rune能操作任何字符，包括中文，而byte不支持中文的操作。
 ### 3.14 var、new()和make()的区别（难点）
 ![difference between new() and make()](../picture/golang/1-3-14.jpg)
 
-`new()`和`make()`最大的区别：`new()`只分配内存而不初始化，`make()`不但分配内存还做初始化。比如:
+`new()`和`make()`最大的区别：`new()`只分配(申请)内存而不初始化，`make()`不但分配(申请)内存还做初始化。比如:
 ```golang
 p := new([]int) //p == nil; with len and cap 0
 v := make([]int, 10) // v is initialed with len 10, cap 50
@@ -190,8 +190,7 @@ fmt.Println(v)        //输出[0 0 0 0 0 0 0 0 0 0 0]
 以下为详细区别：
 - `var`:没加等号的话称为“零值初始化”，虽然带有“初始化”三个字，但对三个特殊的引用类型（slice、map、channel）并没有初始化，只是赋值为nil，对其他类型则是正常赋值为对对应的零值并初始化。
 - `new(type)`：为变量分配内存，将内存置零（注意不是将变量置零，不要混淆了），但不初始化该内存，返回指针。对于值类型，它是零值初始化，和var一样；对于引用类型,此时变量等于nil（注意和其他语言不同，有点难理解）。
-- `make(type,args)`：为变量分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。还有个细节是`make()`是在运行时处理（特殊状态下会做编译器优化）(这就是go的数组不能make声明的原因之一?)。
-
+- `make(type,args...)`：为变量分配内存，将内存置零并初始化。只能用于slice、map和channel，因为这三者在go里必须初始化才能使用。还有个细节是`make()`是在运行时处理（特殊状态下会做编译器优化）(这就是go的数组不能make声明的原因之一?)。
 
 ```go
 foo := new([]int)
@@ -209,7 +208,6 @@ fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
 ```
 
 ### 3.15 三个点...
-
 有两种用法:
 1. 作为语法糖
     1. 用于入参（不能用于出参），比如`func myfunc(arg ...int)`，变量arg就是一个int的slice，但是它比直接声明一个切片更加灵活，比如想接收0个或n个int参数，写成切片的话，0个时需要传空切片或者nil，如果用三个点的写法就什么都不用传。
@@ -943,10 +941,11 @@ slice := []stirng{}
 ```
 注意:
 1. 使用切片字面量的时候，只要`[]`里有值，就不是切片而是数组了
-2. 声明nil slice应该使用`var t []string`而不是`t := []string{}`,前者声明了一个nil slice而后者是一个长度为0的非nil的slice。空切片的数组指针指向的地址不是nil，指向的是一个内存地址，但是它没有分配任何内存空间，即底层元素包含0个元素，而nil slice的数组指针是nil，没有指向任何内存地址。
+2. 声明nil slice应该使用`var t []string`而不是`t := []string{}`,前者声明了一个nil slice而后者是一个长度为0的非nil的slice。空切片的数组指针指向的地址不是nil，指向的是一个内存地址，即底层元素包含0个元素，而nil slice的数组指针是nil，没有指向任何内存地址。
     ```go
     // nil slice的内部是:arr指针 = nil, len = 0, cap = 0
     var s []int
+    fmt.Println(s == nil) // true
 
     // 空 slice的内部是:arr指针 = 0x..., len = 0, cap = 0
     slice := make([]string,0)
@@ -956,9 +955,9 @@ slice := []stirng{}
 切片的操作：
 1. 往切片末尾追加元素或切片，使用内置的`append()`，该函数会自动处理存储空间不足的问题。追加元素使用内置的`append(slice,ele1,ele2,...,eleN)`函数，追加切片要写成`append(slice1,slice2...)`，这三个点的意思是把slice2所有元素打散后传递给`append()`，这是由于`append()`从第二个参数起的所有参数都必须是待附加的单个元素。:
     1. 当每次容量不够的时候，`append()`就会分配一个新的数组，所以可以通过设置长度和容量一样的切片来保证第一次`append()`分配的是新数组
-    2. 扩容策略：有两种策略
-        1. 容量<1024时，每次扩容是容量翻倍；超过1024，则每次增加25%，即每次扩容四分之一。扩容会涉及数组拷贝，产生额外性能开销。
-        2. 批量添加元素，当新的容量高于旧容量的两倍，就会分配比新容量稍大一些，并不会按上面第一条的规则扩容。
+    2. 扩容策略(src/runtime/slice.go growslice)
+        1. 当需要的容量超过原切片容量的两倍时，会使用需要的容量作为新容量。
+        2. 容量<1024时，每次扩容是容量翻倍；超过1024，则每次增加25%，即每次扩容四分之一。扩容会涉及数组拷贝，产生额外性能开销。
 2. 切片中元素的插入、删除和替换，go没有提供直接在切片中间插入/删除元素的方法，所以只有使用子切片的方法来实现，而且切片这种数据结构本身也不适合频繁的插入和删除：
     1. 删除元素：可以使用：`s2=append(s1[:index],s1[index+1:]...)`，注意有坑。
     2. 插入元素：创建临时切片保存后面的部分，然后类似上面那样。。。
@@ -1396,7 +1395,7 @@ for index,ele := range xxx {
     ```
 4. `switch`中的`continue`,`break`
 
-### 4 goto
+### 3.4 goto
 
 ## 4 function
 基本语法:
@@ -2098,11 +2097,11 @@ func main() {
 ```
 
 #### panic
-`panic(string)`，俗称宕机
+`panic(string)`，恐慌，也称宕机。
 
-什么情况会panic：数组下标越界或类型断言失败等运行错误，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
-
-也可以手动触发panic：`panic("xxx")`
+什么情况会panic：
+1. 数组下标越界或类型断言失败等运行错误，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+2. 也可以手动触发panic：`panic("xxx")`
 
 什么场景适合使用panic（除开这些情况，其他错误错误最好都用error）：
 1. 发生严重错误，必须让进程退出。这种情况使用 panic 让进程直接退出将问题暴露反而是更可取的做法：
@@ -2111,6 +2110,18 @@ func main() {
 2. 想快速对顶层的错误进行处理：有时候函数调用栈很深，逐层返回错误可能需要写很多冗余代码，这个时候可以使用 panic 让程序的控制流直接跳到顶层的 recover 处来处理错误。(待研究)
 
 宕机的恢复：内置函数`recover()`会终止当前的宕机状态并返回宕机的值，将`recover()`函数的调用放到 goroutine 的延迟函数中，就可以实现宕机的恢复机制。参考`recover()`
+
+```go
+// panic的数据结构
+type _panic struct {
+    argp      unsafe.Pointer // 指向 defer 延迟调用的参数的指针
+    arg       interface{} // panic 的原因，也就是调用 panic 时传入的参数
+    link      *_panic // 指向上一个调用的 _panic
+    recovered bool // panic 是否已经被处理，也就是是否被 recover
+    aborted   bool // panic 是否被中止
+}
+// 通过link可以看出它是一个链表数据结构
+```
 
 #### defer
 `defer func(){...}()`
@@ -3056,6 +3067,9 @@ func main() {
     1. 动词`%w`：go1.13中新增的，用来生成一个wrapping error。
 3. `Fprintf()`：重定向打印。第一参数必须实现了 io.Writer 接口。`Fprintf()` 能够写入任何类型，只要其实现了 Write 方法，包括标准输出、标准错误输出(os.Stdout、os.Stderr),文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入（适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 Flush()，否则最后的输出不会被写入）。
 
+### http
+1. `ListenAndServe()`:负责监听并处理连接。内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
+
 ### httputil
 1. `DumpRequestOut()`
 
@@ -3411,7 +3425,7 @@ fmt.Println("所有 goroutine 执行结束")
 2. 以`CompareAndSwap`为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
 
 ### syscall
-系统调用，从名字就能知道，这个包很复杂。系统调用是实现应用层和操作底层的接口，不同系统之间的操作常常会有一定的差异，特别是类 Unix 与 Windows 系统之间的差异较大。如果想要寻找 syscall 的使用案例，我们可以看看 net、os、time 这些包的源码。如果要看这部分源码，可以先只看 Linux 的实现，架构的话，如果想看汇编，可以只看 x86 架构。
+系统调用，从名字就能知道，这个包很复杂。系统调用是实现应用层和操作底层的接口(比如使用syscall来调用windows的DLL动态链接库)，不同系统之间的操作常常会有一定的差异，特别是类 Unix 与 Windows 系统之间的差异较大。如果想要寻找 syscall 的使用案例，我们可以看看 net、os、time 这些包的源码。如果要看这部分源码，可以先只看 Linux 的实现，架构的话，如果想看汇编，可以只看 x86 架构。
 
 看源码发现比较晦涩，很正常，再简洁的语言，遇到环境相关，仍然会有很多 tricks，甚至用到 Cgo...
 
@@ -3647,9 +3661,22 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
         ```
     2. `indirect`：的意思是指这个package被子module/package依赖了，但是main module并没有直接import使用，也就是所谓的间接引用
 2. `go.sum`：记录所依赖的项目的版本的锁定，类似于比如 dep 的 Gopkg.lock 的一类文件。它详细罗列了当前项目直接或间接依赖的所有模块版本，并写明了那些模块版本的 SHA-256 哈希值以备 Go 在今后的操作中保证项目所依赖的那些模块版本不会被篡改。
-
+    1. 为什么go.sum要这么设计呢，有以下几个原因:
+        1. 提供分布式环境下的包管理依赖内容校验:不像其他包管理机制，Go 采用分布式的方式来管理包。这意味着缺乏一个可供信赖的中心来校验每个包的一致性。Go并没有一个中央仓库。发布者在 GitHub 上给自己的项目打上 0.1 的 tag 之后，依旧可以删掉这个 tag ，提交不同的内容后再重新打个 0.1 的 tag。哪怕发布者都是老实人，发布平台也可能作恶。所以只能在每个项目里存储自己依赖到的所有组件的 checksum，才能保证每个依赖不会被篡改。
+        2. 作为 transparent log 来加强安全性:go.sum 还有一个很特别的地方，就是它不仅仅记录了当前依赖的checksum，还保留了历史上每次依赖的 checksum。这种做法效法了 transparent log 的概念。transparent log 旨在维护一个 Append Only 的日志记录，提高篡改者的作案成本，同时方便审查哪些记录是篡改进来的。根据 Proposal: Secure the Public Go Module Ecosystem 的说法，go.sum 之所以要用 transparent log 的形式记录历史上的每个checksum，是为了便于 sum db 的工作。
+    2. go.sum也有一些缺点：
+        1. 容易产生合并冲突
+        2. 对于胡乱操作的第三方库，缺乏约束能力
+            1. 一个可能的解决办法是由官方把知名的库的各个版本镜像起来。虽然知名的库通常不会犯乱改已发布版本的错误，但是如果发生了（或者出于某种不可抗力发生了），至少有个镜像可用。然而这又回到单一中央仓库的路子上去。
+        3. 实际情况下，手动编辑go.sum不可避免。
     ```golang
     // 我们可以看到一个模块路径可能有如下两种：前者为 Go modules 打包整个模块包文件 zip 后再进行 hash 值，而后者为针对 go.mod 的 hash 值。他们两者，要不就是同时存在，要不就是只存在 go.mod hash。那什么情况下会不存在 zip hash 呢，就是当 Go 认为肯定用不到某个模块版本的时候，认为你根本也不会下载该模块的 ZIP 文件，所以就没必要对其作出 Hash 校验保证，只需要对该模块的 go.mod 文件作出 Hash 校验保证即可，因为 go.mod 文件是用得着的，在深入挖取项目依赖的时候要用。就会省略它的 zip hash，就会出现不存在 zip hash，只存在 go.mod hash 的情况。
+    // 格式是 
+    // <module> <version> <hash>
+    // <module> <version>/go.mod <hash>
+    // 或者
+    // <module> <version>/go.mod <hash>
+    // module是依赖的路径，version是依赖的版本号。hash是以h1:开头的字符串，表示生成checksum的算法是第一版的hash算法（sha256）
     example.com/apple v0.1.2 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ= 
     example.com/apple v0.1.2/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
     ```

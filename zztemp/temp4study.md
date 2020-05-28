@@ -64,8 +64,6 @@
 1. golang里有相同底层数据类型的算是同一个数据类型吗
 1. 各数据类型在各种情况下的初始值
 1. url.Query()
-1. 消息队列的原理
-    1. 和锁的区别
 1. 信号量，多线程，锁，自旋锁
 1. golang *string
     1. *(*xxx)和xxx的区别
@@ -325,7 +323,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. 把条件写到on和where的区别
     1. 被连接的表的筛选条件放到on后面还是where后面好？
     2. 待笔记：）、not、and、or这四个 的优先级从左到右递减
-    3. 怎么建索引
     5. 线程，协程
         1. 一个线程里可以并行执行两个方法吗
 1. postgresql
@@ -349,7 +346,6 @@ package github.com/cweill/gotests/...: exit status 1
 1. 熟悉processon的使用，将笔记本上的流程图画出来
 1. https协议，post，get，contentType，application/json; charset=UTF-8，请求头，请求体，返回体
     1. 如何配置ssh登录，好处和缺点
-    2. http和消息队列
     3. 一个完整的url是怎么样的，#和？的位置等
         1. 数组的话参数是什么格式
     4. post和get在获取参数的方式上有什么区别
@@ -454,7 +450,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. create table if not exists 。。。
     1. 流程控制：case when then end
     1. 数据库调优
-    2. 索引
     2. 缓存到go里面和缓存到redis里面的比较
     1. 定时任务
     2. 自己实现一个psql格式化的工具
@@ -852,7 +847,6 @@ angualr 表单中:#,name等的区别
 1. sql
     1. varchar2和varchar
     2. 如何查看长度单位
-    4. 数据库索引是什么东西
     6. 换行符和空格会原样取出来吗
 
 1. npm
@@ -1596,7 +1590,6 @@ for (let [i, item] of arr.entries()) {
     [https://naver.github.io/billboard.js/](https://naver.github.io/billboard.js/)
 378. line-height
 379. 文字放在图片的右边的总结
-380. svg的使用
 381. 项目中的`DateUtility`等几个工具类有空研究下
 382. 不知道在angular单页面应用中是否有效:[三种方法能够确定浏览器窗口的尺寸](http://www.w3school.com.cn/js/js_window.asp)
 383. 项目中select中内容的排序
@@ -1635,11 +1628,6 @@ for (let [i, item] of arr.entries()) {
 406. 什么样的查询会使表锁住
 408. 析构函数
 409. 三大运营商是怎么算短信长度的,中英文一样吗?一条短信最大长度是多少?
-410. qq消息是自动同步的吗?还是不同电脑上有不同的记录?
-
-412. plsql 的rowid和rownum区别
-    1. 在sqldeveloper中,只有查出rowid才能修改
-
 413. 现在不写存储过程了?
     1. 存储过程和sql的比较
     2. 存储过程的原理,如果有很多判断什么的,效率会低吗?
@@ -2021,7 +2009,6 @@ Worker<Void> worker = webEngine.getLoadWorker();
 worker.cancel();
 
 47. 地图协议
-49. 消息队列
 50. 序列化和反序列化；生产者和消费者
 
 51. 
@@ -2051,8 +2038,6 @@ worker.cancel();
 
 63. curl 和wget
     1. curl后面的命令跟括号还有大于小于什么意思
-
-65. zookeeper发音
 66. inline-block等的深入理解和使用
 
 67. git push dev分支的时候,说master分支本地落后了,然后master分支的推送被拒绝了
@@ -2061,8 +2046,6 @@ worker.cancel();
 68. 二进制文件删了可以复原吗, 修改不能对吧?
 
 69. 如何搜索某个文件的历史记录
-72. 数据库索引
-
 73. go的参数传递是不是引用传递?
 74. oracle的substr 会导致不能用到索引?
     1. 效率问题

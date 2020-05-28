@@ -733,8 +733,18 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
 特点:
 1. 无类型：可以存储任何类型的JavaScript值。
     1. 扒开V8里数组的C++源码可以看到，数组JSArray继承自JSObject，也就是说，数组是一个特殊的对象，既然是对象，内部也是key-value的存储形式，所以可以存放不同的数据类型。从注释上还可以看到数组有fast和slow两种模式。
-        1. fast数组：低层结构是FixedArray
-        1. slow数组：低层结构是HashTable
+        1. fast数组：底层结构是FixedArray，是一种线性的存储方式。新创建的空数组，默认的存储方式是快数组，快数组长度是可变的，可以根据元素的增加和删除来动态调整存储空间大小，内部是通过扩容和收缩机制实现。
+            1. 扩容策略:根据最大的索引值来扩容
+                1. 扩容后的新容量 = 旧容量的1.5倍 + 16
+                2. 扩容后会将数组拷贝到新的内存空间中
+            2. 收缩策略：也是根据最大的索引值来判断
+                1.  如果容量 >= length的2倍 + 16，则进行收缩容量调整，否则用holes对象（空洞对象，指的是数组中分配了空间，但是没有存放元素的位置，被访问时会得到undefined）填充未被初始化的位置
+                2. 收缩的大小`elements_to_trim`，根据 length + 1 和 old_length 进行判断，是将空出的空间全部收缩掉还是只收缩二分之一。
+        1. slow数组：底层结构是HashTable，不用开辟大块连续的存储空间，节省了内存，但是由于需要维护这样一个 HashTable，其效率会比快数组低。
+        3. 两种模式的比较：快数组就是以空间换时间的方式，申请了大块连续内存，提高效率。 慢数组以时间换空间，不必申请连续的空间，节省了内存，但需要付出效率变差的代价。
+        4. 两种模式的转换
+            1. 快 -> 慢:当对数组赋值时使用远超当前数组的容量+ 1024时（这样出现了大于等于 1024 个空洞，这时候要对数组分配大量空间则将可能造成存储空间的浪费，为了空间的优化，会转化为慢数组。
+            2. 慢 -> 快: 当慢数组的元素可存放在快数组中且长度在 smi 之间且仅节省了50%的空间,则会转变为快数组(待整理)
 2. 动态：可根据需要增长或缩减
 3. 可能是稀疏的：数组元素的索引不一定是连续的，意味着稀疏数组length属性值大于元素的个数
 
@@ -829,7 +839,8 @@ array常用操作总结
     ```
 
 注意：
-1. 查看`map()`方法的文档：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
+1. 查看`map()`方法的文档发现：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
+2. 如何获取数组的容量(capacity):目前js似乎没提供相关的方法来获取
 
 #### 4.4.3 类数组（Like Array、Array-Like)
 **只要有一个 length 属性和(0..length-1)范围的整数属性都认为是类数组对象**。比如宿主浏览器提供的HTMLCollection类型、NodeList对象，`{'length': 2, '0': 'eat', '1': 'bananas'}`，方法实例的arguments等。
@@ -1201,7 +1212,7 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
     ```
 
 # 四 高级
-## 1 闭包(closure)(重点,难点)
+## 1 闭包(closure)
 闭包，指的是词法表示包括不被计算的变量的函数，也就是说，嵌套的函数可以访问在其外部声明的变量,同时也意味着函数内的引用的外部变量,是在运行时才计算的.JS的闭包很有用,它主要有以下几个作用:
 1. 嵌套的函数可以访问在其外部声明的变量,意味着变量被引用着所以不会被回收，因此可以用来封装私有变量和方法,带来了许多与面向对象编程相关的好处,比如我可以保存一个变量,函数运行完后该变量会被保存,待需要的时候调用.但这是优点也是缺点，不必要的闭包只会徒增内存消耗.
 
@@ -1211,7 +1222,7 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 
 ## 3 ArrayBuffers,SharedArrayBuffers,ArrayBuffer视图
 ### 3.1 ArrayBuffers
-为什么我们需要这两个:在js中创建一个变量的时候,引擎会去猜测变量的类型以及如何在内存中表示,会导致分配的内存是实际需要的2~8倍,可能会导致大量的内存浪费.ArrayBuffer用来表示通用的、固定长度的原始二进制数据缓冲区(基本上就像原始内存一样,它模仿了C语言中的直接内存访问),它里面每个元素是值类型,不是引用类型(区别于普通数组可以存引用类型).
+为什么我们需要这两个:在js中创建一个变量的时候,引擎会去猜测变量的类型以及如何在内存中表示,会导致分配的内存是实际需要的2~8倍,比如普通数组，可能变成快数组或者满数组，最终可能会导致大量的内存浪费。而ArrayBuffer用来表示通用的、固定长度的原始二进制数据缓冲区(基本上就像原始内存一样,它模仿了C语言中的直接内存访问),它里面每个元素是值类型,不是引用类型(区别于普通数组可以存引用类型).
 
 我们不能直接操作ArrayBuffer,而是通过类型数组对象(typed array objects)或者数据视图(DataView)对象来操作.那么为什么不让程序员直接访问内存,而是添加这个抽象层:直接访问内存会带来一些安全漏洞.
 
@@ -1232,6 +1243,13 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 
 ### 3.2 ArrayBuffer视图
 简单介绍:ArrayBuffer视图就是对ArrayBuffer增加了一层抽象,它可以是类型数组视图或者数据视图,通过它,我们可以读写ArrayBuffer中的内容.
+```js
+// bf申请了1kb的内存区域。但是并不能对bf直接操作，需要将它赋给一个类型数组对象或者视图对象来操作
+var bf = new ArrayBuffer(1024); 
+// 创建了有符号的32位的整数数组b，每个数占4字节，长度也就是 1024 / 4 = 256 个，通过它就可以操作这块内存区域了
+var b = new Int32Array(bf);
+b[3]=1;
+```
 
 #### 3.2.1 类型数组视图(Typed array views)
 形如Int8Array，Uint32Array，Float64Array等以及特殊的Uint8ClampedArray.(其中Uint8ClampedArray很擅长Canvas数据处理)
@@ -1364,6 +1382,35 @@ js是单线程,也就意味着所有任务需要排队.event loop是js运行时�
 
 ## 6 js引擎
 SpiderMonkey：https://developer.mozilla.org/zh-CN/docs/Mozilla/Projects/SpiderMonkey
+
+## 7 编译时和运行时
+函数编译时按顺序发生的事情：
+1. 创建AO对象（Activation Object(执行期上下文)）
+2. 变量声明提升：找形参和变量声明，将变量和形参名作为AO属性名，值为undefined
+3. 将实参值与形参相统一
+4. 函数声明整体提升：在函数中找函数声明，作为属性名，值为函数体
+
+```js
+// 例子1 
+function test (a, b) {
+  console.log("a:", a);
+  console.log("b:", b);
+  c = 0;
+  var c;
+  a = 3;
+  b = 2;
+  console.log("b:", b);
+  function b () { }
+  function d () { }
+  console.log("b:", b);
+}
+test(1)
+// output:
+// a: 1
+// b: function b () { }
+// b: 2
+// b: 2
+```
 
 # 五 经验
 ## 1 已整理

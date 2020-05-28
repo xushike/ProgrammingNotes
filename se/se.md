@@ -245,6 +245,31 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
 ### 1.27 实时系统和非实时系统
 实时操作系统对一些中断的响应的时效性非常高，即使在内核态的时候。非实时反之。目前像VxWorks属于实时操作系统，大家常用的windows和linux都属于非实时操作系统，也叫做分时操作系统。
 
+### 1.28 web工程师和软件工程师
+来自西雅图的工程师John Washam认为：相较于web工程师，软件工程师需要掌握数据结构、算法、编译语言、内存优化等更深层次的编程知识。
+
+之后，John 便开始投入精力学习，并将进入 Google 工作视为其成功掌握这项技能的判定标准。在学习的过程中，他开始接触大量与编程相关的知识与教学资源，秉着前人栽树后人乘凉的精神，John 在 GitHub 上开源了这份学习指南，并将其命名为「Google Interview University」（现已更名「Coding Interview University」）
+
+即https://github.com/jwasham/coding-interview-university，谷歌面试大学
+
+### 1.29 消息队列
+见MQ部分笔记
+
+### 1.30 RPC(Remote Procedure Call)
+什么是RPC：RPC，远程过程调用，它是一种通过网络从远程计算机程序上请求服务，而不需要了解底层网络技术的思想。它是一种技术思想而非一种规范或协议。通俗地说，RPC允许跨机器、跨语言调用计算机程序方法。比如我用go语言写了个获取用户信息的方法getUserInfo，并把go程序部署在阿里云服务器上面，现在我有一个部署在腾讯云上面的php项目，需要调用golang的getUserInfo方法获取用户信息，php跨机器调用go方法的过程就是RPC调用。
+
+为什么需要RPC：RPC是相对于LPC(本地过程调用)来说的，因为分布式的出现，促使了RPC的出现。
+
+常见 RPC 技术和框架有：
+1. 应用级的服务框架：
+	1. 阿里的 Dubbo/Dubbox：阿里集团开源的一个极为出名的 RPC 框架，在很多互联网公司和企业应用中广泛使用。协议和序列化框架都可以插拔是极其鲜明的特色。
+	2. Google gRPC：基于HTTP 2.0 协议，并支持常见的众多编程语言。RPC 框架是基于 HTTP 协议实现的，底层使用到了 Netty 框架的支持。
+	3. Spring Boot/Spring Cloud
+	4. Facebook的Thrift
+	5. Twitter的Finagle
+2. 远程通信协议：指明了程序如何进行网络传输和序列化。有RMI、Socket、SOAP(HTTP XML)、REST(HTTP JSON)。
+3. 通信框架：MINA 和 Netty。
+
 # 四 高级
 ## 1 未来方向
 ### 无服务器

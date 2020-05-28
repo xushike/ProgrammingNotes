@@ -13,10 +13,19 @@
 ### 2.8 java8
 2014年3月27日——甲骨文公司日前举办Java 8网络直播发布会，发布甲骨文迄今为止最重要的Java技术Java 8。甲骨文宣布推出了Java平台标准版8（Java SE 8）、Java平台微型版8（Java ME 8）以及Oracle Java Embedded产品（为中到高端嵌入式系统进行了优化）的有关版本。JDK 8是Java SE 8平台规范的生产就绪版本，不久前获得Java社区进程（Java Community Process,JCP）批准。JDK 8包括自该平台1996年推出以来最重大的Java编程模型升级。JDK 8经甲骨文与OpenJDK社区合作开发而成。
 
-JDK 8的重要性能包括Project Lambda（JSR 335）、Nashorn JavaScript引擎、一个新的日期与时间API（JSR 310）、一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。
+JDK 8的重要性能包括Project Lambda（JSR 335）、Nashorn JavaScript引擎、一个新的日期与时间API（JSR 310）、一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。其他特性还有：
+1. Optional：官方介绍如下
+    >A container object which may or may not contain a non-null value. If a value is present, isPresent() will return true and get() will return the value.(一个可能包含也可能不包含非null值的容器对象。 如果存在值，isPresent（）将返回true，get（）将返回该值)
+    
+    针对复杂的一长串判空，Optional有它的优势，但是对于简单的判空使用Optional也会增加代码的阅读成本、编码量以及团队新成员的学习成本。
+    1. 所以Optional的优点如下
+        1. 包装防御式编程代码
+        2. 链式调用
+        3. 有效避免程序代码中的空指针
 
 ### 2.9 java9
-lombak的val/var(待整理)
+1. lombak的val/var(待整理)
+2. 增加了实验性的jaotc：jaotc主要用来辅助JIT，在JIT编译器运行前避免直接解释没有预编译过的代码。
 
 ### jdk和openjdk的区别
 授权协议的不同：OpenJDK采用GPL V2协议发布，而JDK则采用JRL协议发布。两个协议虽然都是开放源代码的，但是在使用上的不同在于GPL V2允许在商业上使用，而JRL只允许个人研究使用（个人使用和非商业使用）。 
@@ -76,9 +85,52 @@ java xxx        //运行
 ```
 
 ## 2 mac
-1. mac上安装之后查看java路径：`/usr/libexec/java_home`，一般显示结果是：`/Library/Java/JavaVirtualMachines/jdkxxx.jdk/Contents/Home`
-2. 将`jdk/bin`目录添加到执行路径中——执行路径是操作系统查找可执行文件时所遍历的目录列表
-（此处待补充）
+mac上可以同时安装多个版本的jdk，但是现在的mac都没有自带jdk，有以下方式安装
+1.  https://developer.apple.com/downloads/ 或者 Oracle 网站上下载:但是卸载和升级比较麻烦，JDK安装文件是 pkg 格式，卸载和.app不一样，且没有自动卸载方式。
+2. brew
+    1. 安装最新的java(两者的区别，待补充):
+        1. `brew install java`:安装后还需要自己设置软链接等
+        2. `brew cask install java`(推荐用这个)
+    2. 安装老版本的java：需要先克隆这个仓库`brew tap caskroom/versions`，然后安装，比如jdk6`brew cask install java6`
+
+配置：
+1. mac通过`/usr/libexec/java_home`工具来管理安装的jdk
+    1. 查看安装后的java路径：`/usr/libexec/java_home`，一般显示结果是：`/Library/Java/JavaVirtualMachines/jdkxxx.jdk/Contents/Home`
+    2. 查看安装了哪几个版本的jdk：`/usr/libexec/java_home -V`
+        ```bash 
+        # /usr/libexec/java_home -V
+        Matching Java Virtual Machines (3):
+        1.8.0_121, x86_64:	"Java SE 8"	/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home
+        1.7.0_80, x86_64:	"Java SE 7"	/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+        1.7.0_71, x86_64:	"Java SE 7"	/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home
+
+        /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home
+        ```
+2. 切换jdk版本:
+    1. mac的`java`命令(也就是`/usr/bin/java`)，在默认情况下指向的是已经安装的最新版本，可以设置环境变量`JAVA_HOME`来更改其指向
+        ```bash
+        $ java -version
+        java version "1.8.0_60"
+        Java(TM) SE Runtime Environment (build 1.8.0_60-b27)
+        Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
+        $ JAVA_HOME=/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home java -version
+        java version "1.6.0_65"
+        Java(TM) SE Runtime Environment (build 1.6.0_65-b14-466.1-11M4716)
+        Java HotSpot(TM) 64-Bit Server VM (build 20.65-b04-466.1, mixed mode)
+        # 其中JAVA_HOME=/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home可以用JAVA_HOME=/usr/libexec/java_home -v 1.6``这种更加通用的方式代替
+        ```
+    2. 民间使用的 Java 版本切换方法：添加以下脚本到当前shell配置文件`~/.zprofile`或者`~/.bash_profile`中
+        ```bash
+        function setjdk() {
+            export JAVA_HOME=`/usr/libexec/java_home -v $@`
+        }
+        ```
+        这样我们就可以通过输入一条命令进行版本切换了：`setjdk 1.8`
+    3. jenv(https://www.jenv.be):通过当前目录下的`.java-version`来决定使用哪个JDK,jenv可以用brew安装，但是jenv有几个问题(待整理)：
+        1. 需要手动把`eval "$(jenv init -)"`加入 profile，没有 Oh My Zsh 插件.
+        2. 可以把`eval "$(jenv init -)"`加入~/.zlogin，这样可以避免修改~/.zshrc。
+        3. 需要手动添加 JDK，不会自动采集系统 JDK。跟 Ruby 不同，OS X 已经提供`/usr/libexec/java_home`工具来管理安装的 JDK。
+        4. 需要 jenv rehash。
 
 ## 3 linux
 1. 如果是prm文件安装，则检查是否在`/usr/java/jdk1.8_version`下；但是推荐下载.tar.gz格式的文件安装，可以直接解压到任何地方
@@ -542,27 +594,14 @@ java.util.Arrays里包含了一些static方法，可以直接操作数组（待�
 1. int binarySearch(type[] a,type key)：用二分法查询元素key在数组a中的索引，如果没有则返回负数，要求a已经按升序排列。
 还提供了利用多cpu的工具方法（待补充）：
 
-## 5 java基础类库
-
-### 5.1 Object类
-
-#### 5.1.1 clone()
-该方法用protected native修饰，属于浅复制(会对对象里的成员变量进行"简单复制"，如果成员变量是基本类型和String则会真的复制，如果成员变量是数组和引用类型则只生成一个新的引用)，会生成完全隔离的新对象。该方法非常高效，比数组的静态copy方法快2倍。如果想实现深克隆，则需要开发者自己去"递归"克隆。
-1. 如何使用该方法：
-    1. 自定义类必须实现Cloneable接口，这是标记性的接口，接口里没有定义任何方法，否则会报CloneNotSupportedException
-    2. 重写clone()方法通过super.clone()调用Object类的clone方法，不重写也可
-#### 5.1.2 equals()
-判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
-
-jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
-### 5.2 Math类
-#### 5.2.1 
-#### 5.2.2 random 
-### 5.3 Date和Calendar类
-Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
-### 5.3.1 Date
-### 5.3.2 Calendar类
-### 5.3.3 java8新增的日期、时间包（java.time包）
+## 5 函数
+### 5.1 Lambda表达式
+语法格式如下：
+```java
+(parameters) -> expression  
+或  
+(parameters) -> { statements; }
+```
 
 ## 6 字符串
 String对象是不可变的，这里的不可变指的字符串对象本身，比如
@@ -845,7 +884,7 @@ java将异常分为两种:
 
 ### 13.2 常见的异常
 - ArithmeticException除0异常：用0做了除数就会出现，比如`System.out.println(100/0)`
-- NullPointerException：空指针异常
+- NullPointerException：空指针异常，有人简称为NPE
 - ClassCastException：类型强制转换异常
 - SQLException：操作数据库异常
 - FileNotFoundException：文件未找到
@@ -894,16 +933,52 @@ java将异常分为两种:
 
 # 四 高级
 ## 1 工具链
-### 1.1 jar（Java Archive File）
+### jar（Java Archive File）
 意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
 
-### 1.2 jusched
+### jusched
 jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
 
-### 1.3 javac
-参数-d后面跟目录名，代表编译后的class文件的根目录(相当于src目录)。如果java文件在src/demo下,然后我在src/demo下运行.如`javac -d . xxx.java`,那么class文件的目录会变成src/demo/demo/xxx.class，这样就有问题 ，所以最好把-d的参数设置为src目录
+### javac
+为什么需要预编译、为什么不把预编译和解释执行合在一起、为什么需要class文件(字节码文件)，这几个问题都可以从class文件的作用中找到答案。class文件是作为jvm的可执行文件，它的作用如下
+1. 对源代码文件进行语法检查、语义分析，这一步骤消耗了大量的时间和资源，所以对jvm来说就要轻松多了。
+2. 解耦
+    1. 字节码文件是描述性的，与平台无关，一次编译到处执行
+    2. 其它语言(比如Scala)只要编译生成的class代码符合jvm的规范，就可以在jvm上运行。同样的道理，假如有第三方更好用的编译工具，也可以代替javac。
+3. 字节码文件可以看作是对源代码文件的精炼，去掉了注释等，占用更少的存储空间
+4. 如果不预编译生成class文件，每次执行都需要重新编译，可能很耗时
+5. java是面向对象语言，涉及到大量的复用(待整理)
 
-### 1.4 java
+注意：参数-d后面跟目录名，代表编译后的class文件的根目录(相当于src目录)。如果java文件在src/demo下,然后我在src/demo下运行.如`javac -d . xxx.java`,那么class文件的目录会变成src/demo/demo/xxx.class，这样就有问题 ，所以最好把-d的参数设置为src目录
+
+### java
+### javap
+jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出来的class文件)分解器，可以反编译，也可以查看java编译器生成的字节码。
+
+# 五 经验
+## 2 java基础类库
+### Calendar
+### Date
+Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
+### Math类
+
+常用方法:
+1. `random()`
+
+### Object类
+jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
+
+常用方法：
+1. `clone()`:该方法用protected native修饰，属于浅复制(会对对象里的成员变量进行"简单复制"，如果成员变量是基本类型和String则会真的复制，如果成员变量是数组和引用类型则只生成一个新的引用)，会生成完全隔离的新对象。该方法非常高效，比数组的静态copy方法快2倍。如果想实现深克隆，则需要开发者自己去"递归"克隆。
+
+    ```java
+    // 如何使用该方法
+    // 1. 自定义类必须实现Cloneable接口，这是标记性的接口，接口里没有定义任何方法，否则会报CloneNotSupportedException
+    // 2. 重写clone()方法通过super.clone()调用Object类的clone方法，不重写也可
+    ```
+2. `equals()`:判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
+### time
+java8新增的日期、时间包（java.time包）
 
 # 六 问题
 ## 1 已解决
@@ -952,6 +1027,8 @@ overwrite:是C++中的概念,在java中可以不讨论.
 参考stackoverflow:https://stackoverflow.com/questions/43003012/class-javalaunchhelper-is-implemented-in-two-places
 
 大意是：使用了java Agent的IDE上运行应用时会触发，但这个Error对程序其实没影响，可以无视。在Java 1.8.152+版本里已经修复。
+
+解决方案:点击IJ最上面菜单的`Help` -> `Edit Custom Properties`，没有这个properties文件的话，IJ会提示创建，然后在里面加上`idea.no.launcher=true`，重启IDEA生效。
 
 ## 2 未解决
 1. 公有和私有jre的区别，什么时候用到？
