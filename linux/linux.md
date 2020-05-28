@@ -357,7 +357,14 @@ du -sh ~
 #### 移动或重命名文件 mv
 使用方法和`cp`很像,但是不用加`-r`,操作成功后原来的文件或文件夹不再存在
 1. 移动或重命名单个文件或目录:`mv item1 item2`
-    1. 对于`mv file1 file2`,如果file2存在,则被重写为file1;如果file2不存在,则创建file2.每种情况下file1都不会存在
+    1. 对于`mv file1 file2`,如果file2存在,则被重写为file1(**也就是旧的file2会被新的file2覆盖**);如果file2不存在,则创建file2.每种情况下file1都不会存在
+
+        ```bash
+        # 重命名dir目录下的file1为file2
+        mv dir/file1 dir/file2
+        # 移动dir目录下的file1到dir2
+        mv dir/file1 dir2
+        ```
     2. 对于`mv dir1 dir2`,如果dir2存在,移动dir1及它的内容到dir2中;如果dir2不存在,创建dir2,将dir1的内容移到dir2.
 2. 移动多个文件或目录到目录:`mv item... dir`,dir必须存在
     1. 移动目录下的所有文件和文件夹：`mv dir/* dir2`

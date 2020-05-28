@@ -69,11 +69,52 @@ windows是一个消息驱动的系统，它使用两种方式把各种事件通�
 
 ## 2 iocp(待整理)
 
-## 2 软件推荐
-### 自带的
-1. powershell
-### 第三方
-1. git bash：比默认shell好用
+# 五 经验
+## 1 包管理
+最热门的软件包管理工具就属Scoop和Chocolatey，不过两者的定位稍有不同
+
+### scoop 
+https://github.com/lukesampson/scoop
+
+windows命令行包管理工具，简单执行`scoop install xxx`，它就会把软件检车、下载、安装、更新、配置等步骤全部帮你做完。
+
+使用：
+1. 安装scoop的两种方法(详细见github)
+        1. 实测出现了
+    ```bash
+    # 方法一
+    # 先执行下面这句允许本地脚本运行，否则会出现错误:
+    # 使用“1”个参数调用“DownloadString”时发生异常:“操作超时”
+    # FullyQualifiedErrorId : WebException
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    # 然后安装
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+
+    # 方法二
+    # 实测出现了DNS污染，需要修改hosts文件或者用梯子:
+    # iwr : 未能解析此远程名称: 'raw.githubusercontent.com'
+    xxx.xxx.xxx.xxx raw.githubusercontent.com
+    
+    # 然后执行
+    iwr -useb get.scoop.sh | iex
+
+    # 查看是否安装成功
+    scoop help
+    ```
+2. scoop安装包的位置:用户安装的程序和scoop本身位于`C:\Users<user>\scoop`。全局安装的程序位于`C:\ProgramData\scoop`。可以通过环境变量更改这些设置。
+3. 添加软件库`scoop bucket add bucketnameA`：因为软件不全，所以可以通过添加“软件库”来找到自己想要的软件
+    1. 比如添加scoop-extras存储库可以轻松添加对流行的Windows桌面程序的支持:`scoop bucket add extras https://github.com/lukesampson/scoop-extras.git`
+4. 搜索:`scoop search xxx`
+5. 安装,同理卸载是`uninstall`
+    1. `scoop install xxx`
+    2. `scoop install -g xxx`:安装到全局目录
+6. 更新`scoop update xxx`
+7. 查看软件详情`scoop info xxx`，查看软件状态`scoop status xxx`
+
+### Chocolatey
+
+## 2 Windows Terminal
+主要功能包括多选项卡、窗格、Unicode/UTF-8字符支持、GPU加速文本渲染引擎，运行速度更快，Unicode、UTF-8字符的支持则方便在多种语言环境中使用，并显示表情符号，以及自定义主题、样式和配置等。
 
 # 六 问题
 ## 1 已解决

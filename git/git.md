@@ -326,6 +326,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.它会显示包括上面三个配置在内的所有配置(如果有的话)
 
+查看具体某个项的配置:比如查看大小写敏感`git config --get core.ignorecase`
+
 ### 2.5 git diff 查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名或commit_id,不跟的话就默认列出当前工作区的所有更改.
 
@@ -401,7 +403,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 删除文件并添加到暂存:`git rm <文件名>`,等价于:直接删除文件+添加到暂存(即`git add <文件名>`)
 
-移动或重命名文件并添加到暂存:`git mv <文件名>`,等价于:移动或重命名文件+添加到暂存(即`git add <文件名>`)
+移动或重命名文件并添加到暂存:`git mv fileA fileB`,等价于:移动或重命名文件+添加到暂存(即`git add`)
 
 `git rm --cached <file_path>`:删除暂存区或分支上的文件, 但本地又需要使用, 只是不希望这个文件被版本控制
 
@@ -901,6 +903,13 @@ and its host key have changed at the same time.
 
 ### 1.17 查看某个commit包含在哪些分支里
 `git branch -r --contains COMMIT_ID`
+
+### 1.18 git默认对文件名大小写不敏感
+方法一:用git重命名
+1. 重命名文件：`git mv a.txt A.txt`
+2. 重命名文件夹： `git mv foldername tempname && git mv tempname folderName` (在大小写不敏感的系统中，如windows，重命名文件夹的大小写,使用临时文件名)
+
+方法二:也可以设置` git config core.ignorecase false`使其对大小写敏感，但是提交上去会被认为是重写，多人协作可能就差生了冲突。所以在大小写敏感的情况下，可以先备份文件，然后删除文件在重新提交。
 
 ## 2 未解决
 ### 2.N 其他
