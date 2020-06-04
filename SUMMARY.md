@@ -199,7 +199,7 @@
         * [12.4.PostGIS](se/12.map/12.4.PostGIS.md)
     * [13.AI人工智能](se/13.AI.md)
     * [14.MachineLearning机器学习](se/14.MachineLearning.md)
-    * [15.InternetOfThings物联网](se/15.InternetOfThings.md)
+    * [15.IoT物联网](se/15.IoT.md)
     * [16.microservices微服务](se/16.microservices.md)
     * [17.Serverless无服务架构](se/17.Serverless.md)
     * [18.MQ消息队列](se/18.MQ/18.MQ.md)

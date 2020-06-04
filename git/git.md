@@ -911,6 +911,11 @@ and its host key have changed at the same time.
 
 方法二:也可以设置` git config core.ignorecase false`使其对大小写敏感，但是提交上去会被认为是重写，多人协作可能就差生了冲突。所以在大小写敏感的情况下，可以先备份文件，然后删除文件在重新提交。
 
+### 1.19 使用有些git命令的时候出现 warning: LF will be replaced by CRLF ...
+问题原因: windows中的换行符为 CRLF， 而在linux下的换行符为LF
+
+解决方法:git config --global core.autocrlf false
+
 ## 2 未解决
 ### 2.N 其他
 2. git 可以只clone分支而不是master吗？

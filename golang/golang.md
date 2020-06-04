@@ -2536,7 +2536,7 @@ go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理�
 
 参数:
 1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
-
+2. `-u`:和`-w`相反(待整理)
 
 ### 1.12 go list
 默认列出的是module名
@@ -3584,13 +3584,15 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 比如编译windows平台下的exe文件：`CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build test.go`，交叉编译不支持CGO所以要禁用它
 
 ## 6 依赖管理解决方案
+Go 的包管理方式是逐渐演进的， 最初是 monorepo 模式，所有的包都放在 GOPATH 里面，使用类似命名 空间的包路径区分包，不过这种包管理显然是有问题，由于包依赖可能会引入破坏性更新，生产环境和测试环 境会出现运行不一致的问题。
+
 ### 6.1 dep
 和go mod比较：
 1. mod支持代理
 2. mod速度更快
 
 ### 6.2 vendor
-go在1.5版本引入了vendor属性(默认关闭，需要设置go环境变量GO15VENDOREXPERIMENT=1)，并在1.6版本中默认开启了vendor属性。
+go在1.5版本引入了vendor包模式,增加了vendor属性(默认关闭，需要设置go环境变量GO15VENDOREXPERIMENT=1)，并在1.6版本中默认开启了vendor属性.
 
 简单来说，vendor属性就是让go编译时，优先从项目源码树根目录下的vendor目录查找代码(可以理解为切了一次GOPATH)，如果vendor中有，则不再去GOPATH中去查找。
 
@@ -3610,7 +3612,7 @@ vendor存在的问题：
 ### 6.3 glide
 
 ### 6.4 vgo
-vgo是go modules的前身。
+vgo是go modules的前身(最初的 Go Module 提案的名称叫做 vgo)
 
 ### 6.5 go modules
 参考：https://github.com/developer-learning/reading-go/issues/468
@@ -3698,7 +3700,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
 go mod命令:
 1. `go mod init <project_name>`
 2. `go mod download`: 下载模块到本地缓存，缓存路径是`$GOPATH/pkg/mod/cache`
-2. `go mod tidy`：更新项目里的所有依赖，增加缺少的，去掉无用的
+2. `go mod tidy`：更新项目里的所有依赖，增加缺少的，去掉没用到的
 4. `go mod edit`：编辑go.mod
     
     ```golang
@@ -3726,6 +3728,10 @@ go mod命令:
     )
     ```
 3. 编译项目，会去拉取当前模块下`main.go`文件里依赖的外部项目，缓存起来并放进`go.mod`文件，如果没有创建`go.sum`文件，会被创建。编译和`go test`只会将`go.mod`中没有的package添加进去，不会覆盖或者改变`go get`引入的规则，所以不用担心他们会冲突
+
+何时会下载依赖包:
+1. 运行`go build`、`go run`、`go test`的时候会下载，不过`go build`和`go test`只会下载对应文件中的依赖包，比如pkgA只在dir/sub_dir中用到，如果在dir中直接运行`go test`则不会下载pkgA。（待整理）
+2. （待整理）
 
 ## 7 代码管理
 不同的管理方式各有优劣，个人更倾向于放在一个Repository里，优点如下：
