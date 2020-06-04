@@ -5,6 +5,7 @@
 
 ## 3 常识
 ### 3.1 不同数据库对sql的扩展
+通常也称为Postgres dialect(数据库方言)，是他们之间在遵循 SQL 规范的前提下，都有各自的扩展特性。比如MySQL的分页是用关键字`limit`， 而Oracle用的是`ROWNUM`。
 1. oracle：PL/SQL
 1. DB2：SQL/PL
 1. SQLSever:Transac-SQL(T-SQL)

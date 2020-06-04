@@ -285,6 +285,18 @@ fmt.Println(strconv.Itoa(120))  // 120
         ```
 2. 自己维护一个golint版本来忽略该提示。
 
+
+### 3.27 return、os.exit()、runtime.Goexit()和panic的区别
+return结束当前函数,并返回指定值
+
+`runtime.Goexit`:结束当前goroutine,其他的goroutine不受影响。runtime.Goexit在终止当前goroutine前会先执行此goroutine的还未执行的defer语句。注意不能在主线程(主协程)中调用它，会引发panic。
+
+`os.Exit(code int)`:会立即结束掉当前整个程序。看注释可知，它会立即终止掉程序，不会执行`defer()`语句，并返回错误代码code(其他程序可根据这个code来报告发生的情况)，`code`为0表示正常退出，非0表示错误退出。所以该方法一般用在测试、脚本或者需要退出程序时。
+
+`panic`的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+
+简单总结就是：`runtime.Goexit`退出当前协程，`panic`清理当前协程，然后退出整个进程，`os.Exit(code int)`退出整个进程。那么如何优雅的退出进程呢?
+
 ## 4 文档网址视频等
 1. golang官方
     1. 博客：https://blog.golang.org/
@@ -3069,6 +3081,9 @@ func main() {
 
 ### http
 1. `ListenAndServe()`:负责监听并处理连接。内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
+
+`http.Server`结构体相关操作:
+1. `Shutdown(ctx context.Context)`:golang1.8+的方法，可以优雅退出(待整理)
 
 ### httputil
 1. `DumpRequestOut()`
