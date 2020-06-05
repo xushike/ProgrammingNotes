@@ -298,6 +298,7 @@ return结束当前函数,并返回指定值
 简单总结就是：`runtime.Goexit`退出当前协程，`panic`清理当前协程，然后退出整个进程，`os.Exit(code int)`退出整个进程。那么如何优雅的退出进程呢?
 
 ## 4 文档网址视频等
+网址:
 1. golang官方
     1. 博客：https://blog.golang.org/
     2. playground：https://play.golang.org/
@@ -308,8 +309,14 @@ return结束当前函数,并返回指定值
        1. 代码评审注释：https://github.com/golang/go/wiki/CodeReviewComments#receiver-names
     6. 专为中国开发者建立的（原因你懂的）
         1. https://golang.google.cn/
-2.  _Effective Go_(中文名《高效Go编程》)
-3.  Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
+2. GOPROXY代理
+    1. goproxy.cn:支持GOPROXY代理，且支持GOSUMDB的sum.golang.org的校验
+        1. goproxy.cn/stats：统计数据，里面有一些开放接口
+    2. mirrors.aliyun.com/goproxy:支持GOPROXY代理，但不支持GOSUMDB的sum.golang.org的校验
+        
+文档:
+1.  _Effective Go_(中文名《高效Go编程》)
+2.  Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
 4.  go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
 5.  网友写的md，还没看过，待笔记：https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md
 6.  大神ASTA谢写的Go web编程gitbook，比较详细，应该很值得读：[build-web-application-with-golang](https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/preface.md)
@@ -2445,15 +2452,18 @@ go run *.go
     2. 执行`go tool compile -I $GOPATH/pkg/darwin_amd64 go_cloud/cmd/main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
 3. TODO
 
-### 1.4 go get
+### 1.4 go get(待整理)
 通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。
 
+注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
+
+#### Go modules未启用
 简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
 
 参数说明:
 - `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
 - `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
-- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。请在确定安全的情况下使用它。
+- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包同时Go不会去对下载的依赖包做安全校验。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。使用它可能存在安全隐患，所以请在确定安全的情况下使用它。
 - `...`：在后面加上三个点表示。。。
 - `-d`：只下载，不执行安装动作。
 - `-fix`：下载后执行修正动作再执行安装动作。
@@ -2463,8 +2473,7 @@ go run *.go
 
 如果不能编译和安装，还会获取吗？
 
-
-#### 1.4.1 用于go mod中
+#### Go modules 启用
 `go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有一下几种用法：
 1. `go get xxx@latest`：拉取最新版本，(如果有的话，优先选择tag，否则选择commit)
 1. `go get xxx@master`：拉取master分支的最新commit
@@ -2486,6 +2495,11 @@ go run *.go
 6. `go get -u all`：更新所有模块（推荐）
 
 除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
+
+```golang
+// 例子
+// 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢。这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
+```
 
 ### 1.5 go clean
 清理go编译生成的文件，如`.go`、`.out`、`.a`等
@@ -2532,11 +2546,31 @@ go run *.go
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
 
 ### 1.11 go env
-go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`$HOME/.config/go/env`（`os.UserConfigDir`）中，该命令不会覆盖系统环境变量。
+go env是查看和设置go环境变量。go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`os.UserConfigDir`目录下的`go/env`文件里，比如mac的os.UserConfigDir是是`$HOME/Library/Application Support`，所以在`$HOME/Library/Application Support/go/env`中，注意该命令不会覆盖系统环境变量。
 
-参数:
-1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
-2. `-u`:和`-w`相反(待整理)
+操作:
+1. 查看go环境变量，可以带上格式化参数
+    1. `go env`：查看所有go环境变量
+    2. `go env var_name`:查看指定的环境变量，比如`go env -json GOROOT`
+1. 设置go环境变量
+    1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
+2. `-u`:和`-w`作用相反，会将其变量设置为默认值，如`go env -u GOPROXY`
+
+环境变量说明:
+
+|变量|说明|
+|---|:---|
+| GCCGO	    | 构建时时候所用编译器      |
+| GOARCH	    |计算机处理器的架构（比如：amd64,386,arm 等）      |
+| GOBIN	    |go install 安装可执行文件所在的目录      |
+| GOCACHE	    |存储编译后信息的缓存目录（比如C:\Users\my\AppData\Local\go-build）      |
+| GOFLAGS	    |go 命令能够识别的标记（可以是多个，中间用空格隔开）      |
+| GOOS	    |编译代码的操作系统名称（比如：linux,windows,darwin 等）      |
+| GOPATH	    |工作区所在的绝对目录      |
+| GOPROXY	    |go module 目录所在的地址（URL）      |
+| GORACE	    |用于数据竞争的数据选项（可选）      |
+| GOROOT	    |go 语言安装时所在的目录绝对路径      |
+| GOTOOLDIR	|go 语言工具所在的目录绝对路径       |
 
 ### 1.12 go list
 默认列出的是module名
@@ -3622,19 +3656,32 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
 它有几个特点（待补充）：
 1. 相当于是抛弃了GOPATH：Go modules 出现的目的之一就是为了解决 GOPATH 的问题，也就相当于是抛弃 GOPATH 了。
 2. 支持代理，意味着可以使用私有镜像源
-2. global caching: 不同项目的相同模块版本只会在电脑上缓存一份儿
-    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在 $GOPATH/pkg/mod和 ​$GOPATH/pkg/sum 下，未来或将移至 $GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
+2. global caching: 允许同一个package多个版本并存，且多个项目可以共享缓存的 module不同项目的相同模块版本只会在电脑上缓存一份儿.
+    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在$GOPATH/pkg/mod和 ​$GOPATH/pkg/sum 下，未来或将移至 $GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
 
 环境变量:
 1. `GO111MODULE`:控制go modules的开关，有三个参数，默认是未设置(等同于`auto`）
     1. `auto`：go会根据当前目录启用或禁用模块支持，仅当当前目录位于`$GOPATH/src`之外并且其本身包含`go.mod`文件或位于包含`go.mod`文件的目录下时，才启用模块支持。
-    2. `on`：会忽略 $GOPATH 和 vendor 文件夹，只根据go.mod下载依赖
-    3. `off`：不会使用go modules。它查找vendor 目录和GOPATH
-2. `GOPROXY`:用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用 `goproxy.cn`作为替代`go env -w GOPROXY=https://goproxy.cn,direct`
+    2. `on`：会忽略$GOPATH和vendor文件夹，只根据go.mod下载依赖
+    3. `off`：不会使用go modules。它查找vendor目录和GOPATH
+2. `GOPROXY`和`GONOPROXY`:`GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
     1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
-    2. `direct`：表示直连，用于指示 Go 回源到模块版本的源地址去抓取(比如 GitHub 等)，当值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
-3. `GOSUMDB`：防止出现node.js社区中大量的在使用npm时造成的不经意间引入木马库包的情况而引入的环境变量，用来设置第三方sum database服务器地址。它的值是一个 Go checksum database，用于使 Go 在拉取模块版本时(无论是从源站拉取还是通过 Go module proxy 拉取)保证拉取到的模块版本数据未经篡改。它可以是`off`即禁止Go 在后续操作中校验模块版本。默认值是`https://sum.golang.org`，可惜也被墙了，可被 Go module proxy 代理
-4. `GONOPROXY`、`GONOSUMDB`、`GOPRIVATE`:这三个环境变量都是用在当前项目依赖了私有模块，也就是依赖了由 GOPROXY 指定的 Go module proxy 或由 GOSUMDB 指定 Go checksum database 无法访问到的模块时的场景。它们三个的值都是一个以英文逗号 “,” 分割的模块路径前缀，匹配规则同 path.Match。其中 GOPRIVATE 较为特殊，它的值将作为 GONOPROXY 和 GONOSUMDB 的默认值，所以建议的最佳姿势是只是用 GOPRIVATE。比如`GOPRIVATE=*.corp.example.com`,表示所有模块路径以 corp.example.com 的下一级域名 (如 team1.corp.example.com) 为前缀的模块版本都将不经过 Go module proxy 和 Go checksum database，需要注意的是不包括 corp.example.com 本身
+    2. `direct`的作用：**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
+3. `GOSUMDB`和`GONOSUMDB`：全称是Go checksum database，Go checksum database是Go官方为了go modules安全考虑，设定的module校验数据库，服务器地址为：sum.golang.org，它通过包的哈希值来校验下载的包(无论是从源站拉取还是通过 Go module proxy 拉取)的安全性，保证拉取到的模块版本数据未经篡改，防止出现node.js社区中大量的在使用npm时造成的不经意间引入木马库包的情况。而该环境变量是用来配置你使用哪个校验服务器和公钥来做依赖包的校验，设置格式为`dbNameA+publickeyA+urlA`，它有几种用法:
+    1. 默认值是`sum.golang.org`(之所以没有按照上面的格式是因为Go对该默认值做了特殊处理)，可惜也被墙了，可以使用`sum.golang.google.cn`。
+    2. 如果想对部分包关闭哈希校验，则可以将包的前缀设置到环境变量中`GONOSUMDB`中，设置规则类似GOPRIVATE
+        ```bash
+        GONOSUMDB="sum.golang.org"
+        GONOSUMDB="sum.golang.org+publickeyA"
+        GONOSUMDB="sum.golang.org+publickeyA https://sum.golang.org"
+        ```
+    3. 设置`GOSUMDB=off`，关闭哈希校验
+4. `GOPRIVATE`:用来控制 go 命令把哪些仓库看做是私有的仓库，这样的话，下载的时候可以跳过GOPROXY，校验的时候可以跳过GOSUMDB，这个变量的值支持用逗号分隔，可以填写多个值，比如`*.corp.example.com,rsc.io/private`，这样 go 命令会把所有包含这个后缀的软件包，包括 http://git.corp.example.com/xyzzy , http://rsc.io/private, 和 http://rsc.io/private/quux 都以私有仓库来对待。
+    ```bash
+    GOPRIVATE=*.domain.cc # 一般domain.cc是你公司私有git仓库的域名地址，这样就可跳过proxy的检查
+    ```
+
+`GONOPROXY`、`GONOSUMDB`、`GOPRIVATE`的关联:这三个环境变量都是用在当前项目依赖了私有模块，也就是依赖了由 GOPROXY 指定的 Go module proxy 或由 GOSUMDB 指定 Go checksum database 无法访问到的模块时的场景。它们三个的值都是一个以英文逗号 “,” 分割的模块路径前缀，匹配规则同 path.Match。其中 GOPRIVATE 较为特殊，它的值将作为 GONOPROXY 和 GONOSUMDB 的默认值，所以建议的最佳姿势是只是用 GOPRIVATE。比如`GOPRIVATE=*.corp.example.com`,表示所有模块路径以 corp.example.com 的下一级域名 (如 team1.corp.example.com) 为前缀的模块版本都将不经过 Go module proxy 和 Go checksum database，需要注意的是不包括 corp.example.com 本身
 
 文件:
 1. `go.mod`：现在构建代码时不会自动生成该文件，只能手动生成。`exclude`和`replace`这两个动词只作用于当前主模块，也就是当前项目，它所依赖的那些其他模块版本中如果出现了你待替换的那个模块版本的话，Go modules 还是会为你依赖的那个模块版本去拉取你的这个待替换的模块版本。
@@ -3655,7 +3702,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
             example.com/pineapple v0.0.0-20190924185754-1b0db40df49a
         )
 
-        // exclude：用于从使用中排除一个特定的模块版本
+        // exclude：用于从使用中排除/禁用一个特定的模块版本
         exclude example.com/banana v1.2.4
         
         // replace: 用于将一个模块版本替换为另外一个模块版本。"另一个版本"是路径，这个路径可以是一个本地磁盘的相对路径，也可以是一个本地磁盘的绝对路径，还可以是一个网络路径，但是这个目标路径并不会在今后你的项目代码中作为你“导入路径（import path）”出现，代码里的“导入路径”还是得以你替换成的这个目标“模块版本”的“模块路径”作为前缀。
@@ -3677,7 +3724,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
         )
         ```
     2. `indirect`：的意思是指这个package被子module/package依赖了，但是main module并没有直接import使用，也就是所谓的间接引用
-2. `go.sum`：记录所依赖的项目的版本的锁定，类似于比如 dep 的 Gopkg.lock 的一类文件。它详细罗列了当前项目直接或间接依赖的所有模块版本，并写明了那些模块版本的 SHA-256 哈希值以备 Go 在今后的操作中保证项目所依赖的那些模块版本不会被篡改。
+2. `go.sum`：记录所依赖的包的版本的锁定和对依赖包进行计算得到的校验值(SHA-256哈希值)，类似于比如 dep 的 Gopkg.lock 的一类文件。它详细罗列了当前项目直接或间接依赖的所有模块版本，并写明了那些模块版本的 SHA-256 哈希值以备 Go 在今后的操作中保证项目所依赖的那些模块版本不会被篡改。
     1. 为什么go.sum要这么设计呢，有以下几个原因:
         1. 提供分布式环境下的包管理依赖内容校验:不像其他包管理机制，Go 采用分布式的方式来管理包。这意味着缺乏一个可供信赖的中心来校验每个包的一致性。Go并没有一个中央仓库。发布者在 GitHub 上给自己的项目打上 0.1 的 tag 之后，依旧可以删掉这个 tag ，提交不同的内容后再重新打个 0.1 的 tag。哪怕发布者都是老实人，发布平台也可能作恶。所以只能在每个项目里存储自己依赖到的所有组件的 checksum，才能保证每个依赖不会被篡改。
         2. 作为 transparent log 来加强安全性:go.sum 还有一个很特别的地方，就是它不仅仅记录了当前依赖的checksum，还保留了历史上每次依赖的 checksum。这种做法效法了 transparent log 的概念。transparent log 旨在维护一个 Append Only 的日志记录，提高篡改者的作案成本，同时方便审查哪些记录是篡改进来的。根据 Proposal: Secure the Public Go Module Ecosystem 的说法，go.sum 之所以要用 transparent log 的形式记录历史上的每个checksum，是为了便于 sum db 的工作。
@@ -3699,8 +3746,8 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     ```
 go mod命令:
 1. `go mod init <project_name>`
-2. `go mod download`: 下载模块到本地缓存，缓存路径是`$GOPATH/pkg/mod/cache`
-2. `go mod tidy`：更新项目里的所有依赖，增加缺少的，去掉没用到的
+2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`
+2. `go mod tidy`：整理依赖，更新项目里的所有依赖，增加缺少的，去掉没用到的
 4. `go mod edit`：编辑go.mod
     
     ```golang
@@ -3710,13 +3757,14 @@ go mod命令:
     // 屏蔽包
     // 删除包
     ```
-5. `go mod vendor`:将依赖复制到项目路径的vendor文件夹中
+5. `go mod vendor`:将依赖复制到项目路径的vendor文件夹中。(不过有了go module就不建议使用 go mod vendor了，因为 Go modules在淡化 Vendor 的概念，很有可能 Go2 就去掉了)
     1. `go run -mod=vendor main.go`（？）
 6. `go clean -modcache`:修复go mod？
-
+7. `go mod graph`:打印现有依赖结构
+8. `go mod verify`:校验一个模块是否被篡改过
 
 中国大陆的新项目中使用：
-1. 先修改 `GOPROXY` 和 `GOSUMDB`
+1. 修改`GOPROXY`
 2. `go mod init <project_name>`:包含go.mod文件的目录也被称为模块根，也就是说，go.mod 文件的出现定义了它所在的目录为一个模块
 3. `main.go`如果要引用当前项目的其他包，写法变成`module名/包名`
     
@@ -3730,8 +3778,11 @@ go mod命令:
 3. 编译项目，会去拉取当前模块下`main.go`文件里依赖的外部项目，缓存起来并放进`go.mod`文件，如果没有创建`go.sum`文件，会被创建。编译和`go test`只会将`go.mod`中没有的package添加进去，不会覆盖或者改变`go get`引入的规则，所以不用担心他们会冲突
 
 何时会下载依赖包:
-1. 运行`go build`、`go run`、`go test`的时候会下载，不过`go build`和`go test`只会下载对应文件中的依赖包，比如pkgA只在dir/sub_dir中用到，如果在dir中直接运行`go test`则不会下载pkgA。（待整理）
-2. （待整理）
+1. 运行`go build`、`go run`、`go test`的时候会下载，不过它们只会下载影响到的文件中的依赖包。
+    1. 例子
+        1. 比如pkgA只在dir/sub_dir中用到，如果在dir中直接运行`go test`则不会下载pkgA
+        2. main.go中只有空main函数，则运行`go run main.go`不会下载其他包中的依赖包
+2. `go mod download`
 
 ## 7 代码管理
 不同的管理方式各有优劣，个人更倾向于放在一个Repository里，优点如下：
