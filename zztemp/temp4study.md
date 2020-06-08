@@ -328,7 +328,6 @@ package github.com/cweill/gotests/...: exit status 1
 1. postgresql
     1. case when else
     2. 函数的作用，什么情况下才用函数
-        1. 待笔记： 能用go解决的函数
 1. 待研究：vscode 还有一项很强大的功能就是断点调试,结合 delve 可以很好的进行 Go 代码调试
 1. git fetch
 1. 测试覆盖率
@@ -477,7 +476,6 @@ package github.com/cweill/gotests/...: exit status 1
 2. 回归最优解
 1. js date对象
 3. apply和call
-4. session和jwt
 5. utf16,unicode,base64
 6. JSON.stringify与JSON.parse
 8. cssText

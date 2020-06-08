@@ -144,7 +144,7 @@ parent、child的意思？
     
     SSH 公钥默认储存在账户的主目录下的 `~/.ssh` 目录,进入它的子目录查看是否有`xxx`和 `xxx.pub` 来命名的一对文件，这个 `xxx`通常就是`id_dsa`或`id_rsa`.有`.pub`后缀的文件就是公钥，另一个文件则是密钥。
 
-2. 没有则交互式创建:`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`,会在`~/.ssh`下生成公钥和密钥.或者直接输入`ssh-keygen`也行,但是选项有点多.
+2. 没有则交互式创建:`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`,默认会在`~/.ssh`下生成公钥和密钥.或者直接输入`ssh-keygen`也行,但是选项有点多.
 
     会要求输入密码,应该是用于ssh登录服务器命令行界面的(待确认),所以只是使用git的话可以不用输入.
 
@@ -916,6 +916,30 @@ and its host key have changed at the same time.
 
 解决方法:git config --global core.autocrlf false
 
+### 1.20 换行符
+参考：http://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
+
+#### 文件中换行的地方出现大量`^M`
+出现原因:三大系统的换行符不一样
+- 在windows下的文本文件的每一行结尾，都有一个回车(’\n’)和换行(’\r’),就是`CRLF`
+- 在linux下的文本文件的每一行结尾，只有一个回车(’\n’),是`LF`
+- 在Mac下的文本文件的每一行结尾，只有一个换行(’\r’)，也是`LF`
+
+所以在windows下编辑linux打开过的文件就会在结尾的地方出现"^M"
+
+解决方法：GitHub suggests that you should make sure to only use \n as a newline character in git-handled repos. 推荐设置`git config --global core.autocrlf xxx`（xxx的值设置哪一个参考sof的回答）
+
+`git config core.autocrlf`可能有三个值:
+- true:git add是会将CRLF转换成LF，checkout时git会将LF转换为CRLF
+- false不做任何转换，文本保持本来的样子
+- input:git add是会将CRLF转换成LF，checkout时任然是LF
+
+#### warning: LF will be replaced by CRLF in fileA. The file will have its original line endings in your working directory
+因为在修改git的core.autocrlf之前我就已经将fileA clone下来了，所以怎么修改都不对，始终会出这个提示。因为我现在是在windows环境下，所以我把core.autocrlf设置为input，然后删除fileA重新clone，然后就好了。
+
+### 1.21 windows下git log中文乱码
+在系统环境变量里增加`LESSCHARSET=utf-8`，然后重启相关的IDE就行了。
+
 ## 2 未解决
 ### 2.N 其他
 2. git 可以只clone分支而不是master吗？
@@ -929,8 +953,6 @@ and its host key have changed at the same time.
 5. unknown revision or path not in the working tree.
 我是自己新建的仓库，然后直接add了一些文件，并没有commit，然后调用`git reset HEAD`命令出现的这个错。后面了解了git三棵树和该命令原理之后明白了：是因为初始化后没有commit,HEAD就是空的，所以无法移动HEAD指针。这种情况下，可以直接`git reset [path]`，因为这个命令可以跳过"移动HEAD指针"这一步，直接把HEAD复制到index
 6. 关于HEAD和分支指针的那张图片，一目了然
-
-7. LF will be replaced by CRLF
 8. git是如何判断冲突和不冲突的，界限在哪儿？
 9. 在maste分支上写了东西，然后想提交到develop分支上
 11. git的feature

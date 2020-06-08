@@ -13,14 +13,28 @@ Go Cloud Project是一项计划，允许应用程序开发人员在任何云提�
 Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 
 # 四 高级
-## gin
+## 常见web框架
+
+### goa
+https://github.com/goadesign/goa
+
+Goa是一个基于中间件的golang web框架，其整体思想来源于koajs，并且结合了golang的特性。Goa致力于成为 web 应用和 API 开发领域中的一个更轻量、更高效的框架。Goa 并没有捆绑任何中间件，而是提供了一套优雅的方法，帮助您快速而愉快地编写服务端应用程序。
+
+Goa采用了许多koajs的特性，部分API参照了gin源码。 goa-router则是完全基于高效、内存占用低的httprouter二次开发。
+
+特点：轻量、灵活、高效、内置错误处理、多种格式支持
+
+### gin
 https://github.com/gin-gonic/gin
 
 Gin的词源是金酒, 又称琴酒, 是来自荷兰的一种烈性酒
 
-## iris
+### hugo
+https://github.com/gohugoio/hugo
 
-## beego
+### iris
+
+### beego
 
 ## groupcache
 
@@ -54,6 +68,50 @@ Heteronym
 https://github.com/davecgh/go-spew
 
 为go数据结构实现了一个深漂亮的打印机来帮助调试，是变量数据结构调试的利器
+
+## 命令行交互工具 cobra
+https://github.com/spf13/cobra
+
+用来编写命令行程序，同时它也提供了一个脚手架用于生成基于 cobra 的应用程序框架。非常多知名的开源项目使用了 cobra 库构建命令行，如Kubernetes、Hugo、etcd等。
+
+每个 cobra 程序都有一个根命令，可以给它添加任意多个子命令。
+
+首先要明确几个基本概念：
+1. 命令（Command）:就是需要执行的操作
+1. 子命令（SubCommand）：需要执行的子操作；
+2. 参数（Arg，args,arguments）：命令的参数，即要操作的对象；
+3. 选项（Flag,flags）：命令选项可以调整命令的行为。
+    1. 一般有两种表示方法
+        1. single dash，比如`-h`
+        2. double dash,比如`--help`
+   
+例子
+1. `server version`中`server`是command，`version`是subCommand,同理`server help`中`help`是subCommand
+2. `git clone URL --bare`,`clone`是一个subCommand，`URL`是参数，`--bare`是选项
+2. `server -h`或`server --help`中的`-h`和`--help`是flags
+
+## 配置解决方案 viper
+https://github.com/spf13/viper
+
+完整的配置解决方案。 完美支持 JSON/TOML/YAML/HCL/envfile/Java properties 配置文件等格式，还有一些比较实用的特性，如配置热更新、多查找目录、配置保存等
+
+## 静态网站生成 hugo
+https://github.com/gohugoio/hugo
+
+## ORM
+### gorm
+https://github.com/go-gorm/gorm
+
+## JWT
+https://github.com/dgrijalva/jwt-go
+
+## NoSQL
+### Redis
+https://github.com/go-redis/redis
+
+## 容器相关
+### kubernetes
+https://github.com/kubernetes/kubernetes
 
 # 五 经验
 ## 1 为什么需要框架

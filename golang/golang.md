@@ -2399,7 +2399,7 @@ go run *.go
 
 参数:
 1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
-1. `-o`：指定生成的可执行文件的名字
+1. `-o`：指定生成的可执行文件的名字
 2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
     1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
 
@@ -2456,6 +2456,10 @@ go run *.go
 通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。
 
 注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
+
+如何判断当前Go modules是否启用:
+1. 根据环境变量和当前的路径
+2. 一个更简单的方法，使用`go get -f`，根据错误信息来判断。`-f`参数在go modules未启用才有效，且要和`-u`一起使用；而在go modules启用时，没有`-f`这个参数。
 
 #### Go modules未启用
 简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
@@ -3510,11 +3514,25 @@ fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
 
 golang 提供了下面几种类型：
 - 时间点(Time)
-- 时间段(Duration)
+- 时间段(Duration):
+
+        ```golang
+        // 1. Printf函数知道如何本地化显示一个 Duration 类型
+        var duration_Milliseconds time.Duration = 500 * time.Millisecond
+        var duration_Seconds time.Duration = (1250 * 10) * time.Millisecond
+        var duration_Minute time.Duration = 2 * time.Minute
+        // 上面三个变量用printf和%v打印出来是
+        Milli [500ms]
+        Seconds [12.5s]
+        Minute [2m0s]
+
+        // 
+        ```
 - 时区(Location)
 - Ticker：ticker只要定义完成，从此刻开始计时，不需要任何其他的操作，每隔固定时间都会触发。当下一次执行到来而当前任务还没有执行结束时，会等待当前任务执行完毕后再执行下一次任务。
 - Timer(定时器)：timer定时器，是到固定时间后会执行一次
-*如果timer定时器要每隔间隔的时间执行，实现ticker的效果，使用 `func (t *Timer) Reset(d Duration) bool`
+
+如果timer定时器要每隔间隔的时间执行，实现ticker的效果，使用 `func (t *Timer) Reset(d Duration) bool`
 
 定时器的四种实现和操作：
 1. `time.sleep()`：如果只是想指定时间之后执行，可以用该方法。
@@ -3746,8 +3764,8 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     ```
 go mod命令:
 1. `go mod init <project_name>`
-2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`
-2. `go mod tidy`：整理依赖，更新项目里的所有依赖，增加缺少的，去掉没用到的
+2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)
+2. `go mod tidy`：整理依赖，更新项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
 4. `go mod edit`：编辑go.mod
     
     ```golang
