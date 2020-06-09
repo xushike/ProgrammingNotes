@@ -14,8 +14,29 @@
 1. Windows 10 ISO 映像官方下载地址：https://www.microsoft.com/zh-cn/software-download/windows10ISO
 
 # 四 高级
-# 1 windows to go
+## 1 windows to go
 能将win8和win10装在U盘里跑,根据网友的评价来看,效果还可以
+
+## 2 WSL和WSL2
+相比第一代，新的 WSL2 重新设计了架构，使用真正的 Linux 内核，几乎具有 Linux 的所有完整功能。启用WSL2的 Linux 系统启动时间非常快，内存占用很少，并且，WSL 2 还可以直接原生运行 Docker，VS Code 编辑器还有 Remote-WSL 插件，相对于完整的linux虚拟机只是不支持systemctl、systemd。
+
+子系统所在的目录是`C:\Users\my_username\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu16.04onWindows_79rhkp1fndgsc\LocalState\rootfs`
+
+查看已经安装的子系统:``
+
+换源，然后`sudo apt update`
+
+安装桌面软件吗？看需求，一般来说没必要，因为子系统和windows的资源是共享的。不过为了方便copy文件，可以建立软链接当做共享文件夹，比如:
+1. ` ln -s /mnt/c/Users/my_username/LinuxShare ~/LinuxShare`
+2. ` ln -s /mnt/c/Users/my_username/study ~/study`
+2. ` ln -s /mnt/c/Users/my_username/go ~/go`
+2. ` ln -s /mnt/c/Users/my_username/Downloads ~/Downloads`
+
+
+设置windows下IDE的terminal为wsl.exe就可以使用子系统的终端了。
+
+需要手动安装的工具:
+1. 输入`code`安装vscode-server
 
 # 五 经验
 # 六 问题
