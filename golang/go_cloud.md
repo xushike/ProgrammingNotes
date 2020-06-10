@@ -96,6 +96,50 @@ https://github.com/spf13/cobra
 2. `git clone URL --bare`,`clone`是一个subCommand，`URL`是参数，`--bare`是选项
 2. `server -h`或`server --help`中的`-h`和`--help`是flags
 
+## flag包增强 pflag
+https://github.com/spf13/pflag
+
+基本的使用和内置的flag包基本相同，它特点如下:
+1. 支持更多参数类型：
+    1. 例如，flag 只支持 uint 和 uint64，而 pflag 额外支持 uint8、uint16、int32 等类型。
+    2. 以及ip、ip mask、ip net、count、以及所有类型的 slice 类型。
+2. 兼容内置flag库
+3. 更丰富的功能
+    1. shorthand参数
+    2. 可以设置非必须选项的默认值
+    3. flag定制化
+    4. 弃用flag或者它的shothand
+    5. 隐藏flag:例如希望保持使用flagA参数，但在help文档中隐藏这个参数的说明
+4. 支持bash和zsh的自动补全
+
+```golang
+// 设置非必须选项的默认值
+flag.Lookup("flagname").NoOptDefVal = "4321"
+
+// flag定制化:例如希望使用“-”，“_”或者“.”，像--my-flag == --my_flag == --my.flag
+func wordSepNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
+	from := []string{"-", "_"}
+	to := "."
+	for _, sep := range from {
+		name = strings.Replace(name, sep, to, -1)
+	}
+	return pflag.NormalizedName(name)
+}
+
+myFlagSet.SetNormalizeFunc(wordSepNormalizeFunc)
+
+// 弃用flag或者它的shothand
+// deprecate a flag by specifying its name and a usage message
+flags.MarkDeprecated("badflag", "please use --good-flag instead")
+// deprecate a flag shorthand by specifying its flag name and a usage message
+flags.MarkShorthandDeprecated("noshorthandflag", "please use --noshorthandflag only")
+
+// 隐藏flag
+// hide a flag by specifying its name
+flags.MarkHidden("secretFlag")
+
+```
+
 ## 配置解决方案 viper
 https://github.com/spf13/viper
 

@@ -476,7 +476,6 @@ package github.com/cweill/gotests/...: exit status 1
 2. 回归最优解
 1. js date对象
 3. apply和call
-5. utf16,unicode,base64
 6. JSON.stringify与JSON.parse
 8. cssText
 9. HTML templates（HTML模板）：<template> 和 <slot> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用

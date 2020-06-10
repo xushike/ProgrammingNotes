@@ -376,6 +376,8 @@ go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 
 5. 配置gobin(需不需要看情况)
 
+多版本管理使用gvm:https://github.com/moovweb/gvm
+
 ## 2 mac
 ### 2.1 二进制发行版安装
 1. 下载安装
@@ -410,20 +412,17 @@ tar -ztvf xxx.tar.gz
 sudo tar -zxvf xxx.tar.gz -C /usr/local 
 ```
 
-2. 环境变量设置：需要设置GOROOT和GOPATH.
+2. 环境变量设置
     - 设置GOROOT:
-        1. 设置方式类似于JAVA_HOME，如`export GOROOT=$HOME/xxx`
+        1. go的安装目录，如`export GOROOT=/usr/local/go`
         2. 把`$GOROOT/bin`加入PATH：`export PATH=$PATH:$GOROOT/bin`
         
     - 设置GOPATH：这个目录用来存放Go源码(src)，Go的可运行文件(bin)，以及相应的编译之后的包文件(pkg)
         >在go1.1到1.7，该变量必须设置，且不能和go安装目录一样;从1.8开始有默认值，在Unix上默认为`$HOME/go`,在Windows上默认为`%USERPROFILE%/go`
 
-        1. 设置GOPATH(**最好不要和go安装目录相同**)
-        2. 把GOPATH/bin加入环境变量 
-
-3. 关于GOBIN（待验证）:
-将`$GOPATH/bin`加入PATH中，这样可以方便的运行`go install`好的二进制程序。然而，当存在GOPATH中存在多个路径时，这种写法只会将最后一个路径跟上bin。在mac或linux下可以通过这种方式解决：
-`${GOPATH//://bin:}/bin`
+        1. 设置GOPATH(**最好不要和go安装目录相同**)，比如`export GOPATH=$HOME/go`
+    - 设置GOBIN，`$GOBIN`是golang编译出来的可执行文件的存放路径。比如`export GOBIN=$GOPATH/bin`
+        1. 将`$GOBIN`加入PATH中，比如`export PATH=$PATH:$GOBIN`
 
 ### 3.2 源码安装
 ### 3.3 第三方工具安装（apt、wget等）
@@ -2392,14 +2391,18 @@ go run *.go
 4. `-work`:显示编译时临时工作目录的路径，并且不删除它
 
 ### 1.2 go build
-主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在该命令的执行目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
+主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
 1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译。
 2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。
 3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。
 
+结果文件的路径
+1. 未指定的话默认是当前路径
+2. 也可以指定结果文件的路径，使用`-o`
+
 参数:
 1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
-1. `-o`：指定生成的可执行文件的名字
+1. `-o`：指定生成的可执行文件的名字，可以包含路径。比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。
 2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
     1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
 
@@ -2429,11 +2432,16 @@ go run *.go
 4. `-mod=vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译
 
 ### 1.3 go install
-用于编译并安装代码包或源码文件。安装代码包会在当前工作区的`pkg`下平台相关目录下生成归档文件，安装命令源码文件会在当前工作区的`bin`目录或`$GOBIN`目录生成可执行文件或`.a`文件。有如下几种执行情况：
+用于编译并安装代码包或源码文件。
+1. 安装代码包或者库，会在`$GOPATH/pkg`生成目标库文件(`.a`文件)
+2. 安装命令源码文件会在`$GOBIN`目录生成可执行文件。
+
+有如下几种执行情况：
 1. 执行`go install`且不加任何参数时，默认会把当前目录作为代码包并安装。
 2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
 3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
 
+参数:注意它不支持`-o`参数
 
 静态库的编译和使用例子如下：（待补充）
 1. 假设代码目录如下
@@ -3026,6 +3034,52 @@ fmt.Println(md5str2)
 2. `Unwrap(error) error`:go1.13新增，用于获得被嵌套的error。每次调用解开最外面的一层，如果想获取更里面的，需要调用多次`errors.Unwrap`函数。最终如果一个error不是warpping error，那么返回的是nil。
 3. `Is(err, target error) bool`：是同一个会返回true；如果err是一个wrap error,target也包含在这个嵌套error链中的话，那么也返回true
 4. `As(err error, target interface{}) bool`：实现类型的错误断言，支持wrapping error
+
+### flag
+命令行传参的格式：
+- `-isbool`    (一个 - 符号，布尔类型该写法等同于 -isbool=true)
+- `-age=x`     (一个 - 符号，使用等号)
+- `-age x`     (一个 - 符号，使用空格)
+- `--age=x`    (两个 - 符号，使用等号)
+- `--age x`    (两个 - 符号，使用空格)
+
+所有的参数被保存在 FlagSet 类型的实例中，Flag 包被导入时创建了 FlagSet 类型的对象 CommandLine：`var CommandLine = NewFlagSet(os.Args[0], ExitOnError)`,在程序中定义的所有命令行参数变量都会被加入到 CommandLine 的 formal 属性中，命令行参数的解析过程则由 flag.Parse() 函数完成,并在解析完成后由 flag.Value.Set 方法把用户传递的命令行参数设置给 flag 实例，最后添加到 FlagSet 的 actual 属性中。
+
+flag可以绑定自定义类型，自定义类型需要实现flag包的Value接口,然后才能通过`flag.Var()`方法。
+
+常用方法:
+1. `flag.Parse()`:解析命令行参数，解析函数将会在碰到第一个非 flag 命令行参数时停止
+
+    ```golang
+    var cliName = flag.String("name", "nick", "Input Your Name")
+    // 例子1 go run xxx --name=tom marry
+    flag.Parse()
+    fmt.Printf("args=%s, num=%d\n", flag.Args(), flag.NArg()) // args=[marry], num=1
+
+    // 例子2 go run xxx marry --name=tom 
+    flag.Parse()
+    fmt.Printf("args=%s, num=%d\n", flag.Args(), flag.NArg()) // args=[marry --name=tom], num=2
+
+    ```
+2. `NArg()`:NArg is the number of arguments remaining after flags have been processed.获得non-flag个数
+3. `NFlag`:NFlag returns the number of command-line flags that have been set.获得flag个数
+
+```golang
+// flag包源码
+// Value 接口
+type Value interface {
+    String() string
+    Set(string) error
+}
+
+// Flag 类型
+type Flag struct {
+    Name     string // name as it appears on command line
+    Usage    string // help message
+    Value    Value  // value as set 是个 interface，因此可以是不同类型的实例。
+    DefValue string // default value (as text); for usage message
+}
+```
 
 ### fmt
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
@@ -3764,8 +3818,9 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     ```
 go mod命令:
 1. `go mod init <project_name>`
-2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)
+2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。和`go get`不同的是`go mod download`只会下载，不会编译安装。
 2. `go mod tidy`：整理依赖，更新项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
+    1. 为什么执行之后有些pkg的版本会变化呢?
 4. `go mod edit`：编辑go.mod
     
     ```golang
