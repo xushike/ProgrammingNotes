@@ -24,14 +24,13 @@
 
 查看已经安装的子系统:``
 
-换源，然后`sudo apt update`
+换源，然后`sudo apt update`。如果不换源，安装软件的时候可能出现`The following packages have unmet dependencies: ... but it is not going to be installed`
 
 安装桌面软件吗？看需求，一般来说没必要，因为子系统和windows的资源是共享的。不过为了方便copy文件，可以建立软链接当做共享文件夹，比如:
 1. ` ln -s /mnt/c/Users/my_username/LinuxShare ~/LinuxShare`
 2. ` ln -s /mnt/c/Users/my_username/study ~/study`
 2. ` ln -s /mnt/c/Users/my_username/go ~/go`
 2. ` ln -s /mnt/c/Users/my_username/Downloads ~/Downloads`
-
 
 设置windows下IDE的terminal为wsl.exe就可以使用子系统的终端了。
 

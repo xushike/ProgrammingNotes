@@ -76,7 +76,7 @@ windows是一个消息驱动的系统，它使用两种方式把各种事件通�
 ### scoop 
 https://github.com/lukesampson/scoop
 
-windows命令行包管理工具，简单执行`scoop install xxx`，它就会把软件检车、下载、安装、更新、配置等步骤全部帮你做完。
+windows命令行包管理工具，简单执行`scoop install xxx`，它就会把软件检车、下载、安装、更新、配置等步骤全部帮你做完。它不仅轻量，还将软件默认安装到我们的用户目录下，安装过程不需要申请管理员权限（UAC）也不会污染系统环境变量。
 
 使用：
 1. 安装scoop的两种方法(详细见github)
@@ -86,7 +86,7 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     # 先执行下面这句允许本地脚本运行，否则会出现错误:
     # 使用“1”个参数调用“DownloadString”时发生异常:“操作超时”
     # FullyQualifiedErrorId : WebException
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    Set-ExecutionPolicy RemoteSigned -scope CurrentUser
     # 然后安装
     Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 
@@ -102,14 +102,19 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     scoop help
     ```
 2. scoop安装包的位置:用户安装的程序和scoop本身位于`C:\Users<user>\scoop`。全局安装的程序位于`C:\ProgramData\scoop`。可以通过环境变量更改这些设置。
-3. 添加软件库`scoop bucket add bucketnameA`：因为软件不全，所以可以通过添加“软件库”来找到自己想要的软件
-    1. 比如添加scoop-extras存储库可以轻松添加对流行的Windows桌面程序的支持:`scoop bucket add extras https://github.com/lukesampson/scoop-extras.git`
+3. bucket:Scoop的设计初衷是为了方便 Windows 开发者安装和配置开发工具，其默认软件仓库的收录条件也就很苛刻，导致了它默认软件仓库（main bucket）里软件数量有限。bucket可以理解为软件库，类似于brew的tap,我们可以通过添加“软件库”来找到自己想要的软件.
+    1. 查看可以直接识别并添加的bucket:`scoop bucket known`，简单介绍如下
+        1. `nirsoft`:是一个 NirSoft 开发的小工具的安装合集。NirSoft 制作了大量的（dozens and dozens）小工具，包括系统工具、网络工具、密码恢复等等，孜孜不倦、持续更新。
+    2. 添加bucket，`scoop bucket add bucketnameA`
+        1. 比如添加extras存储库(https://github.com/lukesampson/scoop-extras.git，类似于brew的cask)可以轻松添加对流行的Windows桌面程序的支持:`scoop bucket add extras`
 4. 搜索:`scoop search xxx`
 5. 安装,同理卸载是`uninstall`
     1. `scoop install xxx`
     2. `scoop install -g xxx`:安装到全局目录
 6. 更新`scoop update xxx`
-7. 查看软件详情`scoop info xxx`，查看软件状态`scoop status xxx`
+7. 查看软件详情`scoop info xxx`
+    1. `Manifest`:路径指向的文件是 Scoop 具体读取的配置文件
+8. 查看软件状态`scoop status xxx`
 
 ### Chocolatey
 

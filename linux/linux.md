@@ -440,7 +440,7 @@ mount /dev/hda1 /mnt
 语法是`find path -option xxx command {} \`，如果未指定path则默认以当前路径为path，`command {} \;`表示对查询后的所有结果进行command操作，花括号代表前面find查找出来的目标，分号似乎加不加都行，比如`rm {} \`、`ls -l {} \`，注意这个command操作是对结果一行一行的进行，不是所有行一起进行，比如打包的时候会有区别。
 
 常用参数：
-2. ``-name xxx`或`-name "xxx"`:查找文件名称符合xxx的目标，xxx中`*`通配任意个字符，`?`通配单个字符
+2. `-name xxx`或`-name "xxx"`:查找文件名称符合xxx的目标，xxx中`*`通配任意个字符，`?`通配单个字符
     ```bash
     # 名称是.dbeaver的目标
     find . -name .dbeaver
@@ -735,7 +735,7 @@ command位置常用参数：
             Password:
             -rw------- 1 root root    754 2007-08-11 03:19 /root/anaconda-ks.cfg
             ```
-    3. Use the sudo command.(使用`sudo`命令)
+    3. Use the sudo command.(使用`sudo -i`命令)
 
         类似su,但是几个很重要且不同的功能:
         1. 管理员可以配置sudo命令,从而允许一个普通用户以不同的身份（通常是超级用户），通过一种非常可控的方式来执行命令。尤其是，只有一个用户可以执行一个或多个特殊命令时，（更体现了 sudo 命令的方便性).

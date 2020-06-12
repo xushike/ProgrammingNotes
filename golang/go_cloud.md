@@ -152,12 +152,44 @@ https://github.com/gohugoio/hugo
 ### gorm
 https://github.com/go-gorm/gorm
 
+中文参考：
+1. https://gorm.io/zh_CN/docs/create.html
+
 ## JWT
 https://github.com/dgrijalva/jwt-go
 
 ## NoSQL
 ### Redis
 https://github.com/go-redis/redis
+
+## migrate工具
+https://github.com/golang-migrate/migrate
+
+win上的安装我是使用的scoop
+
+基本用法:
+1. 创建迁移文件:`migrate create -ext sql -dir migrations create_users_table`,执行完这个命令会在migrations文件夹下创建两个文件，分别是：
+    
+    ```bash
+    20190617061102_create_users_table.down.sql 
+    20190617061102_create_users_table.up.sql
+    # 20190617061102 是和时间有关的一个标识，用来区分migration的版本
+    # 这两个文件都是空的，需要我们自己去填充
+    ```
+
+## lint工具 
+https://github.com/golangci/golangci-lint
+
+基本使用
+1. 指定配置文件运行，比如`golangci-lint run -c .golangci.yml ./...`
+
+问题:
+1. "File is not `goimports`-ed with -local (goimports)"
+    1. 可能原因，包的引入代码的位置格式化不对
+2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者却没有。(待研究)
+
+## 单元测试辅助工具 mock
+https://github.com/golang/mock
 
 ## 容器相关
 ### kubernetes

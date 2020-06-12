@@ -424,10 +424,50 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
 2. 交互式参数`p`(`pick`):使 commit 保持原样
 3. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
-4. 交互式参数`s`(`squash`):将此 commit 的更改结合到之前的 commit 中（列表中位于其上面的 commit ）
-5. 交互式参数`f`(`fixup`):将此 commit 的更改结合到前一个 commit 中，但删除提交说明
-6. 交互式参数`x`(`exec`):运行 shell 命令
-7. 交互式参数`d`(`drop`):删除 commit
+4. `e`:`edit <commit> = use commit, but stop for amending`(保留该commit, 但我要停下来修改该提交(不仅仅修改注释))
+4. 交互式参数`s`(`squash`):将此 commit 的更改结合到上面的那个commit（界面中位于其上面的 commit ）中，两者的注释信息会合并
+5. 交互式参数`f`(`fixup`):将此 commit 的更改结合到上面的那个commit（界面中位于其上面的 commit ）中，但不保留该提交的注释信息
+6. 交互式参数`x`(`exec`):运行 shell 命令(待整理)
+7. 交互式参数`d`(`drop`):删除 commit(待整理)
+
+界面看起来是这样
+```bash
+pick cbf3b57 add a.txt for test git rebase
+pick 0325c7f add b.txt for test git rebase
+
+# Rebase 52ef447..0325c7f onto 52ef447 (2 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# ...
+```
+
+我们就是修改上面的"pick"，然后`:wq`，然后`rebase processor`会检测我们输入的指令
+1. 如果指令输入错误，它会提示
+
+    ```bash
+    You can fix this with 'git rebase --edit-todo' and then run 'git rebase --continue'.
+    Or you can abort the rebase with 'git rebase --abort'.
+    ```
+
+    此时我们需要重新输入指令
+2. 如果指令输入正确：我们可以再输入`git rebase --continue`让它真正执行指令。它会从上到下开始执行，每次`git rebase --continue`执行一条，直到完成。
+3. `git rebase`还未结束的时候，执行`git status`会提示
+
+        ```bash
+        interactive rebase in progress; onto 52ef447
+        No commands done.
+        Next commands to do (2 remaining commands):
+        reword cbf3b57 add a.txt for test git rebase
+        pick 0325c7f add b.txt for test git rebase
+        (use "git rebase --edit-todo" to view and edit)
+        You are currently editing a commit while rebasing branch 'master' on '52ef447'.
+        (use "git commit --amend" to amend the current commit)
+        (use "git rebase --continue" once you are satisfied with your changes)
+        ```
+4. 最后完成的时候会提示`Successfully rebased`
+
 
 注意,多人合作的情况下,压制**不应包含已push的commit**,因为其他人可能已经pull了你准备压制的commit,如果你再压制,其他人可能需要做非常麻烦的修改才能同步.
 
@@ -583,7 +623,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 删除本地分支:
 1. `git branch -d <分支名>`，删除的时候可以先切换到其他分支，如果被删的分支没有合并到master会有警告，如“xxx is not fully merged”，没有推送到关联的远程分支则会有警告，这两种情况想继续删除可以先处理了该分支或者使用强制删除`git branch -D <分支名>`。
 
-删除远程的分支:
+删除远程分支:
 1. `git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
 
 删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。也不会删除未追踪的本地分支。
@@ -651,6 +691,31 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 ### 10.1 规范
 1. 多人协作时，不要各自在自己的 Git 分支开发，然后发文件合并。正确的方法应该是开一个远程分支，然后一起在远程分支里协作。不然，容易出现代码回溯（即别人的代码被覆盖的情况）
+
+### 10.2 常用术语(黑话)
+- WIP   Work in progress, do not merge yet. // 开发中
+- LGTM Looks good to me. // Riview 完别人的 PR ，没有问题
+- PTAL Please take a look. // 帮我看下，一般都是请别人 review 自己的 PR
+- CC Carbon copy // 一般代表抄送别人的意思
+- RFC  —  request for comments. // 我觉得这个想法很好, 我们来一起讨论下
+- IIRC  —  if I recall correctly. // 如果我没记错
+- ACK  —  acknowledgement. // 我确认了或者我接受了,我承认了
+- NACK/NAK — negative acknowledgement. // 我不同意
+
+### 10.3 git fork
+和clone不同，fork会copy一份代码到自己名下的远程仓库，fork这个动作没什么好讲的，主要说下fork相关的工作流程。
+
+一般流程是这样:
+1. fork代码,clone，此时本地代码地址是.../myNameA/projectA，orgin是.../myNameA/projectA
+2. 肯定要和原作者的仓库同步，所以需要再设置一个源绑定到原作者的仓库:`git remote add upstream source_rep_url`
+3. 和原仓库同步
+    1. `git fetch upstream`，也可以`git fetch --dry-run`先检查远端是否有变动
+    2. 然后选择想要合并的分支，比如想把develop合并到当前分支，可以`git pull upstream/develop`
+4. 提交MR到原仓库
+    1. 先add，commit自己本地的修改，过程中最好使用`rebase`(待补充)
+        1. `rebase`可以将多个commit合并成一个，会让Code Review非常直观
+    2. 和原仓库同步:确定你这次提交之前与你最后一次拉代码的时候没有人提交，如果有，这时候需要再拉一次代码
+    3. 可以直接以当前分支(比如featrue分支)提MR，也可以合并到自己的主分支(比如develop)再提MR
 
 ## 其他命令
 ### git fsck:文件系统检测
