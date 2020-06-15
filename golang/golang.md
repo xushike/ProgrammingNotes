@@ -1061,13 +1061,20 @@ slice := []stirng{}
 6. 切片的长度和容量:`len()`:返回切片的长度，`cap()`:返回切片的容量
 
 #### 2.2.3 映射/字典map
-map是存储无序键值对的集合,map强大的地方在于可以根据键快速检索到值(对集合元素，提供常数时间的存、取或测试操作).go里面map的键可以是任意类型,只要其值可以用"=="比较,最常用的字符串;值则可以是任意类型.从功能和实现上说，Go的map类似于Java语言中的HashMap，Python语言中的dict，Lua语言中的table，他们通常使用hash实现。go的普通map是线程不安全的（在很多语言里map也是不安全的），sync包下提供了并发安全的map。因为slice、map和channel必须初始化才能使用，所以对于多层map，每层都必须初始化才能使用那一层，比如：
+map是存储无序键值对的集合,map强大的地方在于可以根据键快速检索到值(对集合元素，提供常数时间的存、取或测试操作).go里面map的键可以是任意能用`==`比较的类型;值则可以是任意类型.从功能和实现上说，Go的map类似于Java语言中的HashMap，Python语言中的dict，Lua语言中的table，他们通常使用hash实现。go的普通map是线程不安全的（在很多语言里map也是不安全的），sync包下提供了并发安全的map。因为slice、map和channel必须初始化才能使用，所以对于多层map，每层都必须初始化才能使用那一层，比如：
 ```golang
 m := make(map[string]map[int]interface{})
 //此时只是第一层被初始化了，要想使用第二层，必须初始化第二层
 m1 := make(map[int]interface{})
 m["m1"] = m1
 ```
+
+map的键的特性:
+1. map的键可以是任意能用`==`比较的类型，也就是说除了动态类型、指针、函数和闭包外的其他类型都可以。
+    1. 飞动态类型：可用数组，不能用切片。
+    2. 非指针：每个指针数值都不同，失去哈希意义。
+    3. 函数、闭包不能作为 map 的键，否则报错:runtime error: hash of unhashable type func()
+2. 利用map键的hash特性可以实现多键索引。例子见studyGo
 
 声明方法:
 1. "零值初始化"声明:`var map1 map[key_type]value_type`,这种声明方式声明后不能直接赋值，因为没有初始化
@@ -1086,6 +1093,7 @@ m["m1"] = m1
 常用操作:
 1. 判断某个key是否存在:`_, ok := map1[key1]` // 如果key1存在则ok == true，否则ok为false
 2. 从 map中删除key:`delete(map1, key1)`,如果 key1 不存在，该操作不会产生错误，所以我们无法只通过`delete`函数来判断是否真的删除了某个key。
+3. 清空map:没有内置的清空方法，清空 map 的唯一办法就是重新 make 一个新的 map，不用担心垃圾回收的效率，Go语言中的并行垃圾回收效率比写一个清空函数要高效的多。
 3. 从map中获取key的值，有两种方式，但应该只使用逗号ok这种：
     1. 最佳实践是使用逗号ok模式：`_,ok := map1[key1]`，ok表示是否存在这个key1，ok为true，再取值
     2. 直接取值`map1[key1]`：如果值存在则返回该值，不存在则返回对应数据类型的零值。
@@ -2119,6 +2127,18 @@ func main() {
 
 什么情况会panic：
 1. 数组下标越界或类型断言失败等运行错误，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+    1. 实例包括
+        1. 数组下标越界
+        2. 类型断言失败
+        3. 使用不能用`==`比较的值作为map的key，比如
+            
+            ```golang
+            fn := func() {}
+            _ = map[interface{}]int{
+                fn: 1,
+            }
+            // panic: runtime error: hash of unhashable type func()
+            ```
 2. 也可以手动触发panic：`panic("xxx")`
 
 什么场景适合使用panic（除开这些情况，其他错误错误最好都用error）：
@@ -4040,6 +4060,35 @@ Variables in Go are addressable，但return values of function and method calls 
 
 ### 1.21 assignment to entry in nil map
 可能原因：map赋值前需要初始化，即使这个map在出参里
+
+### 1.23 运行任意main方法出现如下错误
+```
+C:\Go\src\runtime\map.go:65:2: bucketCntBits redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:64:18
+C:\Go\src\runtime\map.go:66:2: bucketCnt redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:65:23
+C:\Go\src\runtime\map.go:70:2: loadFactorNum redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:69:18
+C:\Go\src\runtime\map.go:71:2: loadFactorDen redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:70:18
+C:\Go\src\runtime\map.go:77:2: maxKeySize redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:76:17
+C:\Go\src\runtime\map.go:83:2: dataOffset redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:85:4
+C:\Go\src\runtime\map.go:94:2: evacuatedX redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:93:19
+C:\Go\src\runtime\map.go:95:2: evacuatedY redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:94:19
+C:\Go\src\runtime\map.go:96:2: evacuatedEmpty redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:92:19
+C:\Go\src\runtime\map.go:97:2: minTopHash redeclared in this block
+	previous declaration at C:\Go\src\runtime\hashmap.go:95:19
+C:\Go\src\runtime\map.go:97:2: too many errors
+```
+
+原因:安装第二份go的时候没有先卸载原来的go，而是直接覆盖安装的
+
+解决:正确卸载当前和原来的go，然后重新安装。比如linux可以`rm -rf /usr/local/go`，win可以直接删除安装目录或者运行对应的msi来卸载。
 
 ## 2 未解决
 ### 2.N 其他

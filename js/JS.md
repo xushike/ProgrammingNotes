@@ -36,11 +36,11 @@ js作者的采访:[https://www.youtube.com/watch?v=IPxQ9kEaF8c](https://www.yout
 ## 3 常识
 ### 3.1 js的参数传递(重点)
 三种传递方式的区别：
-- 按值传递（pass-by-value）：
-- 按引用传递（pass-by-reference）：
-- 共享传递（call—by-sharing）：对于传递到函数参数的对象类型，如果直接改变了拷贝的引用，那是不会影响到原来的那个对象；如果是通过拷贝的引用，去进行内部的值的操作，那么就会改变到原来的对象的。
+- 按值传递（call-by-value，pass-by-value）：
+- 按引用传递（call-by-reference，pass-by-reference）：
+- 共享传递（call-by-sharing，pass—by-sharing）：对于传递到函数参数的对象类型，如果直接改变了拷贝的引用，那是不会影响到原来的那个对象；如果是通过拷贝的引用，去进行内部的值的操作，那么就会改变到原来的对象的。
 
-js所有函数的参数都是按值传递的,如果参数是值类型则复制值,如果是引用类型则复制引用(也叫共享传递).本人实测java似乎也是这样。例子如下:
+js所有函数的参数都是按值传递的，不过不同数据类型具体有所不同：如果参数是值类型则复制值,如果是引用类型则复制引用(也叫共享传递).本人实测java似乎也是这样。例子如下:
 
 ```javascript
 var obj = {x : 1};
@@ -284,7 +284,7 @@ age="hello";
 - 声明并赋值:`var age=1,mood="sad"`
 
 ### 1.2 数据的类型
-最新的ES标准定义了7种类型:6种原始类型(String,Number,Boolean,null,undefined,以及ES6的Symbol)和Object（这个Object是广义的，指代所有其他类型）.
+最新的ES标准定义了7种类型:6种原始类型(也称为基本数据类型)(String,Number,Boolean,null,undefined,以及ES6的Symbol)和Object(也称为引用数据类型)（这个Object是广义的，指代除了基本数据类型以外的所有其他类型）.
 
 Object包含:
 1. 标准对象("Normal" objects)
@@ -292,7 +292,22 @@ Object包含:
 3. 有续集(Indexed collections):Arrays和typed Arrays
 4. 键集(Keyed collections):Maps, Sets, WeakMaps, WeakSets
 5. 结构化数据(Structured data):JSON
-6. java标准库的內建对象,如日期(Dates),字符串(String),Math等
+6. java标准库的內建对象,如日期(Dates),字符串(String),Math，正则表达式(RegExp)等
+
+基本数据类型和Object的区别：
+1. 基本数据类型：
+    1. 存放在栈中
+        1. 原始类型放在栈中是因为：原始类型占据空间是固定的，可以将他们存在较小的内存--栈中，这样便于迅速查询变量的值
+    2. 数据大小确定
+    3. 它们是直接按值存放的，访问也是直接按值访问
+    4. 传递的时候是按值传递(call by value,pass by value)
+2. 引用数据类型：
+    1. 值存放在堆中，但是变量保存在栈中，变量保存的是堆内存中的引用地址
+        1. 引用类型的值放在堆中是因为：引用类型的值的大小会改变，放在栈中的话会降低变量查询的速度，而把它的变量放在栈中的话，变量里指针地址的大小是固定的，所以把它的变量存储在栈中对性能无任何负面影响，所以它的值放在堆中，变量放在栈中
+    2. 数据大小不固定
+    3. 直接通过变量(引入)来访问值，不能直接访问值
+    4. 传递的时候也是共享传递(call-by-sharing，pass—by-sharing)
+        1. 是因为：对于复杂类型，按值传递性能较低
 
 判断数据的类型用`typeof xxx`or`typeof (xxx)`,返回字符串,内容是xxx的类型,一般有一下几种类型:
 1. 对这些基本类型就是对应的类型:string,number,boolean,undefined,symbol,除了null。对于null,是object.意味着`typeof null === "object"`,注意这其实是一个错误,因为历史一直没有修复.参考[typeof MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof).所以判断变量是不是对象的时候一般会排除它为null的情况,如`typeof foo == 'object' && foo !== null`
