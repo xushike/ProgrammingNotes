@@ -207,6 +207,7 @@
         * [18.2.RabbitMQ](se/18.MQ/18.2.RabbitMQ.md)
         * [18.3.Redis](se/18.MQ/18.3.Redis.md)
         * [18.4.ActiveMQ](se/18.MQ/18.4.ActiveMQ.md)
+        * [18.5.RocketMQ](se/18.MQ/18.5.RocketMQ.md)
 * [vr](vr/vr.md)
 * [accounting会计学](accounting.md)
 * [math](math/math.md)

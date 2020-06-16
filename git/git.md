@@ -717,6 +717,10 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
     2. 和原仓库同步:确定你这次提交之前与你最后一次拉代码的时候没有人提交，如果有，这时候需要再拉一次代码
     3. 可以直接以当前分支(比如featrue分支)提MR，也可以合并到自己的主分支(比如develop)再提MR
 
+如何同步upstream上新增的分支呢:
+1. 本地建立同名分支:`git checkout -b branchA`
+2. 然后拉取upstream的同名分支到本地`git pull upstream branchA`，done
+
 ## 其他命令
 ### git fsck:文件系统检测
 `git fsck --lost-found`:找回git add过但是已经不存在文件中的内容。可以通过运行 `git show commit_hash`查看提交之后的改变或者运行`git merge commit_hash`来恢复到之前的提交。git fsck 相对reflog是有优势的，比方说你删除一个远程的分支然后关闭仓库，用fsck 你可以搜索和恢复已删除的远程分支。

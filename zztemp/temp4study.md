@@ -8,8 +8,6 @@
 1. vue
     1. el-dialog的title和`:title`，前者只支持字符串？
 1. 依赖注入和普通方法调用的区别
-1. session、cookie、context等
-    1. 主动T用户下线
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
     1. pgsql 未使用order时的默认顺序，函数的默认顺序
     4. 锁的种类级别，查询的时候会锁吗
@@ -272,7 +270,6 @@ package github.com/cweill/gotests/...: exit status 1
     2. 输出格式对齐和不对齐的区别，切换方法
     3. pg update连表的写法：http://qifeifei.iteye.com/blog/2211115
     4. pg学习：https://www.cnblogs.com/kungfupanda/p/4478917.html
-1. cookie和session
 2. golang import cycle not allowed
     1. 怎么找啊
 2. don't use an underscore in package name
