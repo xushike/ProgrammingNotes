@@ -189,9 +189,16 @@ win上的安装我是使用的scoop
     # 20190617061102 是和时间有关的一个标识，用来区分migration的版本
     # 这两个文件都是空的，需要我们自己去填充
     ```
+2. 升级
+    1. 升级到最新版本:`migrate -source fileDirA -database xxx up`
+3. 回滚
+    1. 回滚到最开始版本
+    2. 回滚最新的一个版本:`migrate -source fileDirA -database xxx down 1`，同理，回滚前n个版本是`migrate -source fileDirA -database xxx down n`
 
 ## lint工具 
 https://github.com/golangci/golangci-lint
+
+参考：https://golangci-lint.run/
 
 基本使用
 1. 指定配置文件运行，比如`golangci-lint run -c .golangci.yml ./...`
@@ -199,7 +206,7 @@ https://github.com/golangci/golangci-lint
 问题:
 1. "File is not `goimports`-ed with -local (goimports)"
     1. 可能原因，包的引入代码的位置格式化不对
-2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者却没有。(待研究)
+2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
 
 ## 单元测试相关
 ### 单元测试辅助工具 mock
@@ -225,6 +232,13 @@ https://github.com/stretchr/testify
 ## 容器相关
 ### kubernetes
 https://github.com/kubernetes/kubernetes
+
+## IoT
+### Paho
+Paho是 Eclipse 的一个开源 MQTT 项目，包含多种语言实现，比如JAVA、golang
+
+## cron
+https://github.com/robfig/cron
 
 # 五 经验
 ## 1 为什么需要框架

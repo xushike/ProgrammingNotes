@@ -898,6 +898,10 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
 3. `-d 'xxx'`：HTTP POST方式传送的body数据
 4. `-F 'xxx'`:模拟http表单提交数据
 5. `-I`(`--head`)：只显示头信息
+6. `-i/–include`输出时包括protocol头信息
+7. HTTP认证
+    1. `--basic`，如`curl --basic  -u user:password http://www.example.com/posts/1`
+8. `-v`:显示通信过程
 
 ```bash
 # 例子
