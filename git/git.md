@@ -207,12 +207,12 @@ reference from StackOverflow：https://stackoverflow.com/questions/13790592/how-
 2. linux下启动命令是:eval `ssh-agent`?
 
 ## 4 配置
-### 4.1 Git仓库的配制文件
+### 4.1 Git仓库的配置文件
 Git共有三个级别的config文件，分别是system、global和local:
-1. .git/config：指定仓库配置（特定于某个仓库），获取或设置时使用`--local`参数（或者省去）。
-2. ~/.gitconfig：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用`--global`参数。
+1. `.git/config`：指定仓库配置（特定于某个仓库），获取或设置时使用`--local`参数（或者省去）。
+2. `~/.gitconfig`：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用`--global`参数。
     1. 当然该配置不是一定有的，比如公司的mac air上就没有改配置文件
-3. /etc/gitconfig：系统级别仓库配置（适用于所有仓库），获取或设置时使用`--system`参数。
+3. `/etc/gitconfig`：系统级别仓库配置（适用于所有仓库），获取或设置时使用`--system`参数。
 
 覆写关系为：自上到下，作用范围越大;小范围优先级高于大范围。
 
@@ -231,14 +231,28 @@ ci = commit
 editor = vim
 ```
 
-### 4.2 设置
+### 4.2 设置 git config itemA valueA
 不带级别的话默认是`--local`,比如`git config color.ui true`，默认是设置到当前git仓库的config文件中，如果没有该文件，会提示出来且不会自动创建该文件。如果在设置时加上了`--global`和`--system`，会在没有对应config文件的情况下自动创建对应的config文件。
 
-常用设置：
+使用
+1. 查看设置
+    1. 查看所有配置(包括git自带的和用户自定义的):`git config --list`
+
+    1. 查看配置文件的内容(似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示)
+        - 查看项目的配置文件`git config --local --list`
+        - 查看用户的配置文件`git config --global --list`
+        - 查看系统的配置文件`git config --system --list`
+    1. 查看具体某个项的设置:`git config --get itemA`,比如查看大小写敏感`git config --get core.ignorecase`
+2. 设置
+3. 取消设置
+    1. 取消某个项的设置`git config --unset itemA`，比如`git config --global --unset user.email`
+
+常用设置项：
 1. 为命令设置别名:比如`git config --global alias.st status`，设置后就可以用`st`代替`status`。如果想使用非git命令，需要在前面加上叹号`!`，如`git config --global alias.visual '!gitk'`
 
 ### 4.3 配置自动补全
-win是安装git就自带了的。
+win:
+1. todo
 
 mac按以下步骤操作：
 1. 下载git-completion.bash：https://github.com/git/git/blob/master/contrib/completion/git-completion.bash
@@ -270,7 +284,8 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 ### 1.3 git remote:远程仓库相关
 查看远程仓库:
 - `git remote -v`:查看所有关联的远程仓库的名称和地址(拉取和推送)。在对远程仓库有修改后可以用该命令判断是否修改正确。
-- `git remote show <远程仓库名>`:查看远程仓库详细信息,包括:
+- `git remote show`:查看有那些远程仓库，一般单远程库的显示可能是`origin`，多远程库可能`origin upstream ...`等。
+- `git remote show <远程仓库名>`:查看远程仓库详细信息,如`git remote show origin`。可查看的信息包括:
     * 哪些远程分支没有同步到本地
     * 哪些已同步到本地的远端分支在远端服务器上已被删除
     * 拉取和推送关联的分支
@@ -318,15 +333,6 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
     - `-- <file_path>`或`<file_path>`：按文件过滤
     - 按修改的文本内容过滤
         - `git log -G <pattern>`：支持正则查找。如`git log -G '配件编码'`，会搜索所有改动文本包含"配件编码"的commit。如`git log -G "fmt.Println"`
-    
-### 2.3 git config --list:查看配置文件
-- 查看项目的配置文件`git config --local --list`
-- 查看用户的配置文件`git config --global --list`
-- 查看系统的配置文件`git config --system --list`
-
-上面的三个命令似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示.要想显示用`git config --list`.它会显示包括上面三个配置在内的所有配置(如果有的话)
-
-查看具体某个项的配置:比如查看大小写敏感`git config --get core.ignorecase`
 
 ### 2.5 git diff 查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名或commit_id,不跟的话就默认列出当前工作区的所有更改.
@@ -548,7 +554,7 @@ pick 0325c7f add b.txt for test git rebase
 和`git checkout -- file_name`类似，用指定提交中的文件覆盖暂存区和工作区中的文件
 
 #### git checkout branch_name
-切换分支
+切换分支，单远程库的情况下这样使用没问题，如果是多远程库，可能会提示`git checkout --track origin/<name>`，意思是git并不清楚你要检出哪个远程库的分支，所以要用提示的命令，比如`git checkout --track origin/develop`
 
 #### git checkout commit_id
 根据这个commit生成一个暂时的branch，现在的确在一个branch上，只是这个branch没有名字，我们可以马上`checkout -b`生成一个新的branch，也可以在这个没有名字的branch上面做修改、提交等像正常branch一样的操作（还有说是进入了游离状态，待验证）
@@ -693,7 +699,10 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 1. 多人协作时，不要各自在自己的 Git 分支开发，然后发文件合并。正确的方法应该是开一个远程分支，然后一起在远程分支里协作。不然，容易出现代码回溯（即别人的代码被覆盖的情况）
 
 ### 10.2 常用术语(黑话)
-- WIP   Work in progress, do not merge yet. // 开发中
+- WIP   Work in progress, do not merge yet. // 开发中。WIP可用于多个地方：
+    1. WIP也可用于MR，在MR的标题带上前缀`WIP:`表示分支没准备好，不能合并
+    2. pull请求中，表示工作还没完成，但是想提交代码，目的是：寻求初步的反馈，想使用项目的集成基础设施，比如CI
+    3. WIP也可以用于分支，
 - LGTM Looks good to me. // Riview 完别人的 PR ，没有问题
 - PTAL Please take a look. // 帮我看下，一般都是请别人 review 自己的 PR
 - CC Carbon copy // 一般代表抄送别人的意思
@@ -1008,6 +1017,12 @@ and its host key have changed at the same time.
 
 ### 1.21 windows下git log中文乱码
 在系统环境变量里增加`LESSCHARSET=utf-8`，然后重启相关的IDE就行了。
+
+### 1.22 拉取gitlab远程仓库的时候出现:warning: redirecting to https://projectA.git/
+参考：https://stackoverflow.com/questions/53012504/what-does-the-warning-redirecting-to-actually-mean
+
+可能原因:
+1. 远程仓库的地址没有以`.git`结尾
 
 ## 2 未解决
 ### 2.N 其他

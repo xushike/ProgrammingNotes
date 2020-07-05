@@ -70,9 +70,11 @@ MQTT was created by Andy Stanford-Clark of IBM, and Arlen Nipper (then of Arcom 
 
 # 三 基础
 ## 主题
-MQTT 的 Topic 有层级结构，并且支持通配符 + 和 #:
-1. `+`是匹配单层的通配符。比如 news/+ 可以匹配 news/sports，news/+/basketball 可匹配到 news/sports/basketball。
-2. `#`是一到多层的通配符。比如 news/# 可以匹配 news、 news/sports、news/sports/basketball 以及 news/sports/basketball/x 等等。
+MQTT 的 Topic 有层级结构，并且支持通配符`+`和`#`:
+1. `+`是匹配单层的通配符。
+    1. 比如`news/+`可以匹配`news/sports`，`news/society`，但是不能匹配`news/`，`news/sports/basketball`
+    2. 比如`news/+/basketball`可匹配`news/sports/basketball`，`news/shopping/basketball`
+2. `#`是一到多层的通配符。比如`news/#`可以匹配 `news`、`news/sports`、`news/sports/basketball` 以及 `news/sports/basketball/x` 等等。
 
 MQTT 的主题是不要预先创建的，发布者发送消息到某个主题、或者订阅者订阅某个主题的时候，Broker 就自动创建了这个主题。
 

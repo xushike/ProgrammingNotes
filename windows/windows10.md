@@ -28,7 +28,7 @@
 
 安装桌面软件吗？看需求，一般来说没必要，因为子系统和windows的资源是共享的。不过为了方便copy文件，可以建立软链接当做共享文件夹，比如:
 1. ` ln -s /mnt/c/Users/my_username/LinuxShare ~/LinuxShare`
-2. ` ln -s /mnt/c/Users/my_username/study ~/study`
+2. ` ln -s /mnt/c/Users/my_username/study ~/study`  
 2. ` ln -s /mnt/c/Users/my_username/go ~/go`
 2. ` ln -s /mnt/c/Users/my_username/Downloads ~/Downloads`
 
@@ -36,6 +36,8 @@
 
 需要手动安装的工具:
 1. 输入`code`安装vscode-server
+
+## 3 edge
 
 # 五 经验
 # 六 问题

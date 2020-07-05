@@ -275,6 +275,7 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
 	4. Facebook的Thrift
 	5. Twitter的Finagle
 2. 远程通信协议：指明了程序如何进行网络传输和序列化。有RMI、Socket、SOAP(HTTP XML)、REST(HTTP JSON)。
+  1. 实际情况是很少用HTTP协议，能用二进制传输为什么要用文本传输协议呢
 3. 通信框架：MINA 和 Netty。
 
 # 四 高级

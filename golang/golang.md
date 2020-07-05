@@ -230,12 +230,18 @@ Go源码文件包括三种：
 ### 3.17 平行赋值
 `i, j = i+1, j-1`
 
-### 3.18 运行时环境变量
-主要有四个：GOGC,GOTRACEBACK,GOMAXPROCS, GODEBUG。
+### 3.18 环境变量
+设置环境变量：
+1. 命令设置环境变量，写法`env envNameA=xxx go run ...`，或者直接`envNameA=xxx go run xxx`。
+2. 代码里设置环境变量(略)
 
-GOGC：默认值是100，简单来讲就是值越低GC的频率越快。GOGC=off将会完全关闭垃圾回收
-
-GODEBUG：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
+环境变量明细：
+1. GOGC：默认值是100，简单来讲就是值越低GC的频率越快。GOGC=off将会完全关闭垃圾回收
+2. `GODEBUG`：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
+    1. 如果值包含`gocacheverify=1`将会导致 go 命令绕过任何的缓存数据，而真正地执行操作并重新生成所有结果，然后再去检查新的结果与现有的缓存数据是否一致。
+3. GOOS 程序构建环境的目标操作系统
+4. GOARCH 表示程序构建环境的目标计算架构
+5. `GOCACHE`:`go build`命令现在(go1.10+)总是会把最近的构建结果缓存起来，以便在将来的构建中重用。我们可以通过运行`go env GOCACHE`命令来查看缓存目录的路径。缓存的数据总是能够正确地反映出当时的源码文件、构建环境和编译器选项等的真实情况。一旦有任何变动，缓存数据就会失效，`go build`命令就会再次真正地执行构建。因此，我们并不用担心缓存数据体现的不是实时的结果。实际上，这正是上述改进能够有效的主要原因。`go build`命令会定期地删除最近未使用的缓存数据，但如果你想手动删除所有的缓存数据，运行一下`go clean -cache`命令就好了。而且对于测试成功的结果，go 命令也是会缓存的。运行`go clean -testcache`命令将会删除掉所有的测试结果缓存。
 
 ### 3.19 文件名
 以下划线`_`开头的文件不会被go编译，对golang而言类似于没有该文件
@@ -859,7 +865,7 @@ go有字符串常量池吗：没有。
 对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
 
 ### 2.2 复合(结构化)数据类型
-包含array、slice、map、struct、channel.
+包含array、slice、map、struct、channel(我们通常把array和struct称为值类型，把slice、map、channel称为引用类型，来帮助我们理解go语言的这几个类型。虽然这个称法并不准确，而且官方也没有这样说过)
 
 #### 2.2.1 数组
 特点：
@@ -1443,14 +1449,14 @@ go函数的大概结构:Go中大部分函数的代码结构几乎相同，首先
     ```
 
 ### 4.2 参数传递
-值传递：go 中函数都是按值传递即 passed by value，对于引用类型，这个值指的标头值。每个引用类型创建的标头值是包含一个指向底层数据结构的指针。因为标头值是为复制而设计的，所以永远不需要共享一个引用类型的值。标头值里包含一个指针，因此通过复制来传递一个引用类型的值的副本，本质上就是在共享底层数据结构。
+值传递：go的参数传递都是按值传递(passed by value)，对于引用类型，这个值指的标头值。每个引用类型创建的标头值是包含一个指向底层数据结构的指针的结构体。标头值里包含一个指针，所以传递标头值，本质上就是在共享底层数据结构。
+
 ```go
 // 代码参考studyGo项目
 ...
 // 证明了切片传递的不是指针地址，因为变量前后地址不同。
 // 也证明了切片的参数传递的是传值的形式，具体是传标头值的拷贝，因为指向元素的指针地址相同。
 ```
-
 
 ### 4.3 递归
 1. 大部分编程语言使用固定大小的函数调用栈，常见的大小从64KB到2MB不等。固定大小栈会限制递归的深度，当你用递归处理大量数据时，需要避免栈溢出；除此之外，还会导致安全性问题。与相反,Go语言使用可变栈，栈的大小按需增加(初始时很小)。这使得我们使用递归时不必考虑溢出和安全问题
@@ -1675,14 +1681,16 @@ GOENV=dev go test -v -gcflags=-l -count 1 -p 1 $(go list ./pkg/... | grep -v './
 cached：go1.10开始在go test中引入了cached，规则参考：http://ju.outofmemory.cn/entry/344575，想关闭可以加上`-count=1`参数
 
 命令行参数:
+1. `-args`：传递命令行参数，该标志会将`-args`之后的参数作为命令行参数传递，最好作为最后一个标志。如`go test -args -p=true`
+4. 设置并发执行的测试数量`-parallel n`
+5. 竞争探测`-race`：用于探测高并发的死锁...
+6. `-cpu`
 1. `-cover`：是否开启覆盖率统计。`-covermode`、`-coverpkg`、`-coverprofile`这些参数默认会打开这个选项
 2. `-covermode mode`：可选值有 set、count、atomic，其中 set （默认值）仅统计语法块是否覆盖，count 会统计语法块覆盖了多少次，atomic 用于多线程测试中统计语法块覆盖了多少次。
 3. `-coverpkg pattern1，pattern2，pattern3`：覆盖率统计 packages 的范围，若不设置默认只统计有执行了测试的 packages。
 4. `-coverprofile cover.out`：覆盖率 profile 文件输出地址
 5. `-timeout t`：单个测试用例的超时时间，默认值 10 分钟
-
-### 7.1 test
-参数:
+6. `-i`：安装与测试相关的包，不运行测试。
 1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，如，
 
     ```bash
@@ -1691,6 +1699,10 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
     --- PASS: Testxxx (0.20s)
     ```
 
+注意:
+1. go test 命令还会忽略`testdata`目录，该目录用来保存测试需要用到的辅助数据。
+
+### 7.1 test
 `t *testing.T`的接口:
 1. 打印信息：`Log()`和`Logf()`：内部其实还是使用类似的logs的方法，都是对基本的并行的操作进行了封装之后再处理的，加上了mutex操作，因此在单元测试中不推荐直接使用`fmt.printf`相关的几个的方法。
 2. 失败：
@@ -1703,9 +1715,26 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 4. 综合接口
     1. `Error(args)`：报告出错并继续。相当于在调用 `Log()` 之后调用 `Fail()` 
     2. `Fatal(err)`：报告出错终止。相当于在调用`Log`之后调用`FailNow`
-4. 设置并发执行的测试数量`-parallel n`
-5. 竞争探测`-race`：用于探测高并发的死锁...
-6. `-cpu`
+5. `Run(name string,sub func(*testing.T))`:执行带名字的sub测试函数
+
+
+`m *testing.M`:在所有测试之前执行，类似于preTest这样的功能
+```go
+func TestMain(m *testing.M){
+	fmt.Println("清理数据库")
+	m.Run()
+}
+
+// 运行Test时，会先运行TestMain
+func Test(t *testing.T){
+	fmt.Println("进入测试方法")
+	t.Run("进入sub测试:", testSub)
+}
+
+func testSub(t *testing.T) {
+	t.Log("sub测试完成")
+}
+```
 
 注意：
 1. `go test`后面指定函数或文件名的话，使用的是正则来匹配名字，假如你有"TestHello"、"TestHello1"、"TestHello2"三个方法，那么运行`go test -v -test.run TestHello`时三个都会跑，此时可以使用`go test -v -test.run TestHello$`来避免。
@@ -2423,7 +2452,8 @@ go run *.go
 
 参数:
 1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
-1. `-o`：指定生成的可执行文件的名字，可以包含路径。比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。
+1. `-o`：指定生成的可执行文件的名字，可以包含路径。
+    1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。(待确认)
 2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
     1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
 
@@ -2482,7 +2512,7 @@ go run *.go
 3. TODO
 
 ### 1.4 go get(待整理)
-通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。
+通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。`go get`可以下载一个单一的包或者整个子目录里面的每个包
 
 注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
 

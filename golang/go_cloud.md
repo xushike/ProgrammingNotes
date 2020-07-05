@@ -16,11 +16,18 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 ## 常见web框架
 
 ### goa
-https://github.com/goadesign/goa
+参考：
+1. https://github.com/goadesign/goa
+2. https://goa.design/learn/getting-started/
+3. https://blog.gopheracademy.com/advent-2015/goauntanglingmicroservices/
+4. DSL参考 
+    2. 查看所有的API：https://goa.design/reference/goa/design/apidsl/
+    1. https://goa.design/design/overview/
+    3. https://godoc.org/goa.design/goa/dsl
 
 Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建了一种基于 Go 语言的 HTTP 微服务框架，名为“goa”。这一框架允许开发者通过领域特定语言（DSL）定义服务的API，并且通过自动代码生成功能创建“样板”式的服务端和客户端代码以及文档。
 
-特点:
+#### 特点
 1. 与 goa 框架一同推出的还有一个 goagen 工具，它能够通过设计代码生成各种输出，包括 http 服务器的封装、代码脚手架、文档、js客户端，甚至是自定义的输出。
     1. goa 框架能够描述 API 的意图。通过使用 goa 设计语言，开发者能够定义 API 所暴露的资源与行为（即 API 的终结点）。对于每种行为的描述包括所期待的请求状态，以及各种可能产生的响应。这种方式能够带来许多益处：举例来说，它在设计阶段就能够起到很大的作用，各个团队能够通过 Swagger UI 生成 Swagger 的规格说明，从而提出反馈意见。这一反馈循环能够为负责生成 UI 或编写面向用户的文档的团队带来极大的便利。最大的优点在于，这一切都发生在实际编写代码实现之前。
         1. 它减轻了对反射的依赖，否则的话，实现相同的功能可能要写上几千行代码
@@ -35,7 +42,24 @@ Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建
 3. 插件系统:整个项目最令人惊讶的部分就在于通过代码（以及其他功能）生成所带来的各种可能性。
     1. 它实质上就是一种标准的 Go 包，其中包含了一个公开的 Generate 函数。由 Brian Ketelsen 所编写的 gorma 插件是对这一项目最早的贡献之一，它能够通过 API 设计中所描述的类型生成 gorm 模型。
 
-使用:
+特点总结：
+1. 代码自动生成（自动生成的代码可以热更新，因为生成代码和自己写的代码是分开的）
+2. 理念时髦，基于API设计，利用插件来扩展业务逻辑
+
+#### 使用
+`goagen `
+
+`goa exmaple`:
+1. 比如`goa exqmple serverA/design`
+
+
+#### DSL说明
+goa基于服务提供功能，每个API定义一个服务(Service)，每个服务有若干资源(Resource)，每个资源对应若干操作(Action)，每个操作(Action)有多种响应(Response)，每个响应可能返回不同媒介(Media)的不同视图(View)。当然goa提供了更好的层级控制和继承关系(如上例，Response返回的视图继承于Resource中定义的默认媒介(BottleMedia)的默认视图(default))
+1. API: 描述一个Service及其地址，协议规范等
+2. Resource: 定义一个资源及其一系列相关的操作(Action)，以及这些操作所共用的一些属性
+3. Action: 定义针对于某个资源的操作，包括方法(GET,POST等)，URL(可有多个)，参数(goa自动做类型检查，值检查等)等
+4. Response: 定义一个响应，包括响应模板和承载内容(payload)，在代码中决定调用那个响应模板
+5. MediaType: 定义Response返回的数据结构，一个Media可以有多个View，可在Response中指定返回的View
 
 ### gin
 https://github.com/gin-gonic/gin
@@ -158,6 +182,23 @@ https://github.com/spf13/viper
 
 完整的配置解决方案。 完美支持 JSON/TOML/YAML/HCL/envfile/Java properties 配置文件等格式，还有一些比较实用的特性，如配置热更新、多查找目录、配置保存等
 
+viper提供的配置方式的优先级顺序如下(由高到低)：
+1. 设置显示调用(explicit call to Set)
+2. 命令行标志(flag)
+3. 环境变量(env)
+4. 配置文件(config)
+5. 远程键/值存储(key/value store)
+6. 默认值(default)
+
+使用:
+1. 设置默认值:默认值不是必须的，如果配置文件、环境变量、远程配置系统、命令行参数、Set函数都没有指定时，默认值将起作用。
+
+    ```go
+    viper.SetDefault("name", "xiaoming")
+    viper.SetDefault("age", "12")
+    viper.SetDefault("notifyList", []string{"xiaohong","xiaoli","xiaowang"})
+    ```
+
 ## 静态网站生成 hugo
 https://github.com/gohugoio/hugo
 
@@ -226,8 +267,14 @@ gomock主要包含两个部分：gomock库和辅助代码生成工具mockgen
 5. `-aux_files`:接口文件不止一个文件时附加文件
 6. `-build_flags`: 传递给build工具的参数
 
-### 断言和mock
+### testify
 https://github.com/stretchr/testify
+
+主要功能(常用函数)：
+1. 断言
+    1. `assert`:如果失败，不会退出
+    2. `require`:失败会直接结束
+2. mock
 
 ## 容器相关
 ### kubernetes
@@ -239,6 +286,19 @@ Paho是 Eclipse 的一个开源 MQTT 项目，包含多种语言实现，比如J
 
 ## cron
 https://github.com/robfig/cron
+
+## rpc
+### protoc
+安装并加入环境变量
+
+### protocbuf源码生成插件 protoc-gen-g
+https://github.com/golang/protobuf/tree/master/protoc-gen-go
+
+`github.com/golang/protobuf/protoc-gen-go`
+
+
+## 日志 zap
+https://github.com/uber-go/zap
 
 # 五 经验
 ## 1 为什么需要框架
