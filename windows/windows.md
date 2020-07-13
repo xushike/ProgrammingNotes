@@ -32,6 +32,16 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 
 在开始菜单中输入Hyper-V作为关键字，Hyper-V Manager菜单项就会显示出来，点击Hyper-V Manager的菜单项，即可打开Hyper-V的管理界面。在Hyper-V Manager中，可以非常方便地创建并管理虚拟机，虚拟机的操作系统可以是Windows的，也可以是Linux的，用户只需要下载所需操作系统的ISO镜像即可完成安装，非常方便。可参考微软官网Hyper-V的教程。
 
+### 3.8 有空格的目录
+在终端进入带空格的目录有三种方式(和mac不太一样)，比如目录`Program Files`：
+1. `cd 'Program Files'`
+    1. 如果想直接进去更下面的Docker目录，可以写成`cd 'Program Files\Docker'`而不能写成`cd 'Program Files'\Docker`
+1. `cd Program' 'Files`
+2. `cd Program" "Files`
+
+关于带根目录的目录：
+1. 用`which`命令查看tool的路径的时候，得到的是`c/xxx/xxx`，而不是`c:/xxx/xxx`。而windows带根目录的跳转只能用`c:/xxx/xxx`的方式，所以不能直接使用`which`的结果来跳转
+
 # 二 安装配置
 # 三 基础
 ## 1 DOS

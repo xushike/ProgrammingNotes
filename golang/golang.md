@@ -322,6 +322,7 @@ return结束当前函数,并返回指定值
     2. mirrors.aliyun.com/goproxy:支持GOPROXY代理，但不支持GOSUMDB的sum.golang.org的校验
         
 文档:
+1. 英文的免费电子书，DigitalOcean 发布的。Go 语言编程: https://www.digitalocean.com/community/books/how-to-code-in-go-ebook
 1.  _Effective Go_(中文名《高效Go编程》)
 2.  Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
 4.  go命令教程，听说是干货：https://github.com/hyper0x/go_command_tutorial
@@ -383,7 +384,7 @@ go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 
 5. 配置gobin(需不需要看情况)
 
-多版本管理使用gvm:https://github.com/moovweb/gvm
+多版本管理使用gvm:https://github.com/moovweb/gvm(似乎没有win版本，待整理)
 
 ## 2 mac
 ### 2.1 二进制发行版安装
@@ -3794,7 +3795,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
 1. 相当于是抛弃了GOPATH：Go modules 出现的目的之一就是为了解决 GOPATH 的问题，也就相当于是抛弃 GOPATH 了。
 2. 支持代理，意味着可以使用私有镜像源
 2. global caching: 允许同一个package多个版本并存，且多个项目可以共享缓存的 module不同项目的相同模块版本只会在电脑上缓存一份儿.
-    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在$GOPATH/pkg/mod和 ​$GOPATH/pkg/sum 下，未来或将移至 $GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
+    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在`$GOPATH/pkg/mod`和`​$GOPATH/pkg/sum`下，未来或将移至$GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
 
 环境变量:
 1. `GO111MODULE`:控制go modules的开关，有三个参数，默认是未设置(等同于`auto`）
@@ -3837,6 +3838,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
             example.com/banana v1.2.3
             example.com/banana/v2 v2.3.4
             example.com/pineapple v0.0.0-20190924185754-1b0db40df49a
+            google.golang.org/grpc v1.30.0
         )
 
         // exclude：用于从使用中排除/禁用一个特定的模块版本
@@ -3854,10 +3856,11 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
             golang.org/x/text => github.com/golang/text latest
             golang.org/x/tools => github.com/golang/tools latest
             
-            // replace使用例子2：自定义路径，比如你想使用本地私有模块时
-            github.com/astaxie/beego => /home/mod/astaxie/beego
-            
-           
+            // replace使用例子2：使用固定版本，写法和例子1类似，这个固定版本会覆盖掉require中设置的版本
+            google.golang.org/grpc => google.golang.org/grpc v1.26.0
+
+            // replace使用例子3：自定义路径，比如你想使用本地私有模块时
+            github.com/astaxie/beego => /home/mod/astaxie/beego           
         )
         ```
     2. `indirect`：的意思是指这个package被子module/package依赖了，但是main module并没有直接import使用，也就是所谓的间接引用
@@ -3885,7 +3888,7 @@ go mod命令:
 1. `go mod init <project_name>`
 2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。和`go get`不同的是`go mod download`只会下载，不会编译安装。
 2. `go mod tidy`：整理依赖，更新项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
-    1. 为什么执行之后有些pkg的版本会变化呢?
+    1. 更新并不是一定就好，有可能有不兼容、依赖、bug等问题
 4. `go mod edit`：编辑go.mod
     
     ```golang
@@ -4136,6 +4139,28 @@ C:\Go\src\runtime\map.go:97:2: too many errors
 解决:正确卸载当前和原来的go，然后重新安装。比如linux可以`rm -rf /usr/local/go`，win可以直接删除安装目录或者运行对应的msi来卸载。
 
 ## 2 未解决
+### note: module requires Go 1.14
+
+### Get https://sum.golang.org/lookup/xxxxxx: dial tcp xxx i/o timeout
+
+### verifying gopkg.in/yaml.v2@v2.2.8/go.mod: checksum mismatch
+```
+verifying gopkg.in/yaml.v2@v2.2.8/go.mod: checksum mismatch
+ 	downloaded: h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+ 	go.sum:     h1:hI93XBmqGOSUMDBTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+SECURITY ERROR
+```
+
+解决：
+```bash
+# Remove go.sum
+rm go.sum
+
+# Then re-generate go.sum
+go mod tidy
+```
+
+### no matching versions for query “latest”
 ### 2.N 其他
 6.  protobuf的获得和使用
 7.  go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？

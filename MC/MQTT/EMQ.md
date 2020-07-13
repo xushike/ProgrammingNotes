@@ -51,6 +51,11 @@ EMQ简书账号：https://www.jianshu.com/u/9cbcdf094d33
     1. 启动
     2. 登录地址是:http://127.0.0.1:18083
 
+docker中使用:
+1. 获取镜像
+2. 启动`docker run -d --name emqx-with-modules -p 1883:1883 -p 8083:8083 -p 8883:8883 -p 8084:8084 -p 18083:18083 emqx/emqx`
+3. 修改配置
+
 # 三 基础
 ## 1 插件和内置模块
 ### 插件

@@ -66,7 +66,7 @@ https://github.com/gin-gonic/gin
 
 Gin的词源是金酒, 又称琴酒, 是来自荷兰的一种烈性酒
 
-### hugo
+### 静态网站工具 hugo
 https://github.com/gohugoio/hugo
 
 ### echo
@@ -198,6 +198,9 @@ viper提供的配置方式的优先级顺序如下(由高到低)：
     viper.SetDefault("age", "12")
     viper.SetDefault("notifyList", []string{"xiaohong","xiaoli","xiaowang"})
     ```
+2. 环境变量
+    1. `AutomaticEnv()`
+    2. `SetEnvKeyReplacer`
 
 ## 静态网站生成 hugo
 https://github.com/gohugoio/hugo
@@ -239,7 +242,14 @@ win上的安装我是使用的scoop
 ## lint工具 
 https://github.com/golangci/golangci-lint
 
-参考：https://golangci-lint.run/
+参考：
+1. https://golangci-lint.run/
+2. https://go-critic.github.io/overview
+
+安装:windows的话可以去https://github.com/golangci/golangci-lint/releases下载对应版本。官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
+1. 本人实测，`go get`安装的确实可能有bug。比如
+    1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
+    2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
 
 基本使用
 1. 指定配置文件运行，比如`golangci-lint run -c .golangci.yml ./...`
@@ -248,6 +258,8 @@ https://github.com/golangci/golangci-lint
 1. "File is not `goimports`-ed with -local (goimports)"
     1. 可能原因，包的引入代码的位置格式化不对
 2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
+3. no such linter goerr113
+    1. 可能原因:golangci-lint版本太低
 
 ## 单元测试相关
 ### 单元测试辅助工具 mock
@@ -266,6 +278,12 @@ gomock主要包含两个部分：gomock库和辅助代码生成工具mockgen
 4. `-imports`: 依赖的需要import的包
 5. `-aux_files`:接口文件不止一个文件时附加文件
 6. `-build_flags`: 传递给build工具的参数
+
+mock文件使用:
+
+问题：
+1. has already been called the max number of times
+    1. `Call.Times(int)`:expected execute timers
 
 ### testify
 https://github.com/stretchr/testify
@@ -296,6 +314,11 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
 
 `github.com/golang/protobuf/protoc-gen-go`
 
+### grpc
+
+问题:
+1. undefined: resolver.BuildOption 以及 undefined: grpc.SupportPackageIsVersion6
+    1. 指定grpc版本`replace google.golang.org/grpc => google.golang.org/grpc v1.26.0`，然后重新生成.pb文件，不行的话再降级protoc-gen-go的版本`go get github.com/golang/protobuf/protoc-gen-go@v1.3.2`
 
 ## 日志 zap
 https://github.com/uber-go/zap

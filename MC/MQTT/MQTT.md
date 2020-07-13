@@ -2,14 +2,14 @@
 
 # 一 概述
 ## 1 简介
-MQTT（Message Queuing Telemetry Transport，消息队列遥测传输）是IBM开发的一个即时通讯协议，使用发布/订阅的方式提供互相之间的通讯。MQTT是为在计算能力有限，且工作在低带宽、不可靠的网络的远程传感器和控制设备通讯而设计的协议。它的设计思想是轻巧、开放、简单、规范，易于实现。这些特点使得它对很多场景来说都是很好的选择，特别是对于受限的环境如机器与机器的通信（M2M）以及物联网环境（IoT）。它具有以下主要的几项特性：
+MQTT（Message Queuing Telemetry Transport，消息队列遥测传输）是IBM开发的一个即时通讯协议，使用发布/订阅的方式提供互相之间的通讯。MQTT是为在计算能力有限，且工作在低带宽、不可靠的网络的远程传感器和控制设备通讯而设计的协议。它的设计思想是轻巧、开放、简单、易于实现。这些特点使得它对很多场景来说都是很好的选择，特别是对于受限的环境如机器与机器的通信（M2M）以及物联网环境（IoT）。它具有以下主要的几项特性：
 1. 该协议支持所有平台，几乎可以把所有联网物品和外部连接起来
 2. 有三种消息发布服务质量
     - “至多一次”，消息发布完全依赖底层 TCP/IP 网络。会发生消息丢失或重复。这一级别可用于如下情况，环境传感器数据，丢失一次读记录无所谓，因为不久后还会有第二次发送。
     - “至少一次”，确保消息到达，但消息重复可能会发生。
     - “只有一次”，确保消息到达一次。这一级别可用于如下情况，在计费系统中，消息重复或丢失会导致不正确的结果。
 3. 小型传输，开销很小（固定长度的头部是 2 字节），协议交换最小化，以降低网络流量；
-4. 基于 TCP/IP 协议栈
+4. 使用 TCP/IP 提供网络连接,基于 TCP/IP 协议，提供两者之间的一个有序的、无损的、基于字节流的双向传输
 5. 事实的 IoT 通讯的标准协议
 4. 有许多为物联网优化的特性，比如适应不同网络的QoS、层级主题、遗言等等
     1. 遗言：使用 Last Will 和 Testament 特性通知有关各方客户端异常中断的机制
@@ -35,7 +35,7 @@ MQTT 协议标准，服务器提供三种连接方式，
 2. TLS：默认端口为 8883
 3. WebSocket：默认端口为 8083
 
-QTT传输的消息分为：主题（Topic）和负载（payload）两部分：
+MQTT传输的消息分为：主题（Topic）和负载（payload）两部分：
 1. Topic，可以理解为消息的类型，订阅者订阅（Subscribe）后，就会收到该主题的消息内容（payload）；
 2. payload，可以理解为消息的内容，是指订阅者具体要使用的内容。
 
@@ -57,6 +57,7 @@ MQTT was created by Andy Stanford-Clark of IBM, and Arlen Nipper (then of Arcom 
 2. EMQX: https://github.com/emqx/emqx：使用 Erlang 语言开发的 MQTT Broker，支持许多其他 IoT 协议比如 CoAP、LwM2M 等
 3. Mosca: https://github.com/mcollina/mosca：使用 Node.JS 开发的 MQTT Broker，简单易用。
 4. VerneMQ: https://github.com/vernemq/vernemq：同样使用 Erlang 开发的 MQTT Broker
+5. HiveMQ：https://www.hivemq.com/
 
 从支持 MQTT5.0、稳定性、扩展性、集群能力等方面考虑，EMQX 的表现应该是最好的
 
@@ -67,18 +68,82 @@ MQTT was created by Andy Stanford-Clark of IBM, and Arlen Nipper (then of Arcom 
 1. MQTT官方 : https://github.com/mqtt/mqtt.github.io
 2. 服务中间件列表: https://github.com/mqtt/mqtt.github.io/wiki/servers
 3. 客户端列表: https://github.com/mqtt/mqtt.github.io/wiki/libraries
+4. oasis:https://docs.oasis-open.org/mqtt
 
 # 三 基础
+## 协议
+MQTT协议中有三种身份：发布者（Publish）、代理（Broker）（服务器）、订阅者（Subscribe）。其中，消息的发布者和订阅者都是客户端，消息代理是服务器，消息发布者可以同时是订阅者。
+
+当应用数据通过MQTT网络发送时，MQTT会把与之相关的服务质量（QoS）和主题名（Topic）相关连。
+
+## 会话（Session）
+每个客户端与服务器建立连接后就是一个会话，客户端和服务器之间有状态交互。会话存在于一个网络之间，也可能在客户端和服务器之间跨越多个连续的网络连接
+
 ## 主题
-MQTT 的 Topic 有层级结构，并且支持通配符`+`和`#`:
-1. `+`是匹配单层的通配符。
-    1. 比如`news/+`可以匹配`news/sports`，`news/society`，但是不能匹配`news/`，`news/sports/basketball`
-    2. 比如`news/+/basketball`可匹配`news/sports/basketball`，`news/shopping/basketball`
-2. `#`是一到多层的通配符。比如`news/#`可以匹配 `news`、`news/sports`、`news/sports/basketball` 以及 `news/sports/basketball/x` 等等。
+主题是一个UTF-8字符串。MQTT的主题是不要预先创建的，发布者发送消息到某个主题、或者订阅者订阅某个主题的时候，Broker 就自动创建了这个主题。
 
-MQTT 的主题是不要预先创建的，发布者发送消息到某个主题、或者订阅者订阅某个主题的时候，Broker 就自动创建了这个主题。
+### 主题过滤器(TopicFilter)
+主题过滤器:含有通配符的主题，目的是让客户端同时订阅多个主题。
 
-## 遗言
+使用：
+1. 所有的主题名和主题过滤器必须至少包含一个字符
+2. 主题名或主题过滤器以前置或后置斜杠`/`区分
+3. 只包含斜杠`/`的主题名或主题过滤器是合法的
+4. 主题名和主题过滤器是 UTF-8 编码字符串， 它们不能超过 65535 字节
+5. 主题名和主题过滤器是区分大小写的
+
+### 主题层级
+MQTT 的 Topic 有层级结构，主题层级分隔符使得主题名结构化。如果存在分隔符，它将主题名分割为多个主题层级。
+
+层级分隔符(即`/`,`U+002F`)：
+1. 位置：可以出现在主题名称的任何位置
+    1. 比如`/topic`、`topic/`、`to/pic`
+1. 不带层级分隔符(待整理)：表示模糊匹配？
+    1. `/topic`和`topic`是两个不同的主题。
+    2. 和`topic/`比呢
+
+通配符：
+1. 种类：mqtt支持的通配符有`+`、`#`和`$`，`+`和`#`可以一起使用
+    1. `+`是单层通配符。
+        1. 位置：在主题过滤器的任意层级都可以使用单层通配符，包括第一个和最后一个层级。然而它必须占据过滤器的整个层级 。可以在主题过滤器中的多个层级中使用它
+        2. 例子
+            1. `news/+`可以匹配`news/sports`，`news/society`，但是不能匹配`news/`和`news/sports/basketball`
+            2. `news/+/basketball`可匹配`news/sports/basketball`，`news/shopping/basketball`
+            3. `china/+/+/zhongshanlu`能匹配`china/guangzhou/tianhe/zhongshanlu`和`china/shenzhen/nanshan/zhongshanlu`
+    2. `#`是多层(1~n)通配符，匹配它的父级和任意数量的子层级。
+        1. 位置：多层通配符必须位于它自己的层级或者跟在主题层级分隔符后面，且必须是主题过滤器的最后一个字符 
+        2. 例子
+            1. `#`匹配所有
+            2. `news/#`可以匹配 `news`、`news/sports`、`news/sports/basketball` 以及 `news/sports/basketball/x` 等等。
+            3. `school/teacher#`、`school/teacher/#/lever`是无效的
+    3. `$`有两种用法，由它的位置决定
+        1. 位置:
+            1. 如果放在主题开头，表示这些主题被保留为MQTT代理服务器的内部特性。一般情况下客户端是不能向这些主题发布消息的(只能订阅)。目前，broker所发布的主题格式还没有明确的的官方标准。一般的做法是用`$SYS/`开头表示系统主题。
+                1. 特殊情况比如开了延迟发布模块就可以发送`$delayed/...`
+            2. 只要不是放在主题的最开头，就表示匹配任意一个字符
+        2. 例子
+            1. 
+2. 通配符只能在订阅主题时使用，并且在发布消息时不允许使用。
+
+推荐设计：
+1. 不在最前面加`/`,比如`/news/sports/basketball`, 等于在最前面有一个空字符串层级,浪费了一层，可以使用`news/sports/basketball`
+2. 尽量不用特殊字符，就用英文加数字就行
+3. 使用特定主题，而不是一般主题
+    1. 比如`myhome/livingroom/temperature`, `myhome/livingroom/brightness`,`myhome/livingroom/humidity`多个主题，而不是用`myhome/livingroom`单个主题来获取全部信息
+
+## 发布订阅
+定阅与发布必须要有主题，只有当定阅了某个主题后，才能收到相应主题的payload,才能进行通信。
+
+### 消息发布服务质量
+1. “至多一次”，消息发布完全依赖底层TCP/IP网络。会发生消息丢失或重复。这一级别可用于如下情况，环境传感器数据，丢失一次读记录无所谓，因为不久后还会有第二次发送。这一种方式主要普通APP的推送，倘若你的智能设备在消息推送时未联网，推送过去没收到，再次联网也就收不到了。
+2. “至少一次”，确保消息到达，但消息重复可能会发生。
+3. “只有一次”，确保消息到达一次。在一些要求比较严格的计费系统中，可以使用此级别。在计费系统中，消息重复或丢失会导致不正确的结果。这种最高质量的消息发布服务还可以用于即时通讯类的APP的推送，确保用户收到且只会收到一次。
+
+## 遗言(Last Will)和遗嘱(Testament)
+Last Will：即遗言机制，用于通知同一主题下的其他设备发送遗言的设备已经断开了连接。
+
+Testament：遗嘱机制，功能类似于Last Will。
+
 ### Will Flag
 
 定义了客户端（没有主动发送DISCONNECT消息）出现网络异常导致连接中断的情况下，服务器需要做的一些措施。

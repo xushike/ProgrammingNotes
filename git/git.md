@@ -427,16 +427,19 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ### 5.1 git rebase 压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
-1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
-2. 交互式参数`p`(`pick`):使 commit 保持原样
-3. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
-4. `e`:`edit <commit> = use commit, but stop for amending`(保留该commit, 但我要停下来修改该提交(不仅仅修改注释))
-4. 交互式参数`s`(`squash`):将此 commit 的更改结合到上面的那个commit（界面中位于其上面的 commit ）中，两者的注释信息会合并
-5. 交互式参数`f`(`fixup`):将此 commit 的更改结合到上面的那个commit（界面中位于其上面的 commit ）中，但不保留该提交的注释信息
-6. 交互式参数`x`(`exec`):运行 shell 命令(待整理)
-7. 交互式参数`d`(`drop`):删除 commit(待整理)
+1. 选择压制哪些commit
+    1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
+    2. 极端情况是想从当前分支的第一个提交开始rebase，可以使用`git rebase -i --root`
+2. 交互式参数
+    2. 交互式参数`p`(`pick`):使 commit 保持原样
+    3. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
+    4. `e`:`edit <commit> = use commit, but stop for amending`(保留该commit, 但我要停下来修改该提交(不仅仅修改注释))
+    4. 交互式参数`s`(`squash`):将此 commit 的更改结合到上面的那个commit（界面中位于其上面的 commit ）中，两者的注释信息会合并
+    5. 交互式参数`f`(`fixup`):将此 commit 的更改结合到上面的那个commit（界面中位于其上面的 commit ）中，但不保留该提交的注释信息
+    6. 交互式参数`x`(`exec`):运行 shell 命令(待整理)
+    7. 交互式参数`d`(`drop`):删除 commit(待整理)
 
-界面看起来是这样
+界面看起来是这样，从上到下，log是从旧到新的顺序:
 ```bash
 pick cbf3b57 add a.txt for test git rebase
 pick 0325c7f add b.txt for test git rebase
@@ -699,17 +702,33 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 1. 多人协作时，不要各自在自己的 Git 分支开发，然后发文件合并。正确的方法应该是开一个远程分支，然后一起在远程分支里协作。不然，容易出现代码回溯（即别人的代码被覆盖的情况）
 
 ### 10.2 常用术语(黑话)
+- np：no problem「没问题」
+- wfh：work from home 「在家办公」。
+- CR：Code Review 「代码审查」
 - WIP   Work in progress, do not merge yet. // 开发中。WIP可用于多个地方：
     1. WIP也可用于MR，在MR的标题带上前缀`WIP:`表示分支没准备好，不能合并
     2. pull请求中，表示工作还没完成，但是想提交代码，目的是：寻求初步的反馈，想使用项目的集成基础设施，比如CI
     3. WIP也可以用于分支，
-- LGTM Looks good to me. // Riview 完别人的 PR ，没有问题
+- DNM Do not merge. //不要合并
+- CL Changelist. // 修改的文件
+- CS Changeset. // 和CL 类似
+- TBR To Be Reviewed. // 提示维护者进行 review
+- TBD To Be Done(or Defined/Discussed/Decided/Determined). // 根据语境不同意义有所区别，但一般都是还没搞定的意思
+- IMO In My Opinion. //在我看来、依我看、依我所见
+- IMHO In My Humble Opinion IMO. //谦虚的说法，以我的拙见（多用于邮件和网络）
+- AFAIK/AFAICT As Far As I Know / Can Tell. //据我所知
+- FYI For your information. //供你参考
+- AFK Away From the Keyboard. //稍后回来
+- IANAL I am not a lawyer, but I smell licensing issues. // 我不是律师，但是我闻到了许可问题
+- LGTM Looks good to me. // Riview 完别人的 PR ，没有问题。通常出现在 PR 的评论里，表示对提交者的赞许，鼓励他更多的参与贡献。正如语气 在我看来很好 所以大多是审核者或者项目所有者对贡献者的鼓励，请在评论别人的 PR 时斟酌一二。
+- SGTM Sounds Good To Me.
 - PTAL Please take a look. // 帮我看下，一般都是请别人 review 自己的 PR
 - CC Carbon copy // 一般代表抄送别人的意思
 - RFC  —  request for comments. // 我觉得这个想法很好, 我们来一起讨论下
 - IIRC  —  if I recall correctly. // 如果我没记错
 - ACK  —  acknowledgement. // 我确认了或者我接受了,我承认了
 - NACK/NAK — negative acknowledgement. // 我不同意
+- TL;DR Too Long; Didn't Read. // 太长懒得看。也有很多文档在做简略描述之前会写这么一句
 
 ### 10.3 git fork
 和clone不同，fork会copy一份代码到自己名下的远程仓库，fork这个动作没什么好讲的，主要说下fork相关的工作流程。
@@ -729,6 +748,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 如何同步upstream上新增的分支呢:
 1. 本地建立同名分支:`git checkout -b branchA`
 2. 然后拉取upstream的同名分支到本地`git pull upstream branchA`，done
+
+可以fork空仓库吗:似乎不行，好像必须要有README.md或者lisence文件(待验证)
 
 ## 其他命令
 ### git fsck:文件系统检测
@@ -1023,6 +1044,9 @@ and its host key have changed at the same time.
 
 可能原因:
 1. 远程仓库的地址没有以`.git`结尾
+
+### 1.23 Git :fatal: refusing to merge unrelated histories
+原因是两个分支是两个不同的版本，具有不同的提交历史，解决方法是加上`--allow-unrelated-histories`允许不相关历史强制合并
 
 ## 2 未解决
 ### 2.N 其他

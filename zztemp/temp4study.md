@@ -373,7 +373,6 @@ package github.com/cweill/gotests/...: exit status 1
 1. linux
     1. vim
         1. 大块的复制粘贴
-    1. curl
     2. rmdir
     3. linux如何树状列出目录和文件
         1. 如何递归搜索
