@@ -427,9 +427,20 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ### 5.1 git rebase 压制/衍合/变基
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
-1. 选择压制哪些commit
-    1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
-    2. 极端情况是想从当前分支的第一个提交开始rebase，可以使用`git rebase -i --root`
+1. 两种用法
+    1. 选择压制哪些commit
+        1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
+        2. 极端情况是想从当前分支的第一个提交开始rebase，可以使用`git rebase -i --root`
+    2. 选择远程分支和本地分支的压制
+        1. 比如`git rebase upstream/branchA <local_branch_B>`会执行以下操作
+            1. 会将`local_branch_B`中比`upstream/branchA`多的commit先撤销掉，并将这些commit放在一块临时存储区（.git/rebase）
+            2. 然后将upstream/branchA中比local_branch_B多的commit应用到local_branch_B上，此刻local_branch_B和upstream/branchA的代码状态一致。
+            3. 将存放的临时存储区的commit重新应用到新的local_branch_B上，此时可能会冲突。
+            4. 解决冲突
+                1. 手动编辑冲突文件，手动删除或者保留冲突的代码；
+                2. 对于“both added”、“both deleted”、“both modified”等类型的冲突，若想完整地保留某一方的修改可以执行git checkout --ours(或者--theirs) <文件名>来选择想要保留的版本。需要注意的是由于git rebase 是先撤销再应用commit，所以这里的ours指的是upstream/branchA，theirs指的是我们将要应用的临时commit。
+                3. 对于“added by us/them”、“deleted by us/them”等类型的冲突需要使用git rm <file-name>和git add <file-name>来删除/添加file。在此过程中需要特别注意谁是us，谁是them。
+                4. 冲突解决完之后，使用git add <file-name>来标记冲突已解决，最后执行git rebase --continue继续。如果中间遇到某个补丁不需要应用，可以用`git rebase --skip`忽略
 2. 交互式参数
     2. 交互式参数`p`(`pick`):使 commit 保持原样
     3. 交互式参数`r`(`reword`):保留commit的内容，但修改 commit 说明
@@ -1047,6 +1058,9 @@ and its host key have changed at the same time.
 
 ### 1.23 Git :fatal: refusing to merge unrelated histories
 原因是两个分支是两个不同的版本，具有不同的提交历史，解决方法是加上`--allow-unrelated-histories`允许不相关历史强制合并
+
+### 1.24 git vim中文乱码的问题
+windows上`git log`、`git diff`等命令显示的中文是正确的，但是`git commit --amend`、`git rebase -i head~1`等命令显示的中文是乱码。发现使用后面两个命令的时候是是用的vim编辑器打开，而windows的vim是我安装git的时候附带的，git的安装目录是`C:\Program Files\Git`，vim目录在`C:\Program Files\Git\usr\bin`。不过使用git附带的which命令查看`which which`、`which vim`的时候，显示的是`/usr/bin/which`和`/usr/bin/vim`这里which以`C:\Program Files\Git`为根目录，搞不懂(猜测可能是git默认设置的吧)。要修改vim的配置文件，就要去修改`C:\Program Files\Git\etc\vimrc`文件，具体参考vim笔记部分
 
 ## 2 未解决
 ### 2.N 其他

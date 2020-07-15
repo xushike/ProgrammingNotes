@@ -13,19 +13,35 @@
 ### 2.8 java8
 2014年3月27日——甲骨文公司日前举办Java 8网络直播发布会，发布甲骨文迄今为止最重要的Java技术Java 8。甲骨文宣布推出了Java平台标准版8（Java SE 8）、Java平台微型版8（Java ME 8）以及Oracle Java Embedded产品（为中到高端嵌入式系统进行了优化）的有关版本。JDK 8是Java SE 8平台规范的生产就绪版本，不久前获得Java社区进程（Java Community Process,JCP）批准。JDK 8包括自该平台1996年推出以来最重大的Java编程模型升级。JDK 8经甲骨文与OpenJDK社区合作开发而成。
 
-JDK 8的重要性能包括Project Lambda（JSR 335）、Nashorn JavaScript引擎、一个新的日期与时间API（JSR 310）、一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。其他特性还有：
-1. Optional：官方介绍如下
-    >A container object which may or may not contain a non-null value. If a value is present, isPresent() will return true and get() will return the value.(一个可能包含也可能不包含非null值的容器对象。 如果存在值，isPresent（）将返回true，get（）将返回该值)
-    
-    针对复杂的一长串判空，Optional有它的优势，但是对于简单的判空使用Optional也会增加代码的阅读成本、编码量以及团队新成员的学习成本。
-    1. 所以Optional的优点如下
-        1. 包装防御式编程代码
-        2. 链式调用
-        3. 有效避免程序代码中的空指针
+JDK 8的重要特性包括:
+1. Project Lambda（JSR 335）
+2. Nashorn JavaScript引擎
+3. 一个新的日期与时间API（JSR 310）
+4. 一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。
+5. 其他特性还有：
+    1. Optional：官方介绍如下
+        >A container object which may or may not contain a non-null value. If a value is present, isPresent() will return true and get() will return the value.(一个可能包含也可能不包含非null值的容器对象。 如果存在值，isPresent（）将返回true，get（）将返回该值)
+        
+        针对复杂的一长串判空，Optional有它的优势，但是对于简单的判空使用Optional也会增加代码的阅读成本、编码量以及团队新成员的学习成本。
+        1. 所以Optional的优点如下
+            1. 包装防御式编程代码
+            2. 链式调用
+            3. 有效避免程序代码中的空指针
 
 ### 2.9 java9
+特性：
 1. lombak的val/var(待整理)
 2. 增加了实验性的jaotc：jaotc主要用来辅助JIT，在JIT编译器运行前避免直接解释没有预编译过的代码。
+3. flow
+
+### 2.10 java10
+var
+
+### 2.13 java13
+switch
+
+### 2.14 java14
+instanceof 模式匹配
 
 ### jdk和openjdk的区别
 授权协议的不同：OpenJDK采用GPL V2协议发布，而JDK则采用JRL协议发布。两个协议虽然都是开放源代码的，但是在使用上的不同在于GPL V2允许在商业上使用，而JRL只允许个人研究使用（个人使用和非商业使用）。 

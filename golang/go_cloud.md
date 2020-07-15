@@ -288,11 +288,38 @@ mock文件使用:
 ### testify
 https://github.com/stretchr/testify
 
-主要功能(常用函数)：
-1. 断言
-    1. `assert`:如果失败，不会退出
-    2. `require`:失败会直接结束
-2. mock
+主要包和函数：
+1. assert和require:都是断言，区别是`assert`如果失败不会退出，还是会继续往下执行，而`require`失败会直接结束
+    1. `NoError()`
+    2. `Equal()`
+    3. ...
+2. suite
+3. mock
+
+### 打桩 gostub
+github.com/prashantv/gostub
+
+接口友好，可以对全局变量、函数或过程打桩
+
+使用：
+1. 为变量打桩`sutbs := Stub(targetVar, mockVar)`:用mockVar代替targetVar，sutbs提供了`Reset`方法用于恢复targetVar。(Reset需要放在defer中吗？)
+2. 为函数打桩:首先它不能对定义的函数(形如`func xxx(){}`)打桩，必须要声明成匿名函数，比如有匿名函数`var funcA = func (){}`，然后使用`StubFunc(&funcA, xxx...)`来打桩，当然也可以使用`Stub()`来打桩
+
+最佳实践：
+1. 因为不能直接对第三方库的代码进行打桩，所以可以在项目中增加adapter目录用于适配层，然后对适配层的代码进行打桩
+
+    ```go
+    // adapter适配层代码
+    package adapter
+
+    var FuncA = github.com/xxx/xxx
+
+    // 实际使用代码
+    xxx = adapter.FuncA()
+
+    // 打桩代码
+    StubFunc(&adapter.FuncA, xxx)
+    ```
 
 ## 容器相关
 ### kubernetes
@@ -322,6 +349,15 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
 
 ## 日志 zap
 https://github.com/uber-go/zap
+
+高性能
+
+首先了解下常见日志级别：
+1. debug：需要在调试过程中输出的信息，发布后是不需要的，一般在发布后是不输出的
+2. info：需要持续输出的信息（无论调试还是发布状态）
+3. warn：警告级别的信息（不严重），表示系统还可以继续运行下去
+4. error：错误信息（较严重），不知道系统能不能继续运行下去
+5. fatal：严重错误（特别严重，比如引起崩溃式的错误）
 
 # 五 经验
 ## 1 为什么需要框架

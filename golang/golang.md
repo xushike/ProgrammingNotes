@@ -63,6 +63,10 @@ Pike说:
 1. 调试工具强大:自带一些pprof包可以profile当前程序的CPU消耗、内存占用、锁状态、channel阻塞等，非常便利我们定位问题。
 2. 有一些优秀的微服务框架:我们选用go-micro
 
+go的faq(https://golang.org/doc/faq):
+1. Is Go an object-oriented language?
+    > Yes and no. Although Go has types and methods and allows an object-oriented style of programming, there is no type hierarchy
+
 ## 2 历史
 Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始就移除了"最后残余的C代码"实现了自举.
 
@@ -743,7 +747,7 @@ Go语言将数据类型分为四类：
 
 3. 数值和字符串
     1. 整形到字符串`s = strconv.Itoa(i)` 或者 `s = strconv.FormatInt(int64(i), 10)`
-    2. 字符串到整形：`i, err = strconv.Atoi(s) 或者 i, err = strconv.ParseInt(s, 10, 0)`
+    2. 字符串到整形：`i, err = strconv.Atoi(s) 或者 i, err = strconv.ParseInt(s, 10, 64)`
     3. 字符串到float32/64：`float32, err = strconv.ParseFloat(string, 32)`和`float64,err = strconv.ParseFloat(string,64)`
 
 ### 2.1 基础数据类型
@@ -899,6 +903,7 @@ go有字符串常量池吗：没有。
 3. 数组的合并（待补充）
 4. 在函数间传递数组:可以传递值也可以传递指针，后者只需要在栈上开辟8字节的内存，性能更好，但是对指针的改动会影响共享内存。
 5. 遍历数组:普通for循环和`for range`
+6. 数组的比较
 
 #### 2.2.2 切片
 参考：
@@ -1078,10 +1083,14 @@ m["m1"] = m1
 ```
 
 map的键的特性:
-1. map的键可以是任意能用`==`比较的类型，也就是说除了动态类型、指针、函数和闭包外的其他类型都可以。
-    1. 飞动态类型：可用数组，不能用切片。
-    2. 非指针：每个指针数值都不同，失去哈希意义。
+1. map的键可以是任意能用`==`比较的类型，也就是说除了slice、map、函数和闭包外的其他类型都可以。
+    1. slice：可用数组，不能用切片。
+    2. map
     3. 函数、闭包不能作为 map 的键，否则报错:runtime error: hash of unhashable type func()
+    4. 其他类型
+        1. 数组
+        2. 指针
+        3. 结构体(见结构体部分)
 2. 利用map键的hash特性可以实现多键索引。例子见studyGo
 
 声明方法:
@@ -1252,7 +1261,17 @@ func GetXXX(){
 
 结构体转换：Go 中的类型转换遵循严格的规则。当为结构体定义了一个 alias 类型时，此结构体类型和它的 alias 类型都有相同的底层类型，它们可以互相转换，同时需要注意其中非法赋值或转换引起的编译错误。（待补充）
 
-##### 2.2.4.1 带接收者的函数
+
+##### 结构体的比较
+分为几种情况：
+1. 相同struct类型的两个实例
+    1. 包含不可比较的成员变量（map，slice，func等）：==操作符可以比较指针，不能直接比较实例。此时struct不能作为map的key
+    2. 不包含不可比较的成员变量：==操作符可以比较指针和实例。此时struct可以作为map的key
+    3. `reflect.DeepEqual()`:指针和实例均可以比较（无论有没有包含不可比较的成员变量）
+2. 不同结构体类型，但是结构体类型间可以类型转换：类型转换前不能比较，转换后的比较规律和相同结构体类型一样
+3. 不同结构体类型，且结构体类型间不可以类型转换(待整理)
+
+##### 带接收者的函数
 参考：https://golang.org/doc/faq#methods_on_values_or_pointers
 
 方法/函数接收者(Receiver)：Receiver 的名称应该缩写，一般使用一个或者两个字符作为Receiver的名称，如`func (f foo) method() {...}`;如果方法中没有使用receiver,还可以省略receiver name,这样更清晰的表明方法中没有使用它:`func (foo) method() {...}`。如果函数的接收者不一样，name方法就不一样。
@@ -1965,12 +1984,12 @@ type Context interface {
 }
 ```
 
-1. `Done()`方法返回一个关闭的只读chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号(signal)后，就应该做清理操作，然后退出goroutine，释放资源。这个channel有点像广播通知，告诉给context相关的函数要停止当前工作然后返回。
-2. `Err()`：当Done方法关闭以后，Err方法返回取消的错误原因（因为什么Context被取消）--非nil的错误值。目前该方法之定义了两个返回值：Canceled和DeadlineExceeded
-3. `Deadline()`方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
-4. `Value()`方法获取该Context上绑定的值，是一个键值对，所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
+1. `ctx.Done()`方法返回一个关闭的只读chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号(signal)后，就应该做清理操作，然后退出goroutine，释放资源。这个channel有点像广播通知，告诉给context相关的函数要停止当前工作然后返回。
+2. `ctx.Err()`：当Done方法关闭以后，Err方法返回取消的错误原因（因为什么Context被取消）--非nil的错误值。目前该方法之定义了两个返回值：Canceled和DeadlineExceeded
+3. `ctx.Deadline()`方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
+4. `ctx.Value()`方法获取该Context上绑定的值，是一个键值对，所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
 
-以上四个方法中常用的是`Done()`，如果Context取消的时候，我们就可以得到一个关闭的只读chan，**关闭的chan是可以读取的**，所以只要可以读取的时候，就意味着收到Context取消的信号了。
+以上四个方法中常用的是`ctx.Done()`，如果Context取消的时候，我们就可以得到一个关闭的只读chan，**关闭的chan是可以读取的**，所以只要可以读取的时候，就意味着收到Context取消的信号了。
 
 go已经帮我们实现了两个Context：background和todo，这两个都是emptyCtx结构体类型，且不可取消（删除）、没有设置截止时间、没有携带任何值的Context。
 
@@ -2029,7 +2048,7 @@ go使用三个`With`前缀的函数来派生子context。
 1. `func WithCancel(parent Context) (ctx Context, cancel CancelFunc)`,传入父Context，返回子Context，以及一个取消函数用来取消Context。
 2. `WithDeadline()`：传递截止时间，到了该时间点自动取消Context，也可以主动提前取消。
 3. `WithTimeout()`：和上面类似，传入时间，超过这个时间自动取消。使用 Timeout 会导致内部使用 time.AfterFunc，从而会导致 context 在计时器到时之前都不会被垃圾回收。所以在建立之后，立即 defer cancel() 是一个好习惯
-4. `WithValue()`：生成一个绑定了一个键值对数据的Context，虽然key的类型是interface{}，但是key必需具有可比性，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
+4. `WithValue()`：生成一个绑定了一个键值对数据的Context，虽然key的类型是interface{}，但是key必需具有可比性(comparable)，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
 
 ## 12 底层编程
 主要指C语言相关
@@ -3814,7 +3833,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
         GONOSUMDB="sum.golang.org+publickeyA https://sum.golang.org"
         ```
     3. 设置`GOSUMDB=off`，关闭哈希校验
-4. `GOPRIVATE`:用来控制 go 命令把哪些仓库看做是私有的仓库，这样的话，下载的时候可以跳过GOPROXY，校验的时候可以跳过GOSUMDB，这个变量的值支持用逗号分隔，可以填写多个值，比如`*.corp.example.com,rsc.io/private`，这样 go 命令会把所有包含这个后缀的软件包，包括 http://git.corp.example.com/xyzzy , http://rsc.io/private, 和 http://rsc.io/private/quux 都以私有仓库来对待。
+4. `GOPRIVATE`:用来控制 go 命令把哪些仓库看做是私有的仓库，这样的话，不会使用代理(比如GOPROXY)下载和GOSUMD校验，而是使用版本控制工具去私有库下载并且不会去校验。这个变量的值支持用逗号分隔，可以填写多个值，比如`*.corp.example.com,rsc.io/private`，这样 go 命令会把所有包含这个后缀的软件包，包括 http://git.corp.example.com/xyzzy , http://rsc.io/private, 和 http://rsc.io/private/quux 都以私有仓库来对待。
     ```bash
     GOPRIVATE=*.domain.cc # 一般domain.cc是你公司私有git仓库的域名地址，这样就可跳过proxy的检查
     ```
@@ -3892,7 +3911,9 @@ go mod命令:
 4. `go mod edit`：编辑go.mod
     
     ```golang
-    // 修改版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
+    // 修改当前module的版本：比如显式声明当前库为v2
+    go mod edit --module=private.com/pkg/v2 // go.mod里第一行就变成了：module private.com/pkg/v2，然后其他包引用该包的写法就变成了:private.com/pkg/v2/subPkgA
+    // 修改require包的版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
     go mod edit -require=github.com/360EntSecGroup-Skylar/excelize@v1.3.1
     // 修改引用
     // 屏蔽包
@@ -3924,6 +3945,24 @@ go mod命令:
         1. 比如pkgA只在dir/sub_dir中用到，如果在dir中直接运行`go test`则不会下载pkgA
         2. main.go中只有空main函数，则运行`go run main.go`不会下载其他包中的依赖包
 2. `go mod download`
+
+如何给自己要发布的包设置不同的版本：
+1. 方法一：可以直接打标签，发布包新版本和其它包管理工具基本一致，不过打标签之前需要在 go.mod 中写入相应的版本号，官方推荐将上述过程在一个新分支来避免混淆，那么类如上述例子可以创建一个 v2 分支，但这个不是强制要求的。使用的时候形如`private.com/pkg/v2/subPkgA`
+2. 方法二：主线版本种加入 v2 文件夹，相应的也需要设置一个go.mod文件。使用的时候形如`private.com/pkg/subPkgA/v2`(注意和方法一不同)
+    
+    ```bash
+    # 代码目录形如
+    tree private.com/pkg
+    
+    ├── subPkgA.go
+    ├── subPkgA_test.go
+    ├── README.md
+    └── v2
+        ├── go.mod
+        ├── subPkgA.go
+        ├── subPkgA_test.go
+        ├── README.md
+    ```
 
 ## 7 代码管理
 不同的管理方式各有优劣，个人更倾向于放在一个Repository里，优点如下：
@@ -4137,6 +4176,16 @@ C:\Go\src\runtime\map.go:97:2: too many errors
 原因:安装第二份go的时候没有先卸载原来的go，而是直接覆盖安装的
 
 解决:正确卸载当前和原来的go，然后重新安装。比如linux可以`rm -rf /usr/local/go`，win可以直接删除安装目录或者运行对应的msi来卸载。
+
+### 1.24 go mod module declares its path as ... but was required as ...
+场景1：引入的地址和实际使用包名不一定是一样的
+
+场景2：对于某个私有包，本地的库是最新的，但是远程私有库是旧的，go.mod会自动拉取的远程私有库来当做最新的，而不是本地当做最新的
+
+两种场景的解决方法都是使用go.mod的replace来替换
+
+### 1.25  malformed module path "XXXX": missing dot in first path element
+go1.13的mod要求import 后面的path 第一个元素，符合域名规范，比如github.com/xxx/xxx
 
 ## 2 未解决
 ### note: module requires Go 1.14
