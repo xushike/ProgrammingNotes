@@ -121,7 +121,9 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 5. 安装,同理卸载是`uninstall`
     1. `scoop install xxx`
     2. `scoop install -g xxx`:安装到全局目录
-6. 更新`scoop update xxx`
+6. 更新
+    1. 更新scoop自身到最新版`scoop update`
+    2. 更新某app`scoop update xxx`
 7. 查看软件详情`scoop info xxx`
     1. `Manifest`:路径指向的文件是 Scoop 具体读取的配置文件
 8. 查看软件状态`scoop status xxx`

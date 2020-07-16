@@ -260,6 +260,8 @@ https://github.com/golangci/golangci-lint
 2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
 3. no such linter goerr113
     1. 可能原因:golangci-lint版本太低
+4. level=error msg="Running error: context loading failed: no go files to analyze"
+    1. 更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了，没搞懂
 
 ## 单元测试相关
 ### 单元测试辅助工具 mock

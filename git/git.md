@@ -692,7 +692,12 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 基本用法：
 1. 查看所有标签:`git tag`
-2. 根据tag_name查看标签:`git show tag_name`
+
+    ```bash
+    v0.0.1-alpha
+    v1.0.1
+    ```
+2. 根据tag_name查看commit信息:`git show tag_name_A`
 3. 创建标签：`git tag v1.0`，在某个commitid上打标签：`git tag tag_name commit_id`
 
 参数：   
@@ -773,6 +778,26 @@ git gc 将“重复的”松散的对象变成一个单独的包文件，除非�
 参考：https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E6%89%93%E5%8C%85
 
 bundle 命令会将 git push 命令所传输的所有内容打包成一个二进制文件，你可以将这个文件通过邮件或者闪存传给其他人，然后解包到其他的仓库中。
+
+### git describe
+显示离当前提交最近的标签的一些信息。用来描述离你最近的标签
+
+使用：
+1. 直接使用`git describe`:只会列出带有注释的tag
+2. 一般使用`git describe refA`:refA可以是任何能被 Git 识别成提交记录的引用，如果你没有指定的话，Git会使用你目前所检出的位置(HEAD)，它输出的结果可能是这样的：`<tag>_<numCommits>_g<hash>`，tag 表示的是离 ref 最近的标签， numCommits 是表示这个 ref 与 tag 相差有多少个提交记录， hash 表示的是你所给定的 ref 所表示的提交记录哈希值的前几位。
+
+```bash
+git describe --tags
+
+# 情况1 项目没有任何tag，则会显示
+fatal: No names found, cannot describe anything.
+
+# 情况2 当前commit上有tag，则只会显示tag
+v1.1.1
+
+# 情况3 当前commit距离最新的tag已经过了很多个提交了，则会显示
+v1.0.0-18-g7cb5639 # 表示最新的tag是v1.0.0，距离这个tag到现在已经有18个提交，g是git的缩写(在多版本管理工具中会有用)，最新的commit是7cb5639
+```
 
 # 四 高级
 ## 1 git submodules
