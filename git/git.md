@@ -197,9 +197,11 @@ reference from StackOverflow：https://stackoverflow.com/questions/13790592/how-
 
 也可以直接github上下载：https://github.com/git-for-windows/git/releases
 ## 2 mac
-### 2.1 方式一(最简单):用Xcode的Command Line Tools
-### 2.2 方式二:Homebrew安装
-### 2.3 方式三:在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
+安装：
+1. 方式一(推荐):Homebrew安装
+    1. 需要注意的是，从2.x的某个版本开始，`brew install git`已经不包含gitk了，需要`brew install git-gui`来获取gitk
+2. 方式二:用Xcode的Command Line Tools
+3. 方式三:在[https://git-scm.com/download/mac](https://git-scm.com/download/mac)下载安装
 
 ## 3 linux
 ### 3.1 未整理
@@ -286,11 +288,10 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 - `git remote -v`:查看所有关联的远程仓库的名称和地址(拉取和推送)。在对远程仓库有修改后可以用该命令判断是否修改正确。
 - `git remote show`:查看有那些远程仓库，一般单远程库的显示可能是`origin`，多远程库可能`origin upstream ...`等。
 - `git remote show <远程仓库名>`:查看远程仓库详细信息,如`git remote show origin`。可查看的信息包括:
-    * 哪些远程分支没有同步到本地
-    * 哪些已同步到本地的远端分支在远端服务器上已被删除
-    * 拉取和推送关联的分支
+    * 远程仓库地址
+    * 远程分支的绑定和同步情况
 
-添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库或核心库.
+添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库或核心库.`远程仓库地址`最好以`.git`后缀结尾，比如`https://github.xxx.git`，如果是`https://github.xxx`，虽然也能重定向过去，但是会有warn提示。
 
 可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,如`git pull <远程仓库名> <分支名>`
 
@@ -888,7 +889,11 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 
 ## 4 git自带的图形界面工具
 ### 4.1 gitk(常用)
-主要用于查看查看历史,该工具可能需要自己安装。实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
+主要用于查看查看历史。
+安装：
+1. mac：参考git的安装部分
+
+实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
 
 如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
 
@@ -1086,6 +1091,9 @@ and its host key have changed at the same time.
 
 ### 1.24 git vim中文乱码的问题
 windows上`git log`、`git diff`等命令显示的中文是正确的，但是`git commit --amend`、`git rebase -i head~1`等命令显示的中文是乱码。发现使用后面两个命令的时候是是用的vim编辑器打开，而windows的vim是我安装git的时候附带的，git的安装目录是`C:\Program Files\Git`，vim目录在`C:\Program Files\Git\usr\bin`。不过使用git附带的which命令查看`which which`、`which vim`的时候，显示的是`/usr/bin/which`和`/usr/bin/vim`这里which以`C:\Program Files\Git`为根目录，搞不懂(猜测可能是git默认设置的吧)。要修改vim的配置文件，就要去修改`C:\Program Files\Git\etc\vimrc`文件，具体参考vim笔记部分
+
+### 1.25 git rebase upstream/master vs git pull --rebase upstream master
+参考：https://stackoverflow.com/questions/15602037/git-rebase-upstream-master-vs-git-pull-rebase-upstream-master
 
 ## 2 未解决
 ### 2.N 其他

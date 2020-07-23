@@ -308,6 +308,14 @@ return结束当前函数,并返回指定值
 
 简单总结就是：`runtime.Goexit`退出当前协程，`panic`清理当前协程，然后退出整个进程，`os.Exit(code int)`退出整个进程。那么如何优雅的退出进程呢?
 
+### 3.28 关于并发安全
+Golang不保证任何单独的操作是原子性的，除非：
+1. 使用 atomic 包里提供的原语
+2. 加锁
+3. golang实现了并发安全，比如`sync.Map`
+
+所以常见的基本数据类型和复合数据类型都不是并发安全的
+
 ## 4 文档网址视频等
 网址:
 1. golang官方
@@ -403,7 +411,7 @@ go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 #### 利用brew实现多版本切换
 分两种情况：IDE中和命令行中。在IDE中，一般可以直接修改GOROOT的来切换版本。
 
-在命令行中：同时下载多个版本，比如`1.10.4`和`1.12.9`，其中`1.10.4`可能单独形成目录`/usr/local/Cellar/go@1.10/1.10.4/...`以及在`/usr/local/opt`中形成单独的链接，需要将连接删除，将目录移动到`usr/local/Cellar/go`下，最终形成这样的目录
+在命令行中：同时下载多个版本，比如`1.10.4`和`1.12.9`，其中`1.10.4`可能单独形成目录`/usr/local/Cellar/go@1.10/1.10.4/...`以及在`/usr/local/opt`中形成单独的链接，需要将连接删除，将目录移动到`/usr/local/Cellar/go`下，最终形成这样的目录
 ```
 usr/local/Cellar/go
 ├── 1.10.4
@@ -418,9 +426,10 @@ usr/local/Cellar/go
 ### 3.1 安装包（二进制发行版）安装(**推荐**)
 1. 下载xxx.tar.gz，安装到`/usr/local`下:
 ```bash
-#查看压缩文件内容
+# 查看压缩文件内容
 tar -ztvf xxx.tar.gz
-#解压到目录下
+
+# 解压到目录下
 sudo tar -zxvf xxx.tar.gz -C /usr/local 
 ```
 
@@ -798,10 +807,16 @@ golang中字符串是以 UTF-8 为格式进行存储。语法分为普通字符�
 
 ```go
 // src/runtime/string.go
-// 可以看出string其实是个结构体
+// 可以看出string其实是个结构体，golang无法保证原子性的给他赋值(比如刚修改完指针但是没改len，这时候其他协程读取了该字符串就会得到不正确的结果)，所以golang的string不是并发安全的
 type stringStruct struct {
     str unsafe.Pointer
     len int
+}
+
+// reflect.StringHeader
+type StringHeader struct {
+	Data uintptr
+	Len  int
 }
 ```
 
@@ -1704,6 +1719,10 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 1. `-args`：传递命令行参数，该标志会将`-args`之后的参数作为命令行参数传递，最好作为最后一个标志。如`go test -args -p=true`
 4. 设置并发执行的测试数量`-parallel n`
 5. 竞争探测`-race`：用于探测高并发的死锁...
+    
+    ```golang
+    go run -race xxx.go > fileA
+    ```
 6. `-cpu`
 1. `-cover`：是否开启覆盖率统计。`-covermode`、`-coverpkg`、`-coverprofile`这些参数默认会打开这个选项
 2. `-covermode mode`：可选值有 set、count、atomic，其中 set （默认值）仅统计语法块是否覆盖，count 会统计语法块覆盖了多少次，atomic 用于多线程测试中统计语法块覆盖了多少次。
@@ -2579,9 +2598,11 @@ go run *.go
 
 除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
 
-```golang
-// 例子
-// 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢。这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
+```bash
+# 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢。这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
+
+# 在GO111MODULE=on的情况下想按非go mod的方式拉取包怎么办呢
+GO111MODULE=off go get xxx -v
 ```
 
 ### 1.5 go clean
@@ -3574,9 +3595,12 @@ go1.10开始新增了builder类型，用于提高字符串拼接性能，用法�
 参考：
 1. https://deepzz.com/post/golang-sync-package-usage.html
 
-`Mutex`：互斥锁。锁定指的是锁定互斥锁，而不是说去锁定一段代码。也就是说，当代码执行到有锁的地方时，它获取不到互斥锁的锁定，会阻塞在那里，从而达到控制同步的目的。已经锁定的Mutex并不与特定的goroutine相关联，这样可以利用一个goroutine对其加锁，再利用其他goroutine对其解锁。**适用于读写不确定场景，即读写次数没有明显的区别，并且只允许只有一个读或者写的场景，所以该锁也叫做全局锁。**
-1. `Lock()`：使用Lock()加锁后，便不能再次对其进行加锁，直到利用Unlock()解锁对其解锁后，才能再次加锁。
-2. `UnLock()`：如果在使用Unlock()前未加锁，就会引起一个运行时错误。
+`Mutex`：互斥锁。锁定指的是锁定互斥锁，而不是说去锁定一段代码。也就是说，当代码执行到有锁的地方时，它获取不到互斥锁的锁定，会阻塞在那里，从而达到控制同步的目的。已经锁定的Mutex并不与特定的goroutine相关联，这样可以利用一个goroutine对其加锁，再利用其他goroutine对其解锁。
+1. 适用场景：**适用于读写不确定场景，即读写次数没有明显的区别，并且只允许只有一个读或者写的场景，所以该锁也叫做全局锁。**
+2. 性能：性能不够好(lock does not scale with the number of the processors)
+2. 使用
+    1. `Lock()`：使用Lock()加锁后，便不能再次对其进行加锁，直到利用Unlock()解锁对其解锁后，才能再次加锁。
+    2. `UnLock()`：如果在使用Unlock()前未加锁，就会引起一个运行时错误。
 
 `RWMutex`：读写锁，针对读写操作的互斥锁，实际是一种特殊的自旋锁。读写锁与互斥锁最大的不同就是它把对共享资源的访问者划分成读者和写者，可以分别对读、写进行锁定。这种锁相对于自旋锁而言，能提高并发性，因为在多处理器系统中，它允许同时有多个读者来访问共享资源，最大可能的读者数为实际的逻辑CPU数。写者是排他性的，一个读写锁同时只能有一个写者或多个读者（与CPU数相关），但不能同时既有读者又有写者。**一般用在大量读操作、少量写操作的情况。**
 
@@ -3612,6 +3636,14 @@ fmt.Println("所有 goroutine 执行结束")
 2. 没有提供获取 map 数量的方法，替代方法是获取时遍历自行计算数量
 
 #### sync/atomic
+提供了一个Value类型用于原子操作
+1. `Value`:可以操作任意类型
+    1. 使用
+        1. `Value.Store()`：原子存储任意值。可以存储任意类型的值，但是对于某个Value v1，如果开始存储了类型typeA，后续也只能存储typeA，否则会panic
+        2. `Value.Load()`：原子获取Value里最新的值
+    2. 适用场景：
+        1. **读写冲突概率很小的场景**，性能应该比mutex好（待验证）
+
 提供一些原子操作，比如：
 1. 增或减：`AddUint32(x,x)`
 2. 以`CompareAndSwap`为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
@@ -3657,10 +3689,12 @@ golang 提供了下面几种类型：
 
         ```golang
         // 1. Printf函数知道如何本地化显示一个 Duration 类型
+        var duration_Milliseconds time.Duration = 500 
         var duration_Milliseconds time.Duration = 500 * time.Millisecond
         var duration_Seconds time.Duration = (1250 * 10) * time.Millisecond
         var duration_Minute time.Duration = 2 * time.Minute
         // 上面三个变量用printf和%v打印出来是
+        500ns
         Milli [500ms]
         Seconds [12.5s]
         Minute [2m0s]

@@ -64,8 +64,10 @@ docker中使用:
 ## 1 插件和内置模块
 ### 插件
 1. WebHook:WebHook 是由 emqx_web_hook 插件提供的 将 EMQ X 中的**钩子**事件通知到某个 Web 服务 的功能。
-1. Delayed Publish：emqx_delayed_publish 提供了延迟发送消息的功能。当客户端使用特殊主题前缀 `$delayed/seconds/` 发布消息到 EMQ X 时，EMQ X 将在seconds秒后发布该主题消息。
+1. Delayed Publish：emqx_delayed_publish 提供了延迟发送消息的功能。当客户端使用特殊主题前缀 `$delayed/secondsA/` 发布消息到 EMQ X 时，EMQ X 将在secondsA秒后发布该主题消息。
     1. 参考：https://docs.emqx.io/broker/latest/cn/advanced/delay-publish.html
+    2. 注意topic匹配的时候，`$delayed/secondsA/xxx`不会被算在内，还是算的后面的`xxx`
+        1. 比如发布`$delayed/3/world`,如果订阅了`/world`会匹配到，如果订阅了`$delayed/3/world`则不会被匹配到。
 3. 多语言支持插件：emqx_extension_hook
 4. 插件模版：emqx_plugin_template
 
@@ -82,6 +84,14 @@ docker中使用:
 
 注意：
 1. 尽量不要在钩子内部使用阻塞函数，这会影响系统的吞吐。
+
+## 3 命令行接口
+1. trace
+    
+    ```bash
+    # mac下的docker里我用单引号才生效
+    ./bin/emqx_ctl trace start topic '$system//VPCJN2YC/52R3B6IL/world' trace_topic_world.log
+    ```
 
 ### 回调链
 回调链 需要允许其上面的函数**提前终止链**和**忽略本次操作**。

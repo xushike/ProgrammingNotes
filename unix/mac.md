@@ -60,6 +60,11 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 3. 输入`csrutil disable`禁用，或者输入`csrutil enable`启用
 4. 重启Mac
 
+### 3.13 把文件拖入终端
+等于把文件的路径复制到终端
+
+## 4 文档网址等
+
 # 二 安装配置
 1. 参考：https://juejin.im/entry/58ca60d461ff4b006018aa2f#%E5%85%B6%E4%BB%96%E5%BF%AB%E6%8D%B7%E9%94%AE
 
@@ -80,11 +85,22 @@ mac的介质推出建,在某些电脑上有(有网友说是较老的mac上),位�
 8. 复制粘贴剪切：复制`cmd+c`、粘贴`cmd+v`。实测，`cmd+x`似乎总是不生效，但是可以先`cmd+c`复制，然后`cmd+option+v`实现剪切。
 
 ## 2 命令行工具
+### launchctl
+使用：
+1. 启动服务`launchctl start xxx`，xxx一般是`com.xxx.xxx`或者`com.xxx.xxx.numA`
+2. 查看服务`launchctl list xxx`    
+
 ### open
 打开
-1. 对于文件,会使用关联程序打开;对于目录是finder打开,比如`open .`打开当前目录
-2. `-a`指定用什么打开,`-e`强制用textedit编辑
-3. 把文件拖入终端,等于把文件的路径复制到终端
+
+使用：
+1. 打开文件：对于文件,会使用关联程序打开
+2. 打开目录:对于目录是finder打开,比如`open .`打开当前目录
+3. 打开APP
+    1. 比如打开docker desktop:`open /Applications/Docker.app`
+3. 参数
+    1. `-a`指定用什么打开
+    2. `-e`强制用textedit编辑
 
 ### pbcopy和pbpaste`
 前者允许将stdin或者文件复制到剪切板中,后者用于将剪切板的内容输出,如,
@@ -373,6 +389,11 @@ mac会对图标进行缓存，图标缓存包括finder和dock，一次执行下�
     
 系统版本是Mojave的话:
 1. google了一圈，似乎只有禁用所有通知`defaults write com.apple.diskspaced removeAllNotifications -bool true`是有效的，想单独禁用该通知却没法。最好的办法还是清理硬盘吧。
+
+### 1.14 系统时间不准
+参考：https://superuser.com/questions/155785/mac-os-x-date-time-synchronization
+
+不管自动还是手动都不行，最后参考链接里的方法成功了:`sudo sntp -sS time.apple.com`
 
 ## 2 未解决
 2. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)

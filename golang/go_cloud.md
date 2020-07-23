@@ -222,7 +222,9 @@ https://github.com/go-redis/redis
 ## migrate工具
 https://github.com/golang-migrate/migrate
 
-win上的安装我是使用的scoop
+安装：貌似不能通过`go get`安装
+1. win上的安装我是使用的scoop
+2. mac使用brew
 
 基本用法:
 1. 创建迁移文件:`migrate create -ext sql -dir migrations create_users_table`,执行完这个命令会在migrations文件夹下创建两个文件，分别是：
@@ -234,10 +236,15 @@ win上的安装我是使用的scoop
     # 这两个文件都是空的，需要我们自己去填充
     ```
 2. 升级
-    1. 升级到最新版本:`migrate -source fileDirA -database xxx up`
+    1. 升级到最新版本:`migrate -source file://fileDirA -database xxx up`
+        
+        ```bash
+        # mac demo
+        migrate -source file://./migrations -database "postgres://postgres:@localhost:5432/hello?sslmode=disable" up 
+        ```
 3. 回滚
     1. 回滚到最开始版本
-    2. 回滚最新的一个版本:`migrate -source fileDirA -database xxx down 1`，同理，回滚前n个版本是`migrate -source fileDirA -database xxx down n`
+    2. 回滚最新的一个版本:`migrate -source file://fileDirA -database xxx down 1`，同理，回滚前n个版本是`migrate -source fileDirA -database xxx down n`
 
 ## lint工具 
 https://github.com/golangci/golangci-lint
@@ -262,6 +269,8 @@ https://github.com/golangci/golangci-lint
     1. 可能原因:golangci-lint版本太低
 4. level=error msg="Running error: context loading failed: no go files to analyze"
     1. 更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了，没搞懂
+5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
+    1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
 
 ## 单元测试相关
 ### 单元测试辅助工具 mock
@@ -336,7 +345,9 @@ https://github.com/robfig/cron
 
 ## rpc
 ### protoc
-安装并加入环境变量
+安装：
+1. win(待补充)
+1. mac：`brew install protobuf`
 
 ### protocbuf源码生成插件 protoc-gen-g
 https://github.com/golang/protobuf/tree/master/protoc-gen-go

@@ -591,9 +591,6 @@ package github.com/cweill/gotests/...: exit status 1
     19. 如何配置多个 gopath,配置后会怎么样?
     20. 方法和函数的区别
         1. 参考:https://studygolang.com/articles/9945
-    21. golang切片和数组的区别,`...xxx`是接收的切片还是数组
-    22. type xxx func(* yyy)
-    23. *和&的区别
     24. go get默认会显示是否更新,是否成功吗?
     25. exported type ICoordinate should have comment or be unexported
         1. 似乎是缺少某方法或数据
