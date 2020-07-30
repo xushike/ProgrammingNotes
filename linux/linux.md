@@ -901,7 +901,8 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
 
 ## 8 curl
 文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等。可惜不支持多线程下载。
-参数：
+
+使用和参数：
 1. `-X`:指定request method：POST、GET、DELETE等，默认是GET
 2. `-H 'xxx: xxx'`:自定义头信息传递给服务器
 3. `-d 'xxx'`：HTTP POST方式传送的body数据
@@ -911,6 +912,13 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
 7. HTTP认证
     1. `--basic`，如`curl --basic  -u user:password http://www.example.com/posts/1`
 8. `-v`:显示通信过程
+9. 获取文件内容
+    1. 在版本7.55之前，似乎默认会将二进制输出到终端，可以使用`-o`或`--output`将文件下载到本地，从7.55开始，默认不会将二进制输出到终端，而是提示warn信息`Warning: Binary output can mess up your terminal. Use "--output -" to tell ...`。如果坚持要输出到终端，可以使用`-o -`，也可以使用`-o - > xxx`重定向里面的内容到本地文件中
+10. `-k`：允许curl使用非安全的ssl连接并且传输数据（证书不受信）
+    
+    ```bash
+    curl -k https://localhost:9001 
+    ```
 
 ```bash
 # 例子

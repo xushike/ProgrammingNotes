@@ -108,9 +108,14 @@ img.SetColorIndex(
 ```
 
 ### 3.5 关于go的作者
-1. Robert Griesemer：曾协助实现 Java 的 HotSpot 编译器和 JavaScript V8 引擎。
-2. Rob Pike：曾是贝尔实验室的 Unix 团队和 Plan9 操作系统成员，与Ken Thompson 一起创造了 UTF-8 字符编码。
-3. Ken Thompson，不用多说了，技术圣殿的人物，创造了 C 语言和 Unix，获得了 1983 年图灵奖和 1988 国家技术奖
+最开始的作者：
+1. 罗伯特·格瑞史莫(Robert Griesemer)：曾协助实现 Java 的 HotSpot 编译器和 JavaScript V8 引擎。
+2. 罗勃·派克(Rob Pike)：曾是贝尔实验室的 Unix 团队和 Plan9 操作系统成员，与Ken Thompson 一起创造了 UTF-8 字符编码。
+3. 肯·汤普逊(Ken Thompson): 不用多说了，技术圣殿的人物，创造了 C 语言和 Unix，获得了 1983 年图灵奖和 1988 国家技术奖
+
+后面加入的：
+1. Ian Lance Taylor
+2. Russ Cox
 
 ### 3.6 空标识符（blank identifier）
 即`_`（也就是下划线），它主要有两个作用：
@@ -3279,6 +3284,8 @@ func main() {
 
 ### http
 1. `ListenAndServe()`:负责监听并处理连接。内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
+2. `ListenAndServeTLS(addr, certFile, keyFile string, handler Handler)`:启动https web server，
+3. `FileServer`:提供文件服务的handle，一般需要结合`StripPrefix()`和`Dir()`来使用。里面的核心是`serverFile()`方法，如果是目录则列出里面的内容，如果是文件则使用`serveContent()`输出文件里面的内容，对于二进制类型的文件，浏览器访问默认是下载
 
 `http.Server`结构体相关操作:
 1. `Shutdown(ctx context.Context)`:golang1.8+的方法，可以优雅退出(待整理)
@@ -3289,7 +3296,7 @@ func main() {
 ### io
 学习包也是学习它的设计思想。比如io包，定义了4各基本操作原语(接口)，分别对应二进制流读、写、关闭、寻址操作：
 1. `Reader`：
-    1. 即使我们在读取的时候遇到错误，但是也应该也处理已经读到的数据，因为这些已经读到的数据是正确的，如果不进行处理丢失的话，读到的数据就不完整了
+    1. 即使我们在读取的时候遇到错误，但是也应该处理已经读到的数据，因为这些已经读到的数据是正确的，如果不进行处理丢失的话，读到的数据就不完整了
 2. `Writer`
 3. `Closer`
 4. `Seeker`
@@ -3341,6 +3348,9 @@ func writeFile(path string, b []byte) {
 2. `ReadAll`
 3. `WriteFile(filename string, data []byte, perm os.FileMode) error`:WriteFile 向文件 filename 中写入数据 data,如果文件不存在，则以 perm 权限创建该文件,如果文件存在，则先清空文件，然后再写入,返回写入过程中遇到的任何错误。
 
+变量：
+1. `Discard`：Discard 是一个 io.Writer 接口，调用它的 Write 方法将不做任何事情并且始终成功返回
+
 其他的功能很多似乎都比较鸡肋。
 
 ### log
@@ -3382,19 +3392,25 @@ func GetPulicIP() string {
 5. `SetKeepAlive()`:设置keepAlive属性，是操作系统层在tcp上没有数据和ACK的时候，会间隔性的发送keepalive包，操作系统可以通过该包来判断一个tcp连接是否已经断开，在windows上默认2个小时没有收到数据和keepalive包的时候人为tcp连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。
 
 #### net/http
-发起http请求:
-1. Get:`http.Get()`
-2. Post:
-    1. `http.Post()`:第二个参数要设置成”application/x-www-form-urlencoded”，否则post参数无法传递
-    2. `http.PostForm()`
-3. 复杂的请求:`http.Do()`
+`Request`结构体:
+1. `URL`
+2. `RequestURI`
+
+
+常用方法：
+1. 发起http请求:
+    1. Get:`http.Get()`
+    2. Post:
+        1. `http.Post()`:第二个参数要设置成”application/x-www-form-urlencoded”，否则post参数无法传递
+        2. `http.PostForm()`
+    3. 复杂的请求:`http.Do()`
 
 
 #### net/url
 1. 将字符串转成url类型:`Parse()`
 2. 获取:`Scheme`、`User`（包含所有认证信息）、`User.Username()`、`User.Password()`、`Host`（包括主机名和端口信息）、`Path`（Host后面的）、`Fragment`、`RawQuery`（将查询参数解析成map）
-3. `QueryEscape`：同js的`encodeURI`
-4. `QueryUnescape`:可以解码js的`escape`，`encodeURI`和`encodeURIComponent`
+3. `QueryEscape`：编码URI，同js的`encodeURI`
+4. `QueryUnescape`:解码URI，可以解码js的`escape`，`encodeURI`和`encodeURIComponent`
 
 <!-- 1. `ParseRequestURI()`：解析绝对URL到一个URL结构体中
 2. `ParseQuery()`：将query解析成Values结构体，传入的参数必须是url问号后的path
@@ -3646,7 +3662,8 @@ fmt.Println("所有 goroutine 执行结束")
 
 提供一些原子操作，比如：
 1. 增或减：`AddUint32(x,x)`
-2. 以`CompareAndSwap`为前缀的CAS操作,比如`CompareAndSwapInt32()`，趋于乐观
+2. 以`CompareAndSwap`为前缀的CAS操作
+    1. 比如`CompareAndSwapInt32()`，趋于乐观
 
 ### syscall
 系统调用，从名字就能知道，这个包很复杂。系统调用是实现应用层和操作底层的接口(比如使用syscall来调用windows的DLL动态链接库)，不同系统之间的操作常常会有一定的差异，特别是类 Unix 与 Windows 系统之间的差异较大。如果想要寻找 syscall 的使用案例，我们可以看看 net、os、time 这些包的源码。如果要看这部分源码，可以先只看 Linux 的实现，架构的话，如果想看汇编，可以只看 x86 架构。
@@ -3710,13 +3727,13 @@ golang 提供了下面几种类型：
 定时器的四种实现和操作：
 1. `time.sleep()`：如果只是想指定时间之后执行，可以用该方法。
 2. `time.after()`
-3. `time.Timer`:需要对通道进行释放才能达到定时的效果，直到使用`<-timer.C`发送一个值，该计时器才会过期。在计时器过期之前,可以停止该计时器。不管过没过期，都可以调用`Reset()`方法重置计时器。
+3. `time.Timer`:需要对通道进行释放才能达到定时的效果，直到使用`<-timer.C`发送一个值，该计时器才会过期。在计时器过期之前,可以停止该计时器。同时不管过没过期，都可以调用`Reset()`方法重置计时器。
     
     ```go
     // 定义计数器
 	timer := time.NewTimer(time.Second * 1)
 	fmt.Println("after 1 sec:", <-timer.C)
-	// 停止定时器
+	// 停止定时器:该方法不会清空内部的缓冲通道
 	timer.Stop()
 	// 强制的修改timer中规定的时间
 	timer.Reset(time.Second * 5)
@@ -3728,6 +3745,28 @@ golang 提供了下面几种类型：
     ticker := time.NewTicker(time.Second)
 	for i := 0; i < 3; i++ {
 		fmt.Println(<-ticker.C)
+	}
+    ```
+    
+定时器内部实现细节：
+1. 查看`time.Timer`和`time.Ticker`的源码可知，两者的内部结构包含了容量为1的缓冲通道，这个设计很优秀：当定时器超时时，会将当前时间放入通道中，如果通道已经满了，不能放入就丢弃。利用缓冲通道的特性，做到了定时器外部业务不阻塞内部调度的特性。
+2. 协程调度的问题。如下经典例子
+    
+    ```golang
+    timer1 := time.NewTicker(time.Second * 1)
+	timer2 := time.NewTicker(time.Second * 1)
+	log.Println(time.Now()) 
+    // 正常情况下这里是可能让出自己的线程的，如果让出了，timer1在stop之前就已经有了一次(甚至多次)超时，导致后面的for循环会打印出t1，否则不会打印t1
+    // 为了模拟这种情况，这里我主动sleep了2s
+    time.Sleep(time.Second * 2) 
+	timer1.Stop()
+	for {
+		select {
+		case t1 := <-timer1.C:
+			log.Println("t1:", t1)
+		case t2 := <-timer2.C:
+			log.Println("t2:", t2)
+		}
 	}
     ```
 
