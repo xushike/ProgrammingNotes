@@ -825,8 +825,6 @@ angualr 表单中:#,name等的区别
     1. js引擎能区分不同的基本数据类型吗
 1. guid的生成
 1. vscode 中go怎么自动导包
-1. tslint
-    1. while statements must be braced (curly)
 2. google chrome helper是什么,导致mac发烫
 1. @next是什么版本
 2. package-lock.json对跨平台有影响吗
@@ -1168,7 +1166,6 @@ END;
 151. windows中按时间排序,批量修改和复制移动等等.
 152. 生产者消费者和订阅的区别
 154. oracle多个and和or
-158. TSlint
 159. x7f-xff中的￥
 160. js string默认取值是什么
 161. 主从高可用

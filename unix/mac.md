@@ -395,6 +395,9 @@ mac会对图标进行缓存，图标缓存包括finder和dock，一次执行下�
 
 不管自动还是手动都不行，最后参考链接里的方法成功了:`sudo sntp -sS time.apple.com`
 
+### 1.15 你的电脑检测到了潜在的问题 Your computer has detected a potential problem
+参考：https://support.apple.com/zh-cn/HT207475
+
 ## 2 未解决
 2. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
 4. 合上盖子是什么状态?每隔一段时间就会自动联网?

@@ -25,7 +25,7 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
     1. https://goa.design/design/overview/
     3. https://godoc.org/goa.design/goa/dsl
 
-Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建了一种基于 Go 语言的 HTTP 微服务框架，名为“goa”。这一框架允许开发者通过领域特定语言（DSL）定义服务的API，并且通过自动代码生成功能创建“样板”式的服务端和客户端代码以及文档。
+Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建了一种基于 Go 语言的 HTTP 微服务框架，名为“goa”。这一框架允许开发者通过领域特定语言（DSL(Domain-specific Language)）定义服务的API，并且通过自动代码生成功能创建“样板”式的服务端和客户端代码以及文档。
 
 #### 特点
 1. 与 goa 框架一同推出的还有一个 goagen 工具，它能够通过设计代码生成各种输出，包括 http 服务器的封装、代码脚手架、文档、js客户端，甚至是自定义的输出。
@@ -44,9 +44,13 @@ Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建
 
 特点总结：
 1. 代码自动生成（自动生成的代码可以热更新，因为生成代码和自己写的代码是分开的）
-2. 理念时髦，基于API设计，利用插件来扩展业务逻辑
+2. 理念时髦，设计优先，基于API设计，利用插件来扩展业务逻辑
 
 #### 使用
+参考：
+1. 基本使用的简单示例：https://github.com/goadesign/examples
+    1. 比如upload_download
+
 `goagen `
 
 `goa exmaple`:
