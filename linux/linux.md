@@ -973,9 +973,77 @@ TODO：动态端口转发
 ### 12.1 网络状态
 查看网络状态`netstat`:显示网络状态,包括网络连接、路由表、接口统计等信息
 
-```bash
-```
+## 13 安全相关
+### OpenSSL
+OpenSSL是一个强大的安全套接字层密码库，Apache使用它加密HTTPS，OpenSSH使用它加密SSH，但是，你不应该只将其作为一个库来使用，它还是一个多用途的、跨平台的密码工具。
 
+它主要包含三个组件：
+1. openssl：多用途的命令行工具
+2. libcrypto：加密算法库
+3. libssl：加密模块应用库，实现了ssl及tls
+
+OpenSSL的整个软件包大概可以分成三个主要的功能部分：SSL协议库、应用程序以及密码算法库。我们可以实现：
+1. 证书管理
+2. 对称加密和非对称加密
+
+OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL还有：
+1. 美国联邦政府NIST FIPS 140-2一级评估确认
+2. TLS，下一代SSL协议
+3. X.509密钥和证书的生成
+4. X.509证书权力
+5. S/MIME加密
+6. 文件加密和粉碎
+7. 打乱UNIX密码
+8. 9个不同的商业密码硬件设备
+9. 密码性能测试
+10. 36个命令
+11. 6个消息摘要算法
+12. 9个密码算法
+13. 多个加密协议
+
+常用命令和参数：
+1. `-cert`:The CA certificate file
+2. `-config`
+3. -in filename：指定要加密的文件存放路径
+4. -out filename：指定加密后的文件存放路径
+5. -salt：自动插入一个随机数作为文件内容加密，默认选项
+6. -e：可以指明一种加密算法，若不指的话将使用默认加密算法
+7. -d：解密，解密时也可以指定算法，若不指定则使用默认算法，但一定要与加密时的算法一致
+8. -a/-base64：使用-base64位编码格式
+
+
+
+使用：
+1. 生成私钥：`openssl genrsa -out key.pem 2048`
+2. 加密解密
+    1. 普通加密解密
+    2. 对称加密`openssl enc ...`
+    3. 单向加密`openssl dgst ...`
+    
+    ```bash
+    # 一般加密解密
+    openssl enc -e -des3 -a -salt -in fstab -out jiami
+    openssl enc -d -des3 -a -salt -in fstab -out jiami
+    ```
+3. 生成秘钥对
+    1. genrsa 标准命令生成私钥`openssl genrsa [-out filename] [-passout arg] [-des] [-des3] [-idea] [-f4] [-3] [-rand file(s)] [-engine id] [numbits]`:numbits表示生成私钥的大小，默认是2048。一般情况下秘钥文件的权限一定要控制好，只能自己读写，因此可以使用 umask 命令设置生成的私钥权限
+
+        
+        ```bash
+        ```
+
+    2. rsa 标准命令从私钥中提取公钥`openssl rsa [-inform PEM|NET|DER] [-outform PEM|NET|DER] [-in filename] [-passin arg] [-out filename] [-passout arg] [-sgckey] [-des] [-des3] [-idea] [-text] [-noout] [-modulus] [-check] [-pubin] [-pubout] [-engine id]`,`-in filename`指明私钥文件,`-out filename`指明将提取出的公钥保存至指定文件中,`-pubout`根据私钥提取出公钥 
+4. 证书相关`openssl req`
+    1. 主要参数
+        1. -new    :说明生成证书请求文件
+        2. -x509   :说明生成自签名证书
+        3. -key    :指定已有的秘钥文件生成秘钥请求，只与生成证书请求选项-new配合。
+        4. -newkey :-newkey是与-key互斥的，-newkey是指在生成证书请求或者自签名证书的时候自动生成密钥，然后生成的密钥名称由-keyout参数指定。当指定newkey选项时，后面指定rsa:bits说明产生rsa密钥，位数由bits指定。 如果没有指定选项-key和-newkey，默认自动生成秘钥。
+        5. -out    :-out 指定生成的证书请求或者自签名证书名称
+        6. -config :默认参数在ubuntu上为 /etc/ssl/openssl.cnf, 可以使用-config指定特殊路径的配置文件
+        7. -nodes  :如果指定-newkey自动生成秘钥，那么-nodes选项说明生成的秘钥不需要加密，即不需要输入passphase.   
+        8. -batch  :指定非交互模式，直接读取config文件配置参数，或者使用默认参数值 
+    
 ## N 其他
 1. 别名`alias`
     1. 基本用法是`alias [name]=[string]`,比如想把`cd /usr; ls; cd -`三个命令合在一起取个别名,可以使用`alias foo='cd /usr; ls; cd -'`

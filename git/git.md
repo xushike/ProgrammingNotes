@@ -425,7 +425,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
 3. `-m`：commit message
 
-### 5.1 git rebase 压制/衍合/变基
+### 5.1 git rebase 变基/压制/衍合
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
 1. 两种用法

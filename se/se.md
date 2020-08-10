@@ -278,6 +278,35 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
   1. 实际情况是很少用HTTP协议，能用二进制传输为什么要用文本传输协议呢
 3. 通信框架：MINA 和 Netty。
 
+### 1.30 PKI(Public Key Infrastructure,公钥基础设施)
+公钥基础设施是一个包括硬件、软件、人员、策略和规程的集合，用来实现基于公钥密码体制的密钥和证书的产生、管理、存储、分发和撤销等功能。
+
+证书机构CA:证书机构CA是PKI的信任基础，它管理公钥的整个生命周期，其作用包括：发放证书、规定证书的有效期和通过发布证书废除列表(CRL)确保必要时可以废除证书。
+
+注册机构RA:注册机构RA提供用户和CA之间的一个接口，它获取并认证用户的身份，向CA提出证书请求。它主要完成收集用户信息和确认用户身份的功能。注册机构并不给用户签发证书，而只是对用户进行资格审查。当然，对于一个规模较小的PKI应用系统来说，可把注册管理的职能由认证中心CA来完成，而不设立独立运行的RA。
+
+数字证书的主流格式：
+1. 通常都基于两种基础密码库：OpenSSL和Java。
+    1. Tomcat、Weblogic、JBoss等，使用Java提供的密码库。通过Java的Keytool工具，生成Java Keystore（JKS）格式的证书文件。
+    2. Apache、Nginx等，使用OpenSSL提供的密码库，生成PEM、KEY、CRT等格式的证书文件。
+    3. 此外，IBM的产品，如Websphere、IBM Http Server（IHS）等，使用IBM产品自带的iKeyman工具，生成KDB格式的证书文件。微软Windows Server中的Internet Information Services（IIS），使用Windows自带的证书库生成PFX格式的证书文件。
+2. 各格式的区别：
+    1. `*.DER`、`*.CER`: 这样的证书文件是二进制格式，只含有证书信息，不包含私钥。
+    2. `.CRT`: 这样的文件可以是二进制格式，也可以是文本格式，一般均为文本格式，功能与`.DER`、`*.CER`相同。
+    3. `*.PEM`: 一般是文本格式，可以放证书或私钥，或者两者都包含。 `*.PEM`如果只包含私钥，那一般用`*.KEY`代替。
+    4. `*.PFX`、`*.P12`是二进制格式，同时含证书和私钥，一般有密码保护。
+3. 其他
+    1. 格式之间可以转换
+    2. 怎么判断是文本格式还是二进制？用文本工具打开，如果是规则的数字字母，如
+        
+        ```txt
+        —–BEGIN CERTIFICATE—–
+        MIIE5zCCA8+gAwIBAgIQN+whYc2BgzAogau0dc3PtzANBgkqh…
+        —–END CERTIFICATE—–
+        ```
+        
+        就是文本的，上面的BEGIN CERTIFICATE，说明这是一个证书,如果是—–BEGIN RSA PRIVATE KEY—–，说明这是一个私钥.
+
 # 四 高级
 ## 1 未来方向
 ### 无服务器

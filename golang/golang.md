@@ -3344,7 +3344,7 @@ func main() {
 
 ### http
 1. `ListenAndServe()`:负责监听并处理连接。内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
-2. `ListenAndServeTLS(addr, certFile, keyFile string, handler Handler)`:启动https web server，
+2. `ListenAndServeTLS(addr, certFile, keyFile string, handler Handler)`:启动https web server，certFile是公钥文件名，keyFile是私钥文件名
 3. `FileServer`:提供文件服务的handle，一般需要结合`StripPrefix()`和`Dir()`来使用。里面的核心是`serverFile()`方法，如果是目录则列出里面的内容，如果是文件则使用`serveContent()`输出文件里面的内容，对于二进制类型的文件，浏览器访问默认是下载
 
 `http.Server`结构体相关操作:
@@ -3762,6 +3762,10 @@ fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
 
 golang 提供了下面几种类型：
 - 时间点(Time)
+    1. 使用
+        1. `Time.Format`
+        2. `Time.Truncate`:去尾法求近似值
+        3. `Time.Round()`:四舍五入法求近似值
 - 时间段(Duration):
 
         ```golang
@@ -3829,6 +3833,11 @@ golang 提供了下面几种类型：
 		}
 	}
     ```
+    
+时间包的使用：
+1. `Now()`:形如``。在不同架构下它的精度是不一样的，在mac下是到微秒，但是linux下一般是到纳秒
+    1. 参考
+        1. https://github.com/golang/go/issues/11222
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.

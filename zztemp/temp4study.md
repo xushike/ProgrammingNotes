@@ -116,7 +116,6 @@
 1. utf-8等的区别，go是用的哪一种
 1. network
     1. book：计算机网络
-    2. rfc
 1. vscode debug
 1. 数据的锁，事务隔离级别，mvvc
     1. 排他锁，互斥锁

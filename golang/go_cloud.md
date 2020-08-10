@@ -25,7 +25,7 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
     1. https://goa.design/design/overview/
     3. https://godoc.org/goa.design/goa/dsl
 
-Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建了一种基于 Go 语言的 HTTP 微服务框架，名为“goa”。这一框架允许开发者通过领域特定语言（DSL(Domain-specific Language)）定义服务的API，并且通过自动代码生成功能创建“样板”式的服务端和客户端代码以及文档。
+Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建了一种基于 Go 语言的 HTTP 微服务框架，名为“goa”。这一框架允许开发者通过基于golang的领域特定语言（DSL(Domain-specific Language)）定义服务的API，并且通过自动代码生成功能创建“样板”式的服务端和客户端代码以及文档。
 
 #### 特点
 1. 与 goa 框架一同推出的还有一个 goagen 工具，它能够通过设计代码生成各种输出，包括 http 服务器的封装、代码脚手架、文档、js客户端，甚至是自定义的输出。
@@ -44,26 +44,49 @@ Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建
 
 特点总结：
 1. 代码自动生成（自动生成的代码可以热更新，因为生成代码和自己写的代码是分开的）
-2. 理念时髦，设计优先，基于API设计，利用插件来扩展业务逻辑
+2. 理念时髦:
+    1. 设计优先(Design-Based)
+    2. 基于API设计
+    3. 利用插件来扩展业务逻辑:DSL，代码生成器，用户代码均使用Go语言编写，并且前两者使用plugin实现，可以替换
+3. 遵循单一数据源(Single Source of Truth, SSOT)原则，任何对设计的改变，都将自动反映到系统各处
 
 #### 使用
 参考：
 1. 基本使用的简单示例：https://github.com/goadesign/examples
     1. 比如upload_download
 
+它的使用分为三个部分，分别是：
+1. goa的设计语言是内置DSL，用于描述微服务的设计
+2. goa代码生成器，用于根据DSL描述生成代码模块(框架代码，胶水代码，测试代码)，辅助工具，和文档等
+3. goa利用生成代码和用户代码来实现一个服务，并提供一个完全可插拨的框架
+
 `goagen `
 
 `goa exmaple`:
 1. 比如`goa exqmple serverA/design`
 
+`goa gen`
+1. 例子
+    
+    ```bash
+    goa gen projectA/design -d xxx
+    goa example projectA/design
+    ```
+
 
 #### DSL说明
-goa基于服务提供功能，每个API定义一个服务(Service)，每个服务有若干资源(Resource)，每个资源对应若干操作(Action)，每个操作(Action)有多种响应(Response)，每个响应可能返回不同媒介(Media)的不同视图(View)。当然goa提供了更好的层级控制和继承关系(如上例，Response返回的视图继承于Resource中定义的默认媒介(BottleMedia)的默认视图(default))
+##### 老版本的DSL
+goa基于服务提供功能，每个API定义一个服务(Service)，每个服务有若干资源(Resource)，每个资源对应若干操作(Action)，每个操作(Action)有多种响应(Response)，每个响应可能返回不同媒介(Media)的不同视图(View)。当然goa提供了更好的层级控制和继承关系，如Response返回的视图继承于Resource中定义的默认媒介(BottleMedia)的默认视图(default))
 1. API: 描述一个Service及其地址，协议规范等
 2. Resource: 定义一个资源及其一系列相关的操作(Action)，以及这些操作所共用的一些属性
 3. Action: 定义针对于某个资源的操作，包括方法(GET,POST等)，URL(可有多个)，参数(goa自动做类型检查，值检查等)等
 4. Response: 定义一个响应，包括响应模板和承载内容(payload)，在代码中决定调用那个响应模板
 5. MediaType: 定义Response返回的数据结构，一个Media可以有多个View，可在Response中指定返回的View
+
+##### 新版本的DSL
+![dsl](../picture/golang/goa-dsl.png)
+
+1. API：描述一个服务，可以对应多个环境或服务器
 
 ### gin
 https://github.com/gin-gonic/gin
