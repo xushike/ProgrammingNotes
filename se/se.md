@@ -290,12 +290,13 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
     1. Tomcat、Weblogic、JBoss等，使用Java提供的密码库。通过Java的Keytool工具，生成Java Keystore（JKS）格式的证书文件。
     2. Apache、Nginx等，使用OpenSSL提供的密码库，生成PEM、KEY、CRT等格式的证书文件。
     3. 此外，IBM的产品，如Websphere、IBM Http Server（IHS）等，使用IBM产品自带的iKeyman工具，生成KDB格式的证书文件。微软Windows Server中的Internet Information Services（IIS），使用Windows自带的证书库生成PFX格式的证书文件。
-2. 各格式的区别：
-    1. `*.DER`、`*.CER`: 这样的证书文件是二进制格式，只含有证书信息，不包含私钥。
-    2. `.CRT`: 这样的文件可以是二进制格式，也可以是文本格式，一般均为文本格式，功能与`.DER`、`*.CER`相同。
-    3. `*.PEM`: 一般是文本格式，可以放证书或私钥，或者两者都包含。 `*.PEM`如果只包含私钥，那一般用`*.KEY`代替。
-    4. `*.PFX`、`*.P12`是二进制格式，同时含证书和私钥，一般有密码保护。
-3. 其他
+2. 文件后缀和编码方式：(待整理)
+    1. 编码方式主要有两种:`pem`和`der`，`pem`是文本格式，Apache和*NIX服务器偏向于使用这种编码格式；`der`是二进制格式，Java和Windows服务器偏向于使用这种编码格式。不同文件后缀都可以用这两种编码方式
+    1. 文件后缀
+        1. `*.DER`、`*.CER`: 这样的证书文件是二进制格式，只含有证书信息，不包含私钥。
+        2. `.CRT`: 这样的文件可以是二进制格式，也可以是文本格式，一般均为文本格式，功能与`.DER`、`*.CER`相同。
+        3. `*.PEM`: 一般是文本格式，可以放证书或私钥，或者两者都包含。 `*.PEM`如果只包含私钥，那一般用`*.KEY`代替。
+        4. `*.PFX`、`*.P12`是二进制格式，同时含证书和私钥，一般有密码保护。
     1. 格式之间可以转换
     2. 怎么判断是文本格式还是二进制？用文本工具打开，如果是规则的数字字母，如
         
@@ -305,7 +306,11 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
         —–END CERTIFICATE—–
         ```
         
-        就是文本的，上面的BEGIN CERTIFICATE，说明这是一个证书,如果是—–BEGIN RSA PRIVATE KEY—–，说明这是一个私钥.
+        就是文本的，上面的BEGIN CERTIFICATE，说明这是一个证书,如果是—–BEGIN RSA PRIVATE KEY—–，说明这是一个私钥。还有更具体的区别：`-----BEGIN RSA PRIVATE KEY-----`是RSA直接生成没有进行转换的密钥格式，公钥可以直接使用，私钥需要转换格式；`-----BEGIN PRIVATE KEY-----`就是上面的密钥`PKCS#8`格式化后的密钥格式,java中用的私钥一般就是这种格式,但是公钥就不需要转换,可以直接使用。几种格式间都是可以转换的。
+3. x509：X.509是一种非常通用的证书格式。所有的证书都符合ITU-T X.509国际标准，因此(理论上)为一种应用创建的证书可以用于任何其他符合X.509标准的应用。x509证书一般会用到三类文，key，csr，crt。
+    1. Key 是私用密钥openssl格，通常是rsa算法。
+    2. Csr 是证书请求文件，用于申请证书。在制作csr文件的时，必须使用自己的私钥来签署申，还可以设定一个密钥。
+    3. crt是CA认证后的证书文，（windows下面的，其实是crt），签署人用自己的key给你签署的凭证。
 
 # 四 高级
 ## 1 未来方向

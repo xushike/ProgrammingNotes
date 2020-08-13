@@ -517,10 +517,9 @@ pick 0325c7f add b.txt for test git rebase
 #### 未push
 参数说明（待整理）:
 - `--mixed`(不带参数时的默认参数):
-    - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD从当前commit指向某个commit,**仅仅重置暂存区**,即丢弃当前暂存区,然后将当前commit到某个commit之间的所有修改移动到暂存区,工作区的内容保持不变
-    <!-- 也意味着可以直接`git commit`重新提交对本地代码的修改. -->
+    - `git reset <commit id>`或`git reset <HEAD~n>`:会将HEAD从当前commit指向某个commit,**仅仅重置暂存区**,即丢弃当前暂存区,然后将当前commit到某个commit之间的所有修改移动到暂存区,工作区的内容保持不变。此时可以直接`git add`然后`git commit`重新提交对本地代码的修改。
     - 也可以作用于单个文件,取消暂存：`git reset file_name`
-- `--soft`:保留暂存区和工作区,同时将当前commit到某个commit之间的所有修改移动到暂存区
+- `--soft`:保留暂存区和工作区,同时将当前commit到某个commit之间的所有修改移动到暂存区。此时可以直接`git commit`重新提交对本地代码的修改。
 
 - `--hard`:重置暂存区、工作区及版本库,也就是说工作区和暂存区以及某个commit之后的所有修改都会丢失,慎用!
 

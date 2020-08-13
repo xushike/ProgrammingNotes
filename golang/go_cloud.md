@@ -305,9 +305,15 @@ https://github.com/golang/mock
 
 gomock主要包含两个部分：gomock库和辅助代码生成工具mockgen
 
-使用方式：
-1. 直接命令行使用，比如`mockgen --source .../xxx.go --destination .../xxx.go`
-2. (推荐)mockgen还提供了一种通过注释及`go generate`生成mock文件的方式，比如在接口文件的注释里面增加：`//go:generatemockgen --source .../xxx.go --destination .../xxx.go`，然后执行`go generate`命令就可以自动生成mock文件了。
+使用：
+1. gomock代码生成工具
+    1. 直接命令行使用，比如`mockgen --source .../xxx.go --destination .../xxx.go`
+    2. (推荐)mockgen还提供了一种通过注释及`go generate`生成mock文件的方式，比如在接口文件的注释里面增加：`//go:generatemockgen --source .../xxx.go --destination .../xxx.go`，然后执行`go generate`命令就可以自动生成mock文件了。
+2. gomock库
+    1. 调用`EXPECT()`为你的模拟设置他们的期望值和返回值
+    2. `Return(...)`模拟期望的返回值
+    3. `Times(number)`预计调用次数
+    4. `Do()`类似于钩子的作用
 
 其他参数:
 1. `-source`：指定接口文件
@@ -322,6 +328,8 @@ mock文件使用:
 问题：
 1. has already been called the max number of times
     1. `Call.Times(int)`:expected execute timers
+2. Loading input failed: loading package failed certificate.go:1: running "mockgen": exit status 1
+    1. 可能原因：我的文件名称是certificate.go，但是要generate的文件名称是cert.go。最后把我的文件改成cert.go就好了
 
 ### testify
 https://github.com/stretchr/testify

@@ -860,25 +860,64 @@ array常用操作总结
 #### 4.4.3 类数组（Like Array、Array-Like)
 **只要有一个 length 属性和(0..length-1)范围的整数属性都认为是类数组对象**。比如宿主浏览器提供的HTMLCollection类型、NodeList对象，`{'length': 2, '0': 'eat', '1': 'bananas'}`，方法实例的arguments等。
 
-### 4.5 RegExp
+### 4.5 RegExp对象及正则表达式
+参考：
+1. http://ecma-international.org/ecma-262/5.1/#sec-15.10
+
 字符模式对象,用于正则表达式
-1. 两种语法如下,其中pattern表示模式,modifiers(修饰符) 用于指定全局匹配、区分大小写的匹配和多行匹配:
+
+使用：
+1. 声明语法：有两种，如下,其中pattern表示模式,是正则表达式的主体；modifiers(修饰符)是可选的，用于指定全局匹配、区分大小写、多行匹配等:
 
     ```javascript
-    var patt=new RegExp(pattern,modifiers);
-    //或者更简单的方式
-    var patt=/pattern/modifiers;
-    ```
-    实际使用如下,
-    ```javascript
+    var patt=new RegExp(pattern,modifiers); // 写法一
+    var patt=/pattern/modifiers;  // 写法二：更简洁
+  
+    // 比如
     var re = new RegExp("\\w+");
     var re = /\w+/;
+    var re = /hello/i; // i是修饰符，表示不区分大小写，所以整句的意思是不区分大小写地搜索hello字符串
     ```
 2. 常用方法
-    1. `test()`:搜索字符串指定的值，根据结果返回真或假
-    2. 以下方法都是返回匹配结果形成的数组，该数组和普通数组稍有不同，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array
-        1. `exec()`返回字符串中检索到的指定值形成的数组,没有则返回null
-
+    1. 在字符串上使用
+        1. `stringA.search(pattern)`, 其中的pattern可以是正则也可以是普通字符串，所以它的作用是检索与正则表达式/字符串相匹配的子字符串，并返回子串的起始位置
+        2. `stringA.replace(pattern, target)`，其中的pattern可以是正则也可以是普通字符串，所以它的作用是在字符串中用target替换另一些字符
+    2. 在正则对象上使用
+        1. `regExpA.test(stringA)`:检测一个字符串是否匹配某个模式，如果字符串中含有匹配的文本，则返回 true，否则返回 false
+            
+            ```js
+            // 写法一
+            var patt = /e/;
+            patt.test("The best things in life are free!");
+            
+            // 写法二：更简洁
+            /e/.test("The best things in life are free!")
+            ```
+        2. `regExpA.exec(stringA)`检索字符串中的正则表达式的匹配,该函数返回一个数组，其中存放匹配的结果。如果未找到匹配，则返回值为 null
+            1. 注意返回的数组和普通数组稍有不同，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array
+3. 详细语法
+    1. modifiers(修饰符)
+        1. `i`执行对大小写不敏感的匹配。
+        2. `g`执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。reg对象有个lastIndex属性，只有搭配`g`修饰符一起使用才会生效，在每次匹配成功后更新lastIndex的值为当前成功匹配的下一个位置，下次匹配就从这个位置开始，即使换了stringA对象也是这样。
+        3. `m`执行多行匹配。
+    2. 正则主体
+        1. 分组
+        2. 环视(Look around)，即前瞻后顾(见studyJS笔记)
+            1. 环视匹配的是特定位置，不匹配任何字符，也就是并不会“占用”字符。这一点与单词分界符`\b`，锚点`^`和`$`相似，但是环视更加通用。
+        3. 反向引用
+4. 问题
+    1. 如何一次获取字符串中所有匹配项？目前好像没提供类似的方法，可以使用`g`修饰符和for循环来实现
+        
+        ```js
+         // 1. 查找成对的字母
+        let str = "aabbbbgbddesddfiid"
+        let re = /(\w)(\1)/g
+        let res;
+        while ((res = re.exec(str)) !== null) {
+            console.log(res[0]);
+        }
+        ```
+        
 
 ### 4.6 Function
 参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function

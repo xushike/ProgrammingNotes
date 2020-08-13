@@ -229,7 +229,6 @@
         2. https://studygolang.com/articles/9184
     5. path
     6. 主线程和goroutine的区别
-    7. 正则
     8. go的变量类型转换，比如int转int64
     9. http://wiki.jikexueyuan.com/project/the-way-to-go/02.7.html
 2. 长轮训和socket
@@ -1116,10 +1115,6 @@ END;
         似乎不等,但是`!""`为true
     3. js的1和“1”以及ts的1和“1”
     4. 如果删除某个对象的属性
-101. ts
-    1. number太大了变成e+（科学计数法）的怎么办
-        目前代码中似乎是用字符，然后正则表达式验证，而不用number类型
-
 102. angular
     1. 组件自身可以通过`[组件名].value`来获取绑定的值，为什么其他组件不能这样获取
     3. ngmoudle和value的关系
@@ -1715,11 +1710,6 @@ for (let [i, item] of arr.entries()) {
 15.  管理系统的api如何设计比较好
 
 16.  https://www.cnblogs.com/wl0000-03/p/6050108.html
-1.   依赖注入和import的区别是啥,为什么项目中的登录弹框用的import而不是依赖注入
-    1. 以及angular的路由
-
-        window.location.href = "/";
-
 2.   0.0.0.0 代表什么
 
 3.   编译hydra的命令:go install hydra
