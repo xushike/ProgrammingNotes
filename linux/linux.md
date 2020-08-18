@@ -988,6 +988,10 @@ TODO：动态端口转发
 
 ## 13 安全相关
 ### OpenSSL
+参考：
+1. https://www.feistyduck.com/library/openssl-cookbook/online/ch-openssl.html
+2. 官网：https://www.openssl.org/source/
+
 OpenSSL是一个强大的安全套接字层密码库，Apache使用它加密HTTPS，OpenSSH使用它加密SSH，但是，你不应该只将其作为一个库来使用，它还是一个多用途的、跨平台的密码工具。
 
 它主要包含三个组件：
@@ -995,9 +999,10 @@ OpenSSL是一个强大的安全套接字层密码库，Apache使用它加密HTTP
 2. libcrypto：加密算法库
 3. libssl：加密模块应用库，实现了ssl及tls
 
-OpenSSL的整个软件包大概可以分成三个主要的功能部分：SSL协议库、应用程序以及密码算法库。我们可以实现：
-1. 证书管理
-2. 对称加密和非对称加密
+OpenSSL的整个软件包大概可以分成三个主要的功能部分：
+1. SSL协议库：SSL通信API接口（SSL/TLS 客户端以及服务器的测试，处理S/MIME 或者加密邮件）
+2. 密钥和证书封装管理功能（建立 X.509 证书、证书签名请求(CSR)和CRLs(证书回收列表)）
+3. 密码算法库：密码算法库（建立 RSA、DH、DSA key 参数，计算消息摘要，使用各种 Cipher加密/解密）
 
 OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL还有：
 1. 美国联邦政府NIST FIPS 140-2一级评估确认
@@ -1038,8 +1043,8 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
     openssl enc -e -des3 -a -salt -in fstab -out jiami
     openssl enc -d -des3 -a -salt -in fstab -out jiami
     ```
-3. 生成私钥：`openssl genrsa`使用rsa算法，`openssl ecparam`使用ECDSA算法
-    1. genrsa标准命令生成私钥`openssl genrsa [-out filename] [-passout arg] [-des] [-des3] [-idea] [-f4] [-3] [-rand file(s)] [-engine id] [numbits]`:numbits表示生成私钥的大小，默认是2048。一般情况下秘钥文件的权限一定要控制好，只能自己读写，因此可以使用 umask 命令设置生成的私钥权限
+3. 生成私钥：`openssl genrsa`使用rsa算法(RSA私钥存在PKCS1和PKCS8两种格式)，`openssl ecparam`使用ECC/ECDSA算法
+    1. genrsa标准命令生成私钥`openssl genrsa [-out filename] [-passout arg] [-des] [-des3] [-idea] [-f4] [-3] [-rand file(s)] [-engine id] [numbits]`:numbits表示生成私钥的大小(长度)，默认是2048。一般情况下秘钥文件的权限一定要控制好，只能自己读写，因此可以使用 umask 命令设置生成的私钥权限
 
         
         ```bash
@@ -1057,7 +1062,7 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
     1. 什么是证书请求文件(CSR,Certificate Signing Request):向“证书机构”申请数字证书的时候，就需要向他们提供相应的信息，这些信息以特定文件格式(.csr)提供的，这个文件就是“证书请求文件”；为了确保我提供的信息在互联网的传输过程中不会被有意或者无意的破坏掉，我们有如下的机制来对传输的内容进行保护：首先在本地生成一个私钥，利用这个私钥对“我们需要提供的信息“进行加密，从而生成 证书请求文件(`.csr`), 这个证书请求文件其实就是私钥对应的公钥证书的原始文件，**里面含有私钥所对应的公钥信息**
     1. 主要参数
         1. `-new`:生成证书请求文件
-        2. `-x509`:专用于CA生成自签证书，如果不是自签证书则不需要此项
+        2. `-x509`:专用于CA生成自签证书，如果不是自签证书则不需要此项。除非指定`-set-serial`选项,否则使用0作为证书序列号
         3. `-key`:指定已有的秘钥文件生成秘钥请求，只与生成证书请求选项`-new`配合。
         4. `-newkey`:`-newkey`是与`-key`互斥的，`-newkey`是指在生成证书请求或者自签名证书的时候自动生成密钥，然后生成的密钥名称由`-keyout`参数指定。当指定`-newkey`选项时，后面指定`rsa:bitsA`说明产生rsa密钥，位数由bitsA指定。 如果没有指定选项`-key`和`-newkey`，默认自动生成秘钥。
         5. `-in`:读取文件或标准输入
@@ -1067,6 +1072,7 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
         8. `-batch`:指定非交互模式，直接读取config文件配置参数，或者使用默认参数值 
         9. `-days`:证书的有效期限，单位是day（天），默认是365天
         10. `-verify`验证证书请求文件的数字签名,可以验证出证书请求文件是否被篡改过
+        11. `-outform`输出证书的编码格式,PEM或DER,默认PEM
     2. 使用
         1. 生成根自签名证书：需要输入一些配置信息
             
@@ -1074,10 +1080,12 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
             openssl req -new -x509 -key ca.key  -out ca.pem  -days 365
             openssl req -new -x509 -key ca.key  -out ca.crt  -days 365
             ```
-        2. 生成证书请求文件:要求如下的信息必须和CA相同(如果是客户端CSR似乎不用？)(待研究)
+        2. 生成证书请求文件:有如下信息可选(待研究)
             1. Country Name(C)
             2. State or Province Name(ST)
             3. Organization Name(O)
+            4. Common Name(CN):定义的是将要申请SSL证书的域名、子域名、主机名或IP，CN必须和将要访问的网站地址一样，否则访问时就会给出警告。一般是必填。
+            5. emailAddress:一般不用填
     2. 例子
     
         ```bash
@@ -1091,6 +1099,8 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
         openssl req -new -key pri_key.pem -out req.csr
         #使用req命令，以文本方式查看刚生成的证书请求文件
         openssl req -in req1.csr -text
+        # 验证证书请求文件,"verify OK"表示证书请求文件是完整未被篡改过
+        openssl req -verify -in req2.csr
         # 只查看证书请求的文件头部分
         openssl req -in req1.csr -noout -text
         #查看证书请求文件的公钥， 如果从申请证书请求时所提供的私钥中提取出公钥，这两段公钥的内容是完全一致的
@@ -1104,6 +1114,11 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
         2. 涉及的配置文件
             1. `/etc/pki/CA/index`这个文件用于跟踪已经签发的证书，如果没有签发过，那么该文件应该为0字节.
             2. `/etc/pki/CA/serial`这个文件里面里面保存的是最后一次签发的证书的序列号，初始值应该为01,也可以为00等其他的值。如果以上两个文件缺失或者内容不符合规范，会导致签名命令执行时报错.
+            3. `/etc/pki/tls/openssl.cnf`:
+                1. `basicConstraints=CA:FALSE`:基本约束，`CA:FALSE`表示该证书不能作为CA证书，即不能给其他人颁发证书
+                2. `keyUsage = critical,keyCertSign,cRLSign`:指定证书的目的，也就是限制证书的用法。
+                    1. 如果是生成CA证书可以设置为`keyUsage = cRLSign, keyCertSign`
+
     2. 例子
     
         ```bash
@@ -1121,8 +1136,16 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
         1. ` -text`:print the certificate in text form
     
     ```bash
+    # 查看证书的内容
     openssl x509 -in /etc/pki/CA/certs/test.crt -text
     ```
+7. 吊销证书
+    1. 通过crl列表吊销
+        1. 获取要吊销证书的 serial 和 subject 信息 ，对比其与index.txt 中存储的是否一致 
+        2. 执行吊销`openssl ca -revoke /etc/pki/CA/newcerts/numA.pem`
+        3. 生成吊销证书的吊销编号 （第一次吊销证书时才需要执行）:`echo 01 > /etc/pki/CA/crlnumber`
+        4. 更新证书吊销列表`openssl ca -gencrl -out /etc/pki/CA/crl/ca.crl`
+        5. 查看 crl 文件命令：`openssl crl -in /etc/pki/CA/crl/ca.crl -noout -text`
     
 ## N 其他
 1. 别名`alias`

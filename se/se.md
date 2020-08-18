@@ -291,12 +291,12 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
     2. Apache、Nginx等，使用OpenSSL提供的密码库，生成PEM、KEY、CRT等格式的证书文件。
     3. 此外，IBM的产品，如Websphere、IBM Http Server（IHS）等，使用IBM产品自带的iKeyman工具，生成KDB格式的证书文件。微软Windows Server中的Internet Information Services（IIS），使用Windows自带的证书库生成PFX格式的证书文件。
 2. 文件后缀和编码方式：(待整理)
-    1. 编码方式主要有两种:`pem`和`der`，`pem`是文本格式，Apache和*NIX服务器偏向于使用这种编码格式；`der`是二进制格式，Java和Windows服务器偏向于使用这种编码格式。不同文件后缀都可以用这两种编码方式
+    1. 编码方式主要有两种:`pem`和`der`，`pem`(Privacy Enhance Mail)PEM实质上是Base64编码的二进制内容(即对字符串格式私钥的文件化处理)，再加上开始和结束行，它是文本格式，Apache和*NIX服务器偏向于使用这种编码格式；`der`是二进制格式，Java和Windows服务器偏向于使用这种编码格式。不同文件后缀都可以用这两种编码方式
     1. 文件后缀
         1. `*.DER`、`*.CER`: 这样的证书文件是二进制格式，只含有证书信息，不包含私钥。
         2. `.CRT`: 这样的文件可以是二进制格式，也可以是文本格式，一般均为文本格式，功能与`.DER`、`*.CER`相同。
         3. `*.PEM`: 一般是文本格式，可以放证书或私钥，或者两者都包含。 `*.PEM`如果只包含私钥，那一般用`*.KEY`代替。
-        4. `*.PFX`、`*.P12`是二进制格式，同时含证书和私钥，一般有密码保护。
+        4. `*.PFX`、`*.P12`、`.pkcs12`:一般有密码保护，存储的是已加密后的内容，是二进制格式，同时含证书和私钥，可以通过openssl转换成pem文件后进行处理。
     1. 格式之间可以转换
     2. 怎么判断是文本格式还是二进制？用文本工具打开，如果是规则的数字字母，如
         

@@ -3212,12 +3212,33 @@ fmt.Println(md5str2)
 // 生成32位md5字符串
 ```
 #### crypto/tls
+结构体：
+1. `Config`：Config 结构用于配置 TLS 客户端或服务器
+    1. `Certificates`：设置证书链，允许包含一个或多个
+    2. `ClientAuth`：要求必须校验客户端的证书。可以根据实际情况选用以下参数：
+        
+        ```go
+        const (
+            NoClientCert ClientAuthType = iota
+            RequestClientCert
+            RequireAnyClientCert
+            VerifyClientCertIfGiven
+            RequireAndVerifyClientCert // 要求并且校验客户端证书
+        )
+        ```
+    3. `ClientCAs`：设置根证书的集合，校验方式使用 ClientAuth 中设定的模式
+    4. `ServerName`:用于验证服务端返回的主机名，如果设置了`InsecureSkipVerify`则不会跳过验证。
 
 使用：
-1. `LoadX509KeyPair`
+1. `LoadX509KeyPair(certFile, keyFile string) (Certificate, error)`：从证书相关文件中读取和解析信息，得到证书公钥、密钥对
 
 
 #### crypto/x509
+Package x509 parses X.509-encoded keys and certificates。它可以生成签发证书请求,解析证书吊销列表等
+
+使用:
+1. `NewCertPool() *CertPool`:创建一个新的、空的 CertPool
+2. `*CertPool.AppendCertsFromPEM()`:尝试解析所传入的 PEM 编码的证书。如果解析成功会将其加到 CertPool 中
 
 ### errors
 1. `New(text string) error`
@@ -3424,8 +3445,18 @@ func writeFile(path string, b []byte) {
 ```
 
 #### io/ioutil
-2. `ReadAll`
+使用：
+1. `ReadAll`
+2. `ReadFile()`:将文件内容加载到`[]byte`中
 3. `WriteFile(filename string, data []byte, perm os.FileMode) error`:WriteFile 向文件 filename 中写入数据 data,如果文件不存在，则以 perm 权限创建该文件,如果文件存在，则先清空文件，然后再写入,返回写入过程中遇到的任何错误。
+4. `TempFile("dirA","patternA")`:create a globally unique temporary file. It’s your own job to remove the file when it’s no longer needed.
+    1. go1.11开始，支持`*`来代替random的位置
+    
+    ```go
+    file, err := ioutil.TempFile("dir", "myname.*.bat") 
+    // For example "dir/myname.054003078.bat"
+    ```
+5. `TempDir("dirA","patternA")`:create a globally unique temporary directory.如果dirA为空，则默认使用`os.TempDir()`
 
 变量：
 1. `Discard`：Discard 是一个 io.Writer 接口，调用它的 Write 方法将不做任何事情并且始终成功返回
@@ -3518,22 +3549,29 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 
 文件操作：
 1. 新建文件
-    1. `Create(file_name string) (file *File, err Error)`：返回一个文件对象，默认权限是0666的文件，返回的文件对象是可读写的
+    1. `Create(file_name string) (file *File, err Error)`：返回一个文件对象，默认权限是0666的文件，返回的文件对象是可读写的，注意会覆盖
     2. `NewFile(fd uintptr, name string) *File`:根据文件描述符创建相应的文件，返回一个文件对象
 2. 打开文件
     1. `Open(name string) (file *File, err Error)`：该方法打开一个名称为name的文件，但是是只读方式，内部实现其实调用了OpenFile。
     2. `OpenFile(name string, flag int, perm uint32) (file *File, err Error)`：打开名称为name的文件，flag是打开的方式，只读、读写等，perm是权限
+    3. `Stat(name string) (fi FileInfo, err error)`返回了Fileinfo这个结构
 3. 写文件：`(file *File)Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件， `(file *File) WriteString(s string) (ret int, err Error)`，写入string信息到文件
 4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中
 5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
-6. func SameFile(fi1, fi2 FileInfo) bool　　　　　　//查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
-7. `File.Sync()`:把当前内容持久化，一般就是马上写入到磁盘
+6. `func SameFile(fi1, fi2 FileInfo) bool`　　　　　　//查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
+7. `Rename(oldname, newname string)`:重命名文件
+8. `Symlink(oldname, newname string)`:创建软连接,不支持windows平台
+9. `Truncate(name string, size int64)`改变文件的`Size()`，改变文件内容的长度
+
+文件结构体操作：
+1. `File.Sync()`:把当前内容持久化，一般就是马上写入到磁盘
+2. `File.Fd()`:返回文件的句柄
 
 操作环境变量：
 1. `func Clearenv()`:清除所有环境变量（慎用）
 2. `func Environ() []string`:返回所有环境变量
 3. `func Getenv(key string) string`:获取系统key的环境变量，如果没有环境变量就返回空
-4. func Setenv(key, value string) error           //设定环境变量，经常与Getenv连用，用来设定环境变量的值
+4. `func Setenv(key, value string) error`           //设定环境变量，经常与Getenv连用，用来设定环境变量的值
 
 
 退出程序：
@@ -3993,9 +4031,15 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     1. `auto`：go会根据当前目录启用或禁用模块支持，仅当当前目录位于`$GOPATH/src`之外并且其本身包含`go.mod`文件或位于包含`go.mod`文件的目录下时，才启用模块支持。
     2. `on`：会忽略$GOPATH和vendor文件夹，只根据go.mod下载依赖
     3. `off`：不会使用go modules。它查找vendor目录和GOPATH
-2. `GOPROXY`和`GONOPROXY`:`GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
-    1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
-    2. `direct`的作用：**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
+2. `GOPROXY`和`GONOPROXY`:
+    1. `GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
+        1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
+        2. `direct`的作用：**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
+    2. `GONOPROXY`用于设置不走代理的模块
+        
+        ```bash
+        go env -w GONOPROXY=\*\*.baidu.com\*\*              ## 配置GONOPROXY环境变量,所有百度内代码,不走代理
+        ```
 3. `GOSUMDB`和`GONOSUMDB`：全称是Go checksum database，Go checksum database是Go官方为了go modules安全考虑，设定的module校验数据库，服务器地址为：sum.golang.org，它通过包的哈希值来校验下载的包(无论是从源站拉取还是通过 Go module proxy 拉取)的安全性，保证拉取到的模块版本数据未经篡改，防止出现node.js社区中大量的在使用npm时造成的不经意间引入木马库包的情况。而该环境变量是用来配置你使用哪个校验服务器和公钥来做依赖包的校验，设置格式为`dbNameA+publickeyA+urlA`，它有几种用法:
     1. 默认值是`sum.golang.org`(之所以没有按照上面的格式是因为Go对该默认值做了特殊处理)，可惜也被墙了，可以使用`sum.golang.google.cn`。
     2. 如果想对部分包关闭哈希校验，则可以将包的前缀设置到环境变量中`GONOSUMDB`中，设置规则类似GOPRIVATE

@@ -88,6 +88,9 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 
 1. API：描述一个服务，可以对应多个环境或服务器
 
+问题：
+1. attribute does not have "rpc:tag" defined in the meta
+
 ### gin
 https://github.com/gin-gonic/gin
 
@@ -406,6 +409,23 @@ https://github.com/uber-go/zap
 3. warn：警告级别的信息（不严重），表示系统还可以继续运行下去
 4. error：错误信息（较严重），不知道系统能不能继续运行下去
 5. fatal：严重错误（特别严重，比如引起崩溃式的错误）
+
+## 证书
+### mkcert
+https://github.com/FiloSottile/mkcert
+
+谷歌的Filippo Valsorda使用Golang开发的一个开源工具，使用非常简单，不需要进行任何配置，就可以生成任何你喜欢的域名的本地可信赖的开发证书。`mkcert`不会生成自签证书，它似乎只支持在本地环境使用。
+
+使用：
+1. 基本使用
+    1. `mkcert -install`:创建并安装本地CA
+    1. `mkcert ipA 域名A ...`：会生成基于这些地址的证书和私钥
+        
+        ```bash
+        mkcert example.com "*.example.com" example.test localhost 127.0.0.1 ::1
+        ```
+2. 生成S/MIME邮件证书`mkcert myEmailA`
+3. 移动设备：如果你想让你的证书在移动设备上面受信任，那么就必须安装rootCA。你可以使用`mkcert -CAROOT`来生成一个rootCA.pem的文件。
 
 # 五 经验
 ## 1 为什么需要框架

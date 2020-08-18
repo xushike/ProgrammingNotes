@@ -67,7 +67,7 @@ docker中使用:
 1. Delayed Publish：emqx_delayed_publish 提供了延迟发送消息的功能。当客户端使用特殊主题前缀 `$delayed/secondsA/` 发布消息到 EMQ X 时，EMQ X 将在secondsA秒后发布该主题消息。
     1. 参考：https://docs.emqx.io/broker/latest/cn/advanced/delay-publish.html
     2. 注意topic匹配的时候，`$delayed/secondsA/xxx`不会被算在内，还是算的后面的`xxx`
-        1. 比如发布`$delayed/3/world`,如果订阅了`/world`会匹配到，如果订阅了`$delayed/3/world`则不会被匹配到。
+        1. 比如发布`$delayed/3/world`,如果订阅了`world`会匹配到，如果订阅了`$delayed/3/world`或`/world`则不会被匹配到。
 3. 多语言支持插件：emqx_extension_hook
 4. 插件模版：emqx_plugin_template
 
@@ -103,3 +103,13 @@ message.acked	MQTT 消息回执
 
 ### session
 消息保存在哪儿
+
+
+## 4 指标监控
+EMQ X 将指标分为了 Metrics 与 Stats 两种。Metrics 通常指那些只会单调递增的数据，例如发送字节数量、发送报文数量。EMQ X 目前提供的 Metrics 覆盖了字节、报文、消息和事件四个维度。Stats 则通常指那些成对出现的数据，包括当前值和历史最大值，例如当前订阅数量和订阅历史最大数量。
+
+从 v4.1.0 版本开始，EMQ X 增加了针对指定主题的 Metrics 统计，包括消息收发数量和收发速率。提供了新建主题统计、取消主题统计和返回指定主题统计信息的 HTTP API。
+
+# 六 问题
+## 1 能跟踪通过某个主题的字节数吗
+目前不能，see: https://github.com/emqx/emqx/issues/1685
