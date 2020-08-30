@@ -163,6 +163,13 @@ https://github.com/spf13/cobra
 2. `git clone URL --bare`,`clone`是一个subCommand，`URL`是参数，`--bare`是选项
 2. `server -h`或`server --help`中的`-h`和`--help`是flags
 
+使用：
+1. 初始化`cobra init projectNameA`
+2. 增加子命令`cobra add subCmdA`
+3. `Flags().String(name string, value string, usage string) *string`:name是参数名称，value是默认值，usage是使用说明
+4. `Flags().StringVarP(p *string, name, shorthand string, value string, usage string)`
+
+
 ## flag包增强 pflag
 https://github.com/spf13/pflag
 
@@ -241,6 +248,25 @@ https://github.com/go-gorm/gorm
 
 中文参考：
 1. https://gorm.io/zh_CN/docs/create.html
+
+使用：
+1. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
+    1. `FirstOrCreate()`:
+    2. 使用`gorm:insert_option`
+    
+        ```go
+        db.Set(
+            "gorm:insert_option",
+            "ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = Values(updated_at)",
+        ).Create(&model).Error
+        ```
+2. 全局禁用表名复数:`SingularTable(true)`，不设置的话`User`的默认表名为`users`,设置后变成`user`。使用`TableName`设置的表名不受影响
+3. 日志：Gorm有内置的日志记录器支持，默认情况下，它会打印发生的错误。
+
+    ```go
+    // 启用Logger，显示详细日志
+    db.LogMode(true)
+    ```
 
 ## JWT
 https://github.com/dgrijalva/jwt-go
@@ -341,7 +367,18 @@ https://github.com/stretchr/testify
 1. assert和require:都是断言，区别是`assert`如果失败不会退出，还是会继续往下执行，而`require`失败会直接结束
     1. `NoError()`
     2. `Equal()`
-    3. ...
+    3. `Panics()`
+        
+        ```go
+        func TestOtherFunctionThatPanics(t *testing.T) {
+            assert.Panics(t, OtherFunctionThatPanics, "The code did not panic")
+        }
+        
+        func TestOtherFunctionThatPanics(t *testing.T) {
+           assert.Panics(t, func() { OtherFunctionThatPanics(arg) }, "The code did not panic")
+        }
+        ```
+    4. `Error(t TestingT, err error, msgAndArgs ...interface{})`:断言一个err不是nil，看源码可知它是直接跟nil比较的，感觉有时候会不准确，所以尽量少用。更推荐使用`Equal()`或者`EqualError()`
 2. suite
 3. mock
 

@@ -309,7 +309,7 @@ return结束当前函数,并返回指定值
 
 `os.Exit(code int)`:会立即结束掉当前整个程序。看注释可知，它会立即终止掉程序，不会执行`defer()`语句，并返回错误代码code(其他程序可根据这个code来报告发生的情况)，`code`为0表示正常退出，非0表示错误退出。所以该方法一般用在测试、脚本或者需要退出程序时。
 
-`panic`的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+`panic`的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，待defer函数执行完，将出错信息向其panic调用者传递panic相关信息，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
 
 简单总结就是：`runtime.Goexit`退出当前协程，`panic`清理当前协程，然后退出整个进程，`os.Exit(code int)`退出整个进程。那么如何优雅的退出进程呢?
 
@@ -576,9 +576,9 @@ const (
 )
 ```
 
-优雅的常量iota：iota是无类型的int(untyped int)，不是int也不是uint；iota只能在常量表达式中使用，所以`fmt.Println(iota)`会报错
+优雅的常量iota：iota是无类型的int(untyped int)，不是int也不是uint；iota只能在常量表达式中使用，所以`fmt.Println(iota)`会报错。一般情况下，iota可以看成const块中的行索引，记录行数。
 
-常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。
+常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。(why)
 
 ### 1.5 指针
 指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言里可以对指针进行加或减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
@@ -1808,27 +1808,67 @@ func ExamplePrint() {
 3. 对type的method进行测试`ExampleTypeName_MethodName`，如`ExampleBar_Qux`
 
 ### 7.3 压力测试Benchmark
-形如`func BenchmarkXxx(b *testing.B)`，当`go test`带有bench相关参数就会执行benchmark关联的方法。循环体内需要使用`testing.B.N`，会自动计算合理的次数。
+要求：文件依然必须以`_test.go`结尾，函数必须以`Benchmark`开头，如`func BenchmarkXxx(b *testing.B)`
+
+如何运行基准测试:还是使用`go test ...`，且必须要带上`-bench`参数，因为`go test`默认会运行单元测试方法，所以`go test -bench`会同时运行基准测试和单元测试，如果只想运行基准测试，可以使用`-run pattern`匹配一个从来没有的单元测试方法，比如使用`none`，因为我们基本上不会创建这个名字的单元测试方法，形如`go test -bench=. -run-none`
+
+使用：
+1. for循环外放准备工作代码，被测试的代码则放在for循环里，循环体内需要使用`testing.B.N`，默认情况下会自动计算合理的次数。
+2. 运行后显示形如
+
+    ```bash
+    BenchmarkXxx-4  10           4145280 ns/op           77179 B/op       748 allocs/op
+    ...
+    PASS
+    ok      flysnow.org/hello       5.628s
+    # -4 表示运行时对应的GOMAXPROCS的值
+    # 10 表示for循环的次数
+    # 4145280 ns/op 表示每次循环 耗时 4145280纳秒
+    # 77179 B/op 表示每次循环 需要开辟77179 字节内存
+    # 748 allocs/op 表示每次操作需要分配 748次内存
+    # 5.628s 表示总耗时
+    ```
+3. go1.7开始支持[subtest](https://github.com/golang/proposal/blob/master/design/12166-subtests.md)
 
 命令相关参数：
-1. `-bench xxx`
+1. `-bench regexp`：指定运行哪些性能测试。比如运行当前目录下所有性能测试`go test -bench .`
 2. `-test.bench`：语法:`-test.bench="test_name_regex"`，`.*`表示测试全部压力测试函数
-3. `-count=num`：指定执行多少次
-4. `-benchmem`：输出内存情况。比如输出结果中的`144 B/op    2 allocs/op`，表示每次操作需要进行2次内存分配，分配114字节的内存
+3. `-count=num`：指定执行多少次，默认是一次
+4. `-benchmem`：显示内存分配情况。比如输出结果中的`144 B/op    2 allocs/op`，表示每次操作需要进行2次内存分配，分配114字节的内存
 5. `-benchtime=time`：性能测试运行的时间，默认是1s。有两种写法：
     1. 时间，比如
     
+        ```bash
+        -benchtime=10
+        -benchtime=1h20s
         ```
-        ```
-    2. 次数，比如
+    2. 次数，后缀必须是`x`，比如
         
-        后缀x是运行
+        ```bash
+        -benchtime=10x
+        ```
+6. `-timeout t`:超时时间，如果测试时间如果超过t则panic,默认10分钟
+7. `-v`:显示测试的详细信息，也会把Log、Logf方法的日志显示出来
 
 `b *testing.B`拥有`testing.T`的全部接口，除此之外还有：
-
 1. `SetBytes( i uint64)` 统计内存消耗， 如果你需要的话
 2. `SetParallelism(p int)` 制定并行数目
 3. `StartTimer / StopTimer / ResertTimer` 操作计时器
+    1. `ResetTimer()`:重置计时器为0，这样可以避免之前的代码干扰计时
+        
+        ```go
+        func BenchmarkDeviceCountDaoImpl_BatchUpsertDeviceCountHour(b *testing.B) {
+            // 一大堆初始化代码
+            {...}
+            // 使用b.ResetTimer()避免上面的代码干扰计时
+            b.ResetTimer()
+            for i := 0; i < b.N; i++ {
+                // 被测试的代码要放在for循环里
+                err = deviceCountDao.BatchUpsertDeviceCountHour(deviceCounts, start)
+                assert.NoError(b, err)
+            }
+        }
+        ```
 
 `*testing.PB`接口：
 
@@ -2712,6 +2752,88 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 2. `-m -f={{.Dir}}`:查看主模块的根目录
 2. `-m all`:查看当前的依赖和版本信息
 
+### 1.3 pprof
+用于可视化和性能分析的工具。
+> Profiling 一般翻译为 画像
+
+工具的两个版本：
+1. 从 Go 1.11 开始, 火焰图被集成进入 Go 官方的 pprof 库，直接使用`go tool pprof -http=":8081" [binary] [profile]`
+2. 如果低于1.11版本，可以从git安装`go get -u github.com/google/pprof`，然后使用`pprof -http=":8081" [binary][profile]`。这个版本比官方的pprof精致一些，可以显示火焰图(Flame Graph)，并且是动态的。
+
+PProf 关注的模块:
+- CPU profile：报告程序的 CPU 使用情况，按照一定频率去采集应用程序在 CPU 和寄存器上面的数据
+- Memory Profile（Heap Profile）：报告程序的内存使用情况
+- Block Profiling：报告 goroutines 不在运行状态的情况，可以用来分析和查找死锁等性能瓶颈
+- Goroutine Profiling：报告 goroutines 的使用情况，有哪些 goroutine，它们的调用关系是怎样的
+
+使用：支持以下三种使用模式
+1. Report generation：报告生成
+
+    ```go
+    // 生成pprof file
+    go test -bench=. -benchmem -cpuprofile profile.out
+    // 同时看内存
+    go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out
+    
+    // 启动 pprof 可视化界面
+    // 每个方框代表一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系），箭头代表调用关系，箭头上的时间代表被调用函数的执行时间
+    // 如果报错 failed to execute dot. Is Graphviz installed? Error: exec: "dot": executable file not found in $PATH
+    // 需要安装 graphviz
+    // 1. 使用官方的启动
+    go tool pprof profile.out
+    go tool pprof -http=:8080 cpu.prof
+    // 2. 使用git版本启动
+    pprof -http=:8080 cpu.prof
+    
+    // 可视化界面支持多种显示模式:top、graph、peek、source、火焰图等
+    // 支持精确定位: list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时
+    list FuncA
+    // 如果想要了解对应的汇编代码，可以使用 disadm <regex> 命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 weblist 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码
+    ```
+2. Interactive terminal use：交互式终端使用，形如`go tool pprof -http=":8081" [binary] [profile]`
+3. Web interface：Web 界面    
+    
+什么是火焰图：火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表，因为它的样子近似火焰而得名。火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU时间的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。调用顺序由上到下，每一块代表一个函数，越大代表占用 CPU 的时间更长。同时它也支持点击块深入进行分析.
+1. flat、flat% 表示函数在 CPU 上运行的时间以及百分比
+2. sum% 表示当前函数累加使用 CPU 的比例
+3. cum、cum%表示该函数以及子函数运行所占用的时间和比例，应该大于等于前两列的值
+
+golang代码中引入pprof包的两种方式：
+1. runtime/pprof：采集程序（非 Server）的运行数据进行分析。
+    1. 它用来产生 dump 文件，再使用 Go Tool PProf 来分析这运行日志。
+        
+        ```go
+        // 比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 StopCPUProfile() 即可。
+        // 想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了
+        ```
+2. net/http/pprof：采集 HTTP Server 的运行时数据进行分析。
+    1. 使用：可以做到直接看到当前 web 服务的状态，包括 CPU 占用情况和内存使用情况等。
+        
+        ```go
+        // 如果使用的默认的 http.DefaultServeMux,只需要这样引入就行了
+        import _ "net/http/pprof"
+        
+        // 如果应用使用了自定义的 Mux，则需要手动注册一些路由规则：
+        r.HandleFunc("/debug/pprof/", pprof.Index)
+        r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+        ...
+        // 服务起来之后，就会多多一条路由，如http://127.0.0.1:8000/debug/pprof，有以下输出
+        /debug/pprof/
+        
+        profiles:
+        0    block
+        62    goroutine
+        444    heap
+        30    threadcreate
+        
+        full goroutine stack dump
+        // 这个路径下还有几个子页面：
+        /debug/pprof/profile：访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载
+        /debug/pprof/heap： Memory Profiling 的路径，访问这个链接会得到一个内存 Profiling 结果的文件
+        /debug/pprof/block：block Profiling 的路径
+        /debug/pprof/goroutines：运行的 goroutines 列表，以及调用关系
+        ```
+
 ## 2 其他与go有关的工具
 ### 2.1 Cgo
 编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
@@ -3398,6 +3520,12 @@ func main() {
 1. `Reader`：
     1. 即使我们在读取的时候遇到错误，但是也应该处理已经读到的数据，因为这些已经读到的数据是正确的，如果不进行处理丢失的话，读到的数据就不完整了
 2. `Writer`
+    
+    ```go
+    // Convert String to io.Writer
+    var str string
+    bytes.NewBufferString(str)
+    ```
 3. `Closer`
 4. `Seeker`
 
@@ -3457,6 +3585,7 @@ func writeFile(path string, b []byte) {
     // For example "dir/myname.054003078.bat"
     ```
 5. `TempDir("dirA","patternA")`:create a globally unique temporary directory.如果dirA为空，则默认使用`os.TempDir()`
+6. `NopCloser(r io.Reader) io.ReadCloser`:NopCloser用一个无操作的Close方法包装Reader，返回一个ReadCloser接口，它的`Close()`方法是一个空实现，什么都没做
 
 变量：
 1. `Discard`：Discard 是一个 io.Writer 接口，调用它的 Write 方法将不做任何事情并且始终成功返回
@@ -3505,6 +3634,18 @@ func GetPulicIP() string {
 `Request`结构体:
 1. `URL`
 2. `RequestURI`
+3. `Body io.ReadCloser`
+    1. 它是readcloser，默认情况下，readAll之后就无法再次读取，如果我还想把body转发给其他服务怎么办呢：可以使用`ioutil.NopCloser()`实现复用
+        
+        ```go
+        // 把request的内容读取出来
+        var bodyBytes []byte
+        if c.Request.Body != nil {
+            bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+        }
+        // 把刚刚读出来的再写进去
+        c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+        ```
 
 
 常用方法：
@@ -3655,6 +3796,13 @@ func getFilelist(r string) {
 ### regexp
 正则相关，具体参考正则表达式章节
 
+### rsa
+结构体:
+1. `PublicKey`:它的`N`是modulus(模数)，E是public exponent(公钥指数)
+    1. `PublicKey.N.BitLen`:公钥长度
+2. `PrivateKey`:`D`是private exponent(私钥指数)
+    1. `PrivateKey.N.BitLen`:私钥长度
+
 ### runtime
 runtime包主要用于调试和分析运行时信息，在很多场合都会用到，比如日志和调试。函数表面看起来简单，但是功能强大，常用的几个函数如下：
 1. `Caller(skip int)(pc uintptr, file string, line int, ok bool)`:提供当前goroutine的栈上的函数调用信息。返回当前的PC值、正在执行的文件名（代码文件绝对路径，这个路径不会因为编译成可执行文件而改变，也不会因为go run的位置而改变）、代码行号。参数 skip 是要跳过的栈帧数, 若为 0 则表示 `Caller()` 的调用者。由于历史原因, 该参数和`Callers` 中的 skip 含义并不相同。
@@ -3797,7 +3945,7 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 
 10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
-1. `Unix()`:时间戳（秒）：向下取整，默认使用系统的时区。
+1. `Unix(sec int64, nsec int64) Time`:把时间戳 转为 时间：向下取整，默认使用系统的时区。
 
 跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
 
@@ -3820,9 +3968,9 @@ fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
 golang 提供了下面几种类型：
 - 时间点(Time)
     1. 使用
-        1. `Time.Format`
-        2. `Time.Truncate`:去尾法求近似值
-        3. `Time.Round()`:四舍五入法求近似值
+        1. `Time.Format()`
+        2. `Time.Truncate(d Duration)`:去尾法求近似值
+        3. `Time.Round(d Duration)`:四舍五入法求近似值
 - 时间段(Duration):
 
         ```golang
@@ -4053,6 +4201,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     ```bash
     GOPRIVATE=*.domain.cc # 一般domain.cc是你公司私有git仓库的域名地址，这样就可跳过proxy的检查
     ```
+    当然，还需要配置git，如`git config --global url."git@*.domain.cc:libA".insteadOf "https://*.domain.cc/libA"`
 
 `GONOPROXY`、`GONOSUMDB`、`GOPRIVATE`的关联:这三个环境变量都是用在当前项目依赖了私有模块，也就是依赖了由 GOPROXY 指定的 Go module proxy 或由 GOSUMDB 指定 Go checksum database 无法访问到的模块时的场景。它们三个的值都是一个以英文逗号 “,” 分割的模块路径前缀，匹配规则同 path.Match。其中 GOPRIVATE 较为特殊，它的值将作为 GONOPROXY 和 GONOSUMDB 的默认值，所以建议的最佳姿势是只是用 GOPRIVATE。比如`GOPRIVATE=*.corp.example.com`,表示所有模块路径以 corp.example.com 的下一级域名 (如 team1.corp.example.com) 为前缀的模块版本都将不经过 Go module proxy 和 Go checksum database，需要注意的是不包括 corp.example.com 本身
 
@@ -4132,6 +4281,8 @@ go mod命令:
     // 修改require包的版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
     go mod edit -require=github.com/360EntSecGroup-Skylar/excelize@v1.3.1
     // 修改引用
+    // 比如开发公共包时使用本地的公共包代替调试
+    go mod edit -replace xxx.com/libA=$(your_local_libA)
     // 屏蔽包
     // 删除包
     ```
@@ -4185,6 +4336,9 @@ go mod命令:
 1. 公有库升级的时候所有人都升级，不会存在有的人的服务没有升级的情况
 2. 避免重复造轮子
 3. 方便依赖管理
+
+## 8 自托管 Go 模块代理
+参考：https://goproxy.cn/
 
 ## N 其他
 1. 有空的时候可以多看看Google的工程师是如何实现的

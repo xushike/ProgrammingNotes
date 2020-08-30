@@ -56,9 +56,11 @@ docker中使用:
     1. https://github.com/emqx/emqx-rel/tree/master/deploy/docker
 1. 获取镜像
 2. 启动`docker run -d --name emqx-with-modules -p 1883:1883 -p 8083:8083 -p 8883:8883 -p 8084:8084 -p 18083:18083 emqx/emqx`
-3. 修改配置
-    1. 延迟发布模块
-    2. 端口
+3. 修改配置:可以改配置文件(较麻烦)，也可以进入容器里面使用`emqx_ctl`等命令来操作(推荐)，比如`emqx_ctl plugins load emqx_auth_http`
+    1. 插件：每个插件自己的配置在`/opt/emqx/etc/plugins`下面
+    2. 模块
+        1. 延迟发布模块
+    3. 端口
 
 # 三 基础
 ## 1 插件和内置模块
@@ -70,6 +72,7 @@ docker中使用:
         1. 比如发布`$delayed/3/world`,如果订阅了`world`会匹配到，如果订阅了`$delayed/3/world`或`/world`则不会被匹配到。
 3. 多语言支持插件：emqx_extension_hook
 4. 插件模版：emqx_plugin_template
+5. emqx_auth_http:HTTP 认证使用外部自建 HTTP 应用认证授权数据源，根据 HTTP API 返回的数据判定授权结果，能够实现复杂的 ACL 校验逻辑。
 
 ### 内置模块
 参考:https://docs.emqx.io/broker/latest/cn/advanced/internal-modules.md

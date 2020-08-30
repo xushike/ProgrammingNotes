@@ -279,6 +279,12 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
 3. 通信框架：MINA 和 Netty。
 
 ### 1.30 PKI(Public Key Infrastructure,公钥基础设施)
+参考：
+1. https://tools.ietf.org/html/rfc3280#section-4.1.2.2
+2. golang
+    2. https://golang.org/src/crypto/tls/generate_cert.go
+    3. https://golang.org/src/crypto/x509/example_test.go
+
 公钥基础设施是一个包括硬件、软件、人员、策略和规程的集合，用来实现基于公钥密码体制的密钥和证书的产生、管理、存储、分发和撤销等功能。
 
 证书机构CA:证书机构CA是PKI的信任基础，它管理公钥的整个生命周期，其作用包括：发放证书、规定证书的有效期和通过发布证书废除列表(CRL)确保必要时可以废除证书。
