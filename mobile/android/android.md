@@ -236,10 +236,11 @@ SmartBar
 
 ### 2.2 小米
 
-
-
 # 六 问题
-## 2 未解决
+## 1 dl.google.com 无法下载的问题
+不需要科学上网，修改DNS就可以解决：去[http://ip.tool.chinaz.com](http://ip.tool.chinaz.com/)查询`dl.google.com`的ip，然后ping一个可用的，将其放到hosts文件中就可以了。
+
+# 七 待整理
 1. android framwork和anfroid sdk
 2. 统一推送联盟
 3. Hybrid App（混合模式移动应用）是指介于web-app、native-app这两者之间的app，兼具“Native App良好用户交互体验的优势”和“Web App跨平台开发的优势”。
@@ -255,8 +256,6 @@ SmartBar
 10. 不同视图的id可以相同?
 11. logcat
 12. 如何给xml中的属性注释
-
-# 七 待整理
 1. 临时文件目录是`/data/local/tmp`?
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
 2. 导入项目的几种方式
@@ -267,3 +266,4 @@ SmartBar
 6. JuiceSSH
 
 7.  12 栏响应式栅格布局?
+8. Jetpack

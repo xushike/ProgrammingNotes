@@ -2121,7 +2121,7 @@ go使用三个`With`前缀的函数来派生子context。
 1. `func WithCancel(parent Context) (ctx Context, cancel CancelFunc)`,传入父Context，返回子Context，以及一个取消函数用来取消Context。
 2. `WithDeadline()`：传递截止时间，到了该时间点自动取消Context，也可以主动提前取消。
 3. `WithTimeout()`：和上面类似，传入时间，超过这个时间自动取消。使用 Timeout 会导致内部使用 time.AfterFunc，从而会导致 context 在计时器到时之前都不会被垃圾回收。所以在建立之后，立即 defer cancel() 是一个好习惯
-4. `WithValue()`：生成一个绑定了一个键值对数据的Context，虽然key的类型是interface{}，但是key必需具有可比性(comparable)，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
+4. `WithValue(parent Context, key, val interface{}) Context`：生成一个绑定了一个键值对数据的Context，虽然key的类型是interface{}，但是key必需具有可比性(comparable)，value必需是线程安全的。通过`ctx.Value(key)`可以获取对应的value。一般value用来传必需的数据，而不是什么都传。
 
 ## 12 底层编程
 主要指C语言相关
@@ -2630,8 +2630,8 @@ go run *.go
 如果不能编译和安装，还会获取吗？
 
 #### Go modules 启用
-`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有一下几种用法：
-1. `go get xxx@latest`：拉取最新版本，(如果有的话，优先选择tag，否则选择commit)
+`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有以下几种用法：
+1. `go get xxx@latest`：拉取最新版本:如果有的话，优先选择tag，否则选择commit(所以latest可能不是拉取的最新的)
 1. `go get xxx@master`：拉取master分支的最新commit
 1. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
 1. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
@@ -2640,11 +2640,11 @@ go run *.go
 1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
 2. 如果您的模块依赖于具有require D v1.0.0的模块A，并且您的模块还依赖于具有require D v1.1.1的模块B，则最小版本选择将会选择D的v1.1.1版本用以构建（使用最高版本）  
 
-可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本
+可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本，比如`go get foo@'<v1.6.2'`
 
 参数：
 1. `-u=patch`将只更新小版本，例如从v1.2.4到v1.2.5   
-2. `go get -u`：只更新主要模块，忽略单元测试
+2. `go get -u`：更新次级或补丁版本号，忽略单元测试
 2. `go get -u ./...`：递归更新所有子目录的所有模块，忽略单元测试
 2. `go get -u -t`：更新主要模块，包括单元测试
 2. `go get -u -t ./...`：递归更新所有子目录的所有模块，包括单元测试
@@ -2745,12 +2745,47 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 | GOTOOLDIR	|go 语言工具所在的目录绝对路径       |
 
 ### 1.12 go list
-默认列出的是module名
+List lists the named packages, one per line.列出指定的package，如果未指定任何参数，默认列出的是根module名。
 
 参数：
-1. `-m`：查看主模块的路径
-2. `-m -f={{.Dir}}`:查看主模块的根目录
-2. `-m all`:查看当前的依赖和版本信息
+1. `all`：列出所有依赖的packages
+1. `-m`：list modules instead of packages
+2. `-f`:格式化，比如`-f={{.Dir}}`:查看主模块的根目录
+4. `-versions packageA`:显示包的版本历史
+5. `-u`:显示包的可用latest版本
+
+使用：
+```bash
+# 不带任何参数，显示根module名，比如当前项目的module叫projectA
+# go list 
+projectA
+
+# go list all
+archive/tar
+archive/zip
+bufio
+bytes
+compress/bzip2
+compress/flate
+...
+
+# go list -m all
+cloud.google.com/go v0.57.0
+cloud.google.com/go/bigquery v1.5.0
+cloud.google.com/go/datastore v1.1.0
+cloud.google.com/go/firestore v1.1.0
+...
+
+# 查看包的版本历史
+# go list -m -versions github.com/Azure/go-autorest/autorest 
+github.com/Azure/go-autorest/autorest v0.1.0 v0.2.0 v0.3.0 v0.4.0 v0.5.0 v0.6.0 v0.7.0 v0.8.0 v0.9.0 v0.9.1 v0.9.2 v0.9.3 v0.9.4 v0.9.5 v0.9.6 v0.9.7 v0.9.8 v0.10.0 v0.10.1 v0.10.2 v0.11.0 v0.11.1 v0.11.2 v0.11.3 v0.11.4
+
+# 查看包的可用latest版本
+# go list -u -m all
+cloud.google.com/go v0.57.0 [v0.65.0]
+cloud.google.com/go/bigquery v1.5.0 [v1.10.0]
+...
+```
 
 ### 1.3 pprof
 用于可视化和性能分析的工具。
@@ -3053,6 +3088,16 @@ go的序列化/反序列化应该是有顺序的（待验证）
 5. 分组(grouping):分组有两个作用，一是将里面的内容作为一个整体，二是用于捕获和非捕获
     1. `(xxx)`是捕获分组，会保存起来，在正则替换的时候，“替换内容”中可以使用`$1`、`${1}`、`$name`、`${name}`这样的“分组引用符”获取相应的分组内容，其中`$0`代表整个匹配项，`$1`代表第`1`个分组，`$2` 代表第 2 个分组，以此类推。
         1. 命名捕获`(?<nameA>exp)`
+        
+        ```go
+        // 比如ReplaceAllString的repl就可以使用正则捕获的分组(`$1`等)
+        reg.ReplaceAllString(src, repl string) string 
+        
+        text := `aabbbbgbddesddfiid${name}, ${  age }你好啊
+        「」${中国人}} ${} ${titles.1}`
+        reg := regexp.MustCompile(`\$\{([^}]+)\}`)
+        bar = reg.ReplaceAllString(text, "$1")
+        ```
     2. `(?:xxx)`是非捕获分组，不会保存起来。
 6. 环视：写法和分组有点像，但是用法不一样。环视匹配的是特定位置，不匹配任何字符，也就是并不会“占用”字符。这一点与单词分界符`\b`，锚点`^`和`$`相似，所以环视更加通用。不过google的re2不支持环视，所以golang没有，想了解的话可以参考js正则里的前瞻后顾。
 6. 分支条件`|`：注意分支条件的顺序也很重要，因为匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件
@@ -3104,7 +3149,18 @@ go的序列化/反序列化应该是有顺序的（待验证）
 3. 包含All的方法捕获所有match, 返回值是一个slice. 同时一般会提供一个参数n作为最大匹配次数。
 4. 包含String的方法对string类型进行匹配，反之对[]byte进行匹配。
 5. 包含Submatch的方法返回所有子匹配，返回值是一个slice. 位置0是对应整个正则表达式匹配结果，位置n(n>0)是第n个子表达式(group) 匹配结果。
+    1. `FindAllStringSubmatch(s string, n int) [][]string`
 6. 包含Index的方法返回匹配的位置。例如，返回loc []int, 则与之对应的匹配字符为src[loc[0]:loc[1]].
+7. Replace相关方法
+    1. `*Regexp.ReplaceAllString(src, repl string) string`:这里的repl就可以使用正则捕获的分组(`$1`等)
+        
+        ```go
+        text := `aabbbbgbddesddfiid${name}, ${  age }你好啊
+        「」${中国人}} ${} ${titles.1}`
+        reg := regexp.MustCompile(`\$\{([^}]+)\}`)
+        bar = reg.ReplaceAllString(text, "$1")
+        ```
+    2. `*Regexp.ReplaceAllStringFunc(src string, repl func(string) string) string`:这里repl里不能使用捕获分组了
 
 ### 6.3 例子
 看下例子很容易就明白怎么使用了
@@ -3362,6 +3418,53 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
 1. `NewCertPool() *CertPool`:创建一个新的、空的 CertPool
 2. `*CertPool.AppendCertsFromPEM()`:尝试解析所传入的 PEM 编码的证书。如果解析成功会将其加到 CertPool 中
 
+### database
+#### database/sql
+
+常用：
+1. `Open(driverName, dataSourceName string) (*DB, error)`:创建一个数据库抽象操作接口,它返回一个`sql.DB`指针，注意它并不代表一个数据库连接, 它是一个已存在的数据库的抽象访问接口。这个连接是延时初始化的(lazy init), 即`sql.Open()`并不会立即建立一个数据库的网络连接, 也不会对数据库链接参数的合法性做检验(也就是说没真正建立了解之前，dataSourceName乱填也不会报错), 它仅仅是初始化一个 sql.DB 指针，当我们进行第一次数据库查询操作时, 此时才会真正建立网络连接。其他细节和最佳实践如下
+    1. sql.DB 为我们提供了两个重要的功能:
+        1. sql.DB 通过数据库驱动为我们管理底层数据库连接的打开和关闭操作.
+        2. sql.DB 为我们管理数据库连接池：所以我们每次进行数据库操作时, 都是从连接池中取出一个连接, 当操作任务完成时, 再将连接返回到连接池中, 如果我们没有正确地将连接返回给连接池, 会造成打开过多的数据库连接, 使数据库连接资源耗尽.
+    2. 如果我们想立即检查数据库连接是否可用, 那么可以利用 sql.DB 的 `Ping()` 方法
+    3. sql.DB 对象是作为长期生存的对象来使用的, 应当避免频繁地调用 `Open()` 和 `Close()`，一般是创建一个 sql.DB 并将其保存起来, 每次操作此数据库时, 传递此 sql.DB 指针即可。
+        > the DB handle is meant to be long-lived and shared between many goroutines.
+
+结构体：
+1. `sql.DB`
+    1. `Query(query string, args ...interface{}) (*Rows, error)`:执行 SQL 语句, 此方法会返回一个 Rows 作为查询的结果
+    2. `Close() error`：关闭数据库连接池，一般不会用到
+2. `sql.Rows`:
+    1. `Next() bool`:迭代查询数据
+    2. `Scan(dest ...interface{}) error`:读取每一行的值。需要注意顺序，例如`SELECT * FROM user WHERE id = 1`查询的行的 column 顺序是 "id, name, age", 因此 rows.Scan 也需要按照此顺序 `rows.Scan(&id, &name, &age)`, 不然会造成数据读取的错位.
+    3. `Close() error`:每次 db.Query 操作后, 都需要调用 `rows.Close()`. 因为 `db.Query()` 会从数据库连接池中获取一个连接, 如果我们没有调用 `rows.Close()`, 则此连接会一直被占用. 因此通常我们使用 `defer rows.Close()` 来确保数据库连接可以正确放回到连接池中。而且该方法是幂等的，多次调用不会有副作用。
+        > Close is idempotent and does not affect the result of Err
+    4. `Prepare(query string) (*Stmt, error)`:返回预编译语句(PreparedStatement)
+3. `sql.Stmt`：
+    1. 预编译语句有很多好处
+        1. 可以实现自定义参数的查询
+        2. 通常比手动拼接字符串 SQL 语句高效.
+        3. 防止SQL注入攻击
+    1. `Query(args ...interface{}) (*Rows, error)`
+    2. `Close() error`
+### encoding
+各种编码解码
+
+#### encoding/binary
+1. `Size()`：返回编码某些类型数据需要的字节数（待补充）
+
+#### encoding/csv
+#### encoding/json
+参考json部分
+
+#### encoding/pem
+Package pem implements the PEM data encoding, which originated in Privacy Enhanced Mail. The most common use of PEM encoding today is in TLS keys and certificates. See RFC 1421.
+
+使用：
+1. `Decode(data []byte) (p *Block, rest []byte)`:PEM到Block
+2. `Encode(out io.Writer, b *Block) error`:Block到输出PEM
+3. `EncodeToMemory(b *Block) []byte`:Block到内存PEM
+
 ### errors
 1. `New(text string) error`
 2. `Unwrap(error) error`:go1.13新增，用于获得被嵌套的error。每次调用解开最外面的一层，如果想获取更里面的，需要调用多次`errors.Unwrap`函数。最终如果一个error不是warpping error，那么返回的是nil。
@@ -3612,23 +3715,28 @@ fmt.Println(rand.Intn(100))
 ```
 
 ### net
-简单的获取 IP：
-```go
-func GetPulicIP() string {
-    conn, _ := net.Dial("udp", "8.8.8.8:80")
-    defer conn.Close()
-    localAddr := conn.LocalAddr().String()
-    idx := strings.LastIndex(localAddr, ":")
-    return localAddr[0:idx]
-}
-```
+使用：
+1. 简单的获取 IP：
+
+    ```go
+    func GetPulicIP() string {
+        conn, _ := net.Dial("udp", "8.8.8.8:80")
+        defer conn.Close()
+        localAddr := conn.LocalAddr().String()
+        idx := strings.LastIndex(localAddr, ":")
+        return localAddr[0:idx]
+    }
+    ```
 
 常用func：
 1. `ParseIP(string) IP`:解析ip地址
 2. `ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`：解析`TCPAddr`。`TCPAddr`表示TCP的地址信息
 3. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
-4. `SetReadDeadline()`、`SetWriteDeadline()`：设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。
 5. `SetKeepAlive()`:设置keepAlive属性，是操作系统层在tcp上没有数据和ACK的时候，会间隔性的发送keepalive包，操作系统可以通过该包来判断一个tcp连接是否已经断开，在windows上默认2个小时没有收到数据和keepalive包的时候人为tcp连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。
+
+常用结构体：
+1. `net.TCPConn`
+    1. `SetReadDeadline(t time.Time) error`、`SetWriteDeadline(t time.Time) error`:设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。
 
 #### net/http
 `Request`结构体:
@@ -3968,9 +4076,14 @@ fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
 golang 提供了下面几种类型：
 - 时间点(Time)
     1. 使用
-        1. `Time.Format()`
-        2. `Time.Truncate(d Duration)`:去尾法求近似值
-        3. `Time.Round(d Duration)`:四舍五入法求近似值
+        1. `Format(layout string) string`:时间格式化，不支持c、java、python等的strftime方式(形如`%Y-%m-%d %H:%M:%S`)写法，而是用采用了更为直观的参考时间(reference time)替代strftime的各种标准占位符
+            
+            ```go
+            fmt.Println(time.Now().Format("%Y-%m-%d %H:%M:%S")) // 原封不动地输出: %Y-%m-%d %H:%M:%S
+
+            ```
+        2. `Truncate(d Duration)`:去尾法求近似值
+        3. `Round(d Duration)`:四舍五入法求近似值
 - 时间段(Duration):
 
         ```golang
@@ -4096,26 +4209,6 @@ golang 提供了下面几种类型：
 ### utf8
 与 rune 相关的函数
 
-### encoding
-各种编码解码
-
-#### encoding/binary
-1. `Size()`：返回编码某些类型数据需要的字节数（待补充）
-
-#### encoding/csv
-#### encoding/json
-参考json部分
-
-#### encoding/pem
-Package pem implements the PEM data encoding, which originated in Privacy Enhanced Mail. The most common use of PEM encoding today is in TLS keys and certificates. See RFC 1421.
-
-使用：
-1. `Decode(data []byte) (p *Block, rest []byte)`:PEM到Block
-2. `Encode(out io.Writer, b *Block) error`:Block到输出PEM
-3. `EncodeToMemory(b *Block) []byte`:Block到内存PEM
-
-
-
 ## 3 go的编译器
 1. 变量的静态类型在编译的时候就确定了
 
@@ -4163,10 +4256,10 @@ vendor存在的问题：
 ### 6.4 vgo
 vgo是go modules的前身(最初的 Go Module 提案的名称叫做 vgo)
 
-### 6.5 go modules
+### 6.5 go modules(go mod)
 参考：https://github.com/developer-learning/reading-go/issues/468
 
-Go1.11推出了模块（Modules），随着模块一起推出的还有模块代理协议（Module proxy protocol），通过这个协议我们可以实现 Go 模块代理（Go module proxy），aka 依赖镜像。Go 1.11 和 Go 1.12 模块不太完善，那么 Go 1.13 更加完善。Go 1.13 中的 GOPROXY 环境变量拥有了一个在中国大陆无法访问到的默认值 `proxy.golang.org`,最终 Go 核心团队仍然无法为中国开发者提供一个可在中国大陆访问的官方模块代理，可以使用七牛云的`goproxy.cn`
+Go1.11推出了模块（Modules），随着模块一起推出的还有模块代理协议（Module proxy protocol），通过这个协议我们可以实现 Go 模块代理（Go module proxy），aka 依赖镜像。Go 1.11 和 Go 1.12 模块不太完善，那么 Go 1.13 更加完善。Go 1.13 中的 GOPROXY 环境变量拥有了一个在中国大陆无法访问到的默认值 `proxy.golang.org`,最终 Go 核心团队仍然无法为中国开发者提供一个可在中国大陆访问的官方模块代理，可以使用七牛云的`goproxy.cn`。现在，go mod在go1.13中默认开启
 
 它有几个特点（待补充）：
 1. 相当于是抛弃了GOPATH：Go modules 出现的目的之一就是为了解决 GOPATH 的问题，也就相当于是抛弃 GOPATH 了。
@@ -4276,7 +4369,7 @@ go mod命令:
 4. `go mod edit`：编辑go.mod
     
     ```golang
-    // 修改当前module的版本：比如显式声明当前库为v2
+    // 修改当前module的版本：比如显式声明当前库为v2（具体参考发布部分笔记）
     go mod edit --module=private.com/pkg/v2 // go.mod里第一行就变成了：module private.com/pkg/v2，然后其他包引用该包的写法就变成了:private.com/pkg/v2/subPkgA
     // 修改require包的版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
     go mod edit -require=github.com/360EntSecGroup-Skylar/excelize@v1.3.1
@@ -4285,6 +4378,9 @@ go mod命令:
     go mod edit -replace xxx.com/libA=$(your_local_libA)
     // 屏蔽包
     // 删除包
+    go mod edit --droprequire=golang.org/x/crypto
+    // 格式化包：因为可能手动更改go.mod文件导致其格式乱掉
+    go mod edit -fmt
     ```
 5. `go mod vendor`:将依赖复制到项目路径的vendor文件夹中。(不过有了go module就不建议使用 go mod vendor了，因为 Go modules在淡化 Vendor 的概念，很有可能 Go2 就去掉了)
     1. `go run -mod=vendor main.go`（？）
@@ -4314,7 +4410,8 @@ go mod命令:
 2. `go mod download`
 
 如何给自己要发布的包设置不同的版本：
-1. 方法一：可以直接打标签，发布包新版本和其它包管理工具基本一致，不过打标签之前需要在 go.mod 中写入相应的版本号，官方推荐将上述过程在一个新分支来避免混淆，那么类如上述例子可以创建一个 v2 分支，但这个不是强制要求的。使用的时候形如`private.com/pkg/v2/subPkgA`
+1. 方法一：可以直接打标签，发布包新版本和其它包管理工具基本一致，不过打标签之前需要在 go.mod 中写入相应的版本号，官方推荐将上述过程在一个新分支来避免混淆，那么类如上述例子可以创建一个 v2 分支，但这个不是强制要求的。使用的时候形如`private.com/pkg/v2/subPkgA`。
+    1. 还有个细节是`v0`和`v1`一般不需要加这个后缀的
 2. 方法二：主线版本种加入 v2 文件夹，相应的也需要设置一个go.mod文件。使用的时候形如`private.com/pkg/subPkgA/v2`(注意和方法一不同)
     
     ```bash

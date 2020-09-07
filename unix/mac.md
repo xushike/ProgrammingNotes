@@ -176,9 +176,8 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 2. 中科大：
     1. git remote set-url origin git://mirrors.ustc.edu.cn/brew.git
     2. ...
-    
-听说换本地源后更新可能不及时，暂时还没遇到这个问题，遇到了再说吧。
 
+换源的缺点是：有些源目前没有可替换源(比如部分cask包、部分通过tap添加的包)，在brew update时，更新到这些源仓库，依然需要向 Github 服务器fetch新的内容，速度较慢。
 
 特性：
 1. 支持断点续传（因为使用curl下载）
@@ -187,8 +186,12 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 1. 模糊搜索(search)、查看（info）使用形如`brew search <软件名>`
     1. 使用`info`时，没安装的会提示`not installed`。如果安装了多个版本，比如`brew info go`，多个都会列出来：
         
-        ```
-        /usr/local/Cellar/go/1.10.4 (8,188 files, 336.9MB)
+        ```bash
+        go: stable 1.15 (bottled), HEAD # 显示最新版本
+        Open source programming language to build simple/reliable/efficient software # 显示简介
+        https://golang.org # 显示网址
+        # 显示本地安装的版本和日期
+        /usr/local/Cellar/go/1.10.4 (8,188 files, 336.9MB) 
             Poured from bottle on 2018-09-17 at 20:35:32
         /usr/local/Cellar/go/1.12.9 (9,819 files, 452.8MB) *
             Poured from bottle on 2019-09-19 at 12:05:48
@@ -225,7 +228,7 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
         ```
     2. `brew tap repo_name`:shallow copy一个仓库。比如`brew tap adoptopenjdk/openjdk`
     3. 安装未shallow copy的仓库里的formulae，也会自动shallow copy该仓库
-3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。似乎会默认删除旧版本。
+3. 更新软件包:`brew upgrade name`，不加name则是更新所有可以更新的软件。似乎会默认删除旧版本。注意标记了自动更新`auto_update`的软件包，在执行更新指令时，并不会被列举出来。Homebrew 给出的说法是「Casks with auto_updates or version :latest will not be upgraded」。现在多数软件包都希望大家从软件内部检查并下载更新，但这并不利于 Homebrew 的管理。想要查看和升级这类软件包，需要在指令后面添加`--greedy`参数，比如`brew cask outdated --greedy`、`brew cask upgrade --greedy`。
     1. 显示所有有新版本的软件`brew outdated`
     2. 锁定包`brew pin formula`：不想更新某个包的时候使用，比如不想更新postgresql。解锁是`unpin`
 4. `brew cleanup`：清理旧版本，下载缓存、各种连接信息等。默认每30天会自动运行一次。

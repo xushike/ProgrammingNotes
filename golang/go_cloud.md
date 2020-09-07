@@ -250,6 +250,19 @@ https://github.com/go-gorm/gorm
 1. https://gorm.io/zh_CN/docs/create.html
 
 使用：
+1. 连接不同数据库的DSN格式和常用参数(todo)
+    1. 参考：
+        1. https://godoc.org/github.com/lib/pq
+        1. https://www.postgresql.org/docs/current/external-interfaces.html
+        1. https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+    1. mysql:
+        1. charset=utf8 客户端字符集为utf8
+        2. parseTime=true 支持把数据库datetime和date类型转换为golang的time.Time类型
+        3. loc=Local 使用系统本地时区
+        1. timeout：建立连接超时时间，比如"30s", "0.5m" or "1m30s",比如`timeout=10s`
+        2. readTimeout、writeTimeout:I/O读写超时时间
+    2. postgres
+
 1. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
     1. `FirstOrCreate()`:
     2. 使用`gorm:insert_option`
@@ -261,12 +274,14 @@ https://github.com/go-gorm/gorm
         ).Create(&model).Error
         ```
 2. 全局禁用表名复数:`SingularTable(true)`，不设置的话`User`的默认表名为`users`,设置后变成`user`。使用`TableName`设置的表名不受影响
-3. 日志：Gorm有内置的日志记录器支持，默认情况下，它会打印发生的错误。
+3. 日志：Gorm有内置的日志记录器支持，默认情况下，它会打印发生的错误。当启用`db.LogMode(true)`时，它会打印执行的每一条SQL
 
     ```go
     // 启用Logger，显示详细日志
     db.LogMode(true)
     ```
+4. `SetMaxOpenConns(100)`设置数据库连接池最大连接数
+4. `SetMaxIdleConns(20)`连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
 
 ## JWT
 https://github.com/dgrijalva/jwt-go
@@ -324,7 +339,8 @@ https://github.com/golangci/golangci-lint
 3. no such linter goerr113
     1. 可能原因:golangci-lint版本太低
 4. level=error msg="Running error: context loading failed: no go files to analyze"
-    1. 更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了，没搞懂
+    1. 场景一：更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了
+    2. 场景二：更新了go mod的某个包之后出现，同样执行下go build就好了
 5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
     1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
 
@@ -447,6 +463,9 @@ https://github.com/uber-go/zap
 4. error：错误信息（较严重），不知道系统能不能继续运行下去
 5. fatal：严重错误（特别严重，比如引起崩溃式的错误）
 
+使用：
+1. 
+
 ## 证书
 ### mkcert
 https://github.com/FiloSottile/mkcert
@@ -463,6 +482,10 @@ https://github.com/FiloSottile/mkcert
         ```
 2. 生成S/MIME邮件证书`mkcert myEmailA`
 3. 移动设备：如果你想让你的证书在移动设备上面受信任，那么就必须安装rootCA。你可以使用`mkcert -CAROOT`来生成一个rootCA.pem的文件。
+
+## json
+### jsoniter
+https://github.com/json-iterator/go
 
 # 五 经验
 ## 1 为什么需要框架

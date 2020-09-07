@@ -1094,6 +1094,21 @@ windows上`git log`、`git diff`等命令显示的中文是正确的，但是`gi
 ### 1.25 git rebase upstream/master vs git pull --rebase upstream master
 参考：https://stackoverflow.com/questions/15602037/git-rebase-upstream-master-vs-git-pull-rebase-upstream-master
 
+### 1.26 Failed to connect to 127.0.0.1 port 10010: Connection refused
+开了代理导致的,
+```bash
+# 查看代理
+env|grep -i proxy
+ALL_PROXY=socks5://127.0.0.1:10010
+
+# 取消代理
+unset ALL_PROXY
+```
+### 1.27 Could not resolve host: github.com
+应该是DNS污染
+1. 需要自己修改hosts
+2. 或者刷新DNS缓存`sudo killall -HUP mDNSResponder`(mac不同系统命令不一样)
+
 ## 2 未解决
 ### 2.N 其他
 2. git 可以只clone分支而不是master吗？
