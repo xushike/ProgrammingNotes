@@ -38,8 +38,6 @@
 1. golang
     1. 配置文件热加载
 
-1. kafka
-
 1. 种子工程的建设(angular,vue)
 2. 开发浏览器扩展:https://developer.mozilla.org/zh-CN/Add-ons/WebExtensions
 2. vpn和nat模式

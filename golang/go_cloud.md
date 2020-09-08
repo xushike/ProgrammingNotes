@@ -282,6 +282,7 @@ https://github.com/go-gorm/gorm
     ```
 4. `SetMaxOpenConns(100)`设置数据库连接池最大连接数
 4. `SetMaxIdleConns(20)`连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
+6. `DB.AutoMigrate(values ...interface{}) *DB`自动迁移,只会创建表、列和缺失索引的缺失，并不会改变现有的列的类型或删除未使用的列
 
 ## JWT
 https://github.com/dgrijalva/jwt-go

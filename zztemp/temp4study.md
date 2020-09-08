@@ -139,8 +139,6 @@
 2. 抢购这些是怎么做的
 2. 迪杰斯特拉算法（Dijkstra）
 2. 数据库拖库会怎么样
-    1. 防止sql注入：目前用的转义
-        1. 为什么转义之后就可以防了？
 2. 二进制转成数字还是字母是用的什么协议？
 2. sourcegraph
 2. https://www.jianshu.com/p/ffeeb3d0efd6
@@ -466,7 +464,6 @@ package github.com/cweill/gotests/...: exit status 1
 1. js 获取命令行输入怎么获取
 1. input只输入数字
 1. js在不同地方引入同一个模块的时候,是引用的同一个对象还是不同的对象
-2. SQL注入
 2. 回归最优解
 1. js date对象
 3. apply和call
@@ -545,7 +542,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. sql中#和$的区别
     2. 各sql的变量占位符是啥
         1. note:postgresql是$
-    3. 占位符防止sql注入
     4. 各sql 中 @#$%& 的区别
     5. 如何给数据库传数组等
     6. BEGIN和end if这些是存储过程用到的?普通sql中能用吗
@@ -1127,7 +1123,6 @@ END;
 108. liux如何命令行中打开图片，以及像mac那样命令行和文件夹互相打开
 109. go如何进入引入的包里查看代码
 110. linux如何递归查询目录里是否有某个文件
-111. 如何防止sql注入攻击
 112. 谷歌服务很费电怎么办
 113. scp可以复制到多个目录吗
 114. rpc
