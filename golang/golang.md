@@ -3369,6 +3369,11 @@ go的list的特点：
 参考context部分
 
 ### crypto
+#### crypto/hmac
+
+1. `New(h func() hash.Hash, key []byte) hash.Hash`
+2. `Equal(mac1, mac2 []byte) bool`
+
 #### crypto/md5
 使用md5加密的两种方法：
 ```golang
@@ -3457,6 +3462,9 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
 #### encoding/csv
 #### encoding/hex
 hex包实现了16进制字符表示的编解码。
+
+1. `EncodeToString(src []byte) string`:将字节切片转成十六进制编码字符串
+2. `DecodeString(s string) ([]byte, error)`：将十六进制编码字符串转成字节切片
 
 #### encoding/json
 参考json部分
@@ -3682,6 +3690,7 @@ func writeFile(path string, b []byte) {
 #### io/ioutil
 使用：
 1. `ReadAll`
+    1. ErrTooLarge(todo)
 2. `ReadFile()`:将文件内容加载到`[]byte`中
 3. `WriteFile(filename string, data []byte, perm os.FileMode) error`:WriteFile 向文件 filename 中写入数据 data,如果文件不存在，则以 perm 权限创建该文件,如果文件存在，则先清空文件，然后再写入,返回写入过程中遇到的任何错误。
 4. `TempFile("dirA","patternA")`:create a globally unique temporary file. It’s your own job to remove the file when it’s no longer needed.
@@ -4028,6 +4037,10 @@ fmt.Println("所有 goroutine 执行结束")
 1. `sync.Map` 不能使用`make()`创建
 2. 没有提供获取 map 数量的方法，替代方法是获取时遍历自行计算数量
 
+```go
+// 在遍历的同时做增加或删除操作，是会立即生效的
+```
+
 #### sync/atomic
 提供了一个Value类型用于原子操作
 1. `Value`:可以操作任意类型
@@ -4320,6 +4333,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
             example.com/banana/v2 v2.3.4
             example.com/pineapple v0.0.0-20190924185754-1b0db40df49a
             google.golang.org/grpc v1.30.0
+            github.com/dgrijalva/jwt-go v3.2.0+incompatible 
         )
 
         // exclude：用于从使用中排除/禁用一个特定的模块版本
@@ -4415,7 +4429,12 @@ go mod命令:
 
 如何给自己要发布的包设置不同的版本：
 1. 方法一：可以直接打标签，发布包新版本和其它包管理工具基本一致，不过打标签之前需要在 go.mod 中写入相应的版本号，官方推荐将上述过程在一个新分支来避免混淆，那么类如上述例子可以创建一个 v2 分支，但这个不是强制要求的。使用的时候形如`private.com/pkg/v2/subPkgA`。
-    1. 还有个细节是`v0`和`v1`一般不需要加这个后缀的
+    1. 如果版本号小于2，一般不需要加这个后缀，也就是说一般不需要加`v0`和`v1`
+    2. 如果版本号>=2，但是又没有放在新分支，引入的时候会怎么样呢？go命令会在go.mod中增加`+incompatible`(不兼容)标识，该标识只是表示你引用了一个不规范的Module，在使用上没有任何区别
+        
+        ```go
+        github.com/dgrijalva/jwt-go v3.2.0+incompatible
+        ```
 2. 方法二：主线版本种加入 v2 文件夹，相应的也需要设置一个go.mod文件。使用的时候形如`private.com/pkg/subPkgA/v2`(注意和方法一不同)
     
     ```bash
@@ -4656,7 +4675,7 @@ C:\Go\src\runtime\map.go:97:2: too many errors
 两种场景的解决方法都是使用go.mod的replace来替换
 
 ### 1.25  malformed module path "XXXX": missing dot in first path element
-go1.13的mod要求import 后面的path 第一个元素，符合域名规范，比如github.com/xxx/xxx
+go1.13的mod规范要求import后面的path第一部分必须符合域名规范，比如github.com/pkgA，而不能直接`pkgA`
 
 ## 2 未解决
 ### note: module requires Go 1.14

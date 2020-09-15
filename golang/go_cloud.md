@@ -63,7 +63,20 @@ Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建
 `goagen `
 
 `goa exmaple`:
-1. 比如`goa exqmple serverA/design`
+    
+```bash
+# 比如`goa example projectA/design，会生成如下cmd目录，同时根据design的接口在当前目录生成对应的接口impl文件
+cmd
+├── http_broker
+│   ├── grpc.go
+│   ├── http.go
+│   └── main.go
+├── http_broker-cli
+│   ├── grpc.go
+│   ├── http.go
+│   └── main.go
+└── main.go
+```
 
 `goa gen`
 1. 例子
@@ -342,8 +355,11 @@ https://github.com/golangci/golangci-lint
 4. level=error msg="Running error: context loading failed: no go files to analyze"
     1. 场景一：更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了
     2. 场景二：更新了go mod的某个包之后出现，同样执行下go build就好了
+    3. 场景三：
+        1. https://github.com/golangci/golangci-lint/issues/825
 5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
     1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
+6. ERRO Running error: context loading failed: failed to load program with go/packages: could not determine GOARCH and Go compiler
 
 ## 单元测试相关
 ### 单元测试辅助工具 mock
@@ -441,7 +457,7 @@ https://github.com/robfig/cron
 1. win(待补充)
 1. mac：`brew install protobuf`
 
-### protocbuf源码生成插件 protoc-gen-g
+### protocbuf源码生成插件 protoc-gen-go
 https://github.com/golang/protobuf/tree/master/protoc-gen-go
 
 `github.com/golang/protobuf/protoc-gen-go`
@@ -487,6 +503,15 @@ https://github.com/FiloSottile/mkcert
 ## json
 ### jsoniter
 https://github.com/json-iterator/go
+
+## kafka
+https://github.com/Shopify/sarama
+
+使用：
+1. 连接:golang连接kafka有三种client认证方式：
+    - 无认证
+    - TLS认证
+    - SASL/PLAIN认证, (其他SASL/SCRAM, SASL/GSSAPI都不支持)
 
 # 五 经验
 ## 1 为什么需要框架
