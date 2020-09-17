@@ -809,7 +809,7 @@ Apple<Integer> a2 = new Apple<>(234);
 ...
 ```
 
-系统并不存在真正的泛型类，所以不管传入哪一种类型的类型实参，它们在运行时还是用的同一个Apple类，即生成的都是Apple类而不是泛型类(Apple<T>类)，如下。所以在静态方法、静态初始化块、静态变量的声明和初始化中不允许使用泛型；`instanceOf()`后也不能使用泛型类。
+系统并不存在真正的泛型类，所以不管传入哪一种类型的类型实参，它们在运行时还是用的同一个Apple类，即生成的都是Apple类而不是泛型类(`Apple<T>`类)，如下。所以在静态方法、静态初始化块、静态变量的声明和初始化中不允许使用泛型；`instanceOf()`后也不能使用泛型类。
 
 ```java
 System.out.println(a1.getClass() == a2.getClass());//返回true
@@ -993,8 +993,11 @@ jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
     // 2. 重写clone()方法通过super.clone()调用Object类的clone方法，不重写也可
     ```
 2. `equals()`:判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
+
 ### time
-java8新增的日期、时间包（java.time包）
+java8新增的日期、时间包
+
+不要使用`new`关键字来创建，而是使用静态工厂方法，比如
 
 # 六 问题
 ## 1 已解决
@@ -1045,6 +1048,9 @@ overwrite:是C++中的概念,在java中可以不讨论.
 大意是：使用了java Agent的IDE上运行应用时会触发，但这个Error对程序其实没影响，可以无视。在Java 1.8.152+版本里已经修复。
 
 解决方案:点击IJ最上面菜单的`Help` -> `Edit Custom Properties`，没有这个properties文件的话，IJ会提示创建，然后在里面加上`idea.no.launcher=true`，重启IDEA生效。
+
+### 1.10 Package name 'xxx' does not correspond to the file path 'xxx' 
+参考：https://stackoverflow.com/questions/26440623/package-name-does-not-correspond-to-the-file-path-intellij
 
 ## 2 未解决
 1. 公有和私有jre的区别，什么时候用到？

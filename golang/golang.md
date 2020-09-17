@@ -509,7 +509,7 @@ i, j := 0, 1
     
 4. 指针,接口和引用类型（包括slice、map、chan和函数）变量对应的零值是nil。
 
-    注意:检查slice,map或者channel的空值用`len(s) > 0`而不是`s != nil && len(s) > 0`
+    注意:检查slice,map或者channel的空值用`len(s) > 0`而不是`s != nil && len(s) > 0`，不过还要注意并发的问题，比如channel，在执行到`len(s) > 0`的时候可能里面是空的，但是执行到下一行代码的时候有可能又有值了。
 5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
 6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
 
@@ -1150,7 +1150,7 @@ map的键的特性:
 
 带接收者的函数：go的结构体跟面向对象的编程语言中一个无方法的轻量级类一样，它在go里有着重要的地位，但Go中没有类的概念，要实现类的方法的功能需要使用带接收者的函数。
 
-Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。灵活使用可以实现类似java继承的功能，但不要强行用java的方式去使用go。
+Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。灵活使用可以模拟面向对象里继承的一部分功能，但不要强行用java的方式去使用go。
 
 重载：假如Student和Human都有phone字段，go的规则是最外层的优先访问。所以`student.phone`访问的是Student中的phone,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
 
@@ -1489,7 +1489,22 @@ go函数的大概结构:Go中大部分函数的代码结构几乎相同，首先
     ```
 
 ### 4.2 参数传递
-值传递：go的参数传递都是按值传递(passed by value)，对于引用类型，这个值指的标头值。每个引用类型创建的标头值是包含一个指向底层数据结构的指针的结构体。标头值里包含一个指针，所以传递标头值，本质上就是在共享底层数据结构。
+值传递：go的参数传递都是按值传递(passed by value)，不过对于不同数据类型具体有所不同：
+1. 对于引用类型(slice，map，channel和interface)，这个值指的标头值。每个引用类型创建的标头值是包含一个指向底层数据结构的指针的结构体。标头值里包含一个指针，所以传递标头值，本质上就是在共享底层数据结构。除了原理不一样，在表现上它和其他语言的"共享传递"是一样的--可以进行modify操作，但是add操作不生效。也可以称为"引用传递"
+    
+    ```go
+    // 可以进行modify操作，但是add操作不生效
+    // 以切片为例，意思就是修改切片里元素是生效的，但是对切片参数整个赋值并不会影响原切片(表现得和其他语言一样，但是原理和其他语言可能不一样：对切片参数整个赋值的时候，是把当前切片参数的底层数组重新指向了新的数组，而原切片的底层数组还是没变)
+    fn := func(s []int) {
+		s[0] = 10 // 修改切片里元素是生效的
+		s = []int{1, 2, 3} // 对切片参数整个赋值的时候，是把当前切片参数的底层数组重新指向了新的数组，而原切片的底层数组还是没变
+	}
+	foo := []int{4, 5, 6}
+	fn(foo)
+	fmt.Println(foo) // [10 5 6]
+    ```
+2. 对于指针，传递的是指针的地址，对指针参数进行add操作是生效的。也可以称为"址传递"。要想使add操作生效，必须使用“址传递”，`json.Unmarshal(data []byte, v interface{}) error`里参数v必须是非nil指针，就是因为要进行add操作。
+3. 其他类型传递的就是值的拷贝，也可以称为"值传递"
 
 ```go
 // 代码参考studyGo项目
@@ -1885,33 +1900,27 @@ func ExamplePrint() {
 
 `static type`（静态类型）：Go 是静态类型的。每一个变量有一个静态的类型，也就是说，有一个已知类型并且在**编译**时就确定下来了。比如例子1里：i的static type是`myInt`，j的static type是`int`，虽然两者的底层类型相同，但静态类型不同，只有做类型转换后才能相互赋值。
 
-
-```golang
-// 例子1
-type myInt int
-var i myInt
-var j int
-t := reflect.TypeOf(i) // t是myInt
-k := t.Kind() // k是int·
-```
-
 ### 8.2 反射和reflect包
 反射的定义：通过采用某种机制来实现对自己行为的描述（self-representation）和监测（examination），并能根据自身行为的状态和结果，调整或修改应用所描述行为的状态和相关的语义。每种语言的反射模型都不同，并且有些不支持反射。Golang的反射机制就是在运行时动态的调用对象的方法和属性。
 
-反射的原理：待补充
+反射的原理：在Golang的实现中，每个interface变量都有一个对应的pair，pair中记录了实际变量的值和类型，即(value, type)。在基本的层面上，反射只是一个检查存储在interface变量中的value和type的算法，value和type用类型`reflect.Value`和`reflect.Type`描述。尽管从`reflect.Value`也很容易得到`reflect.Type`（`reflect.Value.Type()`），但为了让value和type在概念上进行分离，我们更习惯用pair进行表达。一般可以通过reflect.ValueOf函数获取value，通过reflect.TypeOf函数获取type。
 
 反射回来的类型大概有：待补充
 
 <!-- 使用反射之前需要了解（感觉不够准确，后面再补充吧）：go的变量包括type和value两部分（所以nil!=nil？），type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、[]string)，concrete type是runtime系统看见的类型；类型断言能否成功，取决于变量的concrete type，而不是static type. 因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer。反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说，它的value是实际变量值，type是实际变量的类型，该pair对在连续赋值的过程中是不变的，所以反射就是用来检测存储在接口变量内部(值value，类型concrete type) pair对的一种机制。 -->
 
-reflect包:reflect包里的有两个重要结构`Type`和`Value`，`Type` 是一个接口，定义了所有类型相关的 api，reflect 里的`*rtype`实现了这个接口，通过 `reflect.TypeOf` 函数可以获取任何传入值的`*rtype`。`Value` 是一个 `struct`，通过 `reflect.ValueOf` 函数获取，它在*rtype的基础上又封装了传入值的 unsafe.Pointer 类型的地址以及这个值的元数据。 在 Type 和 Value 之上还有一个Kind，它代表传入值的原始类型。例子如下：
+reflect包:reflect包里的有两个重要结构`Type`和`Value`，`Type` 是一个接口，定义了所有类型相关的 api，reflect 里的`*rtype`实现了这个接口，通过 `reflect.TypeOf()` 函数可以获取任何传入值的`*rtype`。`Value` 是一个 `struct`，通过 `reflect.ValueOf()` 函数获取，它在*rtype的基础上又封装了传入值的 unsafe.Pointer 类型的地址以及这个值的元数据。 在 Type 和 Value 之上还有一个Kind，它代表传入值的原始类型。例子如下：
 ```go
 // 例子1
-type myInt int
+type myInt *int
 var i myInt
 var j int
-t := reflect.TypeOf(i) // t是myInt
-k := t.Kind() // k是int
+t1 := reflect.TypeOf(i)
+t2 := reflect.TypeOf(j)
+fmt.Println(t1) // myInt
+fmt.Println(t1.Kind() == reflect.Ptr, t1.Elem().Kind() == reflect.Int) // true true
+fmt.Println(t2) // int
+fmt.Println(t2.Kind() == reflect.Int) // true
 
 // 例子2
 var r io.Reader
@@ -1958,10 +1967,31 @@ v.SetFloat(7.1)
 1. 两种类型
     1. `Typeof()`和`Value.Type()`：api里说的是dynamic representation type，字面意思是表现类型，我理解为dynamic type,似乎也是concrete type。
     2. `Kind()`：返回specific kind of type，可以理解为原始类型，这些类型是有限的，比如int、struct、map、对于空接口返回的Invalid等
+        
+        ```go
+        // 判断interface是否为指针
+        reflect.ValueOf(i).Type().Kind() != reflect.Ptr
+        ```
 2. `ValueOf()`
 3. `Value.Elem()`：获取反射对象指针指向的值，如果指针的地址是可修改的（`CanSet()`方法为true），那么获取后就可以对它进行修改。非指针则panic
 4. `Value.Canset()`：判断值是否能修改，要求值可寻址且是导出的字段时才可修改。
-5. `Value.Interface().(xxx)`：可以将“反射类型对象”转变回“接口类型变量”，该方法只能用于导出字段（expected field），失败则panic
+    
+    ```go
+    var m = new(int)
+	v := reflect.ValueOf(m)
+	if v.Elem().CanSet() {
+		v.Elem().SetInt(10)
+		fmt.Println(*m) // 10
+    }
+    
+    var n *int
+	v := reflect.ValueOf(n)
+	if v.Elem().CanSet() { // false, 因为n是nil，不可寻址
+		v.Elem().SetInt(10)
+		fmt.Println(*n)
+	}
+    ```
+5. `Value.Interface().(xxx)`：将“反射类型对象”转变回“接口类型变量”，即还原接口值。该方法只能用于导出字段（expected field），失败则panic
     
     ```go
     // Value 转 原始类型
@@ -1969,6 +1999,11 @@ v.SetFloat(7.1)
         fmt.Println("after:", u1.Name, u1.Age)
     }
     ```
+6. 转换成基本类型,失败则panic
+    1. `Value.Bool() bool`
+    2. `Value.Bytes() []byte`
+    3. `Value.Int() int`
+    4. ...
 
 6. `DeepEqual()`
 
@@ -2966,7 +3001,26 @@ b := []byte(jsonStr)
 
 go的序列化/反序列化应该是有顺序的（待验证）
 
-### 4.1 解析JSON`func Unmarshal(data []byte, v interface{}) error`:注意这儿v必须是指针
+### 4.1 解析JSON func Unmarshal(data []byte, v interface{}) error
+文档说的：If v is nil or not a pointer, Unmarshal returns an InvalidUnmarshalError. 为什么一定要是指针呢，参考go的三种参数的传递方式。
+```go
+// i是非nil的指针，所以没问题
+var i = new(int)
+err := json.Unmarshal([]byte(`1`), i)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(*i)
+
+// j是nil指针，所以报错
+var j *int
+err = json.Unmarshal([]byte(`1`), j)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(*j)
+```
+
 可以解析到以下三种数据类型里。如果go类型是`interface{}`，而json类型是数字，解析之后默认会变成科学计数法：
 1. （最推荐）解析到结构体(已知被解析的JSON数据结构)，可以直接使用
     1. 例如JSON的key是Foo，那么怎么找对应的字段呢？
@@ -3248,6 +3302,10 @@ regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
 
 获取整数的最大值：对于无符号整数形如`^uint(0)`，对于有符号整数（最大值是首位0，其余1）形如`^uint(0) >> 1`。
 
+```go
+fmt.Println(^uint(0) >> 1) // 9223372036854775807
+```
+
 有符号类型的负数的十进制大小：对于有符号类型，如果最高位是1，表示是负数，根据补码规则，应该取反加1，比如有符号两位的`10`,取反加1是`10`,绝对值是`2`因为是负数，所以是`-2`
 
 ## 8 序列化/串行化（serialization）和反序列化
@@ -3461,7 +3519,7 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
 
 #### encoding/csv
 #### encoding/hex
-hex包实现了16进制字符表示的编解码。
+hex包实现了16进制字符的编解码。
 
 1. `EncodeToString(src []byte) string`:将字节切片转成十六进制编码字符串
 2. `DecodeString(s string) ([]byte, error)`：将十六进制编码字符串转成字节切片
@@ -3646,7 +3704,24 @@ func main() {
 
 有了 Reader 和 Writer 抽象，我们就可以格式化读写文件、内存块、字符串、网络文件等。（其实 java 1.5就有了）
 
-然后定义了原语组合接口，表示常用的文件流处理，比如`ReadWriter`（包含`Reader`和`Writer`）、`ReadWriteCloser`（包含`Reader`、`Writer`和`Closer`）。
+然后定义了原语组合接口，表示常用的文件流处理，比如
+1. `ReadWriter`（包含`Reader`和`Writer`）、
+2. `ReadWriteCloser`（包含`Reader`、`Writer`和`Closer`）。
+3. `ReadCloser`
+
+    ```go
+    // string to ReadCloser
+    rc := ioutil.NopCloser(strings.NewReader("xxx"))
+    // ReadCloser to string
+    // way 1:
+    rc.Read(buf)
+    string(buf)
+    
+    // way 2:
+    buf := new(bytes.Buffer)
+    buf.ReadFrom(rc)
+    s := buf.String()
+    ```
 
 为了兼容以往编程习惯，还定义了常见操作接口：
 1. `ReaderAt`、`WriterAt`
@@ -4173,6 +4248,7 @@ golang 提供了下面几种类型：
 1. `Now()`:形如``。在不同架构下它的精度是不一样的，在mac下是到微秒，但是linux下一般是到纳秒
     1. 参考
         1. https://github.com/golang/go/issues/11222
+2. 时间戳转时间`Unix(sec int64, nsec int64) Time`
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.

@@ -418,11 +418,14 @@ https://github.com/stretchr/testify
 ### 打桩 gostub
 github.com/prashantv/gostub
 
-接口友好，可以对全局变量、函数或过程打桩
+接口友好，可以对全局变量、函数或过程打桩。
+
+原理：Stub方法先在map中保存变量指针和变量初始值，然后修改变量指针指向的值为桩。Reset方法将map中保存的所有变量指针指向的值修改为初始值。
 
 使用：
 1. 为变量打桩`sutbs := Stub(targetVar, mockVar)`:用mockVar代替targetVar，sutbs提供了`Reset`方法用于恢复targetVar。(Reset需要放在defer中吗？)
-2. 为函数打桩:首先它不能对定义的函数(形如`func xxx(){}`)打桩，必须要声明成匿名函数，比如有匿名函数`var funcA = func (){}`，然后使用`StubFunc(&funcA, xxx...)`来打桩，当然也可以使用`Stub()`来打桩
+2. 为函数打桩:首先它不能对定义的函数(形如`func xxx(){}`)打桩，必须要声明成匿名函数，比如有匿名函数`var funcA = func (){}`，然后使用`StubFunc(&funcA, returnA, returnB...)`来打桩，当然也可以使用`Stub()`来打桩，不过`StubFunc`更简洁
+3. `Stubs.Reset()`对所有全局变量或函数变量的桩进行回滚
 
 最佳实践：
 1. 因为不能直接对第三方库的代码进行打桩，所以可以在项目中增加adapter目录用于适配层，然后对适配层的代码进行打桩
@@ -437,7 +440,10 @@ github.com/prashantv/gostub
     xxx = adapter.FuncA()
 
     // 打桩代码
-    StubFunc(&adapter.FuncA, xxx)
+    stubs := StubFunc(&adapter.FuncA, returnA, returnB...)
+    defer stubs.Reset()
+    stubs.StubFunc(&adapter.FuncB, ...)
+    stubs.StubFunc(&adapter.FuncC, ...)
     ```
 
 ## 容器相关
