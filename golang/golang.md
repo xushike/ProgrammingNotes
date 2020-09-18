@@ -3322,10 +3322,69 @@ fmt.Println(^uint(0) >> 1) // 9223372036854775807
 
 ### 8.1 protobuf
 参考：
+1. GitHub地址：https://github.com/protocolbuffers/protobuf
 1. https://www.ibm.com/developerworks/cn/linux/l-cn-gpb/index.html
 2. https://developers.google.com/protocol-buffers/docs/gotutorial
 
-Varint（待补充）
+Protobuf即Protocol Buffers，是Google公司开发的一种跨语言和平台的序列化数据结构的方式，是一个灵活的、高效的用于序列化数据的协议。与XML和JSON格式相比，protobuf更小、更快、更便捷。protobuf是跨语言的，并且自带一个编译器(protoc)，只需要用protoc进行编译，就可以编译成Java、Python、C++、C#、Go等多种语言代码，然后可以直接使用，不需要再写其它代码，自带有解析的代码。只需要将要被序列化的结构化数据定义一次(在.proto文件定义)，便可以使用特别生成的源代码(使用protobuf提供的生成工具)轻松的使用不同的数据流完成对结构数据的读写操作。甚至可以更新.proto文件中对数据结构的定义而不会破坏依赖旧格式编译出来的程序。
+
+所以总结它的优点如下：
+1. 性能号，效率高：序列化后字节占用空间比XML少3-10倍，序列化的时间效率比XML快20-100倍。
+1. 有代码生成机制：将对结构化数据的操作封装成一个类，便于使用。
+1. 支持向后和向前兼容：当客户端和服务器同时使用一块协议的时候， 当客户端在协议中增加一个字节，并不会影响客户端的使用(?)
+1. 支持多种编程语言：Protobuf目前已经支持Java，C++，Python、Go、Ruby等多种语言。
+
+缺点如下：
+1. 二进制格式导致可读性差
+2. 缺乏自描述
+
+使用：
+1. 安装[编译器](https://github.com/protocolbuffers/protobuf/releases)，安装后查看版本`protoc --version`
+2. 安装插件protoc-gen-go：`go get -u github.com/golang/protobuf/protoc-gen-go`
+2. 通过定义好的`.proto文件`来生成对应语言的代码，比如`protoc --proto_path=IMPORT_PATH --go_out=DST_DIR`,IMPORT_PATH声明了一个`.proto`文件所在的解析import具体目录。如果忽略该值，则使用当前目录。如果有多个目录则可以多次调用--proto_path，会顺序的被访问并执行导入。`-I=IMPORT_PATH`是`--proto_path`的简化形式。
+    1. 对于Go语言，编译器会为每个消息类型生成了一个`.pb.go`文件。
+3. 然后相应语言就可以操作在.proto文件中定义的消息类型，包括获取、设置字段值，将消息序列化到一个输出流中以及从一个输入流中解析消息。
+
+Protobuf3语法：
+```go
+syntax = "proto3"; // 非注释非空的第一行必须使用Proto版本声明，否则默认使用proto2版本
+
+// 定义包名，在其他的消息格式定义中可以使用包名+消息名的方式来定义域的类型，比如company.Person
+// 如果提供了option go_package，则变成go_package.xxx来使用，比如companypb.Person
+package company;
+
+option go_package = "companypb";
+
+// 定义服务
+service Login {
+	rpc Login (LoginRequest) returns (LoginResponse);
+}
+
+message LoginRequest {
+    // repeated 表示可以用来存放N个相同类型的内容。比如这里可以放N个int32类型的id
+    // 后面的1是分配标识号，有范围限制，而且不能重复
+    repeated int32 ids = 1; 
+    // 使用其他消息类型，支持嵌套的写法
+    Person person = 2;
+}
+
+message Person {
+    string name = 1;
+    int32 id = 2;  
+    string email = 3;
+}
+
+```
+
+编码规范如下：
+1. 描述文件以.proto做为文件后缀。
+1. 除结构定义外的语句以分号结尾，结构定义包括：message、service、enum；rpc方法定义结尾的分号可有可无。
+3. Message命名采用驼峰命名方式，字段命名采用小写字母加下划线分隔方式。
+4. Enums类型名采用驼峰命名方式，字段命名采用大写字母加下划线分隔方式。
+5. Service与rpc方法名统一采用驼峰式命名。
+
+原理：
+1. Varint（待补充）
 
 ## 9 go性能调优
 
@@ -3801,6 +3860,33 @@ log相比fmt的优点：
 rand.Seed(time.Now().UnixNano()) // 指定种子
 fmt.Println(rand.Intn(100))
 ```
+
+### mime
+什么是MIME：MIME(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展类型,设计的最初目的是为了在发送电子邮件时附加多媒体数据，让邮件客户程序能根据其类型进行处理。之后则是用来设定某种扩展名的文件用一种应用程序来打开的方式类型，当该扩展名文件被访问的时候，浏览器会自动使用指定应用程序来打开。多用于指定一些客户端自定义的文件名，以及一些媒体文件打开方式。
+
+它是一个互联网标准，扩展了电子邮件标准，使其能够支持：
+1. 非ASCII字符文本；
+2. 非文本格式附件（二进制、声音、图像等）；
+3. 由多部分（multiple parts）组成的消息体；
+4. 包含非ASCII字符的头信息（Header information）。
+
+在该标准之前的电子邮件标准并不允许在邮件消息中使用7位ASCII字符集以外的字符。因此，一些非英语字符消息和二进制文件，图像，声音等非文字消息原本都不能在电子邮件中传输。
+ 
+在万维网中使用的HTTP协议中也使用了MIME的框架，标准被扩展为互联网媒体类型。最早的HTTP协议中，并没有附加的数据类型信息，所有传送的数据都被客户程序解释为超文本标记语言HTML 文档，而为了支持多媒体数据类型，HTTP协议中就使用了附加在文档之前的MIME数据类型信息来标识数据类型。
+
+使用：
+1. `AddExtensionType(ext, typ string) error`:将扩展名和mimetype建立关联，扩展名应以点号开始，例如".html"
+    
+    ```go
+    mime.AddExtensionType(".svg", "image/svg+xml")
+    ```
+2. `TypeByExtension(ext string) string`:返回与扩展名偶联的MIME类型。扩展名应以点号开始，如".html"。如果扩展名未偶联类型，函数会返回空字符串。
+3. `ParseMediaType(v string) (mediatype string, params map[string]string, err error)`:根据RFC1521解析一个媒体类型值以及可能的参数，v是媒体类型值，一般应为http-header中Content-Type和Conten-Disposition头域的值（参见RFC 2183）。成功的调用会返回小写字母、去空格的媒体类型和一个非空的map。返回的map映射小写字母的属性和对应的属性值。
+    
+    ```go
+    mideaType, params, err := mime.ParseMediaType(p.Header["Content-Type"])
+    ```
+4. `FormatMediaType(t string, param map[string]string) string`
 
 ### net
 使用：
@@ -4777,7 +4863,6 @@ go mod tidy
 
 ### no matching versions for query “latest”
 ### 2.N 其他
-6.  protobuf的获得和使用
 7.  go get如果后面是xxx.go而不是项目的名字，那么引入的是这一个go文件还是整个项目？
 8.  一些文章
     1. [http://blog.csdn.net/libaineu2004/article/details/49722651](http://blog.csdn.net/libaineu2004/article/details/49722651)

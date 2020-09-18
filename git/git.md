@@ -282,6 +282,13 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 
 参数：
 1. `--recursive`:对于含有submodules的仓库，其作用等同于`git clone`+`git submodule init`+`git submodule udpate`，参考git submodule部分的笔记
+2. `-o`:克隆时所使用的远程主机自动被Git命名为origin。如果想用其他的主机名，需要带上该参数，如
+    
+    ```bash
+    git clone -o bar https://github.com/foo.git
+    git remote
+    # bar
+    ```
 
 ### 1.3 git remote:远程仓库相关
 查看远程仓库:
@@ -305,7 +312,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 1. （不推荐，可能导致问题？待测试）`git remote rename <原名称> <新名称>`
 2. （推荐？）先删除远程分支，再推送本地新分支
 
-取消远程仓库:`git remote rm <远程仓库名>`,注意每次取消再重新关联远程仓库之后,都需要重新推送并关联分支.
+取消(删除)远程仓库的关联:`git remote rm <远程仓库名>`,注意每次取消再重新关联远程仓库之后,都需要重新推送并关联分支.
 
 ## 2 查看
 ### 2.1 git status:检查更新和工作区状态
@@ -424,6 +431,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
    1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873。大概是使用`git reflog`找到前面操作的commit id，然后使用`git reset --hard <commit_id>`恢复过去
 2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
 3. `-m`：commit message
+4. `--author="username <xxx@xxx.com>"`:以此作者信息提交。假如某个commit用userA信息提交了，想改成userB，就可以参考这个命令`git commit --amend --author="username <xxx@xxx.com>"`，直接用`git commit --amend`是不行的
 
 ### 5.1 git rebase 变基/压制/衍合
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
@@ -584,14 +592,14 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 参数说明:
 - 不带任何参数：列出所有本地分支
-- `--list <pattern>`:不带`<pattern>`的话是列出所有本地分支。
+- `-l <pattern>`、`--list <pattern>`:不带`<pattern>`的话是列出所有本地分支。
     
     ```git
     git branch --list "*zhangsan*" 或者 git branch --list *zhangsan*
     ```
     
-- `-r`:列出所有远程分支（包括已被删除但缓存还在的）
-- `-a`:列出所有远程分支（包括已被删除但缓存还在的）和所有本地分支
+- `-r`、`--remote`:列出所有远程分支（包括已被删除但缓存还在的）
+- `-a`、`--all`:列出所有远程分支（包括已被删除但缓存还在的）和所有本地分支
 - `-v`:查看所有分支最后一次commit信息;`-vv`:同时还能查看对应的远程分支
 - `-m old_name new_name`：重命名分支
 
@@ -1108,6 +1116,9 @@ unset ALL_PROXY
 应该是DNS污染
 1. 需要自己修改hosts
 2. 或者刷新DNS缓存`sudo killall -HUP mDNSResponder`(mac不同系统命令不一样)
+
+### 1.28 fatal: 不支持 'https' 协议
+在我`git remote add upstream xxx`之后出现的，应该是xxx的地址写错了，`git remote rm upstream`然后重新`git remote add upstream xxx`就好了
 
 ## 2 未解决
 ### 2.N 其他
