@@ -639,11 +639,12 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 恢复储藏:
 1. `git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)。
-2. 恢复并删除最前面的储藏(`stash@{0}`)，`git stash pop`：如果恢复的时候产生了冲突，不会删除该储藏，需要自己手动去删除。
+2. 恢复并删除储藏`git stash pop [stash@{numA}]`: 不指定的话(`git stash pop`)则默认恢复并删除最前面的储藏(`stash@{0}`)，如果恢复的时候产生了冲突，不会删除该储藏，需要自己手动去删除。
+3. 恢复时产生了冲突，如果想全部采用某一方的更改，可以用`git checkout --ours .`或`git checkout --theirs .`
 
 删除储藏:删除之后，其他储藏名字的号码会自动更新。
 1. 按名字删除储藏:`git stash drop <储藏的名字>`,比如`git stash drop stash@{0}`
-2. 删除所有储藏:`git stash clear`
+2. 删除所有储藏:`git stash clear`、`git stash drop`
 
 ### 8.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.
@@ -661,6 +662,9 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 合并时正确做法是不要修改vi中默认的`Merge branch 'other_branch_name'`，只解决合并相关的冲突，等合并完之后再做其他修改。这样方便后续跟踪分析。
 
 合并目标分支到当前分支:`git merge <目标分支名>`,默认是快进模式(Fast-forward)
+
+如果想全部采用某一方的更改，可以用`git checkout --ours .`或`git checkout --theirs .`
+
 撤销上次的分支合并：`git merge --abort`
 
 合并远程的其他分支到当前分支：

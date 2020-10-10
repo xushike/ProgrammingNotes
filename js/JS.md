@@ -19,6 +19,8 @@ js为什么是单线程:与它的用途有关。作为浏览器脚本语言，Ja
 1. JavaScript支持异步，但本质是单线程环境,即使采用Ajax也只能局部更新，只是“看上去有了响应，但总体时间还是不变，甚至会变慢”.
 
 ## 2 历史
+TC39 委员会每年都发布一个语言的新版本
+
 ### js的历史
 js在1995年由Netscape的一位名为Brendan Eich的工程师创立,当时的主要目的是处理以前由服务器端语言(如Perl)负责的一些输入验证操作(在之前是发送到服务端验证,当时网速不好经常等很久才能验证输入是否正确).但现在js已经不仅是验证表单输入了,而是具备了与浏览器窗口及其所有内容**交互的能力**,是一门功能全面的编程语言.
 说它简单，是因为学会使用它只需片刻功夫; 而说它复杂，是因为要真正掌握它则需要数年时间。要想全面理解和掌握js,关键在于弄清楚 它的本质、历史和局限性。
@@ -424,7 +426,23 @@ js判断字符串是否全部为数字的几种方法(待补充):
     ```
 
 #### 1.2.3 Date
-js默认把Date序列化从1970年1月1日0点0分0秒的毫秒数。但JavaScript的`toISOString()`能够将日期类型转成ISO格式的字符串，`Date.parse(dateString)`方法能够将ISO格式的日期字符串转成日期。
+采用系统时区，基本是各语言的默认行为，但js并没有这样做，它默认使用UTC时区。
+
+使用：
+1. 初始化：创建一个新Date对象的唯一方法是通过new 操作符，例如`let now = new Date()`，若将它作为常规函数调用（即不加 new 操作符），将返回一个字符串，而非 Date 对象。 
+
+    ```js
+    let d = new Date();
+    console.log(Date()); // Fri Oct 09 2020 16:24:32 GMT+0800 (GMT+08:00)
+    console.log(d); // 2020-10-09T08:24:32.145Z
+    ```
+3. 时间戳:`Date.now()`序列化从1970年1月1日0点0分0秒(UTC)到现在的毫秒数，它也有几个缺点：
+    1. 它的精度会随user agent的不同而不同，比如在Firefox 59 中，默认被取整至 20 微秒；从Firefox 60开始，则被取整至 2 毫秒。`performance.now()`提供了精确到亚毫秒（sub-millisecond）的时间戳(也是不准确的)。
+    2. 它取决于系统时钟，这不仅意味着它不够精确，而且还不总是递增。WebKit工程师（Tony Gentilcore）的解释如下：基于系统时间的日期可能不太会被采用，对于实际的用户监视也不是理想的选择。 大多数系统运行一个守护程序，该守护程序定期同步时间。 通常每15至20分钟将时钟调整几毫秒。 以该速率，大约10秒间隔的1％将是不准确的。
+2. 字符串和日期的转换：`Date.toISOString()`能够将日期类型转成ISO格式的字符串，`Date.parse(dateString)`方法能够将ISO格式的日期字符串转成日期。
+3. 获取相对时间
+    1. 略
+    2. 如果想获取常见的“昨天”，“20秒前”或“1个月”之类的短语，而不是完整日期和时间戳，可以使用`Intl.RelativeTimeFormat`
 
 #### 1.2.4 对象
 标准对象的定义:
@@ -454,6 +472,15 @@ Object.getPrototypeOf(Object.prototype)
 2. 调用函数时，应该提供的参数没有提供，该参数等于undefined。
 3. 对象没有赋值的属性，该属性的值为undefined。
 4. 函数没有返回值时，默认返回undefined。
+    
+    ```js
+     Math.random = function () {
+        console.log("hello")
+    }
+    console.log(Math.random());
+    // hello
+    // undefined
+    ```
 
 例子如下:
 ```javascript
@@ -631,7 +658,7 @@ for (var i = 0, item; item = a[i]; i++) {
 ### 4.1 Global
 包含值属性和方法属性
 
-#### 4.1.1 值属性
+#### 值属性
 有以下值属性，它们都是simple value, 它们have no properties or methods。也称为全局变量。
 - Infinity：是一个数值，表示无穷大。初始值是Number.POSITIVE_INFINITY。
 - NaN:全局属性 NaN 的值表示不是一个数字（Not-A-Number），和`Number.NaN`相同。编码中很少直接使用到 NaN。通常都是在计算失败时，作为 Math 的某个方法的返回值出现的（例如：Math.sqrt(-1)）或者尝试将一个字符串解析成数字但失败了的时候（例如：parseInt("blabla")）。**NaN自身永不相等于自身**
@@ -639,7 +666,7 @@ for (var i = 0, item; item = a[i]; i++) {
 - null literal
 - globalThis
 
-#### 4.1.2 方法属性
+#### 方法属性
 ##### decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
 有效的URI中不能包含某些字符，例如空格、中文。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`）替换所有无效的字符，从而让浏览器能够接受和理解。
 
@@ -685,6 +712,17 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
     2. 向下舍入：`Math.floor()`
     3. 向上取整：`Math.ceil()`
 2. 取最大值`Math.max()`:如果没有参数，则结果为`-Infinity`,如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
+3. 生成随机数`Math.random()`：生成0~1的pseudorandom number。
+    1. 缺点:非密码学安全，其实现是与宿主对象相关，并且不能保证加密使用的安全性(why?)。
+        
+        ```js
+        // 生成UUID，缺点是重复率较高
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        })
+        ```
+    2. 如果在浏览器环境下，更推荐使用加密安全的`window.crypto.getRandomValues()`
 
 ### 4.3 Object
 **几乎所有的 JavaScript 对象都是 Object 的实例**
@@ -1049,6 +1087,37 @@ Symbol的属性:
 Symbol的方法:
 1. `Symbol.keyFor(symbolA)`:方法返回一个已登记的Symbol类型的key(即descriptionA)。如果Symbol没有被登记，返回undefined
 
+### 4.12 Intl
+它提供了精确的字符串对比、数字格式化，和日期时间格式化(Collator，NumberFormat 和 DateTimeFormat等)，都是language-sensitive(语言敏感的)(或者说本地化)的
+
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Intl
+
+使用：
+1. 大部分都有`formatToParts()`方法
+1. `RelativeTimeFormat()`:可以输出短语化的相对时间
+    
+    ```js
+    // 英文相对时间
+    rtf = new Intl.RelativeTimeFormat('en');
+    // output :: 15 minutes ago
+    console.log(rtf.format(-15, 'minute'));
+    // output :: in 8 hours
+    console.log(rtf.format(8, 'hour'));
+
+    // 中文相对时间
+    rtf = new Intl.RelativeTimeFormat('zh-Hans');
+    // output :: 15分钟前
+    console.log(rtf.format(-15, 'minute'));
+    // output :: 8小时后
+    console.log(rtf.format(8, 'hour'));
+    // 1天前
+    console.log(rtf.format(-1, 'day'));
+    // 昨天
+    const rtf = new Intl.RelativeTimeFormat('zh-Hans', {
+        numeric: 'auto', // other values: 'always'
+    });
+    console.log(rtf.format(-1, 'day'));
+    ```
 
 ## 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
@@ -1274,6 +1343,24 @@ js中，每个文件是一个模块，文件中定义的所有对象都从属于
 1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
 2. 1分钟理解js闭包:[http://www.jb51.net/article/83524.htm](http://www.jb51.net/article/83524.htm)
 
+## 2 web worker
+参考：
+1. http://www.ruanyifeng.com/blog/2018/07/web-worker.html
+
+包含普通线程和共享线程(SharedWorker):
+2. 共享线程：共享线程是为了避免线程的重复创建和销毁过程，降低了系统性能的消耗，共享线程SharedWorker可以同时有多个页面的线程链接。
+
+使用场景：
+1. cpu密集型计算、边缘计算
+2. 在不受第三方脚本影响的上下文中运行脚本，有两种方法：iframe 和 Web Worker。相比之下 Web Workers 更好用，因为它们实例化更快，毕竟它们仅创建新的 JavaScript 执行上下文，而不是完整的 DOM。这里不受影响指的是web worker不受主线程里脚本的影响，比如在主线程中重新定义了`Math.random`，但是在web worker的脚本中不受影响。具体见studyJS项目
+
+问题：
+1. Uncaught DOMException: Failed to construct 'Worker': Script at 'file:///.../worker.js' cannot be accessed from origin 'null'.
+    1. 有些浏览器禁止通过本地文件访问使用Web Worker，有以下几种方法解决
+        1. about:config
+            1. 设置security.fileuri.strict_origin_policy为false
+        2. 把文件放到服务器
+
 ## 3 ArrayBuffers,SharedArrayBuffers,ArrayBuffer视图
 ### 3.1 ArrayBuffers
 为什么我们需要这两个:在js中创建一个变量的时候,引擎会去猜测变量的类型以及如何在内存中表示,会导致分配的内存是实际需要的2~8倍,比如普通数组，可能变成快数组或者满数组，最终可能会导致大量的内存浪费。而ArrayBuffer用来表示通用的、固定长度的原始二进制数据缓冲区(基本上就像原始内存一样,它模仿了C语言中的直接内存访问),它里面每个元素是值类型,不是引用类型(区别于普通数组可以存引用类型).
@@ -1425,7 +1512,7 @@ js是单线程,也就意味着所有任务需要排队.event loop是js运行时�
     1. 如果使用了定时器,那么会先判断是否到了执行时间,如果没到则不管,到了或者过时了才会进入主线程
 4. 不断重复上面的步骤,所以才叫event loop
 
-优点:永不阻塞.例外是`alert()`或者同步 XHR.
+优点:js的优点是永不阻塞(永不阻塞这个说法可能不太准确，因为`alert()`或者同步XHR是会导致阻塞的)，因为它处理I/O通常是通过事件和回调来执行，所以当一个应用正等待一个 IndexedDB 查询返回或者一个异步XHR请求返回时，它仍然可以处理其它事情，比如用户输入。
 
 多个运行时相互通信:一个 web worker 或者一个跨域的iframe都有自己的栈，堆和消息队列。两个不同的运行时只能通过`postMessage()`方法进行通信。如果后者侦听到message事件，则此方法会向其他运行时添加消息。
 

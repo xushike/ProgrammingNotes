@@ -317,6 +317,30 @@ CVE 的英文全称是“Common Vulnerabilities & Exposures”通用漏洞披露
     1. Key 是私用密钥openssl格，通常是rsa算法。
     2. Csr 是证书请求文件，用于申请证书。在制作csr文件的时，必须使用自己的私钥来签署申，还可以设定一个密钥。
     3. crt是CA认证后的证书文，（windows下面的，其实是crt），签署人用自己的key给你签署的凭证。
+    
+### 1.31 UUID、GUID
+参考：
+1. [RFC 4122](https://tools.ietf.org/html/rfc4122)
+
+UUID:UUID（全局唯一标识符，Universally Unique Identifier）是一个标准，由开放软件基金会(Open Software Foundation,OSF)制定,在分布式计算环境 (Distributed Computing Environment, DCE) 领域的一部份。UUID 的目的，是让分布式系统中的所有元素，都能有唯一的辨识资讯，而不需要透过中央控制端来做辨识资讯的指定。通常平台会提供生成UUID的API，用到了以太网卡地址、纳秒级时间、芯片ID码和许多可能的数字。格式为xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxxxxxx(8-4-4-16)(16进制)
+1. M表示UUID的版本，有 5 个可选项：
+    1. 版本 1：UUID 是根据时间和 MAC 地址生成的；
+    1. 版本 2：UUID 是根据标识符（通常是组或用户 ID）、时间和节点 ID生成的；
+    1. 版本 3：UUID 是通过散列（MD5 作为散列算法）名字空间（namespace）标识符和名称生成的；
+    1. 版本 4 - UUID 使用随机性或伪随机性生成；
+    1. 版本 5 类似于版本 3（SHA1 作为散列算法）
+2. N表示UUID的变体。为了能兼容过去的 UUID，以及应对未来的变化，因此有了变体（Variants）这一概念。目前已知的变体有下面 4 种：
+    1. 变体0：格式为 0xxx，为了向后兼容预留。
+    1. 变体1：格式为 10xx，目前大多数使用的 UUID 大都是变体 1，N 的取值是 8、9、a、b 中的一个。8 的二进制为 1000，9 的二进制为 1001，a 的二进制为 1010，b 的二进制为 1011，都符合 10xx 的格式。
+    1. 变体2：格式为 11xx，为早期微软的 GUID 预留。
+    1. 变体3：格式为 111x，为将来的扩展预留，目前暂未使用
+1. 标准实现：UUID标准的实现有很多，最常用的就是微软的GUID，其他还有COMB等。
+2. 应用场景：UUID 的其他应用有文件系统，例如 GUID 分区表（UEFI 的一部分），或在数据库中用于取代传统整数作为记录主键。在互联网广告的上下文中，它们经常用于唯一地标识在 Web 上查看广告的用户。
+
+GUID;GUID(全局唯一标识符，Globally Unique Identifier)是微软对UUID标准的实现。是一种由算法生成的二进制长度为128位的数字标识符。GUID主要用于在拥有多个节点、多台计算机的网络或系统中,分配必须具有唯一性的标识符。在理想情况下，任何计算机和计算机集群都不会生成两个相同的GUID。GUID 的总数达到了2^128（3.4×10^38）个，所以随机生成两个相同GUID的可能性非常小(理论上能产生全宇宙唯一的值)，但并不为0。所以，用于生成GUID的算法通常都加入了非随机的参数（如时间），以保证这种重复的情况不会发生。
+1. GUID 的格式为“xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx”(8-4-4-4-12)(16进制)，其中每个 x 是 0-9 或 a-f 范围内的一个十六进制数。例如：6F9619FF-8B86-D011-B42D-00C04FC964FF 即为有效的 GUID 值。
+
+COMB:COMB（combine）型是数据库特有的一种设计思想，可以理解为一种改进的GUID，它通过组合GUID和系统时间，以使其在索引和检索事有更优的性能。它是由Jimmy Nilsson在他的“The Cost of GUIDs as Primary Keys”一文中设计出来的。基本设计思路是这样的：既然UniqueIdentifier数据因毫无规律可言造成索引效率低下，影响了系统的性能，那么我们 能不能通过组合的方式，保留UniqueIdentifier的前10个字节，用后6个字节表示GUID生成的时间（DateTime），这样我们将时间 信息与UniqueIdentifier组合起来，在保留UniqueIdentifier的唯一性的同时增加了有序性，以此来提高索引效率。
 
 # 四 高级
 ## 1 未来方向

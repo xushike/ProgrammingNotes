@@ -426,13 +426,6 @@ package github.com/cweill/gotests/...: exit status 1
     1. 结构体传入方法中被改变后，原结构体会变吗？
     1. switch中多个条件都满足时会随机选择一个？
     1. Go 语言对 protocol buffers 和 gRPC 有一流的支持
-    1. 我们可以使用 Dep 来管理依赖项，它也能指定特定的软件包版本。除此之外，我们还可以使用一个名为 VirtualGo 的开源工具，它能轻松地管理 Go 语言编写的多个项目。
-    2. 前面三个点是什么意思
-        ```golang
-        func mergeArray(arr ...[]int) {
-            fmt.Println(reflect.TypeOf(arr))
-        }
-        ```
 
 1. db
     1. 增加表字段对原有数据有什么影响
@@ -500,7 +493,6 @@ package github.com/cweill/gotests/...: exit status 1
     5. 单页面和iframe的关系
 31. 未设置onclick的空button有事件监听器吗,点击时会有方法执行吗
     1. 当一个事件出现且有一个事件监听器被绑定时，消息会被随时添加。如果没有事件监听器，事件会丢失,不会被添加到队列
-    2. 一个 web worker 或者一个跨域的iframe都有自己的栈，堆和消息队列。两个不同的运行时只能通过 postMessage方法进行通信。如果后者侦听到message事件，则此方法会向其他运行时添加消息。
 32. requestAnimationFrame和settimeout
     1. HTML5标准规定了setTimeout()的第二个参数的最小值（最短间隔），不得低于4毫秒，如果低于这个值，就会自动增加。在此之前，老版本的浏览器都将最短间隔设为10毫秒。另外，对于那些DOM的变动（尤其是涉及页面重新渲染的部分），通常不会立即执行，而是每16毫秒执行一次。这时使用requestAnimationFrame()的效果要好于setTimeout()。
 
@@ -510,7 +502,6 @@ package github.com/cweill/gotests/...: exit status 1
 37. 浏览器跨域,iframe,跨域加载js
 38. web work参考
     1. https://www.cnblogs.com/giggle/p/5350288.html
-    2. https://segmentfault.com/a/1190000012528806
 39. console.log()参考:https://segmentfault.com/a/1190000012957199
 
 40. 按mdn的html元素参考重新整理html笔记:https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element
@@ -817,7 +808,6 @@ angualr 表单中:#,name等的区别
 1. blob,dataview,轮询
 1. js有类型的概念吗
     1. js引擎能区分不同的基本数据类型吗
-1. guid的生成
 1. vscode 中go怎么自动导包
 2. google chrome helper是什么,导致mac发烫
 1. @next是什么版本
@@ -909,8 +899,6 @@ angualr 表单中:#,name等的区别
         { provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'never' } }
     ]`
     2. https://blog.csdn.net/qq_24078843/article/details/78560556
-
-1. web worker
 1. 参考该页面的样式:https://www.cnblogs.com/bndong/p/6743524.html
 1. encodeURIComponent和encodeURI,以及location.hash,URL中的#
     1. 参考:https://www.cnblogs.com/season-huang/p/3439277.html
@@ -963,7 +951,6 @@ angualr 表单中:#,name等的区别
 1. js:如果把对象中的引用传过来并修改了,会影响对象吗
 1. ajax
 1. bootstrap vue
-1. web worker
 1. 研究下项目中Util的写法并用到vue中
 1. viewport;html和css渲染;华尔街golang
 1. 基于nodejs、Vue实现服务端渲染
@@ -1341,8 +1328,6 @@ for (let [i, item] of arr.entries()) {
 267. js中各种遍历的比较：[https://www.incredible-web.com/blog/performance-of-for-loops-with-javascript/](https://www.incredible-web.com/blog/performance-of-for-loops-with-javascript/)
 
     结论似乎不准确,还有一点就是for of entries()方法效率似乎比较低,总之最好别用
-268. 我们项目的ts编译后是es5还是什么
-
 270. js到ts:[https://segmentfault.com/a/1190000010774159](https://segmentfault.com/a/1190000010774159)
 271. 深入js的for of:[http://www.jb51.net/article/70106.htm](http://www.jb51.net/article/70106.htm)
 272. linux删除后的撤销

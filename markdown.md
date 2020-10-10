@@ -47,9 +47,21 @@ _You **can** combine ~~them~~_
 前面是显示的链接，后面是实际链接，引号里是鼠标移上去的tips
 [https://github.com](https://github.com "github官网")
 
+高级链接：通过变量来设置一个链接，比如
+[https://github.com][变量a]
+
+[变量a]:https://github.com "github官网"
+
 ### 图片
-可以使用相对路径和绝对路径，语法和链接类似.如果想图片所在的行没有文字,需要在前后都换行.
-![Image of Test](img/test.png "Image of Test")
+三种使用方式：
+1. 本地图片：可以使用相对路径和绝对路径，语法和链接类似.如果想图片所在的行没有文字,需要在前后都换行.![Image of Test](img/test.png "Image of Test")
+2. 网络图片：![avatar](http://baidu.com/pic/doge.png)
+3. 把图片存入markdown文件：用base64转码工具把图片转成一段字符串，然后把字符串填到基础格式中链接的那个位置。
+    1. 基础用法：![avatar](data:image/png;base64,iVBORw0......)，这个时候会发现插入的这一长串字符串会把整个文章分割开，非常影响编写文章时的体验。如果能够把大段的base64字符串放在文章末尾，然后在文章中通过一个id来调用，文章就不会被分割的这么乱了。
+    2. 高级用法，比如
+    
+        ![avatar][base64str]
+        [base64str]:data:image/png;base64,e8d8f4d65bac6874cbf8d8cebe3caadb
 
 ### 引用
 引用中再嵌套引用只需要多加一个>,如下

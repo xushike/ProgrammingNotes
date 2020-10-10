@@ -151,17 +151,114 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 `.nomedia`:作用是告诉系统和其他程序不要索引当前目录下的媒体文件。当然它只是一个约定，而不是强制性的，其他APP依然可以不遵守这个约定。
 
 # 四 高级
-## 1 真机调试
-[http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/](http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/)
+## 1 adb
+参考：
+1. https://github.com/mzlogin/awesome-adb
+
+ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安装卸载apk、拷贝推送文件、查看设备硬件信息、查看应用程序占用资源、在设备执行shell命令等功能
+
+安装下载：
+1. 我们可以在android sdk安装目录的platform-tools目录下找到adb工具
+2. `brew cask install android-platform-tools`
+
+配置：环境变量
+
+架构：ADB是一个C/S架构的应用程序，由三部分组成：
+1. 运行在pc端的adb client：命令行程序”adb”用于从shell或脚本中运行adb命令。首先，“adb”程序尝试定位主机上的ADB服务器，如果找不到ADB服务器，“adb”程序自动启动一个ADB服务器。接下来，当设备的adbd和pc端的adb server建立连接后，adb client就可以向ADB servcer发送服务请求；
+2. 运行在pc端的adb server：ADB Server是运行在主机上的一个后台进程。它的作用在于检测USB端口感知设备的连接和拔除，以及模拟器实例的启动或停止，ADB Server还需要将adb client的请求通过usb或者tcp的方式发送到对应的adbd上；
+3. 运行在设备端的常驻进程adb demon (adbd)：程序“adbd”作为一个后台进程在Android设备或模拟器系统中运行。它的作用是连接ADB服务器，并且为运行在主机上的客户端提供一些服务；
+
+使用：
+1. 查询已连接的设备和状态`adb devices`，输出格式一般为`serialNumberA stateA`
+    1. serialNumber 即我们常说的 SN
+    2. state 有如下几种：
+        1. offline —— 表示设备未连接成功或无响应。
+        2. device —— 设备已连接。注意这个状态并不能标识 Android 系统已经完全启动和可操作，在设备启动过程中设备实例就可连接到 adb，但启动完毕后系统才处于可操作状态。
+        3. no device —— 没有设备/模拟器连接。
+    
+    ```bash
+    # 示例
+    List of devices attached
+    cf264b8f	device
+    emulator-5554	device
+    10.129.164.6:5555	device
+    # cf264b8f、emulator-5554 和 10.129.164.6:5555 分别是它们的 SN。从 emulator-5554 这个名字可以看出它是一个 Android 模拟器，而 10.129.164.6:5555 这种形为 <IP>:<Port> 的 serialNumber 一般是无线连接的设备或 Genymotion 等第三方 Android 模拟器。
+    ```
+2. 连接设备和电脑：
+    1. USB连接
+    2. 无线连接：
+        1. prerequisites：设备和PC机已经接入局域网，并且设备有局域网的IP地址
+        1. 让设备在某个端口监听TCP/IP连接
+            1. 这一步可以借助USB连接来操作`adb tcpip <port>`，比如`adb tcpip 5555`，之后就不需要USB了
+            1. 也可以不借助USB，在设备的终端模拟器上操作
+                
+                ```bash
+                su # 需要root权限
+                setprop service.adb.tcp.port 5555
+                stop adbd
+                start adbd
+                ```
+        2. 断开 USB 连接,找到设备的 IP 地址,通过 IP 地址连接设备`adb connect <device-ip-address>`
+            1. 使用完后断开连接`adb disconnect <device-ip-address>`
+            2. 恢复USB调试`adb usb`
+3. 打开软件
+    1. `adb shell am start`
+4. `adb shell`
+    1. `adb root`:以 root 权限运行 adbd,再运行 `adb shell`，命令行提示符变成`#`.相应地，如果要恢复 adbd 为非 root 权限的话，可以使用 adb unroot 命令。
+        1. 有些手机 root 后也无法通过 adb root 命令让 adbd 以 root 权限执行，比如三星的部分机型，会提示"adbd cannot run as root in production builds"，此时可以先安装 adbd Insecure，然后 adb root 试试。
+5. 应用管理
+    1. 查看应用列表
+        1. `adb shell pm list packages`
+    1. 安装apk`adb install [-lrtsdg] <path_to_apk>`，比如`adb install xxx.apk`
+        1. 安装原理：adb install 实际是分三步完成：
+            1. push apk 文件到 /data/local/tmp。
+            2. 调用 pm install 安装。
+            3. 删除 /data/local/tmp 下的对应 apk 文件。
+        1. 安装状态
+            1. 成功
+                
+                ```bash
+                Performing Streamed Install
+                Success
+                ```
+            2. 失败
+                
+                ```bash
+                Performing Streamed Install
+                # 可能出现的错误很多，比如
+                # 空间不足
+                Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE] 
+                ```
+    3. 卸载`adb uninstall 包名A`，比如`adb uninstall com.xxx.xxx`
+6. 文件管理
+    1. 复制设备里的文件到电脑`adb pull <设备里的文件路径> [电脑上的目录]`，如果省略电脑上的目录，则默认复制到当前目录。
+        1. 设备上的文件路径可能需要 root 权限才能访问，如果你的设备已经 root 过，可以先使用 adb shell 和 su 命令在 adb shell 里获取 root 权限后，先 cp /path/on/device /sdcard/filename 将文件复制到 sdcard，然后 adb pull /sdcard/filename /path/on/pc。
+    2. 复制电脑里的文件到设备`adb push <电脑上的文件路径> <设备里的目录>`
+        
+        ```bash
+        adb push 393ac486.0 /system/etc/security/cacerts/
+        ```
+7. 模拟按键/输入
+    1. 比如模拟点击：//在屏幕上点击坐标点x=50 y=250的位置。`adb shell input tap 50 250`
+    2. 比如使用 `adb shell input keyevent keyCodeA`命令，不同的 keycode 能实现不同的功能
+        1. 滑动解锁:如果锁屏没有密码，是通过滑动手势解锁，那么可以通过 input swipe 来解锁。
+            1. 向上滑动手势解锁举例:`adb shell input swipe 300 1000 300 500`
+        2. 输入文本:在焦点处于某文本框时，可以通过 input 命令来输入文本`adb shell input text hello`
+8. 查看日志:Android 系统的日志分为两部分，底层的 Linux 内核日志输出到 /proc/kmsg，Android 的日志输出到 /dev/log。
+9. 录制屏幕:录制屏幕以 mp4 格式保存到 /sdcard：`adb shell screenrecord /sdcard/filename.mp4`
+10. 重新挂载 system 分区为可写(需要 root 权限):/system 分区默认挂载为只读，但有些操作比如给 Android 系统添加命令、删除自带应用等需要对 /system 进行写操作，所以需要重新挂载它为可读写。
+    1. 进入 shell 并切换到 root 用户权限。`adb shell`、`su`
+    2. 查看当前分区挂载情况:`mount`
+11. 查看连接过的 WiFi 密码(需要 root 权限)`adb shell su cat /data/misc/wifi/*.conf`
+    
+问题：
+1. 5037为adb默认端口，若5037端口被占用
+    1. 以win为例
+        1. 找到使用该端口的进程Pid`netstat -aon|findstr 5037`
+        2. 通过PID找到对应的进程名（便于定位，可以跳过）`tasklist /fi "PID eq pidA"`
+        3. 终止pid`taskkill /pid 3172 /f`
 
 ## 2 Udacity的google Android课程
-整个纳米学位免费的课程如下
-- Android 基础：用户界面
-- Android 基础：用户输入
-- Android 基础：多屏应用
-- Android 基础：网络
-- Android 基础：数据存储
-
 ### 课程1 入门课程
 #### 课程1A:视图VIEWS
 使用大驼峰写法
@@ -200,13 +297,6 @@ Instant Apps 体验更好，功能更强大，可以独立运行在手机上，�
 #### 解决错误
 1. [常见视图备忘单](http://cn-static.udacity.com/nd801/Common_Android_Views_Cheat_Sheet.pdf)
 
-### 课程1B:打造布局
-一些概念如下
-- 视图组（ViewGroups）
-- 根视图（Root View）
-- 父（Parent）
-- 子（Child）
-- 兄弟姐妹（Sibling）
 
 #### 宽度和高度
 "子视图的高宽和位置是由父视图决定的"这句话如何理解
@@ -260,7 +350,6 @@ SmartBar
 1. 临时文件目录是`/data/local/tmp`?
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)
 2. 导入项目的几种方式
-3. ADB
 4. [Android 性能优达学城课程，其中也介绍了Memory Monitor](https://classroom.udacity.com/courses/ud825/lessons/3846748822/concepts/37868186490923)
 
 5. 微信公众平台接口测试帐号申请 
@@ -268,3 +357,5 @@ SmartBar
 
 7.  12 栏响应式栅格布局?
 8. Jetpack
+9. 真机调试
+[http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/](http://expelliarmus923.github.io/2017/03/31/%E7%9C%9F%E6%9C%BA%E8%B0%83%E8%AF%95%E5%90%84%E7%A7%8D%E6%96%B9%E6%B3%95/)

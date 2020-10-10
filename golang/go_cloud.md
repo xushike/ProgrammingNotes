@@ -275,7 +275,17 @@ https://github.com/go-gorm/gorm
         1. timeout：建立连接超时时间，比如"30s", "0.5m" or "1m30s",比如`timeout=10s`
         2. readTimeout、writeTimeout:I/O读写超时时间
     2. postgres
-
+2. 查询
+    1. 使用`join()`
+    
+        ```go
+        db.Table("go_service_info").Select("go_service_info.serviceId as service_id, go_service_info.serviceName as service_name, go_system_info.systemId as system_id, go_system_info.systemName as system_name").Joins("left join go_system_info on go_service_info.systemId = go_system_info.systemId").Scan(&results)
+        ```
+    1. 使用原生语句查询
+        
+        ```go
+        db.Raw("SELECT a.serviceId as service_id,a.serviceName as service_name, b.systemId as system_id, b.systemName as system_name FROM go_service_info a LEFT JOIN go_system_info b ON a.systemId = b.systemId").Scan(&results)
+        ```
 1. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
     1. `FirstOrCreate()`:
     2. 使用`gorm:insert_option`
@@ -286,15 +296,18 @@ https://github.com/go-gorm/gorm
             "ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = Values(updated_at)",
         ).Create(&model).Error
         ```
-2. 全局禁用表名复数:`SingularTable(true)`，不设置的话`User`的默认表名为`users`,设置后变成`user`。使用`TableName`设置的表名不受影响
-3. 日志：Gorm有内置的日志记录器支持，默认情况下，它会打印发生的错误。当启用`db.LogMode(true)`时，它会打印执行的每一条SQL
+2. 常用配置
+    1. 全局禁用表名复数:`SingularTable(true)`，不设置的话`User`的默认表名为`users`,设置后变成`user`。使用`TableName`设置的表名不受影响
+    2. 日志：Gorm有内置的日志记录器支持，默认情况下，它会打印发生的错误。当启用`db.LogMode(true)`时，它会打印执行的每一条SQL
 
-    ```go
-    // 启用Logger，显示详细日志
-    db.LogMode(true)
-    ```
-4. `SetMaxOpenConns(100)`设置数据库连接池最大连接数
-4. `SetMaxIdleConns(20)`连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
+        ```go
+        // 启用Logger，显示详细日志
+        db.LogMode(true)
+        // 也可以在每条db的开头单独打印
+        xxx.db.Debug().Create()...
+        ```
+    4. `SetMaxOpenConns(100)`设置数据库连接池最大连接数
+    4. `SetMaxIdleConns(20)`连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
 6. `DB.AutoMigrate(values ...interface{}) *DB`自动迁移,只会创建表、列和缺失索引的缺失，并不会改变现有的列的类型或删除未使用的列
 
 ## JWT
@@ -306,6 +319,12 @@ https://github.com/go-redis/redis
 
 ## migrate工具
 https://github.com/golang-migrate/migrate
+
+使用后会在public下创建表schema_migrations表，里面存放的是当前migration的版本(version)以及状态(dirty)。
+
+缺点：
+1. 就算migrate up操作失败了，这个version还是会被up
+2. golang-migrate只会记录最高的版本号，在协同开发的过程中，其他同事后创建的migrate不会执行
 
 安装：貌似不能通过`go get`安装
 1. win上的安装我是使用的scoop
@@ -330,6 +349,17 @@ https://github.com/golang-migrate/migrate
 3. 回滚
     1. 回滚到最开始版本
     2. 回滚最新的一个版本:`migrate -source file://fileDirA -database xxx down 1`，同理，回滚前n个版本是`migrate -source fileDirA -database xxx down n`
+    
+参数：
+1. `-verbose`
+
+问题：
+1. Dirty database version xxx. Fix and force version
+    1. 需要解决对应的错误：修改SQL语句或者修改表数据，然后再强制操作`force xxx`,比如
+        
+        ```bash
+        migrate -source file://./migrations -database "postgres://postgres:@localhost:5432/hello?sslmode=disable" force 20190617062220
+        ```
 
 ## lint工具 
 https://github.com/golangci/golangci-lint

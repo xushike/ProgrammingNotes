@@ -426,10 +426,15 @@ jdk7引入了新功能，可以在数值中使用下划线，可以更直观地�
 初始化规则:0(int), 0.0(float), false(boolean)
 
 #### 2.1.1 整型
-1. byte:在内存里占8位，即1个字节，表数范围-128(-2^7^)到127(2^7^-1)
-2. short
-3. int
-4. long
+包含：byte、short、int、long
+
+byte:在内存里占8位，即1个字节，表数范围-128(-2^7^)到127(2^7^-1)
+
+short
+
+int和Integer:
+
+long
 
 #### 2.1.2 字符型
 通常用于表示单个的字符，必须用单引号包裹，java语言使用16位的Unicode字符集作为编码方式。而Unicode被设计成支持世界上所有书面语言的字符。char类型的值可以直接作为整型值来使用。
@@ -1108,7 +1113,23 @@ String str = stream.collect(Collectors.joining()).toString();
     concat = Stream.of("a", "B", "c", "D", "e", "F").filter(x -> x.compareTo("Z") > 0).reduce("", String::concat);
     System.out.println("过滤和字符串连接:" + concat); //过滤和字符串连接:ace
     ```
-
+#### UUID
+使用：
+1. 静态方法`randomUUID()`:生成一个版本 4 的 UUID
+2. `nameUUIDFromBytes()`: 会生成一个版本 3 的 UUID，需要传递一个名称的字节数组作为参数。
+    
+    ```java
+    UUID uuid3 = UUID.nameUUIDFromBytes("test".getBytes());
+    int version3 = uuid3.version();
+    System.out.println("UUID:"+ uuid3+" 版本 " + version3);
+    ```
+3. `fromString()`方法会生成一个基于指定 UUID 字符串的 UUID 对象，如果指定的 UUID 字符串不符合 UUID 的格式，将抛出 IllegalArgumentException 异常。
+    
+    ```java
+    UUID uuid = UUID.fromString("38400000-8cf0-11bd-b23e-10b96e4ef00d");
+    int version = uuid.version();
+    System.out.println("UUID:"+ uuid+" 版本 " + version);
+    ```
 
 # 六 问题
 ## 1 已解决
