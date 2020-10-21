@@ -137,6 +137,7 @@
     * [hackintosh](unix/hackintosh.md)
 * [news重要新闻](news.md)
 * [markdown](markdown.md)
+* [asciidoc](asciidoc.md)
 * [software&tool软件和工具](software&tool/0.software&tool.md)
     * [1.VSCode](software&tool/1.vscode.md)
     * [2.google](software&tool/2.google.md)

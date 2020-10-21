@@ -391,6 +391,35 @@ https://github.com/golangci/golangci-lint
     1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
 6. ERRO Running error: context loading failed: failed to load program with go/packages: could not determine GOARCH and Go compiler
 
+## sonyflake
+参考
+1. https://github.com/sony/sonyflake
+1. https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake.html
+
+雪花算法snowflake是Twitter公司提出的唯一ID算法，广泛应用在各种业务系统中，而由snowflake的启发，衍生出很多改进算法，比如索尼公司的sonyflake算法。对比两种算法，sonyflake对于snowflake的改进有些像是用空间换时间，时间戳位数减少，以从69年升至174年。但是1秒最多生成的ID从409.6w降至2.56w条。(待确认)
+
+twitter的雪花算法在一个机器，在1秒内 最多可以生成4096*1000约 400万个id，生成的id的二进制格式为`0 00100011100111101001100101110101111101000 0000000001 000000000000`
+
+索尼雪花算法标准格式如下：id 是64位整型的
+```
+| 1 Bit Unused | 39 Bit Timestamp | 8 Bit sequence number  |   16 Bit machine 
+```
+
+结构体：
+1. `Settings`
+
+    ```go
+    type Settings struct {
+        StartTime      time.Time //起始时间，类似于snowflake的epoch，默认为2014-09-01 00:00:00 +0000 UTC
+        MachineID      func() (uint16, error) //可自定义当前的机器id（或者线程id），默认是本机ip的低16位
+        CheckMachineID func(uint16) bool // 可自定义检查machineid是否合法或冲突的函数。默认不做验证
+    }
+    ```
+
+使用:
+1. 生成的id是19位的数字
+    
+
 ## 单元测试相关
 ### 单元测试辅助工具 mock
 https://github.com/golang/mock

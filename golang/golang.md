@@ -111,6 +111,7 @@ img.SetColorIndex(
 最开始的作者：
 1. 罗伯特·格瑞史莫(Robert Griesemer)：曾协助实现 Java 的 HotSpot 编译器和 JavaScript V8 引擎。
 2. 罗勃·派克(Rob Pike)：曾是贝尔实验室的 Unix 团队和 Plan9 操作系统成员，与Ken Thompson 一起创造了 UTF-8 字符编码。
+    1. Length is not a virtue in a name; clarity of expression is. 《Notes on Programming in C》长度不是名字中的优点，表达的清晰度是。
 3. 肯·汤普逊(Ken Thompson): 不用多说了，技术圣殿的人物，创造了 C 语言和 Unix，获得了 1983 年图灵奖和 1988 国家技术奖
 
 后面加入的：
@@ -245,7 +246,8 @@ Go源码文件包括三种：
 2. 代码里设置环境变量(略)
 
 环境变量明细：
-1. GOGC：默认值是100，简单来讲就是值越低GC的频率越快。GOGC=off将会完全关闭垃圾回收
+1. GC相关
+    1. `GOGC`：设置初始垃圾回收目标百分比，默认值是100，简单来讲就是值越低GC的频率越快。`GOGC=off`将会完全关闭垃圾回收
 2. `GODEBUG`：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
     1. 如果值包含`gocacheverify=1`将会导致 go 命令绕过任何的缓存数据，而真正地执行操作并重新生成所有结果，然后再去检查新的结果与现有的缓存数据是否一致。
 3. GOOS 程序构建环境的目标操作系统
@@ -320,6 +322,9 @@ Golang不保证任何单独的操作是原子性的，除非：
 3. golang实现了并发安全，比如`sync.Map`
 
 所以常见的基本数据类型和复合数据类型都不是并发安全的
+
+### 3.29 go有依赖注入吗
+没有，但是...
 
 ## 4 文档网址视频等
 网址:
@@ -760,9 +765,25 @@ Go语言将数据类型分为四类：
     ```
 
 3. 数值和字符串
-    1. 整形到字符串`s = strconv.Itoa(i)` 或者 `s = strconv.FormatInt(int64(i), 10)`
-    2. 字符串到整形：`i, err = strconv.Atoi(s) 或者 i, err = strconv.ParseInt(s, 10, 64)`
-    3. 字符串到float32/64：`float32, err = strconv.ParseFloat(string, 32)`和`float64,err = strconv.ParseFloat(string,64)`
+    1. 整形到字符串`s = strconv.Itoa(i)` 或者 
+        
+        ```go
+        s = strconv.FormatInt(int64(i), 10) // 转成十进制数对应的字符串
+        s = strconv.FormatInt(int64(i), 16) // 转成十六进制数对应的字符串
+        ```
+    2. 字符串到整形
+        
+        ```go
+        i, err = strconv.Atoi(s) 
+        i, err = strconv.ParseInt(s, 10, 64) // 将字符串类型的64位的十进制数转成整形
+        i, err = strconv.ParseInt(s, 16, 64) // 将字符串类型的64位的十六进制数转成整形
+        ```
+    3. 字符串到float32/64：
+    
+        ```go
+        float32, err = strconv.ParseFloat(string, 32)
+        float64,err = strconv.ParseFloat(string,64)
+        ```
 
 ### 2.1 基础数据类型
 包含int、float、bool、string
@@ -1775,7 +1796,7 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
     3. `Skiped` 检测是否跳过
 4. 综合接口
     1. `Error(args)`：报告出错并继续。相当于在调用 `Log()` 之后调用 `Fail()` 
-    2. `Fatal(err)`：报告出错终止。相当于在调用`Log`之后调用`FailNow`
+    2. `Fatal(err)`：报告出错并终止。相当于在调用`Log`之后调用`FailNow`
 5. `Run(name string,sub func(*testing.T))`:执行带名字的sub测试函数
 
 
@@ -3462,8 +3483,49 @@ func test() {
 
 ## 2 常用包和方法
 
-### byfio
-封装了带缓存的io操作以及Scanner，通过包裹 io.Reader 或 io.Writer 函数创建新的 Reader 或 Writer 实例，并且这些新创建的实例提供了缓冲的能力。使用方法非常简单，达到指定缓冲大小，触发写或读操作，如未达到要求，可用 Flush 方法刷新。
+### bufio
+封装了带缓存的io操作以及Scanner，通过包裹 io.Reader 或 io.Writer 对象创建新的 Reader 或 Writer 实例，并且这些新创建的实例提供了缓冲的能力。使用方法非常简单，达到指定缓冲大小，触发写或读操作，如未达到要求，可用 Flush 方法刷新。
+
+结构体：
+1. `Reader`
+    1. `(*Reader).Peek(n int) ([]byte, error)`:返回缓存的一个切片，该切片引用缓存中前 n 字节数据,该操作不会将数据读出，只是引用；引用的数据在下一次读取操作之前是有效的；及其他一些细节
+        
+        ```go
+        s := strings.NewReader("ABCDEFG")
+        br := bufio.NewReader(s)
+
+        foo, _ := br.Peek(5)
+        fmt.Printf("%s\n", foo)
+        // ABCDE
+
+        foo[0] = 'a'
+        bar, _ := br.Peek(5)
+        fmt.Printf("%s\n", bar)
+        // aBCDE
+        ```
+    2. `(*Reader).Read(p []byte) (n int, err error)`:读出数据到 p 中，返回读出的字节数；及其他一些细节
+        
+        ```go
+        s := strings.NewReader("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+        br := bufio.NewReader(s)
+        b := make([]byte, 20)
+
+        n, err := br.Read(b)
+        fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
+        // ABCDEFGHIJKLMNOPQRST 20 <nil>
+
+        n, err = br.Read(b)
+        fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
+        // UVWXYZ1234567890 16 <nil>
+
+        n, err = br.Read(b)
+        fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
+        // 0 EOF
+        ```
+    3. `(*Reader).ReadString(delim byte) (string, error)`、`(*Reader).ReadBytes(delim byte) ([]byte, error)`、`(*Reader) ReadSlice(delim byte) (line []byte, err error)`：这几个方法都是基于`ReadSlice()`实现的，大同小异。
+使用：
+1. `NewReader(rd io.Reader) *Reader`：将 rd 封装成一个默认大小缓存的 bufio.Reader 对象
+1. `NewReaderSize(rd io.Reader, size int) *Reader`：将rd封装成一个拥有 size 大小缓存的 bufio.Reader 对象
 
 ### bytes
 主要是关于 byte slice 操作的一些函数。由于 []byte 也可用于表示 string，故其中的函数、方法与 strings 很类似，比如 Join、Split、Trim、 Contains、`Count()`、`Repeat()`、`Runes()`等。
@@ -3572,6 +3634,86 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
     2. `Close() error`
 ### encoding
 各种编码解码
+
+#### encoding/base32
+base64和base32的区别：
+1. base64编码用到了大写字母（A-Z）,小写字母（a-z），数字（0-9）以及`+`、`/`;
+2. base32编码只有大写字母（A-Z）和数字234567；
+
+里面的方法和base64如出一辙。
+
+#### encoding/base64
+Base64就是一种基于64个可打印字符来表示二进制数据的方法，它是网络上最常见的用于传输8Bit字节码的编码方式之一，采用Base64编码具有不可读性，需要解码后才能阅读。为统一和规范化Base64的输出，Base62x被视为无符号化的改进版本。
+
+实现过程：
+1. 把每3个字节变成4个字节。三个字节一组，那不够3的倍数咋办？就用`=`来填充，这也是为什么经常看到base64编码的结尾有一个或两个`=`
+2. 每76个字符加一个换行符
+
+结构体：
+1. `Encoding`
+    1. 变体
+        1. `StdEncoding`
+        1. `URLEncoding`：标准的Base64并不适合直接放在URL里传输，因为标准Base64编码出来的结果里可能有`/`和`+`字符，而`URLEncoding`会将`+`和`/`分别改成`-`和`_`（不过没有处理`=`，所以在URL里传输可能还是有问题的）
+        1. `RawStdEncoding`:不进行padding操作，即末尾不填充`=`
+        1. `RawURLEncoding`:不进行padding操作，即末尾不填充`=`
+    2. 方法
+        1. `(*Encoding).EncodeToString(src []byte) string`:编码为base64的字符串
+        2. `(*Encoding).DecodeString(s string) ([]byte, error)`:解码base64的字符串
+        3. `(*Encoding) EncodedLen(n int) int)`:计算base64编码后数据的长度
+        3. `(*Encoding) DecodedLen(n int) int)`:计算base64解码后数据的长度
+        
+使用：
+1. 流式API:上面几个编码解码需要声明`[]byte`，对于较大的文件不太适用，可以使用下面两个流式API
+    1. `NewDecoder(enc *Encoding, r io.Reader) io.Reader`
+    2. `NewEncoder(enc *Encoding, w io.Writer) io.WriteCloser`
+
+```golang
+// 一般使用
+// 1. 对比
+str := "abcdefg"
+fmt.Println(base64.StdEncoding.EncodeToString([]byte(str)))
+fmt.Println(base64.URLEncoding.EncodeToString([]byte(str)))
+fmt.Println(base64.RawStdEncoding.EncodeToString([]byte(str)))
+fmt.Println(base64.RawURLEncoding.EncodeToString([]byte(str)))
+// YWJjZGVmZw==
+// YWJjZGVmZw==
+// YWJjZGVmZw
+// YWJjZGVmZw
+
+// 2. 指定len
+src := []byte("abcdefg") // 准备数据
+n := base64.StdEncoding.EncodedLen(len(src)) // 计算编码后数据的长度
+dst := make([]byte,n) // 创建容器
+base64.StdEncoding.Encode(dst,src) // 编码数据
+fmt.Println(dst) // 打印结果：[89 87 74 106 90 71 86 109 90 119 61 61]
+fmt.Printf("%s\n",dst) // 转换为字符串： YWJjZGVmZw==
+fmt.Println(base64.StdEncoding.EncodeToString([]byte("abcdefg"))) // 结果：YWJjZGVmZw==
+
+// 流式API
+// 1. 比如标准输入输出流
+input := []byte("foo,bar")
+encoder := base64.NewEncoder(base64.StdEncoding, os.Stdout) //生成一个编码器，会将调用Write()写入的值编码后写到os.Stdout中
+encoder.Write(input)
+encoder.Close() // 写入完毕后，必须调用Close方法以便将未写入的数据从缓存中刷新到w中
+// Zm9vLGJhcg==
+
+// 2. 文件流
+f, err := os.Open("xxx")
+if err != nil {
+    log.Fatalln(err)
+}
+defer f.Close()
+
+fEnc, err := os.Create("xxx")
+if err != nil {
+    log.Fatalln(err)
+}
+defer fEnc.Close()
+
+w := base64.NewEncoder(base64.StdEncoding, fEnc)
+io.Copy(w, f)
+w.Close()
+```
 
 #### encoding/binary
 1. `Size()`：返回编码某些类型数据需要的字节数（待补充）
@@ -3823,7 +3965,7 @@ func writeFile(path string, b []byte) {
 
 #### io/ioutil
 使用：
-1. `ReadAll`
+1. `ReadAll()`
     1. ErrTooLarge(todo)
 2. `ReadFile()`:将文件内容加载到`[]byte`中
 3. `WriteFile(filename string, data []byte, perm os.FileMode) error`:WriteFile 向文件 filename 中写入数据 data,如果文件不存在，则以 perm 权限创建该文件,如果文件存在，则先清空文件，然后再写入,返回写入过程中遇到的任何错误。
@@ -4224,32 +4366,33 @@ fmt.Println("所有 goroutine 执行结束")
 ### time
 go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
 
-时区：有GMT、UTC、CST，可以简单认为`CST=UTC/GMT + 8 小时`
+常见概念：
+1. 时区：有GMT、UTC、CST，可以简单认为`CST=UTC/GMT + 8 小时`，中国常用的是CST
+2. 时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
+    1. 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
+        1. `Unix(sec int64, nsec int64) Time`:把时间戳 转为 时间：向下取整，默认使用系统的时区。
+3. 时区
+    1. 跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
+    2. `2006-01-02 15:04:05 -0700 MST`:在go中它的作用相当于其他语言的"yyyy-MM-dd 。。。"，比较常用的是`2006-01-02 15:04:05`
 
-时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
+使用：
+1. 获取当前时间`Now()`：在不同架构下它的精度是不一样的，在mac下是到微秒，但是linux下一般是到纳秒
+    1. 参考
+        1. https://github.com/golang/go/issues/11222
+2. 时间戳转时间`Unix(sec int64, nsec int64) Time`
+3. 从字符串生成时间
+    1. `ParseInLocation`:可以根据时间字符串和指定时区转换Time。
+4. 设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置，如`LoadLocation`:可以根据时区名创建时区Location，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
+    ```go
+    // 设置时区1：使用time.LoadLocation
+    // 在windows系统上，没有安装go语言环境的情况下，time.LoadLocation会加载失败。
+    var cstSh, err = time.LoadLocation("Asia/Shanghai") //上海
+    fmt.Println("SH : ", time.Now().In(cstSh).Format("2006-01-02 15:04:05"))
 
-时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
-
-10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
-1. `Unix(sec int64, nsec int64) Time`:把时间戳 转为 时间：向下取整，默认使用系统的时区。
-
-跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
-
-`2006-01-02 15:04:05 -0700 MST`:在go中它的作用相当于其他语言的"yyyy-MM-dd 。。。"，比较常用的是`2006-01-02 15:04:05`
-
-`LoadLocation`:可以根据时区名创建时区Location，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
-`ParseInLocation`:可以根据时间字符串和指定时区转换Time。
-
-设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置，如
-```go
-// 设置时区1
-var cstSh, _ = time.LoadLocation("Asia/Shanghai") //上海
-fmt.Println("SH : ", time.Now().In(cstSh).Format("2006-01-02 15:04:05"))
-
-// 设置时区2
-var cstZone = time.FixedZone("CST", 8*3600)       // 东八
-fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
-```
+    // 设置时区2:使用time.FixedZone
+    var cstZone = time.FixedZone("CST", 8*3600)       // 东八
+    fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
+    ```
 
 golang 提供了下面几种类型：
 - 时间点(Time)
@@ -4276,7 +4419,14 @@ golang 提供了下面几种类型：
         Seconds [12.5s]
         Minute [2m0s]
 
-        // 
+        // 时间的加减
+        // 10分钟前的时间
+        m, _ := time.ParseDuration("-10m")
+        mT := now.Add(m)
+
+        // 10分钟后的时间
+        m, _ := time.ParseDuration("10m")
+        mT := now.Add(m)
         ```
 - 时区(Location)
 - Ticker：ticker只要定义完成，从此刻开始计时，不需要任何其他的操作，每隔固定时间都会触发。当下一次执行到来而当前任务还没有执行结束时，会等待当前任务执行完毕后再执行下一次任务。
@@ -4329,12 +4479,6 @@ golang 提供了下面几种类型：
 		}
 	}
     ```
-    
-时间包的使用：
-1. `Now()`:形如``。在不同架构下它的精度是不一样的，在mac下是到微秒，但是linux下一般是到纳秒
-    1. 参考
-        1. https://github.com/golang/go/issues/11222
-2. 时间戳转时间`Unix(sec int64, nsec int64) Time`
 
 ### unicode
 包含了一些针对测试字符的非常有用的函数.
@@ -4403,6 +4547,8 @@ Go语言的闪电般的编译速度主要得益于三个语言特性:
 2. `$GOOS`:目标平台（编译后的目标平台）的操作系统（darwin、freebsd、linux、windows）
 
 比如编译windows平台下的exe文件：`CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build test.go`，交叉编译不支持CGO所以要禁用它
+
+交叉编译不是任何情况下都有效
 
 ## 6 依赖管理解决方案
 Go 的包管理方式是逐渐演进的， 最初是 monorepo 模式，所有的包都放在 GOPATH 里面，使用类似命名 空间的包路径区分包，不过这种包管理显然是有问题，由于包依赖可能会引入破坏性更新，生产环境和测试环 境会出现运行不一致的问题。

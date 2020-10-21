@@ -4,6 +4,9 @@
 # 一 概述
 关于计算机、软件工程的大杂烩
 
+## 4 文档资料等
+1. 代码可读性心理学：https://medium.com/@egonelbre/psychology-of-code-readability-d23b1ff1258a
+
 # 三 基础
 ## 1 一些概念和术语
 ### 1.1 MVC、MVVM
@@ -337,10 +340,12 @@ UUID:UUID（全局唯一标识符，Universally Unique Identifier）是一个标
 1. 标准实现：UUID标准的实现有很多，最常用的就是微软的GUID，其他还有COMB等。
 2. 应用场景：UUID 的其他应用有文件系统，例如 GUID 分区表（UEFI 的一部分），或在数据库中用于取代传统整数作为记录主键。在互联网广告的上下文中，它们经常用于唯一地标识在 Web 上查看广告的用户。
 
-GUID;GUID(全局唯一标识符，Globally Unique Identifier)是微软对UUID标准的实现。是一种由算法生成的二进制长度为128位的数字标识符。GUID主要用于在拥有多个节点、多台计算机的网络或系统中,分配必须具有唯一性的标识符。在理想情况下，任何计算机和计算机集群都不会生成两个相同的GUID。GUID 的总数达到了2^128（3.4×10^38）个，所以随机生成两个相同GUID的可能性非常小(理论上能产生全宇宙唯一的值)，但并不为0。所以，用于生成GUID的算法通常都加入了非随机的参数（如时间），以保证这种重复的情况不会发生。
+GUID;GUID(全局唯一标识符，Globally Unique Identifier)是微软对UUID标准的实现。是一种由算法生成的二进制**长度为128位**(32位的16进制数字所构成)的数字标识符。GUID主要用于在拥有多个节点、多台计算机的网络或系统中,分配必须具有唯一性的标识符。在理想情况下，任何计算机和计算机集群都不会生成两个相同的GUID。GUID 的总数达到了2^128（3.4×10^38）个，所以随机生成两个相同GUID的可能性非常小(理论上能产生全宇宙唯一的值)，但并不为0。所以，用于生成GUID的算法通常都加入了非随机的参数（如时间），以保证这种重复的情况不会发生。
 1. GUID 的格式为“xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx”(8-4-4-4-12)(16进制)，其中每个 x 是 0-9 或 a-f 范围内的一个十六进制数。例如：6F9619FF-8B86-D011-B42D-00C04FC964FF 即为有效的 GUID 值。
 
 COMB:COMB（combine）型是数据库特有的一种设计思想，可以理解为一种改进的GUID，它通过组合GUID和系统时间，以使其在索引和检索事有更优的性能。它是由Jimmy Nilsson在他的“The Cost of GUIDs as Primary Keys”一文中设计出来的。基本设计思路是这样的：既然UniqueIdentifier数据因毫无规律可言造成索引效率低下，影响了系统的性能，那么我们 能不能通过组合的方式，保留UniqueIdentifier的前10个字节，用后6个字节表示GUID生成的时间（DateTime），这样我们将时间 信息与UniqueIdentifier组合起来，在保留UniqueIdentifier的唯一性的同时增加了有序性，以此来提高索引效率。
+
+### 1.32 OCR(Optical Character Recognition,光学字符识别)
 
 # 四 高级
 ## 1 未来方向

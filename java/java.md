@@ -625,7 +625,7 @@ java.util.Arrays里包含了一些static方法，可以直接操作数组（待�
 
 ## 5 函数
 ### 5.1 Lambda表达式(lambda expression)
-它是带有参数变量的表达式，是没有函数名的函数，是一段可以传递的代码，可以被一次或多次执行，是一种精简的字面写法，其实就是把匿名内部类中“一定”要做的工作省略掉，然后由JVM通过推导把简化的表达式还原。
+它是带有参数变量的表达式，是没有函数名的函数(这样说可能不准确，它不是真正的函数，只是单函数对象)，是一段可以传递的代码，可以被一次或多次执行，是一种精简的字面写法，通俗地讲就是把匿名内部类中“一定”要做的工作省略掉，然后由JVM通过推导把简化的表达式还原。
 
 原理：lambda底层是invokedynamic，基于方法句柄去做的，和反射都是间接调用，比不上invokevirtual调用实例方法，但是正确使用差距是非常小的
 
@@ -903,6 +903,15 @@ System.out.println(list3.get(0).getClass());//编译时不报错，仅仅提示"
 ```
 ### 8.7 泛型和数组
 java不支持创建泛型数组，除非是无上限的类型通配符(即？)
+
+## 9 反射
+
+```java
+// 如果要使用反射，可以创建一个类，并从类中获取所需的信息
+Class cls = obj.getClass(); 
+Constructor constructor = cls.getConstructor(); 
+Method[] methods = cls.getDeclaredFields();
+```
 
 ## 13 错误/异常处理
 java把所有的非正常情况分为两种,两种都继承了Throwable类:
