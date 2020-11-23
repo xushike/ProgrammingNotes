@@ -235,6 +235,13 @@ this === this.window // true
 ### 3.14 falsy和truthy
 js中**只有0、""、''、null、false、undefined、NaN这七个的布尔值(可通过`Boolean(xxx)`查看)是false**，其余为true(包括[]、{}、'0'、"0"、Function、Object、Infinity等).注意这儿说的布尔值而不是值.
 
+### 3.15 shim和sham
+参考：
+1. https://github.com/es-shims/es5-shim
+
+shim指能用旧js引擎完美模拟新ES中的方法，而不能完美模拟的就变成了sham，sham只是尽力模拟(as close as possible)，只承诺代码不会崩溃，不保证能起作用。比如
+1. 在VUE中，`Object.defineProperty`这个特性是无法使用低级浏览器中的方法来实现的，所以Vue的响应式不支持IE8以及更低版本的浏览器(待确认)
+
 ## 4 文档网址等
 1. 廖雪峰的js标准参考教程:[http://javascript.ruanyifeng.com/](http://javascript.ruanyifeng.com/)
 2. 廖雪峰的es6入门:[http://es6.ruanyifeng.com/](http://es6.ruanyifeng.com/)

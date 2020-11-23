@@ -141,6 +141,10 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。它对应的命�
 2. 查看文件信息：`cmd+i`
 2. 打开文件所在文件夹：`cmd+r`or`cmd+return`
 3. 使用浏览器联网搜索：`cmd+b`
+    1. 实测: my default browser is edge, default engine is baidu, but spotlight use google engine in edge, not baidu. i change all the default engines in safari, safari technology preview and edge, but not works. i am helpless.
+        1. This issue has been resolved on macOS 11
+    2. 如果焦点在默认浏览器上，那么spoltlight框不会自动关闭，反之则会自动关闭。
+        1. 参考：https://apple.stackexchange.com/questions/293513/spotlight-and-command-b-shortcut-quirk 
 4. 搜索结果中按分类跳转：`cmd+up/down arrow`
 
 ### 2.2 Bootcamp

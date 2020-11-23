@@ -60,32 +60,46 @@ Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建
 2. goa代码生成器，用于根据DSL描述生成代码模块(框架代码，胶水代码，测试代码)，辅助工具，和文档等
 3. goa利用生成代码和用户代码来实现一个服务，并提供一个完全可插拨的框架
 
-`goagen `
-
-`goa exmaple`:
-    
-```bash
-# 比如`goa example projectA/design，会生成如下cmd目录，同时根据design的接口在当前目录生成对应的接口impl文件
-cmd
-├── http_broker
-│   ├── grpc.go
-│   ├── http.go
-│   └── main.go
-├── http_broker-cli
-│   ├── grpc.go
-│   ├── http.go
-│   └── main.go
-└── main.go
-```
-
-`goa gen`
-1. 例子
+两个命令：
+1. `goa gen moduleNameA [--out DIRECTORY] [--debug]`: Generate service interfaces, endpoints, transport code and OpenAPI spec.
     
     ```bash
-    goa gen projectA/design -d xxx
-    goa example projectA/design
+    goa gen projectA/design -o xxx
+    # 会在xxx目录下生成形如这样的目录
+    gen
+    ├── apidoc.html
+    ├── apps
+    │   ├── client.go
+    │   ├── endpoints.go
+    │   ├── service.go
+    │   └── views
+    ├── grpc
+    │   ├── apps
+    │   └── cli
+    └── http
+        ├── apps
+        ├── cli
+        ├── openapi.json
+        ├── openapi.yaml
+        ├── openapi3.json
+        └── openapi3.yaml
     ```
-
+2. `goa example moduleNameA [--out DIRECTORY] [--debug]`: Generate example server and client tool.
+    
+    ```bash
+    # 比如`goa example projectA/design -o .，会生成如下cmd目录，同时根据design的接口在当前目录生成对应的接口impl文件
+    .
+    ├── http_broker.go
+    └── cmd
+        ├── http_broker
+        │   ├── grpc.go
+        │   ├── http.go
+        │   └── main.go
+        └── http_broker-cli
+            ├── grpc.go
+            ├── http.go
+            └── main.go
+    ```
 
 #### DSL说明
 ##### 老版本的DSL
@@ -265,6 +279,8 @@ https://github.com/go-gorm/gorm
 使用：
 1. 连接不同数据库的DSN格式和常用参数(todo)
     1. 参考：
+        1. 官方：
+            1. https://gorm.io/docs/connecting_to_the_database.html
         1. https://godoc.org/github.com/lib/pq
         1. https://www.postgresql.org/docs/current/external-interfaces.html
         1. https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
@@ -309,6 +325,8 @@ https://github.com/go-gorm/gorm
     4. `SetMaxOpenConns(100)`设置数据库连接池最大连接数
     4. `SetMaxIdleConns(20)`连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
 6. `DB.AutoMigrate(values ...interface{}) *DB`自动迁移,只会创建表、列和缺失索引的缺失，并不会改变现有的列的类型或删除未使用的列
+7. 插入数组
+    1. `插入text[]`可以使用`pq.StringArray`
 
 ## JWT
 https://github.com/dgrijalva/jwt-go
@@ -368,7 +386,7 @@ https://github.com/golangci/golangci-lint
 1. https://golangci-lint.run/
 2. https://go-critic.github.io/overview
 
-安装:windows的话可以去https://github.com/golangci/golangci-lint/releases下载对应版本。官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
+安装:windows的话可以去[release](https://github.com/golangci/golangci-lint/releases)下载对应版本,mac可以使用`brew install golangci-lint`，官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
 1. 本人实测，`go get`安装的确实可能有bug。比如
     1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
     2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
@@ -385,8 +403,8 @@ https://github.com/golangci/golangci-lint
 4. level=error msg="Running error: context loading failed: no go files to analyze"
     1. 场景一：更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了
     2. 场景二：更新了go mod的某个包之后出现，同样执行下go build就好了
-    3. 场景三：
-        1. https://github.com/golangci/golangci-lint/issues/825
+    3. 场景三：运行下go test后又好了
+        1. 参考：https://github.com/golangci/golangci-lint/issues/825
 5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
     1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
 6. ERRO Running error: context loading failed: failed to load program with go/packages: could not determine GOARCH and Go compiler

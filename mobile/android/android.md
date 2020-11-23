@@ -189,8 +189,8 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
     2. 无线连接：
         1. prerequisites：设备和PC机已经接入局域网，并且设备有局域网的IP地址
         1. 让设备在某个端口监听TCP/IP连接
-            1. 这一步可以借助USB连接来操作`adb tcpip <port>`，比如`adb tcpip 5555`，之后就不需要USB了
-            1. 也可以不借助USB，在设备的终端模拟器上操作
+            1. 方法一：这一步可以借助USB连接来操作`adb tcpip <port>`，比如`adb tcpip 5555`，之后就不需要USB了
+            1. 方法二：也可以不借助USB，在设备的终端模拟器上操作
                 
                 ```bash
                 su # 需要root权限

@@ -62,7 +62,7 @@ MVVM核心的思想就是视图是状态的函数：View = ViewModel(Model)，�
 
 纯函数的意义:因为纯函数非常“靠谱”，执行一个纯函数你不用担心它会干什么坏事，它不会产生不可预料的行为，也不会对外部产生影响。不管何时何地，你给它什么它就会乖乖地吐出什么。如果你的应用程序大多数函数都是由纯函数组成，那么你的程序测试、调试起来会非常方便。
 
-### 1.15 IaaS,SaaS,PaaS,CaaS,FaaS和Serverless Architecture
+### 1.15 IaaS,SaaS,PaaS,CaaS,FaaS和Serverless Architecture等
 IaaS(Infrastructure-as-a-Service):基础设施即服务
 
 PaaS(Platform-as-a-Service):平台即服务
@@ -73,7 +73,11 @@ Functions as a Service:功能即服务，代表有k8s
 
 CaaS（Communications-as-a-Service）：通讯即服务，代表有docker
 
-Serverless Architecture:无服务架构
+Serverless Architecture:无服务架构，Serverless容器的特点：
+1. 第一个特点是运行时沙箱会更频繁地创建和销毁
+2. 第二个特点是切分的粒度会非常非常细, 细中细就是 FaaS, 一个函数就要一个沙箱. 因此就要求两点:
+    1. 沙箱启动删除必须飞快
+    2. 沙箱占用的资源越少越好
 
 通俗点理解就是(可能不是非常准确):IaaS就是服务器和设备,PaaS就是操作系统和开发环境,SaaS就是软件
 
@@ -346,6 +350,14 @@ GUID;GUID(全局唯一标识符，Globally Unique Identifier)是微软对UUID标
 COMB:COMB（combine）型是数据库特有的一种设计思想，可以理解为一种改进的GUID，它通过组合GUID和系统时间，以使其在索引和检索事有更优的性能。它是由Jimmy Nilsson在他的“The Cost of GUIDs as Primary Keys”一文中设计出来的。基本设计思路是这样的：既然UniqueIdentifier数据因毫无规律可言造成索引效率低下，影响了系统的性能，那么我们 能不能通过组合的方式，保留UniqueIdentifier的前10个字节，用后6个字节表示GUID生成的时间（DateTime），这样我们将时间 信息与UniqueIdentifier组合起来，在保留UniqueIdentifier的唯一性的同时增加了有序性，以此来提高索引效率。
 
 ### 1.32 OCR(Optical Character Recognition,光学字符识别)
+### 1.33 项目构建、依赖管理
+gradle、maven、ant等
+
+### 1.34 工作流
+1. zeebe
+    1. 参考
+        1. https://zeebe.io/what-is-zeebe/
+        1. https://github.com/zeebe-io/zeebe-get-started-go-client
 
 # 四 高级
 ## 1 未来方向

@@ -2672,6 +2672,8 @@ go run *.go
 #### Go modules未启用
 简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
 
+具体实现代码参考：`$GOROOT/src/cmd/go/internal/get/get.go`，会将包下载到`$GOPATH/src`，且会对其repo下的submodule进行循环拉取
+
 参数说明:
 - `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
 - `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
@@ -2686,6 +2688,8 @@ go run *.go
 如果不能编译和安装，还会获取吗？
 
 #### Go modules 启用
+具体实现代码参考：`$GOROOT/src/cmd/go/internal/modget/get.go`,会将包下载到`$GOPATH/pkg/mod`，不会对其repo下的submodule进行循环拉取
+
 `go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有以下几种用法：
 1. `go get xxx@latest`：拉取最新版本:如果有的话，优先选择tag，否则选择commit(所以latest可能不是拉取的最新的)
 1. `go get xxx@master`：拉取master分支的最新commit
@@ -2765,10 +2769,16 @@ GO111MODULE=off go get xxx -v
 2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
 
 #### godoc
-1. 查看包说明和`go doc`一样，查看具体方法/变量等的说明略有不同：`godoc pkg_name xxx...`,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
-2. 启动本地文档服务器:`godoc -http=:6060`，然后通过`localhost:6060`就可以访问本地go的文档了，而且文档内容会比标准库多，因为官网只是标准库，而本地是`$GOPATH`和`GOROOT`下所有包生成的文档
-3. `-src`在命令行中打印源代码
-4. `-ex`查看文档和示例代码
+使用：
+1. 查看包说明：和`go doc`一样
+2. 查看具体方法/变量等的说明：`godoc pkg_name xxx...`，和`go doc`略有不同,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
+3. 启动本地文档服务器`godoc -http=:6060`：默认只扫描`$GOPATH`和`GOROOT`下所有的包(https://github.com/golang/go/issues/26827)，然后通过`localhost:6060`就可以访问本地go的文档了
+    1. 如果想扫描其他目录下的包
+        1. 可以建立软链接放入这两个目录下(mac下实测不行！)
+4. 在命令行中打印源代码`-src`
+5. 查看文档和示例代码`-ex`
+6. 显示更多信息`-v`：包括扫描进度等
+7. 开启playground`-play`:可以运行Example代码等
 
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
@@ -3742,6 +3752,13 @@ Package pem implements the PEM data encoding, which originated in Privacy Enhanc
 3. `Is(err, target error) bool`：是同一个会返回true；如果err是一个wrap error,target也包含在这个嵌套error链中的话，那么也返回true
 4. `As(err error, target interface{}) bool`：实现类型的错误断言，支持wrapping error
 
+    ```go
+    err := ...
+    var p *pq.PgError
+	ok := errors.As(err, &p) // as成功之后就可以直接用第二个参数了
+	assert.True(t, ok)
+	assert.Equal(t, p.Code, "23505")
+    ```
 ### flag
 命令行传参的格式：
 - `-isbool`    (一个 - 符号，布尔类型该写法等同于 -isbool=true)
@@ -4690,11 +4707,12 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
 go mod命令:
 1. `go mod init <project_name>`
 2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。和`go get`不同的是`go mod download`只会下载，不会编译安装。
-2. `go mod tidy`：整理依赖，更新项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
-    1. 更新并不是一定就好，有可能有不兼容、依赖、bug等问题
+2. `go mod tidy`：整理依赖，整理项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
+    1. 只是整理，并不会更新
 4. `go mod edit`：编辑go.mod
     
     ```golang
+    // 增加包:好像没有直接增加包的命令，可以修改go.mod然后执行go mod tidy
     // 修改当前module的版本：比如显式声明当前库为v2（具体参考发布部分笔记）
     go mod edit --module=private.com/pkg/v2 // go.mod里第一行就变成了：module private.com/pkg/v2，然后其他包引用该包的写法就变成了:private.com/pkg/v2/subPkgA
     // 修改require包的版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
@@ -4710,7 +4728,7 @@ go mod命令:
     ```
 5. `go mod vendor`:将依赖复制到项目路径的vendor文件夹中。(不过有了go module就不建议使用 go mod vendor了，因为 Go modules在淡化 Vendor 的概念，很有可能 Go2 就去掉了)
     1. `go run -mod=vendor main.go`（？）
-6. `go clean -modcache`:修复go mod？
+6. `go clean -modcache`:clean to remove the entire module download cache, including unpacked source code of versioned dependencies.
 7. `go mod graph`:打印现有依赖结构
 8. `go mod verify`:校验一个模块是否被篡改过
 
