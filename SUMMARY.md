@@ -121,6 +121,7 @@
         * [3.Redis](MC/MQ/3.Redis.md)
         * [4.ActiveMQ](MC/MQ/4.ActiveMQ.md)
         * [5.RocketMQ](MC/MQ/5.RocketMQ.md)
+        * [6.Nats](MC/MQ/6.Nats.md)
     * [MQTT](MC/MQTT/MQTT.md)
         * [EMQ](MC/MQTT/EMQ.md)
     * [RPC](MC/RPC/RPC.md)

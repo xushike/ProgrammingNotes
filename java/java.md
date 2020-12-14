@@ -444,6 +444,16 @@ long
 ![](../picture/java/0-2-character.jpg "常见转义字符")
 3. 直接用Unicode值来表示，格式是'\uXXXX'，XXXX代表一个十六进制的整数，范围是'\u0000'到'\uFFFF'，一共可以表示65536个，其中前256个（'\0000'到'\00FF'）和ASCII码中的字符完全重合
 
+方法：
+1. `"xxx".getBytes("decodeA")`:根据指定的decode编码返回某字符串在该编码下的byte数组
+    
+    ```java
+    byte[] b_gbk = "深".getBytes("GBK");  // 结果长度为2
+    byte[] b_utf8 = "深".getBytes("UTF-8");   // 结果长度为3
+    byte[] b_iso88591 = "深".getBytes("ISO8859-1");   // 结果长度为1
+    byte[] b_unicode = "深".getBytes("unicode");  // 结果长度为4
+    ```
+
 #### 2.1.3 浮点型
 java默认的浮点数类型是double，如果要用float，应该在尾部加上F或者f。double比float精确，两者都可能不能精确表示一个浮点数，如果需要精确保存一个浮点数，可以用BigDecimal类。
 java表示浮点数的两种形式：
@@ -826,9 +836,10 @@ List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
 4. store(OutputStream out,String comments)：将Properties的key-value对输出到指定的属性文件中(以输出流表示),comments相当于顶部注释的文字
 
 #### 7.6.2 LinkedHashMap
+类似LinkedHashSet，可以保持键值对的插入顺序
 
-类似LinkedHashSet
 #### 7.6.3 SortedMap接口和TreeMap实现类
+SortedMap可以按key排序
 
 #### 7.6.4 WeakHashMap
 和HashMap用法基本类似，区别在于HashMap的key保留了强引用，但WeakHashMap保留的是弱引用。

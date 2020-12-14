@@ -118,6 +118,10 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 问题：
 1. attribute does not have "rpc:tag" defined in the meta
 
+#### 问题
+1. panic: view "default" on field "nextNode" cannot be computed: view "default" on field "branches" cannot be computed: unknown view "default"
+2. invalid CollectionOf argument: not a result type and not a known result type identifier (top level)
+
 ### gin
 https://github.com/gin-gonic/gin
 
@@ -128,6 +132,72 @@ https://github.com/gohugoio/hugo
 
 ### echo
 主要面向API
+
+### micro/go-micro
+#### asim/nitro
+https://github.com/asim/nitro
+
+由`micro/go-micro`的v1和v2转变而来，也就是现在的`asim/nitro`，变成了个人项目（go-micro所属公司的ceo名下）。
+
+#### micro/micro
+参考：
+1. https://m3o.com/
+1. https://micro.mu/
+1. https://juejin.cn/post/6844903780736057357
+4. https://github.com/micro/services:包含了很多真实示例的仓库
+5. https://www.kancloud.cn/linimbus/go-micro
+
+由`micro/go-micro`v3转变而来，不过有巨大变化：
+1. 不再是一个纯粹的微服务框架，而是云原生开发/托管平台
+2. 一般我们将 go-micro 视为框架，将 micro 视为工具箱，但这样的划分似乎没有意义。
+
+micro是一个工具包toolkit合集，能帮助我们快速开发、调试微服务。
+
+Micro解决了构建云本地系统的关键需求。它采用了微服务体系结构模式,并将其转换为一组工具,作为可伸缩平台的构建块。Micro隐藏了分布式系统的复杂性,并为开发人员提供了很好的理解概念。Micro是一个专注于简化分布式系统开发的微服务生态系统。是一个工具集合, 通过将微服务架构抽象成一组工具。隐藏了分布式系统的复杂性,为开发人员提供了更简洁的概念。Micro是一个微服务架构的一个框架，是一个插件化的框架，默认支持protobuf、grpc、consul。
+
+Micro 采用插件化的架构设计，用户可以替换底层的实现，而不更改任何底层的代码。每个 Go-Micro 框架的底层模块定义了相应的接口，registry作为服务发现，transport 作为同步通信，broker 作为异步通信/异步消息总线。
+```go
+type Transport interface {
+    Dial(addr string, opts ...DialOption) (Client, error)
+    Listen(addr string, opts ...ListenOption) (Listener, error)
+    String() string
+}
+
+type Registry interface {
+    Register(*Service, ...RegisterOption) error
+    Deregister(*Service) error
+    GetService(string) ([]*Service, error)
+    ListServices() ([]*Service, error)
+    Watch() (Watcher, error)
+    String() string
+}
+
+type Broker interface {
+    Options() Options
+    Address() string
+    Connect() error
+    Disconnect() error
+    Init(...Option) error
+    Publish(string, *Message, ...PublishOption) error
+    Subscribe(string, Handler, ...SubscribeOption) (Subscriber, error)
+    String() string
+}
+```
+
+常用服务类型(待整理):
+1. api：http接口服务，供用户访问
+2. fnc（函数）
+3. srv：内网的后台服务，供其他微服务内部访问
+4. web
+5. cli：用来写客户端, 生成command line程序，接口测试等
+
+命名：micro中微服务的名字定义为[命名空间].[资源类型].[服务名]的，而micro api代理访问api类型的资源，比如go.micro.api.greeter，micro web代理访问web类型的资源，比如go.micro.web.greeter
+
+broker代理：go-micro支持http/nats/memory三种broker,其中http是默认的broker。
+
+使用：
+1. 安装：`go get -u github.com/micro/micro`
+2. 测试安装成功`micro --version`
 
 ### iris
 创建者称其为“真正属于Go的Express.js”，也就是说，它是JavaScript / Node.js的Web框架的Go语言版，它使用最小设计，绝大部分功能都由插件提供。Iris提供基本的MVC功能，自带对中间件、会话、路由和缓存的支持。
@@ -540,10 +610,24 @@ https://github.com/robfig/cron
 1. win(待补充)
 1. mac：`brew install protobuf`
 
-### protocbuf源码生成插件 protoc-gen-go
+### protoc-gen-go
 https://github.com/golang/protobuf/tree/master/protoc-gen-go
 
-`github.com/golang/protobuf/protoc-gen-go`
+介绍：按照Go的代码风格，protoc-gen-go源码主要包含一下几个包：
+1. main包
+    1. doc.go 主要是说明。
+    2. link_grpc.go 显式引用protoc-gen-go/grpc包，触发grpc的init函数。
+    3. main.go 代码不到50行，初始化generator，并调用generator相应的方法输出protobuf的Go语言文件。
+2. generator包
+    1. generator.go 包含了大部分由protobuf原生结构到Go语言文件的渲染方法，其中 func (g *Generator) P(str ...interface{}) 这个方法会把渲染输出到generator的output（generator匿名嵌套了bytes.Buffer，因此有Buffer的方法）。
+    2. name_test.go 测试，主要包含generator中名称相关方法的测试。
+3. grpc包
+    1. grpc.go 与generator相似，但是包含了很多生成grpc相关方法的方法，比如渲染转译protobuf中定义的rpc方法（在generator中不包含，其默认不转译service的定义）
+4. descriptor 包含protobuf的描述文件（.proto文件及其对应的Go编译文件），其中proto文件来自于proto库（参见这里）
+5. plugin 包含plugin的描述文件（.proto文件及其对应的Go编译文件），其中proto文件来自于proto库，参见这里
+
+使用：
+1. 安装`go get -u github.com/golang/protobuf/protoc-gen-go`
 
 ### grpc
 
@@ -564,7 +648,9 @@ https://github.com/uber-go/zap
 5. fatal：严重错误（特别严重，比如引起崩溃式的错误）
 
 使用：
-1. 
+1. 首先分几种模式
+    1. sugar：性能差点，但编码友好，适合一般后台业务场景
+    2. desugar：编码稍微麻烦，但性能较好，适合高并发场景
 
 ## 证书
 ### mkcert

@@ -73,19 +73,9 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
 过期的git分支,一般是删除了远程分支,但是本地分支还在的情况下看得到.
 
 ### 3.11 gitlab生成秘钥
-待笔记:https://www.jianshu.com/p/46aaccc71ce8
-1. 检查是否已经存在SSH Key:`ls -al ~/.ssh`
-...
-
-
-ssh -T 。。。的作用
-
-
-生成公钥连邮箱都可以不用输？
-
-ssh 秘钥公钥的原理
-
-多个秘钥的情况
+1. 检查是否已经存在SSH Key:`ls -al ~/.ssh`，如果有，查看`id_rsa.pub`文件中的邮箱对不对
+2. 重新生成秘钥：`ssh-keygen -t rsa -C 'foo@example.com'`，一般情况下一路回车就行
+3. 打开gitlab,找到Profile Settings-->SSH Keys--->Add SSH Key,并把`id_rsa.pub`中的内容粘贴到Key所对应的文本框，在Title对应的文本框中给这个sshkey设置一个名字，点击Add key，搞定
 
 ### 3.12 detached
 ### 3.13 分支状态：active（活动）、stale（过时的）、traced
@@ -247,7 +237,10 @@ editor = vim
     1. 查看具体某个项的设置:`git config --get itemA`,比如查看大小写敏感`git config --get core.ignorecase`
 2. 设置
 3. 取消设置
-    1. 取消某个项的设置`git config --unset itemA`，比如`git config --global --unset user.email`
+    1. 一般情况下取消某个项的设置`git config --unset itemA`，比如`git config --global --unset user.email`
+    2. 特殊的，比如`git config --global url."git@*.domain.cc:libA".insteadOf "https://*.domain.cc/libA"`
+        1. 可以这样取消`git config --global --remove-section url."git@*.domain.cc:lib"`
+        2. 也可以直接删除`~/.gitconfig`中对应的段落
 
 常用设置项：
 1. 为命令设置别名:比如`git config --global alias.st status`，设置后就可以用`st`代替`status`。如果想使用非git命令，需要在前面加上叹号`!`，如`git config --global alias.visual '!gitk'`

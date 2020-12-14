@@ -969,8 +969,14 @@ curl -XPOST 'https://xxx/companies/search'
 ```
 
 使用：
-1. 判断端口连通性：`curl ip:port`
-    1. Connection reset by peer
+1. 判断端口连通性
+    1. `curl ip:port`
+        1. Connection reset by peer 表示 通的
+        1. Empty reply from server 表示 通的
+        1. Connection refused 表示 不通
+    2. `telnet ip port`
+        1. Connected to 192.168.3.132. Escape character is '^]'. 表示通的
+        1. connect to address 192.168.3.132: Connection refused. Unable to connect to remote host 表示不通
 2. 利用`cip.cc`快捷查询IP地址信息
     
     ```bash

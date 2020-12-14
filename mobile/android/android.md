@@ -186,6 +186,9 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
     ```
 2. 连接设备和电脑：
     1. USB连接
+        1. Android 设备的开发者选项和 USB 调试模式已开启。
+            1. 一般情况下会自动连接，如果没有，则关闭USB调试后再重新打开
+        2. 连接成功后通过`adb devices`可以看到该设备
     2. 无线连接：
         1. prerequisites：设备和PC机已经接入局域网，并且设备有局域网的IP地址
         1. 让设备在某个端口监听TCP/IP连接
@@ -198,9 +201,11 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
                 stop adbd
                 start adbd
                 ```
-        2. 断开 USB 连接,找到设备的 IP 地址,通过 IP 地址连接设备`adb connect <device-ip-address>`
+        2. 连接设备
+            1. 断开 USB 连接(如果没用USB则忽略此步)
+            2. 找到设备的 IP 地址,通过 IP 地址连接设备`adb connect <device-ip-address>`，如`adb connect 192.168.2.157`，连接成功后通过`adb devices`可以看到该设备
             1. 使用完后断开连接`adb disconnect <device-ip-address>`
-            2. 恢复USB调试`adb usb`
+            2. 恢复USB调试`adb usb`(没有则忽略此步)
 3. 打开软件
     1. `adb shell am start`
 4. `adb shell`

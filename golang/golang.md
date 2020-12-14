@@ -1155,12 +1155,16 @@ map的键的特性:
 3. 从map中获取key的值，有两种方式，但应该只使用逗号ok这种：
     1. 最佳实践是使用逗号ok模式：`_,ok := map1[key1]`，ok表示是否存在这个key1，ok为true，再取值
     2. 直接取值`map1[key1]`：如果值存在则返回该值，不存在则返回对应数据类型的零值。
-4. 遍历map：是无序的。而且go没有提供类似java的直接获取set（将key和value放在一个变量里）的方法，go里只能分别获取key和value
+4. 遍历map：是无序的。而且go没有提供类似java的直接获取set（将key和value放在一个变量里）的方法，go里只能分别获取key和value。详细参考[Go maps in action ](https://blog.golang.org/maps):
+    > When iterating over a map with a range loop, the iteration order is not specified and is not guaranteed to be the same from one iteration to the next. Since the release of Go 1.0, the runtime has randomized map iteration order.
+    
     ```golang
     for k:= range m {
         fmt.Println(k) // 获取的是key
     }
     ```
+    
+    有人给官方提过有序map的实现，不过被拒绝了[ 7930: encoding/json: Optionally preserve the key order of JSON objects ](https://go-review.googlesource.com/c/go/+/7930)
 5. 打印map：go1.12之前`fmt`打印map是无序的，go1.12开始`fmt`打印map是有序的。但是`range`依然是无序的。参考:https://golang.org/doc/go1.12
 
 注意：
@@ -2692,7 +2696,7 @@ go run *.go
 
 `go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有以下几种用法：
 1. `go get xxx@latest`：拉取最新版本:如果有的话，优先选择tag，否则选择commit(所以latest可能不是拉取的最新的)
-1. `go get xxx@master`：拉取master分支的最新commit
+1. `go get xxx@master`：优先拉取master分支的最新commit
 1. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
 1. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
 
@@ -2721,6 +2725,9 @@ GO111MODULE=off go get xxx -v
 
 ### 1.5 go clean
 清理go编译生成的文件，如`.go`、`.out`、`.a`等
+
+参数:
+1. 
 
 ### 1.6 go generate
 在执行go generate时将会加入些信息到环境变量，可在命令程序中使用。$GOARCH 架构 (arm, amd64, etc.)、$GOOS OS (linux, windows, etc.)、$GOFILE 当前处理中的文件名$GOLINE 当前命令在文件中的行号、$GOPACKAGE 当前处理文件的包名、$DOLLAR 一个美元符号（？），同时该命令是在所处理文件的目录下执行，故利用上述信息和当前目录，边可获得丰富的DIY功能。
@@ -3353,9 +3360,19 @@ fmt.Println(^uint(0) >> 1) // 9223372036854775807
 
 ### 8.1 protobuf
 参考：
-1. GitHub地址：https://github.com/protocolbuffers/protobuf
+1. 官方
+    1. https://developers.google.com/protocol-buffers/docs/reference/go/faq
+    2. https://developers.google.com/protocol-buffers/docs/gotutorial
 1. https://www.ibm.com/developerworks/cn/linux/l-cn-gpb/index.html
-2. https://developers.google.com/protocol-buffers/docs/gotutorial
+
+版本变更
+2. v2
+    1. 支持map
+1. v3
+    1. 保留repeated，删除required和optional，默认就是optional：为了更好的兼容Android Java、Objective C和Go等语言
+    2. 删除unknown field
+    3. 不再支持继承，以Any type代之
+    4. 新添加了syntax关键字，以指明proto文件的protobuf协议版本，不指明则是v2
 
 Protobuf即Protocol Buffers，是Google公司开发的一种跨语言和平台的序列化数据结构的方式，是一个灵活的、高效的用于序列化数据的协议。与XML和JSON格式相比，protobuf更小、更快、更便捷。protobuf是跨语言的，并且自带一个编译器(protoc)，只需要用protoc进行编译，就可以编译成Java、Python、C++、C#、Go等多种语言代码，然后可以直接使用，不需要再写其它代码，自带有解析的代码。只需要将要被序列化的结构化数据定义一次(在.proto文件定义)，便可以使用特别生成的源代码(使用protobuf提供的生成工具)轻松的使用不同的数据流完成对结构数据的读写操作。甚至可以更新.proto文件中对数据结构的定义而不会破坏依赖旧格式编译出来的程序。
 
@@ -3370,21 +3387,50 @@ Protobuf即Protocol Buffers，是Google公司开发的一种跨语言和平台�
 2. 缺乏自描述
 
 使用：
-1. 安装[编译器](https://github.com/protocolbuffers/protobuf/releases)，安装后查看版本`protoc --version`
-2. 安装插件protoc-gen-go：`go get -u github.com/golang/protobuf/protoc-gen-go`
-2. 通过定义好的`.proto文件`来生成对应语言的代码，比如`protoc --proto_path=IMPORT_PATH --go_out=DST_DIR`,IMPORT_PATH声明了一个`.proto`文件所在的解析import具体目录。如果忽略该值，则使用当前目录。如果有多个目录则可以多次调用--proto_path，会顺序的被访问并执行导入。`-I=IMPORT_PATH`是`--proto_path`的简化形式。
+1. 安装[编译器](https://github.com/protocolbuffers/protobuf/releases)，安装后查看版本`protoc --version`。
+2. 安装插件protoc-gen-go，该插件用来生成go代码，下面两个的区别似乎只是版本(待确认?)
+    1. `go get -u github.com/golang/protobuf/protoc-gen-go`: 用它生成的是message v1
+    2. `go install google.golang.org/protobuf/cmd/protoc-gen-go`：用它生成的是message v2
+        1. 如果报错`cannot find module providing package google.golang.org/protobuf/cmd/protoc-gen-go: working directory is not part of a module`，使用`go get`
+2. 通过定义好的`.proto文件`来生成对应语言的代码，比如`protoc --proto_path=IMPORT_PATH --go_out=DST_DIR INPUT_FILE`
+    1. 参数
+        1. `IMPORT_PATH`声明了一个`.proto`文件import的目录。如果忽略该值，则使用当前目录。如果有多个目录则可以多次调用`--proto_path`，会顺序的被访问并执行导入。`-I=IMPORT_PATH`是`--proto_path`的简化形式。
+        2. `DST_DIR`生成文件的位置
+            1. 指定`--go_opt=paths=source_relative`时，生成文件的位置**相对于源文件的路径**
+            
+            ```bash
+            # 假如当前目录下有protoA和protoB文件夹,protoA下有有foo.proto和bar.proto
+            # foo.proto的 option go_package = "example.com/protos";
+            protoc --go_out=protoB  protoA/*.proto
+            
+            ```
+        2. `INPUT_FILE`是proto源文件的
+        4. `--go_opt=paths=source_relative`：指定生成目录是源文件的相对目录
+        5. `--go_opt=module=$PREFIX`：生成文件目录中的`$PREFIX`会被移除
     1. 对于Go语言，编译器会为每个消息类型生成了一个`.pb.go`文件。
+    
+    ```bash
+    # 例子1 比如，当前目录下protoA文件夹下有有foo.proto和bar.proto，想在protoB文件夹下生成对应的pb文件，可以这样
+    protoc --go_out=protoB protoA/*.proto
+    # 例子2 
+    protoc --go_out=protoB protoA/*.proto
+    ```
+    
 3. 然后相应语言就可以操作在.proto文件中定义的消息类型，包括获取、设置字段值，将消息序列化到一个输出流中以及从一个输入流中解析消息。
 
 Protobuf3语法：
 ```go
 syntax = "proto3"; // 非注释非空的第一行必须使用Proto版本声明，否则默认使用proto2版本
 
-// 定义包名，在其他的消息格式定义中可以使用包名+消息名的方式来定义域的类型，比如company.Person
-// 如果提供了option go_package，则变成go_package.xxx来使用，比如companypb.Person
+// packeage 定义包名，在其他的消息格式定义中可以使用包名+消息名的方式来定义域的类型，比如company.Person.
+// 如果提供了option go_package，则是指定生成go程序的位置和包名（不是包文件名），最后路径的最后一位是目录名，也是go程序的包名，指定之后引用变成go_package后缀.xxx来使用，比如这儿的companypb.Person。
 package company;
 
-option go_package = "companypb";
+// 导入其他目录下的proto包
+import "google/protobuf/timestamp.proto";
+
+// 
+option go_package = "example.com/company;companypb"; 
 
 // 定义服务
 service Login {
@@ -3392,7 +3438,7 @@ service Login {
 }
 
 message LoginRequest {
-    // repeated 表示可以用来存放N个相同类型的内容。比如这里可以放N个int32类型的id
+    // repeated 表示可以用来存放N个相同类型的内容。比如这里可以放N个int32类型的id。编译成go语言的话就是slice
     // 后面的1是分配标识号，有范围限制，而且不能重复
     repeated int32 ids = 1; 
     // 使用其他消息类型，支持嵌套的写法
@@ -3403,6 +3449,16 @@ message Person {
     string name = 1;
     int32 id = 2;  
     string email = 3;
+    enum Corpus { // enum表示枚举，protobuf目前的所有的枚举值都只能是int32类型
+        UNIVERSAL = 0;
+        WEB = 1;
+        IMAGES = 2;
+        LOCAL = 3;
+        NEWS = 4;
+        PRODUCTS = 5;
+        VIDEO = 6;
+    }
+    Corpus corpus = 4;    
 }
 
 ```
@@ -3416,6 +3472,22 @@ message Person {
 
 原理：
 1. Varint（待补充）
+
+问题：
+1. proto: invalid field number
+2. Deprecated use of 'go_package' option without a full import path in "member.proto", please specify:
+        option go_package = ".;pb"; 
+        A future release of protoc-gen-go will require the import path be specified.
+        See https://developers.google.com/protocol-buffers/docs/reference/go-generated#package for more information.
+    1. 意思是`go_package`需要定义完整的路径，如果不想用全路径，可以使用`go_package = ".;packageA"`
+
+#### protoc
+protoc是protobuf文件（.proto）的编译器，可以借助这个工具把 .proto 文件转译成各种编程语言对应的源码，包含数据类型定义、调用接口等。通过查看protoc的源码（参见[github库](https://github.com/google/protobuf)）可以知道，protoc在设计上把protobuf和不同的语言解耦了，底层用c++来实现protobuf结构的存储，然后通过插件的形式来生成不同语言的源码。可以把protoc的编译过程分成简单的两个步骤:
+1. 解析.proto文件，转译成protobuf的原生数据结构在内存中保存
+2. .把protobuf相关的数据结构传递给相应语言的编译插件，由插件负责根据接收到的protobuf原生结构渲染输出特定语言的模板
+
+#### protoc-gen-go
+protoc-gen-go是protobuf编译插件系列中的Go版本
 
 ## 9 go性能调优
 
@@ -4636,7 +4708,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     ```bash
     GOPRIVATE=*.domain.cc # 一般domain.cc是你公司私有git仓库的域名地址，这样就可跳过proxy的检查
     ```
-    当然，还需要配置git，如`git config --global url."git@*.domain.cc:libA".insteadOf "https://*.domain.cc/libA"`
+    因为go mod默认使用http(https)拉取模块，但是内网的包一般是无法直接通过https拉取的，所以还需要类似这样配置：`git config --global url."git@*.domain.cc:libA".insteadOf "https://*.domain.cc/libA"`
 
 `GONOPROXY`、`GONOSUMDB`、`GOPRIVATE`的关联:这三个环境变量都是用在当前项目依赖了私有模块，也就是依赖了由 GOPROXY 指定的 Go module proxy 或由 GOSUMDB 指定 Go checksum database 无法访问到的模块时的场景。它们三个的值都是一个以英文逗号 “,” 分割的模块路径前缀，匹配规则同 path.Match。其中 GOPRIVATE 较为特殊，它的值将作为 GONOPROXY 和 GONOSUMDB 的默认值，所以建议的最佳姿势是只是用 GOPRIVATE。比如`GOPRIVATE=*.corp.example.com`,表示所有模块路径以 corp.example.com 的下一级域名 (如 team1.corp.example.com) 为前缀的模块版本都将不经过 Go module proxy 和 Go checksum database，需要注意的是不包括 corp.example.com 本身
 
@@ -5002,6 +5074,11 @@ C:\Go\src\runtime\map.go:97:2: too many errors
 
 ### 1.25  malformed module path "XXXX": missing dot in first path element
 go1.13的mod规范要求import后面的path第一部分必须符合域名规范，比如github.com/pkgA，而不能直接`pkgA`
+
+### 1.26 go mod 拉取私有模块的时候报错: ... unkown version
+配置git协议拉取
+
+### 1.27 invalid version: module contains a go.mod file, so major version must be compatible ...
 
 ## 2 未解决
 ### note: module requires Go 1.14
