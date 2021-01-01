@@ -425,18 +425,59 @@ jdk7引入了新功能，可以在数值中使用下划线，可以更直观地�
 
 初始化规则:0(int), 0.0(float), false(boolean)
 
-#### 2.1.1 整型
-包含：byte、short、int、long
+#### 2.1.1 整型和位运算/移位运算
+参考:https://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2
 
-byte:在内存里占8位，即1个字节，表数范围-128(-2^7^)到127(2^7^-1)
+##### 整型
+在Java中，负数是用补码来表示的，也就是**其绝对值取反加1得到的，并用首位作为符号位来标识正数负数**，首位1为负数，0为0或正数。整数的大小不会随操作系统改变，所以int在32位和64位系统上都是32位。
 
-short
+首先java的整形默认都是**有符号的**，如果想使用无符号的可以调用对应类型的静态方法`toUnsignedInt()`、`toUnsignedLong()`转换成`int`或`long`再使用，如果传入的值为零或正，则转换的int和long值将相同，如果是负数，则转换的数字将为`2的N次方 + numA`
+```java
+// byte类型负数，toUnsigned()结果是 2的8次方+numA
+byte a = -4;
+System.out.println(Byte.toUnsignedInt(a)); // 252
 
-int和Integer:
+// short类型负数，toUnsigned()结果是 2的16次方+numA，其他数值类型以此类推
+```
 
-long
+整形包含：byte、short、int、long
+1. `byte`:在内存里占8位，即1个字节，值的范围是-128(负2的7次方)到127(2的7次方-1)
+2. `short`16位，2个字节
+3. `int`和`Integer`:32位，4个字节
+4. `long`
 
-#### 2.1.2 字符型
+查看数值的最大最小值:使用类型对应的静态常量，比如int可以`Integer.MAX_VALUE`和`Integer.MIN_VALUE`
+1. 额外的，针对32位整形int的，还可以这样：最大值是`~0 >>> 1`，最小值`~(~0 >>> 1)`。本来除了int的其他几个类型应该也是可以的，但是java的`>>>`默认将移位结果按int来处理，所以只有int能这样计算(已实测)
+
+##### 位运算/移位运算
+计算机指令中的左移就是补0，但是右移分为两种：
+1. 算术右移：移动后补的是最高位的值
+    
+    ```java
+    // 一个byte数字99 的二进制是 0110 0011
+    // 右移4位后 补的是0 ------0000 0110
+    
+    // byte数字-107 二进制是1001 0100 这是1开头的
+    // 右移4位后补的确是最高位1 -------1111 1001
+    ```
+2. 逻辑右移:补0
+    
+    ```java
+    // todo
+    ```
+
+位运算有：
+1. 移位运算符：共三种
+    1. `<<`: 左移运算符
+    2. `>>`: 右移运算符
+    3. `>>>`: 无符号右移，忽略符号位，空位都以0补齐
+1. `~`：按位取反(和C语言一样)
+    ```java
+    System.out.println(~4); // -5
+    ```
+2. `^`：异或
+
+#### 字符型
 通常用于表示单个的字符，必须用单引号包裹，java语言使用16位的Unicode字符集作为编码方式。而Unicode被设计成支持世界上所有书面语言的字符。char类型的值可以直接作为整型值来使用。
 字符型有三种表示方式：
 1. 直接的单个字符，如：'a'
@@ -454,7 +495,7 @@ long
     byte[] b_unicode = "深".getBytes("unicode");  // 结果长度为4
     ```
 
-#### 2.1.3 浮点型
+#### 浮点型
 java默认的浮点数类型是double，如果要用float，应该在尾部加上F或者f。double比float精确，两者都可能不能精确表示一个浮点数，如果需要精确保存一个浮点数，可以用BigDecimal类。
 java表示浮点数的两种形式：
 1. 十进制
@@ -468,7 +509,31 @@ java有三个特殊的浮点数值用来表示溢出和出错：
 1. 所有的正无穷大都是相等的，负无穷也是，而NaN不和任何数相等，包括自身
 2. 只有浮点数除以0才可以得到正负无穷大，因为java会自动把浮点数运算的0当作0.0处理，而整数值除以0会抛出ArithmeticException：/by zero异常
 
-#### 2.1.4 布尔型
+#### 布尔型
+`false`和`Boolean.FALSE`区别:
+1. 前者是原始值，后者是对象。
+2. `if else`打断点的时候，前者不会停留，后者会
+
+    ```java
+    // false
+    if (false) { // 此处打断点不会停留
+        ...
+    } 
+    
+    // 
+     if (Boolean.FALSE) { // 此处打断点会停留
+        ...
+    } 
+    ```
+3. 唯一只能使用Boolean而不能用boolean就是从列表或者哈希表获取值的时候(待验证)
+    
+    ```java
+    boolean b = false;
+    Map map = new HashMap();
+    map.put("b", b);
+    // 取的时候只能用Boolean
+    Boolean b1 = (Boolean) map.get("t");
+    ```
 
 #### 类型转换
 有两种:自动类型转换和强制类型转换.
@@ -1034,6 +1099,14 @@ jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出�
 
 # 五 经验
 ## 2 java基础类库
+前缀`java.lang`
+
+### Boolean
+此类提供了许多用于将布尔值转换为String以及将String转换为布尔值的方法，以及其他在处理布尔值时有用的常量和方法
+
+参考：http://docs.oracle.com/javase/7/docs/api/java/lang/Boolean.html。
+1. The Boolean class wraps a value of the primitive type boolean in an object. An object of type Boolean contains a single field whose type is boolean.(布尔类将原始类型boolean的值包装在对象中。 布尔类型的对象包含一个布尔类型的字段。)
+
 ### Calendar
 ### Date
 Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
@@ -1041,6 +1114,7 @@ Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
 
 常用方法:
 1. `random()`
+2. `pow(a,b)`:a的b次方
 
 ### Object类
 jdk7新增了Objects工具类，里面的方法大多是空指针安全的。

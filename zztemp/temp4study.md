@@ -2020,7 +2020,6 @@ worker.cancel();
 82. 动态路由
 83. Web前端单元测试、自动化测试和压力测试程序的开发 
 84. 如何模拟网络状况
-85. async 和await
 87. vue lavas
 88. 路由策略:RouteReuseStrategy
     1. 路由复用策略

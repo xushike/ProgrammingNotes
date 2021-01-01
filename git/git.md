@@ -569,7 +569,7 @@ pick 0325c7f add b.txt for test git rebase
 和`git checkout -- file_name`类似，用指定提交中的文件覆盖暂存区和工作区中的文件
 
 #### git checkout branch_name
-切换分支，单远程库的情况下这样使用没问题，如果是多远程库，可能会提示`git checkout --track origin/<name>`，意思是git并不清楚你要检出哪个远程库的分支，所以要用提示的命令，比如`git checkout --track origin/develop`
+见切换分支部分笔记
 
 #### git checkout commit_id
 根据这个commit生成一个暂时的branch，现在的确在一个branch上，只是这个branch没有名字，我们可以马上`checkout -b`生成一个新的branch，也可以在这个没有名字的branch上面做修改、提交等像正常branch一样的操作（还有说是进入了游离状态，待验证）
@@ -606,9 +606,11 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
 
 ### 8.2 切换/签出分支（git checkout）
-切换分支:`git checkout branch_name`,工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。
+对本地而言，可以直接切换到本地以及所有的远程(orgin、upstream等)的分支，如果切换远程时提示没有对应的分支，需要先同步一下远程信息，比如`git fetch upstreamA`，单远程库的情况下这样使用没问题，如果是多远程库，可能会提示`git checkout --track origin/<name>`，意思是git并不清楚你要检出哪个远程库的分支，所以要用提示的命令，比如`git checkout --track origin/develop`
 
-所以对于新增的文件,如果目标分支没有该文件,切换成功;有该文件,切换失败.
+使用：
+1. 切换分支：工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。所以对于新增的文件,如果目标分支没有该文件,切换成功;有该文件,切换失败.
+    1. `git checkout branch_name`,
 
 ### 8.3 git stash 储藏修改
 当某个分支改到一半需要切换到另一个分支时,有些文件只更改到一半,这个时候有两种解决方法:commit和stash,使用stash最好.注意新增的文件不受影响.

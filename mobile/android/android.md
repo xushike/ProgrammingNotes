@@ -206,11 +206,37 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
             2. 找到设备的 IP 地址,通过 IP 地址连接设备`adb connect <device-ip-address>`，如`adb connect 192.168.2.157`，连接成功后通过`adb devices`可以看到该设备
             1. 使用完后断开连接`adb disconnect <device-ip-address>`
             2. 恢复USB调试`adb usb`(没有则忽略此步)
-3. 打开软件
-    1. `adb shell am start`
-4. `adb shell`
-    1. `adb root`:以 root 权限运行 adbd,再运行 `adb shell`，命令行提示符变成`#`.相应地，如果要恢复 adbd 为非 root 权限的话，可以使用 adb unroot 命令。
+4. `adb shell`:发出shell命令，有两种使用方式，`adb shell shellCommandA`是发出单个shell命令(无需进入远程shell)，`adb shell`是启动交互式shell(需要进入远程shell)。
+    1. 使用shell命令之前，推荐先`adb root`:以 root 权限运行 adbd,再运行 `adb shell`，命令行提示符变成`#`.相应地，如果要恢复 adbd 为非 root 权限的话，可以使用 adb unroot 命令。
         1. 有些手机 root 后也无法通过 adb root 命令让 adbd 以 root 权限执行，比如三星的部分机型，会提示"adbd cannot run as root in production builds"，此时可以先安装 adbd Insecure，然后 adb root 试试。
+        2. 参数`-s`：多个设备的时候用于指定具体某个设备`adb -s emulator-5554 shell`
+    2. 查看可用的Unix命令行工具列表`adb shell ls /system/bin`：Android 提供了大多数常见的 Unix 命令行工具，`--help`参数可获得大多数命令的帮助。许多 shell 命令都由 toybox 提供.
+    3. 调用 Activity 管理器 (am)：可以执行各种系统操作，如启动 Activity、强行停止进程、广播 intent、修改设备屏幕属性，等等。语法可以是`adb shell am xxx`(无需进入远程shell)，也可以是`am xxx`(需要先进入远程shell)
+        1. 打开app`adb shell am start `
+            1. `-n componentA`：通过组件名，即`软件包名/activity名`打开app
+                
+                ```bash
+                adb shell am start com.hypergryph.arknights/com.u8.sdk.U8UnityContext
+                ```
+        2. 终止app
+            1. 正常终止`adb shell am kill pkgA`:终止与 package（应用的软件包名称）关联的所有进程。此命令仅终止可安全终止且不会影响用户体验的进程。也就是说如果应用在前台使用，是不会终止的，只有应用在后台的时候才会被终止。
+            1. 强行终止`adb shell am force-stop pkgA`:强行停止与 package（应用的软件包名称）关联的所有进程
+    4. 实时查看正在运行的app的包名和activity
+        1. 方法一`adb shell dumpsys activity activities`(推荐)
+        2. 方法二`adb shell logcat | grep ActivityManager`
+        
+            ```bash
+            # 比如启动mrfz，可以发现一串字符 
+            Start proc 3027:com.hypergryph.arknights/u0a447 for activity {com.hypergryph.arknights/com.u8.sdk.U8UnityContext} caller=com.android.shell
+            # 其中com.hypergryph.arknights是包名，com.u8.sdk.U8UnityContext是当前活动的Activity
+            ```
+    7. `dumpsys`:等同`getprop`，获取在连接的设备上运行的所有系统服务的诊断输出，就是从系统的各种配置文件中读取信息。
+        1. 查看屏幕密度
+            1. `adb shell getprop ro.sf.lcd_density`
+            2. `adb shell wm density`
+        2. 查看屏幕尺寸`adb shell wm size`
+    8. `ps`
+        1. 根据包名获取运行进程的pid`adb shell pidof pkgA`，如`com.hypergryph.arknights`，未运行时返回空字符串
 5. 应用管理
     1. 查看应用列表
         1. `adb shell pm list packages`
@@ -350,7 +376,6 @@ SmartBar
 8. dimens文件
 9. `layout_padding`和`margin`的区别,我怎么感觉两者差不多呢?
 10. 不同视图的id可以相同?
-11. logcat
 12. 如何给xml中的属性注释
 1. 临时文件目录是`/data/local/tmp`?
 1. [去哪儿查找android资料](https://classroom.udacity.com/courses/ud836/lessons/4329970891/concepts/43237591300923)

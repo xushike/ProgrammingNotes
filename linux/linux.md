@@ -75,14 +75,20 @@ linux系统的区域设置、本地化策略。其中几个设置的优先级是
         
         资料说`export`可以设置、修改和查看环境变量，但是查看的时候，比如`export $PATH`会提示`export: not valid in this context: ...`（虽然后面会跟着环境变量的内容，但是前面的错误让人不爽），没搞懂，干脆用`echo $PATH`查看。
     4. 为了让修改永久添加到`$PATH`，只要将`export`的那行添加到`.bashrc`或`/etc/bashrc`文件中，然后用`source ~/.bashrc`使其立即生效。（一般会在`.bash_profile`文件中显式调用`.bashrc`，登陆linux启动bash时首先会去读取`~/.bash_profile`文件，这样`~/.bashrc`也就得到执行了，你的个性化设置也就生效了）
-3. alias别名
-    1. 一般在.bashrc或/etc/bashrc文件里有几句话
-        ```bash
-        alias rm='rm -i'
-        alias cp='cp -i'
-        alias mv='mv -i'
-        ```
-        可以在该配置文件中添加自己风格的别名，如“alias ll='ls -l'”，只需要在终端中输入“ll”就实现了“ls -l”的功能
+3. `alias`:设置别名，在shell的配置文件中添加自己风格的别名，如`alias ll='ls -l'`，只需要在终端中输入`ll`就实现了`ls -l`的功能
+
+    ```bash
+    # 如果是bash，配置文件一般是在 .bashrc 或 /etc/bashrc 里
+    # 一般默认就带了下面三个
+    alias rm='rm -i'
+    alias cp='cp -i'
+    alias mv='mv -i'
+    
+    # 自定义
+    alias ssh_qa2='ssh qa2@www.example.com' # alias设置的别名不支持空格，所以这里不能设置为 ssh qa2，可以用下划线等替代
+    alias psql_test='psql "postgresql://postgres:xxx@hostA:portA/dbNameA?sslmode=disable"'
+    ```
+        
 4. 提示符(意义不大)
 
 ### 1.8 关于文件扩展名

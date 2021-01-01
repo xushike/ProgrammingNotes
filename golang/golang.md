@@ -2232,19 +2232,43 @@ if err != nil {
 ### 13.1 错误处理策略
 通常有以下几种错误处理策略：
 1. 继续传递错误（最常用的方式）：可以直接返回，直接返回时最简单的处理方式；也可以追加信息后返回。由于错误信息经常是以链式组合在一起的，所以错误信息中应避免大写(因为可能有多层嵌套)和换行符(更好地定位报错信息)。最终的错误信息可能很长，我们可以通过类似grep的工具处理错误信息。
+    1. 直接返回
+        
+         ```golang
+        // 例子1 直接返回
+        datas, err := http.Get(url)
+        if err != nil {
+                return nil, err
+        }
+        ```
+    2. 追加信息后返回
     
-    ```golang
-    // 例子1 直接返回
-    datas, err := http.Get(url)
-    if err != nil {
-            return nil, err
-    }
-    // 例子2 追加信息后返回
-    datas, err := http.Get(url)
-    if err != nil {
-        return nil, fmt.Errorf("parsing %s error: %v", url, err)
-    }
-    ```
+        ```go
+        // go1.13之前，有两种方式实现：fmt.Errof() 或者定义新的结构体
+        // 例子1 fmt.Errof() :缺点是丢失了原来的err，变成了一个新的error类型了
+        datas, err := http.Get(url)
+        if err != nil {
+            return nil, fmt.Errorf("parsing %s error: %v", url, err)
+        }
+        // 例子2 定义新的结构体：缺点是可能需要定义很多新的结构体
+        type MyError struct {
+            err error
+            msg string
+        }
+
+        func (e *MyError) Error() string {
+            return e.err.Error() + e.msg
+        }
+
+        
+        
+        // go1.13及之后:fmt.Errof() 中使用%w可以使err变成warp err
+        // 例子3 fmt.Errof() 
+        datas, err := http.Get(url)
+        if err != nil {
+            return nil, fmt.Errorf("parsing %s error: %w", url, err) // fmt.Errof的%w可以将err变成warp err，具体参考errors包
+        }
+        ```
 2. 重试:如果错误的发生是偶然性的，或由不可预知的问题导致的。一个明智的选择是重新尝试失败的操作。在重试时，我们需要限制重试的时间间隔或重试的次数，防止无限制的重试。
 3. 输出错误信息并结束程序:用于错误发生后，程序无法继续运行。这种策略只应在main中执行。对库函数而言，应仅向上传播错误，除非遇到了bug，才能在库函数中结束程序
     1. 关于错误信息的时间：log.Fatalf可以更简洁的代码达到与上文相同的效果。log中的所有函数，都默认会在错误信息之前输出时间信息。
@@ -3139,6 +3163,7 @@ fmt.Println(*j)
 ## 6 正则表达式（regular expression）和regexp包
 参考：
 1. https://github.com/google/re2/wiki/Syntax
+2. https://cloud.tencent.com/developer/article/1683447
 
 一般来讲，正则匹配的效率比文本匹配低，但更灵活。go的正则表达式规则遵守的是re2标准[https://github.com/google/re2](https://github.com/google/re2)：re2保证匹配时间和字符串长度是线性相关的、限制内存的最大占用、避免堆栈溢出，性能不稳定但总体表现良好等。目前支持贪婪模式，不支持独占模式（？）
 
@@ -3148,8 +3173,13 @@ fmt.Println(*j)
 1. 贪婪模式（greedy）：趋向于匹配最长的，反之则是懒惰，即非贪婪模式。
     1. 回溯：假如有*Regexp为`ab{1,3}c`，对于字符串`abbbc`，一次就匹配成功，不会发生回溯；而对于字符串`abc`，匹配完前两个字符之后，此时b只匹配到了一个，根据贪婪特性，还会将c放进去判断是否符合第二个b，发现不符合后会将c吐出来(这种匹配-舍弃的方式也叫做回溯，所以此时发生了一次回溯)，然后再用正则的c去匹配文本的c。
     1. 使用时需要小心回溯带来的性能问题。
-2. 懒惰模式
-    1. 使用:懒惰量词是在贪婪量词后面加个`?`，比如`??`、`+?`、`{m, n}?`、`{n,}?`等
+2. 懒惰模式:有两种用法
+    1. 一种标记部分内容为非贪婪模式:在贪婪量词后面加个`?`，比如`??`、`+?`、`{m, n}?`、`{n,}?`等
+    2. 一种是对整体标记为非贪婪模式：前面加上`(?U)`
+        
+        ```go
+        pattern := `(?U)H[\w\s]+o`
+        ```
 4. 独占模式：同贪婪模式一样，独占模式一样会匹配最长。不过在独占模式下，正则表达式尽可能长地去匹配字符串，一旦匹配不成功就会结束匹配而不会回溯。
     
     在该模式下（go暂未支持？），假如有正则对象`ab{1,2}b+c`，对于字符串`abbc`，最后结果是匹配失败。
@@ -3214,10 +3244,15 @@ fmt.Println(*j)
         reg := regexp.MustCompile(`[^Hello是世界你好]`)
         fmt.Printf("%q\n", reg.FindAllString(text, -1)) // [" " "！" "1" "2" "3" " " "G" "."]
 
-        // 范围
+        // 匹配范围内的单个字符
         text := `Hello 世界！123 Go.-`
         reg := regexp.MustCompile(`[a-l]`) 
         fmt.Printf("%q\n", reg.FindAllString(text, -1)) // ["e" "l" "l"]
+        
+        // 匹配范围内的连续字符
+        text := `Hello 世界！123 Go.-`
+        reg := regexp.MustCompile(`[a-l]`) 
+        fmt.Printf("%q\n", reg.FindAllString(text, -1)) // ["ell"]
         
         text := `Hello 世界！123 Go.-`
         reg := regexp.MustCompile(`[l-a]`)
@@ -3227,10 +3262,53 @@ fmt.Println(*j)
         reg := regexp.MustCompile(`[l\-a]`) // 转义了，所以不算是使用范围，- 被当做普通字符
         fmt.Printf("%q\n", reg.FindAllString(text, -1)) // ["l" "l" "-"]
         ```
+5. 内置的一些类:只列出了部分，更多的参考链接
+    1. ASCII类
+        1. `[:alpha:]`: 字母(alphabetic)，相当于`[A-Za-z]`
+        2. `[:digit:]`: 数字(digits)，相当于 `[0-9]`)
+        3.  `[:alnum:]`: 字母数字(alphanumeric),相当于`[0-9A-Za-z]`
+            
+            ```go
+            str := "abc124,;;l6//.."
+            
+            // 默认是匹配单个字符
+            reg := regexp.MustCompile("[:alnum:]+")
+            res := reg.FindAllString(str,-1)
+            for i := range res {
+                fmt.Println(i, res[i]) // a l
+            }
+            
+            // 匹配连续的
+            reg := regexp.MustCompile("[[:alnum:]]+")
+            res := reg.FindAllString(str,-1)
+            for i := range res {
+                fmt.Println(i, res[i]) // abc124 l6
+            }
+            ```
+        4. `[[:graph:]]`:图形字符(graphical)，相当于`[!-~]`，很有参考意义(比如找特殊字符)。
+            
+            ```go
+            // 再具体点就是
+            // [!-~] ≡ [A-Za-z0-9!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]
+            // 注意其中 -、\和]三个字符是转义了的
+            ```
+        5. `[:print:]`: 可打印字符(printable),相当于`[ -~]`,相当于`[ [:graph:]]`
+        6. `[:punct:]`: 标点符号(punctuation)
+        
+            ```go
+            // 相当于 
+            // [!-/:-@[-`{-~]
+            ```
+        7. `[[:space:]]`:空白字符(whitespace)，相当于`[\t\n\v\f\r ]`
+        8. `[:ascii:]`: ASCII字符集，相当于`[\x00-\x7F]`
+        9. `[:blank:]`: 空白占位符(blank),相当于`[\t ]`
+    2. Perl类
 
 ### 6.2 regexp包
 通过这些方法，可以看出go regexp的设计哲学，至于好不好用，就仁者见仁智者见智了。
-1. `CompilePOSIX()`和`Compile()`：前者的匹配规则是最左最长，后者只匹配最左。
+1. `CompilePOSIX()`和`Compile()`区别
+    1. 前者的匹配规则是最左最长，后者只匹配最左。
+    2. POSIX 语法不支持 Perl类 的语法格式：`\d、\D、\s、\S、\w、\W`
 2. `Compile(string) *Regexp, error`和`MustCompile(string) *Regexp`：两者都是返回优化后的Regexp结构体，该结构体有许多正则相关的方法。
     
     ```golang
@@ -3238,12 +3316,47 @@ fmt.Println(*j)
     b:=r.MatchString("peach")
     fmt.Println(b)  //true
     ```
-3. 包含All的方法捕获所有match, 返回值是一个slice. 同时一般会提供一个参数n作为最大匹配次数。
-4. 包含String的方法对string类型进行匹配，反之对[]byte进行匹配。
-5. 包含Submatch的方法返回所有子匹配，返回值是一个slice. 位置0是对应整个正则表达式匹配结果，位置n(n>0)是第n个子表达式(group) 匹配结果。
-    1. `FindAllStringSubmatch(s string, n int) [][]string`
-6. 包含Index的方法返回匹配的位置。例如，返回loc []int, 则与之对应的匹配字符为src[loc[0]:loc[1]].
-7. Replace相关方法
+3. 方法规律
+    4. 包含`String`的方法对string类型进行匹配，反之对`[]byte`或流进行匹配。
+    5. 包含`Submatch`的方法返回所有子匹配，返回值是一个slice. 位置`<0`是对应整个正则表达式匹配结果，位置n(n>0)是第n个子表达式(group) 匹配结果。
+    6. 包含Index的方法返回匹配的位置。例如，返回`loc []int`
+        1. `QuoteMeta(s string) string`:将string中特殊字符转义，特殊字符有`\.+*?()|[]{}^$`
+        1. 形如`Find()`的方法:返回第一个匹配的内容
+            1. `(*Regexp)FindString(s string) string`
+        3. 形如`FindAll()`的方法捕获所有match, 返回值是一个slice，只查找前 n 个匹配项，如果 n < 0，则查找所有匹配项
+            1. `(*Regexp) FindAllString(s string, n int) []string`
+        4. 形如`FindIndex()`的方法：返回第一个匹配的位置`[startIndexA, endIndexA]`
+            1. `(*Regexp) FindStringIndex(s string) (loc []int)`
+        5. 形如`FindAllIndex()`的方法：返回所有匹配的位置`[[startIndexA, endIndexA],[startIndexB, endIndexB]]`,只查找前 n 个匹配项，如果 n < 0，则查找所有匹配项
+            1. `(*Regexp) FindAllStringIndex(s string, n int) [][]int`
+        6. 形如`FindSubmatch()`的方法：返回第一个匹配的内容，同时返回子表达式匹配的内容，形如`{{完整匹配项}, {子匹配项}, {子匹配项}, ...}`
+            1. `(*Regexp) FindStringSubmatch(s string) []string`
+        7. 形如`FindAllSubmatch()`:返回所有匹配的内容,同时返回子表达式匹配的内容，形如`{{完整匹配项}, {子匹配项}, {子匹配项}, ...}`,只查找前 n 个匹配项，如果 n < 0，则查找所有匹配项
+        8. 形如`FindSubmatchIndex()`:返回第一个匹配的位置,同时返回子表达式匹配的位置,形如`{完整项起始, 完整项结束, 子项起始, 子项结束, 子项起始, 子项结束, ...}`
+        9. 形如`FindAllSubmatchIndex()`:返回所有匹配的位置,同时返回子表达式匹配的位置，只查找前 n 个匹配项，如果 n < 0，则查找所有匹配项
+            
+            ```go
+            // 形如
+            {
+                {完整项起始, 完整项结束, 子项起始, 子项结束, 子项起始, 子项结束, ...},
+                {完整项起始, 完整项结束, 子项起始, 子项结束, 子项起始, 子项结束, ...},
+                ...
+            }
+            ```
+10. 形如`(*Regexp) Expand(dst []byte, template []byte, src []byte, match []int) []byte`的方法：将 template 的内容经过处理后，追加到 dst 的尾部。
+    
+    ```go
+    reg := regexp.MustCompile(`(\w+),(\w+)`)
+    src := "Golang,World!" // 源文本
+    dst := []byte("Say: ") // 目标文本（可写）
+    template := "Hello $1, Hello $2" // 模板
+    match := reg.FindStringSubmatchIndex(src) // 解析源文本
+    // 填写模板，并将模板追加到目标文本中
+    fmt.Printf("%q", reg.ExpandString(dst, template, src, match))
+    // "Say: Hello Golang, Hello World"
+    ```
+11. `(*Regexp)Longest()`:切换到贪婪模式
+12. Replace相关方法:在 src 中搜索匹配项，并替换为 repl 指定的内容
     1. `*Regexp.ReplaceAllString(src, repl string) string`:这里的repl就可以使用正则捕获的分组(`$1`等)
         
         ```go
@@ -3252,7 +3365,8 @@ fmt.Println(*j)
         reg := regexp.MustCompile(`\$\{([^}]+)\}`)
         bar = reg.ReplaceAllString(text, "$1")
         ```
-    2. `*Regexp.ReplaceAllStringFunc(src string, repl func(string) string) string`:这里repl里不能使用捕获分组了
+    2. `*Regexp.ReplaceAllStringFunc(src string, repl func(string) string) string`:搜索所有匹配项,替换后返回。这里repl里不能使用捕获分组了
+    
 
 ### 6.3 例子
 看下例子很容易就明白怎么使用了
@@ -3305,6 +3419,8 @@ regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
 ```
 
 ## 7 位运算/移位运算
+go的右移`>>`是算术右移(参考java部分的笔记)
+
 位运算主要用于底层性能优化，或者一些tricks，比如用0和1来表示两种状态，这样int8类型就可以表示16种状态了。
 
 位运算操作符有以下：
@@ -3320,7 +3436,7 @@ regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
 2. 按位与（AND）`&`：两个都为1时才为1，其他情况为0
 3. 按位或（OR）`|`：两个中只要有一个为1就是1，否则为0
 4. 按位异或（XOR）`^`：有两种情况
-    1. 作为一元运算符是按位取反：
+    1. 作为一元运算符是按位取反(和C、Java不一样，在C、Java中是`~`)：
         ```golang
         x := 4
         fmt.Println(^x)
@@ -3338,7 +3454,9 @@ regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, str)
         // output：0
         ```
 
-获取整数的最大值：对于无符号整数形如`^uint(0)`，对于有符号整数（最大值是首位0，其余1）形如`^uint(0) >> 1`。
+获取整数的最大值最小值：
+1. 对于无符号整数，比如`uint`，最小值是`uint(0)`(其最小值是0，那么二进制表示就是所有位都为0),最大值`^uint(0)`(其最大值二进制表示所有位数表示为1，通过最小值的位运算可得)
+2. 对于有符号整数，比如`int`，最大值是`^uint(0) >> 1`(根据补码，其最大值二进制表示，首位为0，其余位为1)，最小值是`^(^uint(0) >> 1)`(根据补码，其最小值二进制表示，首位为1， 其余位为0)
 
 ```go
 fmt.Println(^uint(0) >> 1) // 9223372036854775807
@@ -3819,10 +3937,15 @@ Package pem implements the PEM data encoding, which originated in Privacy Enhanc
 3. `EncodeToMemory(b *Block) []byte`:Block到内存PEM
 
 ### errors
+go1.13开始提供了Error Warpping，go没有提供专门的函数来生成warpping error，而是使用`fmt.Errorf("%w",err)`。所以生成warpping error有两种方法：
+1. `fmt.Errorf("%w",err)`
+2. 声明一个类型，实现`Unwrap() error`方法
+
+使用：
 1. `New(text string) error`
 2. `Unwrap(error) error`:go1.13新增，用于获得被嵌套的error。每次调用解开最外面的一层，如果想获取更里面的，需要调用多次`errors.Unwrap`函数。最终如果一个error不是warpping error，那么返回的是nil。
 3. `Is(err, target error) bool`：是同一个会返回true；如果err是一个wrap error,target也包含在这个嵌套error链中的话，那么也返回true
-4. `As(err error, target interface{}) bool`：实现类型的错误断言，支持wrapping error
+4. `As(err error, target interface{}) bool`：实现类型的断言，之前一般是用type assertion或type switch来实现，但是不支持wrapping error；而`As()`更强大，支持wrapping error
 
     ```go
     err := ...
@@ -3909,7 +4032,11 @@ func main() {
 5. `%t`:格式化布尔值
 6. 进制格式化
     - `%d`:标准十进制格式化
-    - `%b`:二进制，注意会把结果前面的0忽略掉，比如`int8(3)`的二进制是`00000011`,会输出`11`
+    - `%b`:二进制，并非真正的二进制，正数会把前面的所有0忽略掉；负数的话前面再多一个`-`
+        ```go
+        // int8(3) 的二进制是 0000 0011,会输出 11
+        // int8(-3) 的二进制是 1111 1101 会输出 -11 (跟负数的二进制可以说没直接关系...)
+        ```
     - `%x`:十六进制，`hex.EncodeToString([]byte) string`方法也是做类似的事。
 7. `%c`:输出给定整数的对应字符
 8. 浮点数格式化

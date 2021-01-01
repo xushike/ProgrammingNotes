@@ -406,7 +406,9 @@ https://github.com/dgrijalva/jwt-go
 https://github.com/go-redis/redis
 
 ## migrate工具
-https://github.com/golang-migrate/migrate
+参考：
+1. 主页：https://github.com/golang-migrate/migrate
+2. 针对不同db的页面：https://github.com/golang-migrate/migrate/tree/master/database
 
 使用后会在public下创建表schema_migrations表，里面存放的是当前migration的版本(version)以及状态(dirty)。
 
@@ -431,8 +433,11 @@ https://github.com/golang-migrate/migrate
     1. 升级到最新版本:`migrate -source file://fileDirA -database xxx up`
         
         ```bash
-        # mac demo
+        # postgresql in mac 
         migrate -source file://./migrations -database "postgres://postgres:@localhost:5432/hello?sslmode=disable" up 
+        
+        # mysql in mac
+        migrate -source file://./migrations -database "mysql://root:123456@tcp(localhost:3306)/hello?" up
         ```
 3. 回滚
     1. 回滚到最开始版本
@@ -634,7 +639,8 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
 问题:
 1. undefined: resolver.BuildOption 以及 undefined: grpc.SupportPackageIsVersion6
     1. 指定grpc版本`replace google.golang.org/grpc => google.golang.org/grpc v1.26.0`，然后重新生成.pb文件，不行的话再降级protoc-gen-go的版本`go get github.com/golang/protobuf/protoc-gen-go@v1.3.2`
-
+2. rpc error: code = DeadlineExceeded desc = context deadline exceeded
+    1. 可能原因：超时时间设置得太短
 ## 日志 zap
 https://github.com/uber-go/zap
 
