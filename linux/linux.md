@@ -254,7 +254,7 @@ sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
 |`b`|	一个块设备文件。这种文件类型是指按照数据块来处理数据的设备，例如一个硬盘或者 CD-ROM 盘。|
 
 ### 1.3 查看文本文件内容 less
-可查看所有类型的文本文件(即ASCII类型的文件,包括txt、配置文件、脚本等),如果查看非文本文件,则是乱码.特点是自带分页,可以接受标准输入.less是早期unix程序more的改进版,意味着less is more。因为有分页,所以可以用来方便的查看产生标准输出的命令运行结果,比如`ls | less`
+可查看所有类型的文本文件(即ASCII类型的文件,包括txt、配置文件、脚本等),如果查看非文本文件,则是乱码.特点是自带分页,可以接受标准输入.less是早期unix程序more的改进版,意味着"less is more"。因为有分页,所以可以用来方便的查看产生标准输出的命令运行结果,比如`ls | less`
 
 常用操作:上一页`b`,下一页`space`,页首`g`,页尾`G`,向上/下查找匹配`?xxx`和`/xxx`,查看上/下一个匹配`n`和`N`，查看帮助`h`,退出less`q`，多个文件时的下一个文件`:n`,上一个文件`:p`，使用配置的编辑器编辑文件`v`，仅显示匹配模式的行，而不是整个文件`&pattern`
 
@@ -972,6 +972,24 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
 curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
 # 2
 curl -XPOST 'https://xxx/companies/search'
+
+# 3 
+curl 'http://example.com/foo/bar' \
+  -H 'Connection: keep-alive' \
+  -H 'Pragma: no-cache' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Accept: application/json, text/plain, */*' \
+  -H 'X-Org-Id: 49e8e3246000045' \
+  -H 'X-App-Id: 131' \
+  -H 'X-YCUBE-APPID: 131' \
+  -H 'Authorization: Bearer xxx.xxx.xxx' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36' \
+  -H 'Referer: http://example.com' \
+  -H 'Accept-Language: zh-CN,zh;q=0.9' \
+  -H 'Cookie: VARIABLES_KEY={...}; 
+  YCUBE_TOKEN=xxx.xxx.xxx;' \
+  --compressed \
+  --insecure
 ```
 
 使用：

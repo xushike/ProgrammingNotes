@@ -440,12 +440,14 @@ js判断字符串是否全部为数字的几种方法(待补充):
 
     ```js
     let d = new Date();
-    console.log(Date()); // Fri Oct 09 2020 16:24:32 GMT+0800 (GMT+08:00)
     console.log(d); // 2020-10-09T08:24:32.145Z
+    console.log(Date()); // Fri Oct 09 2020 16:24:32 GMT+0800 (GMT+08:00)
     ```
-3. 时间戳:`Date.now()`序列化从1970年1月1日0点0分0秒(UTC)到现在的毫秒数，它也有几个缺点：
-    1. 它的精度会随user agent的不同而不同，比如在Firefox 59 中，默认被取整至 20 微秒；从Firefox 60开始，则被取整至 2 毫秒。`performance.now()`提供了精确到亚毫秒（sub-millisecond）的时间戳(也是不准确的)。
-    2. 它取决于系统时钟，这不仅意味着它不够精确，而且还不总是递增。WebKit工程师（Tony Gentilcore）的解释如下：基于系统时间的日期可能不太会被采用，对于实际的用户监视也不是理想的选择。 大多数系统运行一个守护程序，该守护程序定期同步时间。 通常每15至20分钟将时钟调整几毫秒。 以该速率，大约10秒间隔的1％将是不准确的。
+3. 获取时间戳
+    1. `Date.now()`序列化从1970年1月1日0点0分0秒(UTC)到现在的毫秒数，它也有几个缺点：
+        1. 它的精度会随user agent的不同而不同，比如在Firefox 59 中，默认被取整至 20 微秒；从Firefox 60开始，则被取整至 2 毫秒。`performance.now()`提供了精确到亚毫秒（sub-millisecond）的时间戳(也是不准确的)。
+        2. 它取决于系统时钟，这不仅意味着它不够精确，而且还不总是递增。WebKit工程师（Tony Gentilcore）的解释如下：基于系统时间的日期可能不太会被采用，对于实际的用户监视也不是理想的选择。 大多数系统运行一个守护程序，该守护程序定期同步时间。 通常每15至20分钟将时钟调整几毫秒。 以该速率，大约10秒间隔的1％将是不准确的。
+    2. `(*Date).getTime()`
 2. 字符串和日期的转换：`Date.toISOString()`能够将日期类型转成ISO格式的字符串，`Date.parse(dateString)`方法能够将ISO格式的日期字符串转成日期。
 3. 获取相对时间
     1. 略
@@ -1434,29 +1436,68 @@ b[3]=1;
 与 ArrayBuffer 不同的是,SharedArrayBuffers不能被分离.但是因为安全漏洞,SharedArrayBuffers将会被禁用,所以简单了解就行了.
 
 ## 4 js模块化
-为什么需要模块化:开发中,我们需要引入其他软件,新旧代码之间就会存在依赖关系,由于这些软件需要一起工作,因此它们之间不存在冲突是非常重要的.封装可以防止模块之间相互冲突,这也是C语言库中元素通常带有前缀的原因之一.
+为什么需要模块化:开发中,我们需要引入其他软件,新旧代码之间就会存在依赖关系,由于这些软件需要一起工作,因此它们之间不存在冲突是非常重要的.封装可以防止模块之间相互冲突,这也是C语言库中元素通常带有前缀的原因之一。所以可以归纳以下几个：
+1. 防止全局污染
+2. 依赖管理
 
 随着js越来越复杂,依赖管理可能会变得麻烦,重构也受到影响:如何维护加载链的正确顺序?
 
-主流的几个方案:
-1. webpack
-2. CommonJS
-3. ES6
-4. AMD / CMD
+主流的几个方案: 
+1. 方案
+    1. 社区方案
+        1. webpack
+        2. CommonJS
+        4. AMD/CMD/UMD
+    2. 官方方案
+        3. ES6
+2. 对比：
+    1. 编译时和运行时：
+        1. CommonJS和AMD/CMD/UMD在运行时确定模块的依赖关系，因为它是通过查找对象属性来判断
+        2. ES Modules是在编译时确定模块的依赖关系。
+    
 
 ### 4.1 webpack
 
 ### 4.2 CommonJS
 CommonJS是用于开发服务器端的JS项目.同步加载模块.NodeJS采用的CommonJS规范.
 
-优点:简单,支持循环依赖
+使用：
+1. 原理：require 命令第一次加载该脚本时就会执行整个脚本，然后在内存中生成一个对象（模块可以多次加载，但是在第一次加载时才会运行，结果被缓存），这个结果长成这样：
+    
+    ```js
+    {
+        id: '...',
+        exports: { ... },
+        loaded: true,
+        ...
+    }
+    ```
+1. 优缺点
+    1. 优点:
+        1. 简单
+        2. 所有代码都运行在模块作用域，不会污染全局作用域
+        3. 支持循环依赖
+    2. 缺点:
+        1. 没有模块的构造函数
+        2. 模块是单一文件
+        2. 因为是同步加载，所以不适合浏览器环境
+3. 细节
+    1. 模块加载的顺序，按照其在代码中出现的顺序
 
-缺点:
-1. 没有模块的构造函数
-2. 模块是单一文件.
+```js
+// 把方法定义到模块的属性上
+module.exports.sayHello = function() {
+    console.log('Hello ');
+};
+var myModule = require('module');
+myModule.sayHello();
 
-引入是`require('module-name')`,导出是`exports`
-
+// 把模块定义为方法
+module.exports = sayHello;
+// 调用则需要改为
+var sayHello = require('module');
+sayHello();
+```
 
 ### 4.3 ES2015
 `import`和`export`指令的静态特性允许静态分析器在不运行代码的情况下构建完整的依赖关系树。
@@ -1466,36 +1507,37 @@ CommonJS是用于开发服务器端的JS项目.同步加载模块.NodeJS采用�
 2. 语法简单。
 3. 支持静态分析工具。
 
-#### 4.3.1 导入import
-引入模块的几种写法,其中`module-name`一般是模块js文件的路径,一般不包含`.js`扩展名,用单引号或双引号包裹:
-1. 导入整个模块:形如`import {export} from "module-name"`,也可以使用别名`import { export as alias } from "module-name"`
-2. 导入里面的多个子模块:形如`import {foo, bar} from "module-name"`:也可以使用别名`import { export1 , export2 as alias2 , ["module-name"] } from "module-name"`
-3. 导入成默认值:形如`import myDefault from "module-name"`:导入单个或多个时导出时,需要知道导出的名字,很不方便,所以js允许设置一个默认的导出,形如`export default xxx`,这样导入的时候就可以随意取一个名字,而且不用大括号包裹来表示默认的导出.
-4. 仅为副作用而导入一个模块:`import "module-name"`
-5. 导入某模块的所有导出:`import * as xxx from "module-name"`:可以用别名`xxx`来使用模块.此时如果模块里有多个导出,就可以使用xxx.yyy来使用对应的导出.
+```js
+// 导出模块:方法一 命名导出。命名导出对导出多个值很有用。（一个模块可以有任意个命名导出）
+export var firstName = 'Michael'; // 导出成变量
+var firstName = 'Michael'; 
+var lastName = 'Jackson';
+export { firstName, lastName }; // 导出多个变量
+export { firstName as aliasA, lastName as aliasB }; // 使用别名导出多个变量
+export function diag(xxx) {...}  // 导出成方法
+export { myFunction } // 导出成方法，存在名为myFunction的方法
+export const foo = Math.sqrt(2) // 导出成常量
+export default class {} // 导出类
 
-#### 4.3.2 导出export
-1. 命名导出:命名导出对导出多个值很有用。在导入时,必须使用相同名称。
+// 导出模块:方法二 默认导出。命令用于指定模块的默认输出（一个模块只能有一个默认输出）。如果使用了 export default 语法，在 import 时则可以任意命名
+export default 121 // 默认导出变量 121
+export default function myLogger() {} // 默认导出方法
 
-    ```js
-    // 导出方法
-    export { myFunction } // 存在名为myFunction的方法
-    export function diag(xxx) {...} 
-    // 导出成常量
-    export const foo = Math.sqrt(2)
-    ```
-2. 默认导出:对于默认导出,在导入的时候可以使用任意名字接收。语法形如`export default xxx`
-    ```js
-    // 导出函数
-    export default function() {}
-    // 导出类
-    export default class {}
-    // 使用任意名字接收
-    import abc from 'module-name'
-    ````
+// 导出使用总结：模块的默认导出通常是用在你期望该从模块中获取到任何想要的内容；而命名导出则是用于一些有用的公共方法，但是这些方法并不总是必要的。
 
-### 4.4 AMD / CMD
-支持异步加载模块,意味着启动更快.兼容`require`,`exports`和`define`
+// 导入模块：一般使用模块js文件的路径来导入，一般不包含".js"扩展名,用单引号或双引号包裹，导入的方式很多，如下
+import { firstName } from 'module'; // 导入整个模块
+import { firstName as alias } from 'module'; // 使用别名导入整个模块
+import { firstName, lastName, year } from 'module'; // 导入里面的多个子模块
+import { firstName, lastName, year as alias1, alias2, alias3} from 'module'; // 使用别名导入里面的多个子模块
+import alias from 'module'; // 导入单个或多个时,需要知道导出的名字,很不方便,所以js允许设置一个默认的导出。对于使用默认导出的模块，可以使用随意的名字来接收，而且不用大括号包裹
+import "module"  // 仅为副作用而导入
+import * as moduleA from 'module'; // 导入某模块的所有导出,可以用别名`moduleA`模块.此时如果模块里有多个导出,就可以使用moduleA.partA来使用对应的导出.(注意和默认导入不一样)
+import A, { myA, Something } from './A' // 默认导入和命名导入结合使用
+```
+
+### 4.4 AMD/CMD/UMD
+AMD(Asynchronous Module Definition),支持异步加载模块,意味着启动更快(更适合浏览器环境)，兼容`require`,`exports`和`define`；CMD(Common Module Definition)，是 Sea.js 所推广的一个模块化方案的输出；UMD，全称 Universal Module Definition，即通用模块规范。既然 CommonJs 和 AMD 风格一样流行，那么需要一个可以统一浏览器端以及非浏览器端的模块化方案的规范。
 
 优点:
 1. 支持构造函数

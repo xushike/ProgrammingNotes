@@ -12,6 +12,8 @@ Go Cloud Project是一项计划，允许应用程序开发人员在任何云提�
 
 Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 
+# 三 基础
+
 # 四 高级
 ## 常见web框架
 
@@ -215,13 +217,6 @@ https://github.com/go-playground/validator/tree/v9.24.0
 
 ## 页面转pdf go-wkhtmltopdf
 github.com/SebastiaanKlippert/go-wkhtmltopdf
-
-## 猴子补丁
-在测试用例中挺好用的：https://github.com/bouk/monkey。注意下载和引入是`bou.ke/monkey`，github地址只是放的代码，而不是引入用的地址。
-
-参考：https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
-
-但有时候可能不生效，比如有内敛优化的时候，此时可以加上`-gcflags=-l`禁用内敛优化来测试，但也未必会生效。
 
 ## 结构体工具 structs
 https://github.com/fatih/structs
@@ -455,6 +450,16 @@ https://github.com/go-redis/redis
         ```
 
 ## lint工具 
+### golint
+参考：https://pkg.go.dev/golang.org/x/lint
+
+该包由官方提供但未包含在标准库中。不支持定制
+
+关于不支持定制
+1. 原因可见该讨论：https://github.com/golang/lint/issues/263
+2. 比较中肯的观点：在社区中保证一致的编程规范是一件非常有益的事情，不过对于很多公司内部的服务或者项目，可能在业务服务上就会发生一些比较棘手的情况，使用这种过强的约束没有太多明显地收益。
+
+### golangci-lint
 https://github.com/golangci/golangci-lint
 
 参考：
@@ -511,45 +516,96 @@ twitter的雪花算法在一个机器，在1秒内 最多可以生成4096*1000�
 
 使用:
 1. 生成的id是19位的数字
-    
 
-## 单元测试相关
+## 测试相关
+参考：
+1. https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+
 ### 单元测试辅助工具 mock
 https://github.com/golang/mock
 
-gomock主要包含两个部分：gomock库和辅助代码生成工具mockgen
+能够对接口进行Mock，它主要包含两个部分：gomock库和辅助代码生成工具mockgen
 
 使用：
-1. gomock代码生成工具
-    1. 直接命令行使用，比如`mockgen --source .../xxx.go --destination .../xxx.go`
-    2. (推荐)mockgen还提供了一种通过注释及`go generate`生成mock文件的方式，比如在接口文件的注释里面增加：`//go:generatemockgen --source .../xxx.go --destination .../xxx.go`，然后执行`go generate`命令就可以自动生成mock文件了。
-2. gomock库
+1. gomock库
     1. 调用`EXPECT()`为你的模拟设置他们的期望值和返回值
     2. `Return(...)`模拟期望的返回值
     3. `Times(number)`预计调用次数
     4. `Do()`类似于钩子的作用
-
-其他参数:
-1. `-source`：指定接口文件
-2. `-destination`: 生成的文件名
-3. `-package`:生成文件的包名
-4. `-imports`: 依赖的需要import的包
-5. `-aux_files`:接口文件不止一个文件时附加文件
-6. `-build_flags`: 传递给build工具的参数
-
-mock文件使用:
+2. gomock代码生成工具
+    1. 生成mock代码
+        1. 直接命令行使用，比如`mockgen --source .../xxx.go --destination .../xxx.go`
+        2. (推荐)mockgen还提供了一种通过注释及`go generate`生成mock文件的方式，比如在接口文件的注释里面增加：`//go:generatemockgen --source .../xxx.go --destination .../xxx.go`，然后执行`go generate`命令就可以自动生成mock文件了。
+    2. 常用参数
+        1. `-source`：指定接口文件
+        2. `-destination`: 生成的文件名
+        3. `-package`:生成文件的包名
+        4. `-imports`: 依赖的需要import的包
+        5. `-aux_files`:接口文件不止一个文件时附加文件
+        6. `-build_flags`: 传递给build工具的参数
 
 问题：
 1. has already been called the max number of times
     1. `Call.Times(int)`:expected execute timers
 2. Loading input failed: loading package failed certificate.go:1: running "mockgen": exit status 1
     1. 可能原因：我的文件名称是certificate.go，但是要generate的文件名称是cert.go。最后把我的文件改成cert.go就好了
+    
+### sqlmock
+https://github.com/DATA-DOG/go-sqlmock
+
+模拟数据库的连接。
+
+使用：
+1. 最常用的几个方法就是 `ExpectQuery` 和 `ExpectExec`，前者主要用于模拟 SQL 的查询语句，后者用于模拟 SQL 的增删
+    
+    ```go
+    func (s *suiteServerTester) TestRemovePost() {
+        entry := pb.Post{
+            Id: 1,
+        }
+
+        rows := sqlmock.NewRows([]string{"id", "author"}).AddRow(1, "draveness")
+
+        s.Mock.ExpectQuery(`SELECT (.+) FROM "posts"`).WillReturnRows(rows)
+        s.Mock.ExpectExec(`DELETE FROM "posts"`).
+            WithArgs(1).
+            WillReturnResult(sqlmock.NewResult(1, 1))
+
+        response, err := s.server.RemovePost(context.Background(), &entry)
+
+        s.NoError(err)
+        s.EqualValues(response, &entry)
+        s.NoError(s.Mock.ExpectationsWereMet())
+    }
+    ```
+    
+### httpmock 
+https://github.com/jarcoal/httpmock
+
+用于 Mock 所有 HTTP 依赖的包，它使用模式匹配的方式匹配 HTTP 请求的 URL，在匹配到特定的请求时就会返回预先设置好的响应。
+
+```go
+func TestFetchArticles(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "https://api.mybiz.com/articles",
+		httpmock.NewStringResponder(200, `[{"id": 1, "name": "My Great Article"}]`))
+
+	httpmock.RegisterResponder("GET", `=~^https://api\.mybiz\.com/articles/id/\d+\z`,
+		httpmock.NewStringResponder(200, `{"id": 1, "name": "My Great Article"}`))
+
+	...
+}
+```
 
 ### testify
 https://github.com/stretchr/testify
 
+可以对测试代码按照簇进行组织
+
 主要包和函数：
-1. assert和require:都是断言，区别是`assert`如果失败不会退出，还是会继续往下执行，而`require`失败会直接结束
+1. `assert`和`require`:都是断言，区别是`assert`如果失败不会退出，还是会继续往下执行，而`require`失败会直接结束
     1. `NoError()`
     2. `Equal()`
     3. `Panics()`
@@ -565,8 +621,36 @@ https://github.com/stretchr/testify
         ```
     4. `Error(t TestingT, err error, msgAndArgs ...interface{})`:断言一个err不是nil，看源码可知它是直接跟nil比较的，感觉有时候会不准确，所以尽量少用。更推荐使用`Equal()`或者`EqualError()`
 2. suite
+    1. `SetupSuite`和`TearDownSuite`:是执行测试前后以及执行测试簇前后的钩子方法，我们能在其中完成一些共享资源的初始化，减少测试中的初始化代码。
 3. mock
 
+
+使用：
+1. 简单示例
+    
+    ```go
+    import (
+        "testing"
+        "github.com/stretchr/testify/suite"
+    )
+
+    type ExampleTestSuite struct {
+        suite.Suite
+        VariableThatShouldStartAtFive int
+    }
+
+    func (suite *ExampleTestSuite) SetupTest() {
+        suite.VariableThatShouldStartAtFive = 5
+    }
+
+    func (suite *ExampleTestSuite) TestExample() {
+        suite.Equal(suite.VariableThatShouldStartAtFive, 5)
+    }
+
+    func TestExampleTestSuite(t *testing.T) {
+        suite.Run(t, new(ExampleTestSuite))
+    }
+    ```
 ### 打桩 gostub
 github.com/prashantv/gostub
 
@@ -597,6 +681,72 @@ github.com/prashantv/gostub
     stubs.StubFunc(&adapter.FuncB, ...)
     stubs.StubFunc(&adapter.FuncC, ...)
     ```
+    
+### 猴子补丁
+https://github.com/bouk/monkey
+
+很强，能够通过替换函数指针的方式修改任意函数的实现，可以作为提供测试依赖的最终解决方案
+
+注意下载和引入是`bou.ke/monkey`，github地址只是放的代码，而不是引入用的地址。
+
+```go
+monkey.Patch(fmt.Println, func(a ...interface{}) (n int, err error) {
+    s := make([]interface{}, len(a))
+    for i, v := range a {
+        s[i] = strings.Replace(fmt.Sprint(v), "hell", "*bleep*", -1)
+    }
+    return fmt.Fprintln(os.Stdout, s...)
+})
+fmt.Println("what the hell?") // what the *bleep*?
+```
+
+注意：
+1. 这种方法的使用其实有一些限制，由于它是在运行时替换了函数的指针，所以如果遇到一些简单的函数，例如 `rand.Int63n` 和 `time.Now`，编译器可能会直接将这种函数内联到调用实际发生的代码处并不会调用原有的方法，所以使用这种方式往往需要我们在测试时额外指定 `-gcflags=-l`(`go test -gcflags=-l ./...`) 禁止编译器的内联优化(实测指定了似乎也未必会生效)
+2. 应该只在必要的时候使用这种方法，且不要在单元测试之外的地方使用猴子补丁
+
+### ginkgo
+https://github.com/onsi/ginkgo
+
+社区中较常见的BDD框架，虽然不一定要使用 BDD/TDD 的思想对项目进行开发，但是却可以使用 BDD 的风格方式组织非常易读的测试代码。
+
+BDD 框架中一般都包含 Describe、Context 以及 It 等代码块，其中 Describe 的作用是描述代码的独立行为、Context 是在一个独立行为中的多个不同上下文，最后的 It 用于描述期望的行为，这些代码块最终都构成了类似『描述……，当……时，它应该……』的句式帮助我们快速地理解测试代码。如下
+
+```go
+var _ = Describe("Book", func() {
+    var (
+        book Book
+        err error
+    )
+
+    BeforeEach(func() {
+        book, err = NewBookFromJSON(`{
+            "title":"Les Miserables",
+            "author":"Victor Hugo",
+            "pages":1488
+        }`)
+    })
+
+    Describe("loading from JSON", func() {
+        Context("when the JSON fails to parse", func() {
+            BeforeEach(func() {
+                book, err = NewBookFromJSON(`{
+                    "title":"Les Miserables",
+                    "author":"Victor Hugo",
+                    "pages":1488oops
+                }`)
+            })
+
+            It("should return the zero-value for the book", func() {
+                Expect(book).To(BeZero())
+            })
+
+            It("should error", func() {
+                Expect(err).To(HaveOccurred())
+            })
+        })
+    })
+})
+```
 
 ## 容器相关
 ### kubernetes
@@ -687,6 +837,72 @@ https://github.com/Shopify/sarama
     - 无认证
     - TLS认证
     - SASL/PLAIN认证, (其他SASL/SCRAM, SASL/GSSAPI都不支持)
+    
+## 依赖注入
+uber的dig和Facebook的inject，这两个都是通过运行时注入的，使用运行时注入，会有一些问题，比如不好调试，错误提示不及时等，而wire采用不同的方式来实现，通过生成依赖注入的代码来解决问题，这样就和手写是一样的，只是减轻手写的麻烦
+
+### google的wire
+https://github.com/google/wire
+
+```go
+// model.go
+type Foo struct {
+
+}
+
+func NewFoo() *Foo{
+    return &Foo{}
+}
+
+type Bar struct {
+    foo *Foo
+}
+
+func NewBar(foo *Foo) *Bar {
+    return &Bar{
+        foo:foo,
+    }
+}
+
+func (p *Bar) Test(){
+    fmt.Println("hello")
+}
+
+// wire.go：
+package wire
+
+import (
+    wire "github.com/google/wire"
+)
+
+type Instance struct {
+    Foo *Foo
+    Bar *Bar
+}
+
+var SuperSet = wire.NewSet(NewFoo, NewBar)
+
+func InitializeAllInstance() *Instance { // 方法名随意
+    wire.Build(SuperSet, Instance{})
+    return &Instance{}
+}
+
+// 执行wire命令，会读取到wire.NewSet里面的ProviderSet，通过分析各个函数的参数和返回值，来自行解决依赖，可以生成wire_gen.go：
+func InitializeAllInstance() *Instance {
+    foo := NewFoo()
+    bar := NewBar(foo)
+    instance := &Instance{
+        Foo: foo,
+        Bar: bar,
+    }
+
+    return instance
+}
+```
+
+### uber的dig
+### fackbook的inject
+https://github.com/facebookarchive/inject
 
 # 五 经验
 ## 1 为什么需要框架

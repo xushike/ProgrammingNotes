@@ -166,6 +166,15 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
 架构：ADB是一个C/S架构的应用程序，由三部分组成：
 1. 运行在pc端的adb client：命令行程序”adb”用于从shell或脚本中运行adb命令。首先，“adb”程序尝试定位主机上的ADB服务器，如果找不到ADB服务器，“adb”程序自动启动一个ADB服务器。接下来，当设备的adbd和pc端的adb server建立连接后，adb client就可以向ADB servcer发送服务请求；
 2. 运行在pc端的adb server：ADB Server是运行在主机上的一个后台进程。它的作用在于检测USB端口感知设备的连接和拔除，以及模拟器实例的启动或停止，ADB Server还需要将adb client的请求通过usb或者tcp的方式发送到对应的adbd上；
+    1. 操作
+        1. 开关
+        
+            ```bash
+            # 启动服务
+            adb start-server 
+            # 关闭服务
+            adb kill-server 
+            ```
 3. 运行在设备端的常驻进程adb demon (adbd)：程序“adbd”作为一个后台进程在Android设备或模拟器系统中运行。它的作用是连接ADB服务器，并且为运行在主机上的客户端提供一些服务；
 
 使用：
@@ -184,6 +193,8 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
     10.129.164.6:5555	device
     # cf264b8f、emulator-5554 和 10.129.164.6:5555 分别是它们的 SN。从 emulator-5554 这个名字可以看出它是一个 Android 模拟器，而 10.129.164.6:5555 这种形为 <IP>:<Port> 的 serialNumber 一般是无线连接的设备或 Genymotion 等第三方 Android 模拟器。
     ```
+    
+    3. 状态可能有缓存，导致显示得不及时，目前能找到的解决办法是重启adb server
 2. 连接设备和电脑：
     1. USB连接
         1. Android 设备的开发者选项和 USB 调试模式已开启。
@@ -192,7 +203,7 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
     2. 无线连接：
         1. prerequisites：设备和PC机已经接入局域网，并且设备有局域网的IP地址
         1. 让设备在某个端口监听TCP/IP连接
-            1. 方法一：这一步可以借助USB连接来操作`adb tcpip <port>`，比如`adb tcpip 5555`，之后就不需要USB了
+            1. 方法一：这一步可以借助USB连接来操作`adb tcpip <port>`，比如`adb tcpip 5555`(让设备在 5555 端口监听 TCP/IP 连接)，之后就不需要USB了
             1. 方法二：也可以不借助USB，在设备的终端模拟器上操作
                 
                 ```bash
@@ -257,8 +268,11 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
                 ```bash
                 Performing Streamed Install
                 # 可能出现的错误很多，比如
+                
                 # 空间不足
-                Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE] 
+                INSTALL_FAILED_INSUFFICIENT_STORAGE
+                # 开发者选项里不允许USB安装：xiaomi在未root的情况，即使设置为允许，还是会在手机上弹出安装询问
+                INSTALL_FAILED_USER_RESTRICTED
                 ```
     3. 卸载`adb uninstall 包名A`，比如`adb uninstall com.xxx.xxx`
 6. 文件管理

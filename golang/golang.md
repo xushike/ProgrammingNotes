@@ -324,11 +324,16 @@ Golang不保证任何单独的操作是原子性的，除非：
 所以常见的基本数据类型和复合数据类型都不是并发安全的
 
 ### 3.29 go有依赖注入吗
-没有，但是...
+依赖注入跟语言可以说是没关系。
 
 ## 4 文档网址视频等
 网址:
 1. golang官方
+    1. 各种项目的文档
+        1. [https://godoc.org](https://godoc.org)
+            1. 该网址可以找到社区写的package(?)
+        2. `pkg.go.dev`用于取代`godoc.org`
+    
     1. 博客：https://blog.golang.org/
     2. playground：https://play.golang.org/
         1. studygoalng也做了一个国内版的:https://play.studygolang.com/
@@ -342,7 +347,10 @@ Golang不保证任何单独的操作是原子性的，除非：
     1. goproxy.cn:支持GOPROXY代理，且支持GOSUMDB的sum.golang.org的校验
         1. goproxy.cn/stats：统计数据，里面有一些开放接口
     2. mirrors.aliyun.com/goproxy:支持GOPROXY代理，但不支持GOSUMDB的sum.golang.org的校验
-        
+3. 其他
+    1. 代码风格(style):
+        1. https://github.com/uber-go/guide/blob/master/style.md#reduce-scope-of-variables
+        2. 官方的style：https://github.com/golang/go/wiki/CodeReviewComments
 文档:
 1. 英文的免费电子书，DigitalOcean 发布的。Go 语言编程: https://www.digitalocean.com/community/books/how-to-code-in-go-ebook
 1.  _Effective Go_(中文名《高效Go编程》)
@@ -353,7 +361,6 @@ Golang不保证任何单独的操作是原子性的，除非：
     1. https://astaxie.gitbooks.io/build-web-application-with-golang/zh/
 7.  http://bmknav.com/go/
 8.  go语言圣经中文网：[http://books.studygolang.com/gopl-zh/](http://books.studygolang.com/gopl-zh/)
-9.  该网址可以找到社区写的package(?):[https://godoc.org](https://godoc.org)
 10. go语言官方文档地址：https://golang.org/
     1. 比如想看runtime包，可以访问：https://golang.org/pkg/runtime/
 11. GO入门指南：https://www.kancloud.cn/kancloud/the-way-to-go/72675
@@ -638,30 +645,11 @@ fmt.Println(c == Celsius(f)) // "true"!
 ### 1.9 包
 一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.
 
-1. 网友推荐的包目录结构如下：
-```bash
-dir      
-  -- goWorkSpace1   #主要是为了区分自己的鼓捣的一些东西和工作上的项目
-  -- goWorkSpace2   #需要把两个workspace都加入gopath
-        -- bin
-        -- pkg
-        -- src                  
-           -- myApp1    #src下最好每个项目一个目录
-              -- .git
-              -- models
-              -- controllers
-              -- main.go 
-           -- myApp2
-              -- .git
-              -- models
-              -- controllers
-              -- main.go 
-           -- myApp3
-              -- .git
-              -- models
-              -- controllers
-              -- main.go
-```
+1. 目录结构
+    1. 参考：
+        1. https://github.com/golang-standards/project-layout
+        2. 如何写出优雅的 Go 语言代码(非常值得阅读)：https://draveness.me/golang-101/
+            1. How To Use Go Interfaces(不完全赞同)：https://blog.chewxy.com/2018/03/18/golang-interfaces/
 
 2. 包路径
 
@@ -2718,11 +2706,11 @@ go run *.go
 #### Go modules 启用
 具体实现代码参考：`$GOROOT/src/cmd/go/internal/modget/get.go`,会将包下载到`$GOPATH/pkg/mod`，不会对其repo下的submodule进行循环拉取
 
-`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认是`latest`，除此之外有以下几种用法：
-1. `go get xxx@latest`：拉取最新版本:如果有的话，优先选择tag，否则选择commit(所以latest可能不是拉取的最新的)
-1. `go get xxx@master`：优先拉取master分支的最新commit
-1. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
-1. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
+`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认查找规则参考:[https://golang.org/cmd/go/#hdr-Add_dependencies_to_current_module_and_install_them]()，除此之外有以下几种用法：
+1. `go get xxx@latest`：拉取最新的tag
+    1. 如果没有tag，可能会拉取失败or按分支表现不同(todo)
+2. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
+3. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
 
 版本选择:最小版本选择算法”(The minimal version selection algorithm: https://github.com/golang/go/wiki/Modules#version-selection ),算法名字叫“最小版本选择算法”，然而内容却是“最高版本选择算法”。
 1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
@@ -2787,7 +2775,11 @@ GO111MODULE=off go get xxx -v
 2. `-x`：既打印出go fmt命令又执行它
 
 #### goimports
-不是内置的，需要自己安装。
+https://pkg.go.dev/golang.org/x/tools/cmd/goimports
+
+In addition to fixing imports, goimports also formats your code in the same style as gofmt so it can be used as a replacement for your editor's gofmt-on-save hook.( goimports = gofmt + 依赖包管理)
+
+未包含在标准库中，需要自己安装。
 
 1. help:`goimports -h`
 
@@ -5206,6 +5198,9 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 配置git协议拉取
 
 ### 1.27 invalid version: module contains a go.mod file, so major version must be compatible ...
+
+### 1.28 invalid character after top-level value
+场景一：反序列化字符串的时候出错，可能是字符串为空
 
 ## 2 未解决
 ### note: module requires Go 1.14

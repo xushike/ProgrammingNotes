@@ -167,7 +167,7 @@
 36. 后端
     1. 服务降级
     2. 服务发现、传输协议
-37. Serverless、Service Mesh
+37. Service Mesh
 38. 越界slice为什么可以取？比如下面这个开始index是3，明显超过a的最大idnex了，居然不报错
 
     ```golang

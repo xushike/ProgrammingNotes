@@ -22,7 +22,7 @@
 2014年3月27日——甲骨文公司日前举办Java 8网络直播发布会，发布甲骨文迄今为止最重要的Java技术Java 8。甲骨文宣布推出了Java平台标准版8（Java SE 8）、Java平台微型版8（Java ME 8）以及Oracle Java Embedded产品（为中到高端嵌入式系统进行了优化）的有关版本。JDK 8是Java SE 8平台规范的生产就绪版本，不久前获得Java社区进程（Java Community Process,JCP）批准。JDK 8包括自该平台1996年推出以来最重大的Java编程模型升级。JDK 8经甲骨文与OpenJDK社区合作开发而成。
 
 JDK 8的重要特性包括:
-1. Project Lambda（JSR 335）
+1. Project Lambda（JSR 335）:在Lambda之前，方法只能传一般意义的对象，此时依赖注入(DI)对Java很重要，用来注入对象。Java 8有了Lambda，很多时候方法参数传Lambda(单函数对象)就可以了，方便了很多
 2. Nashorn JavaScript引擎
 3. 一个新的日期与时间API（JSR 310）
 4. 一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。

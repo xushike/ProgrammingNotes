@@ -19,9 +19,12 @@
 MVVM核心的思想就是视图是状态的函数：View = ViewModel(Model)，所以当Model发生改变时，ViewModel会来操作View来怎么做，而非是自己写代码来做。Model 层代表数据模型，也可以在Model中定义数据修改和操作的业务逻辑；View 代表UI 组件，它负责将数据模型转化成UI 展现出来，ViewModel 是一个同步View 和 Model的对象。
 
 ### 1.2 new,工厂模式和依赖注入的通俗易懂比较
-[http://blog.csdn.net/mrli113/article/details/70792498](http://blog.csdn.net/mrli113/article/details/70792498)
+参考：
+1. [Spring依赖注入和实例化(new)的差别](http://blog.csdn.net/mrli113/article/details/70792498)
 
-依赖注入使得我们面向接口而不是实现进行编程，大大降低了代码的耦合性，提高了可测试性。随着应用复杂度的增加，使用依赖注入会越来越重要.
+依赖注入使得我们面向接口而不是实现进行编程，大大降低了代码的耦合性，提高了可测试性。在小型系统里可有可无，但是在大型系统里，随着应用复杂度的增加，使用依赖注入会越来越重要.
+
+不过依赖注入也是有争议的，缺点是降低了可读性
 
 ### 1.3 桩方法method stub
 桩方法的维基百科:[https://en.wikipedia.org/wiki/Method_stub](https://en.wikipedia.org/wiki/Method_stub)

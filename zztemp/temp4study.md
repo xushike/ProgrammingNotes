@@ -7,7 +7,6 @@
 
 1. vue
     1. el-dialog的title和`:title`，前者只支持字符串？
-1. 依赖注入和普通方法调用的区别
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
     1. pgsql 未使用order时的默认顺序，函数的默认顺序
     4. 锁的种类级别，查询的时候会锁吗
@@ -1658,7 +1657,6 @@ for (let [i, item] of arr.entries()) {
 433.  分支没修改完,怎么添加临时存储,然后切换到另一个分支
 `Your local changes to the following files would be overwritten by checkout`
     `Please, commit your changes or stash them before you can switch branches. Aborting
-2.   测试普通的类可以注册为服务然后依赖注入吗
 
 3.    insert select
 4.   [angular2学习使用心得](http://blog.csdn.net/liufang1991/article/details/76041161)

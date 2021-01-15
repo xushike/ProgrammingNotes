@@ -423,7 +423,10 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 1. `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
    1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873。大概是使用`git reflog`找到前面操作的commit id，然后使用`git reset --hard <commit_id>`恢复过去
 2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
-3. `-m`：commit message
+3. `-m`：commit message，用双引号的话默认输入的所有内容会变成一行
+    1. 实现commit message多行的方法
+        1. 多次调用`-m`
+        2. 使用单引号
 4. `--author="username <xxx@xxx.com>"`:以此作者信息提交。假如某个commit用userA信息提交了，想改成userB，就可以参考这个命令`git commit --amend --author="username <xxx@xxx.com>"`，直接用`git commit --amend`是不行的
 
 ### 5.1 git rebase 变基/压制/衍合
@@ -925,15 +928,28 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 ### 4.3 git mergetool
 主要用于解决冲突,似乎只有存在冲突文件时才会出现(待测试)
 
-## 5 `.gitignore`文件
+## 5 .gitignore文件
 **该文件只能作用于 Untracked Files，也就是那些从来没有被 Git 记录过的文件（自添加以后，从未 add 及 commit 过的文件）**
 
 规则:
-- 以斜杠“/”开头表示目录；
-- 以星号“*”通配多个字符；
-- 以问号“?”通配单个字符
-- 以方括号“[]”包含单个字符的匹配列表；
-- 以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
+- `/`开头表示匹配仅匹配当前目录下的，以`/`结尾表示匹配目录
+- 星号`*`通配多个字符；
+- 问号`?`通配单个字符
+- 方括号`[]`包含单个字符的匹配列表；
+- 叹号`!`表示不忽略(跟踪)匹配到的文件或目录；
+    
+    ```bash
+    !.gitkeep # 绕过跟踪空目录的限制
+    ```
+
+使用：
+```bash
+node_modules # 匹配所有名称为node_modules的文件，目录，链接
+/node_modules/ # 仅匹配当前目录下名为 node_modules 的目录
+node_modules/ # 匹配当前目录及所有子目录下 名为 node_modules 的目录
+
+/dir/* # 匹配当前目录下dir目录里的所有内容（但不包括 dir 目录本身）
+```
 
 规范顺序和范围：git 对于`.gitignore`配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
 
