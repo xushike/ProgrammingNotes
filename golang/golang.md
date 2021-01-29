@@ -253,7 +253,8 @@ Go源码文件包括三种：
 3. GOOS 程序构建环境的目标操作系统
 4. GOARCH 表示程序构建环境的目标计算架构
 5. `GOCACHE`:`go build`命令现在(go1.10+)总是会把最近的构建结果缓存起来，以便在将来的构建中重用。我们可以通过运行`go env GOCACHE`命令来查看缓存目录的路径。缓存的数据总是能够正确地反映出当时的源码文件、构建环境和编译器选项等的真实情况。一旦有任何变动，缓存数据就会失效，`go build`命令就会再次真正地执行构建。因此，我们并不用担心缓存数据体现的不是实时的结果。实际上，这正是上述改进能够有效的主要原因。`go build`命令会定期地删除最近未使用的缓存数据，但如果你想手动删除所有的缓存数据，运行一下`go clean -cache`命令就好了。而且对于测试成功的结果，go 命令也是会缓存的。运行`go clean -testcache`命令将会删除掉所有的测试结果缓存。
-
+    1. compiler决定是否重新编译包是content based的，而不是依照时间戳比对来决策。也就是说对文件的某一行，如果先删除，再恢复这行，是不会重新编译的。
+    2. 缓存目录：Linux上，GOCACHE=`~/.cache/go-build`; 在Mac OS X上，GOCACHE=`~/Library/Caches/go-build`
 ### 3.19 文件名
 以下划线`_`开头的文件不会被go编译，对golang而言类似于没有该文件
 
@@ -329,11 +330,11 @@ Golang不保证任何单独的操作是原子性的，除非：
 ## 4 文档网址视频等
 网址:
 1. golang官方
+    1. `golang.org`和`go.dev`:`go.dev`是`golang.org`的一个配套网站。
+        1. Go 团队核心成员 RSC（Russ）的解释是：Golang.org是开源项目和发行版的所在地，是官方权威的，不想和其他第三方内容混在一起；而Go .dev是Go用户的中心，提供来自整个Go生态系统的集中和管理资源，包含更多社区内容
     1. 各种项目的文档
         1. [https://godoc.org](https://godoc.org)
-            1. 该网址可以找到社区写的package(?)
         2. `pkg.go.dev`用于取代`godoc.org`
-    
     1. 博客：https://blog.golang.org/
     2. playground：https://play.golang.org/
         1. studygoalng也做了一个国内版的:https://play.studygolang.com/
@@ -1013,20 +1014,21 @@ slice := []stirng{}
     ```
 
 切片的操作：
-1. 往切片末尾追加元素或切片，使用内置的`append()`，该函数会自动处理存储空间不足的问题。追加元素使用内置的`append(slice,ele1,ele2,...,eleN)`函数，追加切片要写成`append(slice1,slice2...)`，这三个点的意思是把slice2所有元素打散后传递给`append()`，这是由于`append()`从第二个参数起的所有参数都必须是待附加的单个元素。:
-    1. 当每次容量不够的时候，`append()`就会分配一个新的数组，所以可以通过设置长度和容量一样的切片来保证第一次`append()`分配的是新数组
-    2. 扩容策略(src/runtime/slice.go growslice)
-        1. 当需要的容量超过原切片容量的两倍时，会使用需要的容量作为新容量。
-        2. 容量<1024时，每次扩容是容量翻倍；超过1024，则每次增加25%，即每次扩容四分之一。扩容会涉及数组拷贝，产生额外性能开销。
-2. 切片中元素的插入、删除和替换，go没有提供直接在切片中间插入/删除元素的方法，所以只有使用子切片的方法来实现，而且切片这种数据结构本身也不适合频繁的插入和删除：
-    1. 删除元素：可以使用：`s2=append(s1[:index],s1[index+1:]...)`，注意有坑。
-    2. 插入元素：创建临时切片保存后面的部分，然后类似上面那样。。。
-    3. 替换元素：`slice[num]`用于单个元素，`append()`用于单个或多个元素，例子如下
+1. 拼接：
+    1. 往切片末尾追加元素或切片，使用内置的`append()`，该函数会自动处理存储空间不足的问题。追加元素使用内置的`append(slice,ele1,ele2,...,eleN)`函数，追加切片要写成`append(slice1,slice2...)`，这三个点的意思是把slice2所有元素打散后传递给`append()`，这是由于`append()`从第二个参数起的所有参数都必须是待附加的单个元素。:
+        1. 当每次容量不够的时候，`append()`就会分配一个新的数组，所以可以通过设置长度和容量一样的切片来保证第一次`append()`分配的是新数组
+        2. 扩容策略(src/runtime/slice.go growslice)
+            1. 当需要的容量超过原切片容量的两倍时，会使用需要的容量作为新容量。
+            2. 容量<1024时，每次扩容是容量翻倍；超过1024，则每次增加25%，即每次扩容四分之一。扩容会涉及数组拷贝，产生额外性能开销。
+    2. 切片中元素的插入、删除和替换，go没有提供直接在切片中间插入/删除元素的方法，所以只有使用子切片的方法来实现，而且切片这种数据结构本身也不适合频繁的插入和删除：
+        1. 删除元素：可以使用：`s2=append(s1[:index],s1[index+1:]...)`，注意有坑。
+        2. 插入元素：创建临时切片保存后面的部分，然后类似上面那样。。。
+        3. 替换元素：`slice[num]`用于单个元素，`append()`用于单个或多个元素，例子如下
 
-        ```golang
-        append(slice1[:index], ele)
-        // 当index<slice1的容量时，原index位置的元素被替换成ele；当index>=slice1时，返回的是一个新的切片，对slice1没有影响。
-        ```
+            ```golang
+            append(slice1[:index], ele)
+            // 当index<slice1的容量时，原index位置的元素被替换成ele；当index>=slice1时，返回的是一个新的切片，对slice1没有影响。
+            ```
 3. 切片的迭代。迭代的是`len()`而不是`cap()`:
     1.  使用关键字`range`,第一个返回值是索引，第二个返回值是值的副本（注意是值而不是引用）
 
@@ -2485,7 +2487,13 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 局部变量分配到堆或者栈上并不是由用var还是new声明变量的方式决定的,编译器会做逃逸分析(escape analysis),当发现变量的作用域没有跑出函数范围，就可以在栈上，反之则必须分配在堆上.比如某个局部变量x在函数退出后依然可以通过包一级的global变量找到，那么x必须在堆上分配内存，用Go语言的术语说，这个x局部变量从函数f中逃逸了.所以不用担心会不会导致内存泄漏(memory leak),go语言声称这样可以释放程序员关于内存的使用限制，更多的让程序员关注于程序功能逻辑本身。
 
 ## 15 注释
-注释有两种形式：
+go的注释写法只有两种：`//`和`/**/`，但是用法有好几种：
+1. 普通注释
+2. 文档注释
+2. 编译标签(build tag)
+
+### 15.1 普通注释
+普通注释有两种形式：
 1. 行注释：以`//`开始，至行尾结束。一条行注释视为一个换行符（待补充）。行注释比块注释更加通用。
     1. 下一行会在转化时，会作为同一个段落，如果要分段落，插入以`//`开头的空行
     2. 如果需要预格式化（比如示例代码）的部分，只要使用缩进即可。比如下面的time包的注释，代码部分前面是tab缩进，说明部分是空格缩进，
@@ -2542,7 +2550,6 @@ go注释的规则：
     //
     // ...
     ```
-3. 标识不被编译：`// +build generate`
 4. 标识方法被废弃：`// Deprecated`，在支持的开发工具里会看到删除线，比如`github.com/go-gomail/gomail`的`NewPlainDialer()`在goland里会看到删除线。
     
     ```golang
@@ -2566,7 +2573,7 @@ go注释的规则：
  */
 ```
 
-### 15.1 文档注释
+### 15.2 文档注释
 几乎所有全局作用域的类型、常量、变量、函数和被导出的对象都应该有一个合理的注释。如果这种注释（称为文档注释）出现在函数前面，例如函数 Abcd，则要以 "Abcd..." 作为开头，且首句应该是一句话的总结。如,
 
 ```go
@@ -2576,6 +2583,11 @@ func enterOrbit() error {
    ...
 }
 ```
+
+### 15.3 编译标签( build tag)
+条件编译
+
+1. 标识不被编译：`// +build generate`
 
 ## 16 和其他语言的交互
 了解就行
@@ -2617,12 +2629,13 @@ go run *.go
 
 参数:
 1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
+2. `-v`：见`go run`
 1. `-o`：指定生成的可执行文件的名字，可以包含路径。
     1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。(待确认)
 2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
     1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
 
-        ```
+        ```bash
         go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
         ```
         会给这三个变量设置对应的值。
@@ -2645,7 +2658,10 @@ go run *.go
         concurrent_demo/cmd/main.go:7:21: inlining call to goroutine_demo.Init # 表示内联调用了
         ```
     5. `-S` 输出汇编代码
-4. `-mod=vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译
+4. `-mod`
+    1. `vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译，在开启模块支持的情况下，用这个可以退回到使用 vendor 的时代
+    2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
+    3. `mod`
 
 ### 1.3 go install
 用于编译并安装代码包或源码文件。
@@ -2787,11 +2803,26 @@ In addition to fixing imports, goimports also formats your code in the same styl
 两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器。感觉前者用起来更方便。。。
 
 #### go doc
-查看文档,挺方便的.
-1. 查看包的说明：`go doc pkg_name`,如`go doc http`可以直接看到整个包的概述和所有导出方法
-2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
+查看文档，可以查看项目里的第三方包(需要在项目下运行该命令)
 
-#### godoc
+使用：
+1. 查看包的说明：`go doc pkg_name`,如`go doc http`可以直接看到整个包的概述和所有导出方法
+    
+    ```bash
+    # 查看第三方包
+    go doc github.com/Shopify/sarama
+    # or
+    go doc sarama
+    ```
+2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
+    
+    ```bash
+    go doc github.com/Shopify/sarama Validate # 查看方法
+    go doc github.com/Shopify/sarama Config # 查看结构体
+    ...
+    ```
+
+<!-- #### godoc
 使用：
 1. 查看包说明：和`go doc`一样
 2. 查看具体方法/变量等的说明：`godoc pkg_name xxx...`，和`go doc`略有不同,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
@@ -2801,7 +2832,7 @@ In addition to fixing imports, goimports also formats your code in the same styl
 4. 在命令行中打印源代码`-src`
 5. 查看文档和示例代码`-ex`
 6. 显示更多信息`-v`：包括扫描进度等
-7. 开启playground`-play`:可以运行Example代码等
+7. 开启playground`-play`:可以运行Example代码等 -->
 
 ### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
@@ -3720,7 +3751,11 @@ func test() {
 1. `NewReaderSize(rd io.Reader, size int) *Reader`：将rd封装成一个拥有 size 大小缓存的 bufio.Reader 对象
 
 ### bytes
-主要是关于 byte slice 操作的一些函数。由于 []byte 也可用于表示 string，故其中的函数、方法与 strings 很类似，比如 Join、Split、Trim、 Contains、`Count()`、`Repeat()`、`Runes()`等。
+主要是关于 byte slice 操作的一些函数。由于 []byte 也可用于表示 string，故其中的函数、方法与 strings 很类似，比如 `Join()`、`Split()`、`Trim()`、 `Contains()`、`Count()`、`Repeat()`、`Runes()`等。
+
+使用：
+1. `[]byte`的拼接
+    1. 知道大小然后分配固定内存是最快的，在不知道大小的情况下推荐用`bytes.Buffer`来拼接
 
 ### cmd
 ### container
@@ -3733,6 +3768,18 @@ func test() {
 go的list的特点：
 1. 无类型：可以插入任意类型，包括nil（可能成为坑）
 
+操作：
+1. 清空：有两种方式，区别是：
+    1. `l.Init()`：因为`l`是指针，所以其他地方的`l`也会受影响
+    2. `l = list.New()`：相当于重复赋值，所以其他地方的`l`也不会受影响(?)
+2. 遍历
+    
+    ```go
+    for e := l.Front(); e != nil; e = e.Next() {
+        fmt.Printf("%v\n", e.Value)
+    }
+    ```
+
 #### container/ring
 环形链表
 
@@ -3742,10 +3789,20 @@ go的list的特点：
 ### crypto
 #### crypto/hmac
 
-1. `New(h func() hash.Hash, key []byte) hash.Hash`
+1. `New(h func() hash.Hash, key []byte) hash.Hash`:h只要是哈希函数就行
 2. `Equal(mac1, mac2 []byte) bool`
 
+```go
+str := "abc123"
+key := []byte("a secret")
+h := hmac.New(md5.New, key)
+h.Write([]byte(str))
+fmt.Println(hex.EncodeToString(h.Sum(nil))) // 4e551e31d3d4df77e8d5cc6e44dc7359
+```
+
 #### crypto/md5
+md5已被证实无法防止碰撞，已经不算是很安全的算法了，因此不适用于安全性认证，如SSL公开密钥认证或是数字签名等用途。对于需要高度安全性的数据，一般建议改用其他算法，比如 sha256。
+
 使用md5加密的两种方法：
 ```golang
 str := "abc123"
@@ -3755,17 +3812,31 @@ data := []byte(str)
 fmt.Println("data:", data)
 has := md5.Sum(data)
 md5str1 := fmt.Sprintf("%x", has) // 将[]byte转成16进制
-fmt.Println(md5str1)
+fmt.Println(md5str1) // e99a18c428cb38d5f260853678922e03
 
 // 方法二
 w := md5.New()
 io.WriteString(w, str)                   //将str写入到w中
 md5str2 := fmt.Sprintf("%x", w.Sum(nil)) //w.Sum(nil)将w的hash转成[]byte格式
-fmt.Println(md5str2)
+fmt.Println(md5str2) // e99a18c428cb38d5f260853678922e03
 
 // 生成32位md5字符串
 ```
+#### crypto/sha256
+```go
+str = "abc123"
+h := sha256.New()
+h.Write([]byte(str))
+sum := h.Sum(nil)
+
+//由于是十六进制表示，因此需要转换
+s := hex.EncodeToString(sum)
+fmt.Println(string(s)) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
+```
+
 #### crypto/tls
+提供的部分方法和用法和net包一样，除此之外...
+
 结构体：
 1. `Config`：Config 结构用于配置 TLS 客户端或服务器
     1. `Certificates`：设置证书链，允许包含一个或多个
@@ -3798,18 +3869,20 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
 #### database/sql
 
 常用：
-1. `Open(driverName, dataSourceName string) (*DB, error)`:创建一个数据库抽象操作接口,它返回一个`sql.DB`指针，注意它并不代表一个数据库连接, 它是一个已存在的数据库的抽象访问接口。这个连接是延时初始化的(lazy init), 即`sql.Open()`并不会立即建立一个数据库的网络连接, 也不会对数据库链接参数的合法性做检验(也就是说没真正建立了解之前，dataSourceName乱填也不会报错), 它仅仅是初始化一个 sql.DB 指针，当我们进行第一次数据库查询操作时, 此时才会真正建立网络连接。其他细节和最佳实践如下
-    1. sql.DB 为我们提供了两个重要的功能:
-        1. sql.DB 通过数据库驱动为我们管理底层数据库连接的打开和关闭操作.
-        2. sql.DB 为我们管理数据库连接池：所以我们每次进行数据库操作时, 都是从连接池中取出一个连接, 当操作任务完成时, 再将连接返回到连接池中, 如果我们没有正确地将连接返回给连接池, 会造成打开过多的数据库连接, 使数据库连接资源耗尽.
-    2. 如果我们想立即检查数据库连接是否可用, 那么可以利用 sql.DB 的 `Ping()` 方法
-    3. sql.DB 对象是作为长期生存的对象来使用的, 应当避免频繁地调用 `Open()` 和 `Close()`，一般是创建一个 sql.DB 并将其保存起来, 每次操作此数据库时, 传递此 sql.DB 指针即可。
+1. 创建一个数据库抽象操作接口`Open(driverName, dataSourceName string) (*DB, error)`:它返回一个`sql.DB`指针，注意它并不代表一个数据库连接, 它是一个已存在的数据库的抽象访问接口。这个连接是延时初始化的(lazy init), 即`sql.Open()`并不会立即建立一个数据库的网络连接, 也不会对数据库链接参数的合法性做检验(也就是说没真正建立了解之前，dataSourceName乱填也不会报错), 它仅仅是初始化一个`sql.DB`指针，当我们进行第一次数据库查询操作时, 此时才会真正建立网络连接。其他细节和最佳实践如下
+    1. `sql.DB` 为我们提供了两个重要的功能:
+        1. `sql.DB` 通过数据库驱动为我们管理底层数据库连接的打开和关闭操作.
+        2. `sql.DB` 为我们管理数据库连接池：所以我们每次进行数据库操作时, 都是从连接池中取出一个连接, 当操作任务完成时, 再将连接返回到连接池中, 如果我们没有正确地将连接返回给连接池, 会造成打开过多的数据库连接, 使数据库连接资源耗尽.
+    2. 如果我们想立即检查数据库连接是否可用, 那么可以利用 `sql.DB` 的 `Ping()` 方法
+    3. `sql.DB` 对象是作为长期生存的对象来使用的, 应当避免频繁地调用 `Open()` 和 `Close()`，一般是创建一个 `sql.DB` 并将其保存起来, 每次操作此数据库时, 传递此 `sql.DB` 指针即可。
         > the DB handle is meant to be long-lived and shared between many goroutines.
-2. `Register(name string, driver driver.Driver)`:用来注册数据库驱动。使用第三方数据库驱动，最重要的一点就是要导入该库，实现第三方数据库驱动的init 函数。该init 函数即是实现注册数据库驱动。
+2. `Register(name string, driver driver.Driver)`:用来注册数据库驱动。使用第三方数据库驱动，最重要的一点就是要导入该库，实现第三方数据库驱动的`init()` 函数。该`init()` 函数即是实现注册数据库驱动。
 
 结构体：
 1. `sql.DB`
     1. `Query(query string, args ...interface{}) (*Rows, error)`:执行 SQL 语句, 此方法会返回一个 Rows 作为查询的结果
+    2. `QueryRow`：至多一条，没有则报错
+    3. `Exec()`
     2. `Close() error`：关闭数据库连接池，一般不会用到
 2. `sql.Rows`:
     1. `Next() bool`:迭代查询数据
@@ -4239,48 +4312,148 @@ fmt.Println(rand.Intn(100))
 4. `FormatMediaType(t string, param map[string]string) string`
 
 ### net
+对于网络I/O提供了便携式接口，包括TCP/IP,UDP，域名解析以及Unix Socket，经常用来解析ip或者host。除此之外，还提供了一些工具函数。
+
 使用：
-1. 简单的获取 IP：
+1. 查询
+    1. 查询
+        1. 根据host和port获取TCP地址和端口`ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`:通过输入net和addr来创建一个`TCPAddr`，它表示TCP的地址信息，包含IP地址和端口号。入参`net`为"tcp"、"tcp4"、"tcp6"的一种，如果是""则默认为"tcp"。入参`addr`是类似"g.cn:80"或者"127.0.0.1:80"这样的字符串
+            
+            ```go
+            addr, err := net.ResolveTCPAddr("", "baidu.com:80")
+            if err != nil {
+                log.Fatal(err)
+            }
+            fmt.Println(addr) // 39.156.69.79:80
+            ```
+        2. 根据host获取ip地址列表`LookupHost(host string) (addrs []string, err error)`：通常主机服务器有多块网卡，`LookupHost()`通过利用本地解析器对给定的host进行查找，返回主机地址的数组
+        3. 类似查询
+            1. 查询A记录`LookupIP(host string) ([]IP, error)`
+            3. 查询CNAME`LookupCNAME(host string) (cname string, err error)`
+            2. 查询NS记录
+            2. 查询MX记录
+            2. 查询TXT记录
+        4. 返回该系统的网络接口的地址列表`func InterfaceAddrs() ([]Addr, error)`
+        5. 返回该系统的网络接口列表`func Interfaces() ([]Interface, error)`
+        6. 返回指定network和service的端口`func LookupPort(network, service string) (port int, err error)`
+        7. 查询服务对应的端口`LookupPort(network, service string) (port int, err error)`:在Unix系统中, `/etc/services`文件列出了常用的端口,该方法可以从该文件获取常用端口号。入参`network`可以为"tcp"或者"udp"
+            
+            ```go
+            port, _ := net.LookupPort("tcp", "http")
+            fmt.Println(port) // 80
+            ```
+        4. 反向查询`LookupAddr(addr string) (names []string, err error)`:给定DSN地址，通过DNS PRT反向解析出域名。反向解析只对部分固定域名生效
+            
+            ```go
+            names, err := net.LookupAddr("114.114.114.114")
+            if err != nil {
+                log.Fatal(err)
+            }
+            log.Println("names:", names) // names: [public1.114dns.com.]
+            ```
+        
+    
+2. 建立连接：go提供的几种连接方法返回不同的`Conn`和错误，返回的`Conn`都实现了`Conn`接口，其中`Dial()`是对其他几个`DialXxx()`方法的封装。底层实现基本相同，后续的使用也是类似的。
+    1. `Dial(network, address string) (Conn, error)`
+    2. `DialTCP(network string, laddr, raddr *TCPAddr) (*TCPConn, error)`
+    3. `DialUDP(network string, laddr, raddr *UDPAddr) (*UDPConn, error)`
+    4. `DialIP(network string, laddr, raddr *IPAddr) (*IPConn, error)`
+    5. `DialUnix(network string, laddr, raddr *UnixAddr) (*UnixConn, error)`
+    6. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
+    7. `FileConn(f *os.File) (c Conn, err error)`返回一个对文件f的网络连接的复制copy，当调用完毕后，用户需要自己关闭文件f，由于是复制关系，所以关闭c和关闭f二者互不影响。
 
-    ```go
-    func GetPulicIP() string {
-        conn, _ := net.Dial("udp", "8.8.8.8:80")
-        defer conn.Close()
-        localAddr := conn.LocalAddr().String()
-        idx := strings.LastIndex(localAddr, ":")
-        return localAddr[0:idx]
-    }
-    ```
-
-常用func：
-1. `ParseIP(string) IP`:解析ip地址
-2. `ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`：解析`TCPAddr`。`TCPAddr`表示TCP的地址信息
-3. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
+工具func：
+1. `JoinHostPort(host, port string) string`:将host和port合并为一个网络地址。如果检测到host包含`:`，则返回`[host]:port`
+3. 验证IP的有效性`ParseIP(s string) IP`:解析ip地址为`IP`
 5. `SetKeepAlive()`:设置keepAlive属性，是操作系统层在tcp上没有数据和ACK的时候，会间隔性的发送keepalive包，操作系统可以通过该包来判断一个tcp连接是否已经断开，在windows上默认2个小时没有收到数据和keepalive包的时候人为tcp连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。
 
 常用结构体：
+1. `net.Interface`
+    
+    ```go
+    type Interface struct {
+        Index        int          // 索引，必须为正整数
+        MTU          int          // 最大传输单元
+        Name         string       // 名字，例如： "en0", "lo0", "eth0.100"
+        HardwareAddr HardwareAddr // 硬件地址，例如： IEEE MAC-48, EUI-48 and EUI-64 form
+        Flags        Flags        // flags标记,例如： FlagUp, FlagLoopback, FlagMulticast
+    }
+    ```
+1. `net.IP`：IP地址
+    1. 获取默认子网掩码`func (ip IP) DefaultMask() IPMask`
+1. `net.TCPAddr`:TCP地址，包含IP和port
+4. `net.Dialer`
+    
+    ```go
+    net.Dialer{
+        Timeout :15*time.Second, // 限制创建一个TCP连接使用的时间
+    }
+    ```
 1. `net.TCPConn`
-    1. `SetReadDeadline(t time.Time) error`、`SetWriteDeadline(t time.Time) error`:设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。
+    1. 获取address(ip和端口)
+        1. `LocalAddr() Addr`连接对应的本地address
+        1. `RemoteAddr() Addr`连接对应的远程address
+    1. `SetReadDeadline(t time.Time) error`、`SetWriteDeadline(t time.Time) error`:设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。它是比`net/http`包更低层的超时设置。
+        1. 一旦被设置，将一直生效（直到再一次调`SetXxxDeadline()`），它并不关心在此期间链接是否存在以及如何使用。因此，你需要在每次进行读/写操作前，使用`SetXxxDeadline()`设定一个超时时长.(待确认)
 
 #### net/http
-`Request`结构体:
-1. `URL`
-2. `RequestURI`
-3. `Body io.ReadCloser`
-    1. 它是readcloser，默认情况下，readAll之后就无法再次读取，如果我还想把body转发给其他服务怎么办呢：可以使用`ioutil.NopCloser()`实现复用
-        
-        ```go
-        // 把request的内容读取出来
-        var bodyBytes []byte
-        if c.Request.Body != nil {
-            bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-        }
-        // 把刚刚读出来的再写进去
-        c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-        ```
+provides HTTP client and server implementations.
+
+结构体：Client和Transport是并发安全的，如果想重用的话，只需要初始化一次。
+1. `http.Server`
+    
+    ```go
+    http.Server{
+        Addr:           ":8080",
+        Handler:        myHandler,
+        // 两个Timeout是比 net.Conn.SetXxxDeadline() 更高层的超时设置。
+        ReadTimeout:    10 * time.Second, // ReadTimeout的时间计算是从连接被接受(accept)到request body完全被读取(如果你不读取body，那么时间截止到读完header为止)。它的内部实现是在Accept立即调用SetReadDeadline()方法代码。
+        WriteTimeout:   10 * time.Second, // WriteTimeout的时间计算正常是从request header的读取结束开始，到 response write结束为止 (也就是 ServeHTTP 方法的声明周期), 它是通过在readRequest方法结束的时候调用SetWriteDeadline()实现的代码。
+        MaxHeaderBytes: 1 << 20,
+    }
+    ```
+2. `http.Client`
+    
+    ```go
+    http.Client{
+        Timeout:15*time.Second, // 它涵盖整个交互过程，从发起连接到接收响应报文结束
+        Transport: nil,
+        CheckRedirect: nil, // 
+		Jar:           nil,
+    }
+    ```
+3. `http.Transport`:For control over proxies, TLS configuration, keep-alives, compression, and other settings
+    
+    ```go
+    http.Transport{
+		TLSHandshakeTimeout:    0, // 限制TLS握手使用的时间
+		ResponseHeaderTimeout:  0, // 限制读取响应报文头使用的时间
+		ExpectContinueTimeout:  0, // 限制客户端在发送一个包含：100-continue的http报文头后，等待收到一个go-ahead响应报文所用的时间
+	}
+    ```
+1. `http.Request`结构体:
+    1. `URL`
+    2. `RequestURI`
+    3. `Body io.ReadCloser`
+        1. 它是readcloser，默认情况下，readAll之后就无法再次读取，如果我还想把body转发给其他服务怎么办呢：可以使用`ioutil.NopCloser()`实现复用
+            
+            ```go
+            // 把request的内容读取出来
+            var bodyBytes []byte
+            if c.Request.Body != nil {
+                bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+            }
+            // 把刚刚读出来的再写进去
+            c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+            ```
 
 
-常用方法：
+使用：
+1. 启动HTTP server:并不推荐使用形如`http.XxxServeXxx()`的方式来启动，因为这些函数默认关闭了超时设置，也无法手动设置。使用这些函数，可能很快泄露连接，从而耗尽文件描述符。
+    1. 形如`http.XxxServeXxx()`来启动
+        1. 定义好handler或者用默认的handler，然后启动`ListenAndServe(addr string, handler Handler) error`
+    2. 通过自定义的Server来启动
+        1. `(*Server) ListenAndServe() error`
 1. 发起http请求:
     1. Get:`http.Get()`
     2. Post:
@@ -4577,8 +4750,7 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
 常见概念：
 1. 时区：有GMT、UTC、CST，可以简单认为`CST=UTC/GMT + 8 小时`，中国常用的是CST
 2. 时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
-    1. 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。10位的时间戳表示秒，以此类推，13位表示毫秒，16微秒，19纳秒
-        1. `Unix(sec int64, nsec int64) Time`:把时间戳 转为 时间：向下取整，默认使用系统的时区。
+    1. 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 3. 时区
     1. 跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
     2. `2006-01-02 15:04:05 -0700 MST`:在go中它的作用相当于其他语言的"yyyy-MM-dd 。。。"，比较常用的是`2006-01-02 15:04:05`
@@ -4587,7 +4759,17 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
 1. 获取当前时间`Now()`：在不同架构下它的精度是不一样的，在mac下是到微秒，但是linux下一般是到纳秒
     1. 参考
         1. https://github.com/golang/go/issues/11222
-2. 时间戳转时间`Unix(sec int64, nsec int64) Time`
+2. 获取时间戳
+    1. `(t Time) Unix() int64`:返回秒的时间戳
+    2. `(t Time) UnixNano() int64`：返回纳秒的时间戳
+        1. 如果想获取毫秒可以通过纳秒来转换，如`time.Now().UnixNano()/1e6`
+2. 时间戳转时间
+    1. `Unix(sec int64, nsec int64) Time`:把时间戳 转为 时间：向下取整，默认使用系统的时区。
+        
+        ```go
+        now := time.Now().UnixNano()
+	    fmt.Println(time.Unix(0, now))
+        ```
 3. 从字符串生成时间
     1. `ParseInLocation`:可以根据时间字符串和指定时区转换Time。
 4. 设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置，如`LoadLocation`:可以根据时区名创建时区Location，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
@@ -4899,16 +5081,18 @@ go mod命令:
 1. `go mod init <project_name>`
 2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。和`go get`不同的是`go mod download`只会下载，不会编译安装。
 2. `go mod tidy`：整理依赖，整理项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
-    1. 只是整理，并不会更新
+    1. 只是整理，并不会更新依赖版本
 4. `go mod edit`：编辑go.mod
     
     ```golang
     // 增加包:好像没有直接增加包的命令，可以修改go.mod然后执行go mod tidy
     // 修改当前module的版本：比如显式声明当前库为v2（具体参考发布部分笔记）
     go mod edit --module=private.com/pkg/v2 // go.mod里第一行就变成了：module private.com/pkg/v2，然后其他包引用该包的写法就变成了:private.com/pkg/v2/subPkgA
-    // 修改require包的版本：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
+    // 添加依赖或修改依赖版本，版本号规则和go get一样：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
+    // go mod edit -require=path@version
     go mod edit -require=github.com/360EntSecGroup-Skylar/excelize@v1.3.1
     // 修改引用
+    // go mod edit -replace=path1@version=path2@version使用path2路径的包来代替path1路径的包
     // 比如开发公共包时使用本地的公共包代替调试
     go mod edit -replace xxx.com/libA=$(your_local_libA)
     // 屏蔽包

@@ -1365,7 +1365,6 @@ dpkg -L package #列出与该包关联的文件
     3. 硬链接的实现原理是怎么样的?
     3. 参考:[http://www.jianshu.com/p/dde6a01c4094](http://www.jianshu.com/p/dde6a01c4094)
 18. linux的命令一共有4中,除了type识别的三种还有:shell函数(即小型shell脚本)?
-19. gdb调试工具
 20. sftp:[https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html](https://jingyan.baidu.com/article/c910274be7bc6acd361d2da7.html)
 21. linux cheat
 22. [命令行的艺术:linux bash命令大全详解](http://ourjs.com/detail/5923d49cf1239006149616a6)

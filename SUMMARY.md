@@ -247,12 +247,4 @@
     * [temp](zztemp/temp.md)
     * [temp4study](zztemp/temp4study.md)
     * [temp4studyLater以后再学的](zztemp/temp4studyLater.md)
-* [zzdraft草稿](zzdraft/draft.md)
-    * [draft](zzdraft/draft.json)
-    * [draft](zzdraft/draft.md)
-    * [draft](zzdraft/draft2.md)
-    * [draft](zzdraft/draft.txt)
-    * [draft](zzdraft/draft.sql)
-    * [draft2](zzdraft/draft2.sql)
-    * [draft2](zzdraft/draft2.json)
 

@@ -1099,24 +1099,25 @@ jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出�
 
 # 五 经验
 ## 2 java基础类库
-前缀`java.lang`
 
-### Boolean
+### lang
+#### lang.Boolean
 此类提供了许多用于将布尔值转换为String以及将String转换为布尔值的方法，以及其他在处理布尔值时有用的常量和方法
 
 参考：http://docs.oracle.com/javase/7/docs/api/java/lang/Boolean.html。
+
 1. The Boolean class wraps a value of the primitive type boolean in an object. An object of type Boolean contains a single field whose type is boolean.(布尔类将原始类型boolean的值包装在对象中。 布尔类型的对象包含一个布尔类型的字段。)
 
-### Calendar
-### Date
+#### java.lang.Calendar
+#### java.lang.Date
 Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
-### Math类
+#### java.lang.Math
 
 常用方法:
 1. `random()`
 2. `pow(a,b)`:a的b次方
 
-### Object类
+#### java.lang.Object
 jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
 
 常用方法：
@@ -1129,7 +1130,7 @@ jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
     ```
 2. `equals()`:判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
 
-### time
+#### java.lang.time
 java8新增的日期、时间包。在JDK1.8之前，Java处理日期、日历和时间的方式一直为社区所诟病，将 java.util.Date设定为可变类型，以及SimpleDateFormat的非线程安全使其应用非常受限。因此推出了java.time包，该包下的所有类都是不可变类型而且线程安全。
 
 不要使用`new`关键字来创建，而是使用静态工厂方法，比如
@@ -1138,11 +1139,11 @@ java8新增的日期、时间包。在JDK1.8之前，Java处理日期、日历�
 1. `ldt.plusDays()`
 2. `ldt.minusDays()`
 
-### util
-#### concurrent
+#### java.lang.util
+##### concurrent
 JUC就是java.util .concurrent工具包的简称，它是处理线程的工具包，JDK 1.5开始出现的。
 
-#### stream
+##### stream
 Stream 使用一种类似用 SQL 语句从数据库查询数据的直观方式来提供一种对 Java 集合运算和表达的高阶抽象。Stream API可以极大提高Java程序员的生产力，让程序员写出高效率、干净、简洁的代码。这种风格将要处理的元素集合看作一种流， 流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。
 
 ```java
@@ -1207,7 +1208,7 @@ String str = stream.collect(Collectors.joining()).toString();
     concat = Stream.of("a", "B", "c", "D", "e", "F").filter(x -> x.compareTo("Z") > 0).reduce("", String::concat);
     System.out.println("过滤和字符串连接:" + concat); //过滤和字符串连接:ace
     ```
-#### UUID
+##### UUID
 使用：
 1. 静态方法`randomUUID()`:生成一个版本 4 的 UUID
 2. `nameUUIDFromBytes()`: 会生成一个版本 3 的 UUID，需要传递一个名称的字节数组作为参数。

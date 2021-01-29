@@ -282,6 +282,10 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 1. 块选中:`option+cmd`
 
 #### on-my-zsh
+参考:
+1. 插件:https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
+    1. 比如docker-compose:https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/docker-compose
+
 主题颜色不错，很多自定义配置，自带git支持（命令提示，分支高亮）
 配置：
 1. 下载主题

@@ -396,6 +396,10 @@ https://github.com/go-gorm/gorm
 ## JWT
 https://github.com/dgrijalva/jwt-go
 
+问题：
+1. key is of invalid type
+    1. key要用`[]byte`类型
+
 ## NoSQL
 ### Redis
 https://github.com/go-redis/redis
@@ -804,9 +808,20 @@ https://github.com/uber-go/zap
 5. fatal：严重错误（特别严重，比如引起崩溃式的错误）
 
 使用：
-1. 首先分几种模式
+1. 首先性能上分几种模式
     1. sugar：性能差点，但编码友好，适合一般后台业务场景
     2. desugar：编码稍微麻烦，但性能较好，适合高并发场景
+2. 环境上分几种模式
+
+    ```go
+    var logger *zap.Logger
+	if debug {
+		logger, _ = zap.NewDevelopment()
+	} else {
+		logger, _ = zap.NewProduction()
+	}
+	zap.ReplaceGlobals(logger)
+    ```
 
 ## 证书
 ### mkcert
@@ -837,6 +852,8 @@ https://github.com/Shopify/sarama
     - 无认证
     - TLS认证
     - SASL/PLAIN认证, (其他SASL/SCRAM, SASL/GSSAPI都不支持)
+2. 生产
+3. 消费
     
 ## 依赖注入
 uber的dig和Facebook的inject，这两个都是通过运行时注入的，使用运行时注入，会有一些问题，比如不好调试，错误提示不及时等，而wire采用不同的方式来实现，通过生成依赖注入的代码来解决问题，这样就和手写是一样的，只是减轻手写的麻烦
@@ -903,6 +920,19 @@ func InitializeAllInstance() *Instance {
 ### uber的dig
 ### fackbook的inject
 https://github.com/facebookarchive/inject
+
+## 监控 prometheus
+参考：
+1. github.com/labstack/echo-contrib/prometheus
+2. github.com/prometheus/client_golang
+
+Prometheus是由SoundCloud开发的开源监控报警系统和时序列数据库(TSDB)。Prometheus使用Go语言开发，是Google BorgMon监控系统的开源版本。
+
+使用：
+1. 使用 Prometheus 生成服务级别的指标时，有两个典型的方法：内嵌地运行在一个服务里并在 HTTP 服务器上暴露一个 /metrics 端点，或者创建一个独立运行的进程，建立一个所谓的导出器。
+
+Prometheus 客户端公开了在暴露服务指标时能够运用的四种指标类型：
+1. 
 
 # 五 经验
 ## 1 为什么需要框架

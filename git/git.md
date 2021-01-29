@@ -711,7 +711,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 3. 创建标签：`git tag v1.0`，在某个commitid上打标签：`git tag tag_name commit_id`
 
 参数：   
-1. `-m`：指定标签的说明文字。
+1. `-m`：指定标签的附注(annotated，即说明文字)。
 
 ## 10 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序

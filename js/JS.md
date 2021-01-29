@@ -399,38 +399,44 @@ js判断字符串是否全部为数字的几种方法(待补充):
 #### 1.2.2 数字number
 支持正负数和任意位的小数,js中不存在整数,所有数字都是64位浮点型.
 (待补充:精确度的计算)
+使用：
+1. 声明
+    1. 可用科学计数法来表示,如,
+
+        ```javascript
+        var y=123e5;    // 12300000
+        var z=123e-5;   // 0.00123
+        ```
+    2. 可用八进制和十六进制来表示,也可转换为八进制或十六进制,如
+
+        ```javascript
+        var y = 0377; 
+        var z = 0xFF;
+        var myNumber=128;
+        myNumber.toString(16);   // 返回 80
+        myNumber.toString(8);    // 返回 200
+        myNumber.toString(2);    // 返回 10000000
+        ```
+    5. `Infinity`表示无穷大的数字,可带正负.非0除以0可产生无穷大,如`2/0`
+    6. `NaN`表示非数字值,即指示某个值不是数字.可设置number对象为该值,但NaN是不好(toxic)的,把它传给任何一个数学操作，结果都会返回一个NaN.全局函数`isNaN()`可判断一个值是否是NaN.
+    7. `new Number(num)`生成数字对象,类似java,如,
+
+        ```javascript
+        var x = 123;              
+        var y = new Number(123);
+        typeof(y) // 返回 Object
+        (x === y) // 为 false，因为 x 是一个数字，y 是一个对象
+        ```
+2. 绝对值
+    1. `Math.abs(numberA)`
 1. 判断数值类型的常见方法是正则表达式(待补充)
-2. 可用科学计数法来表示,如,
+4. 浮点运算
+    1. 自带的浮点运算并不100%准确,比如,
 
-    ```javascript
-    var y=123e5;    // 12300000
-    var z=123e-5;   // 0.00123
-    ```
-3. 可用八进制和十六进制来表示,也可转换为八进制或十六进制,如
-
-    ```javascript
-    var y = 0377; 
-    var z = 0xFF;
-    var myNumber=128;
-    myNumber.toString(16);   // 返回 80
-    myNumber.toString(8);    // 返回 200
-    myNumber.toString(2);    // 返回 10000000
-    ```
-4. 浮点运算并不100%准确,比如,
-
-    ```javascript
-    var x = 0.2+0.1; // 输出结果为 0.30000000000000004
-    ```
-5. `Infinity`表示无穷大的数字,可带正负.非0除以0可产生无穷大,如`2/0`
-6. `NaN`表示非数字值,即指示某个值不是数字.可设置number对象为该值,但NaN是不好(toxic)的,把它传给任何一个数学操作，结果都会返回一个NaN.全局函数`isNaN()`可判断一个值是否是NaN.
-7. `new Number(num)`生成数字对象,类似java,如,
-
-    ```javascript
-    var x = 123;              
-    var y = new Number(123);
-    typeof(y) // 返回 Object
-    (x === y) // 为 false，因为 x 是一个数字，y 是一个对象
-    ```
+        ```javascript
+        var x = 0.2+0.1; // 输出结果为 0.30000000000000004
+        ```
+    2. 所以可以引入第三方包，比如decimal.js
 
 #### 1.2.3 Date
 采用系统时区，基本是各语言的默认行为，但js并没有这样做，它默认使用UTC时区。
@@ -1321,8 +1327,7 @@ console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 tru
 
 
 ## 6 事件
-## 7 模块
-js中，每个文件是一个模块，文件中定义的所有对象都从属于那个模块。 通过`export`关键字，模块可以把它的某些对象声明为公共的。 其它js模块可以使用`import`语句来访问这些公共对象。
+
 
 ## 9 定时器(难点)
 参考网友的文章:https://www.cnblogs.com/wangying731/p/5164780.html
@@ -1500,7 +1505,7 @@ sayHello();
 ```
 
 ### 4.3 ES2015
-`import`和`export`指令的静态特性允许静态分析器在不运行代码的情况下构建完整的依赖关系树。
+`import`和`export`指令的静态特性允许静态分析器在不运行代码的情况下构建完整的依赖关系树。注意它会自动采用严格模式，且 `import` 命令具有提升效果，会提升到整个模块的头部，首先执行
 
 优点:
 1. 支持同步和异步加载。

@@ -173,7 +173,7 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
             # 启动服务
             adb start-server 
             # 关闭服务
-            adb kill-server 
+            adb kill-server
             ```
 3. 运行在设备端的常驻进程adb demon (adbd)：程序“adbd”作为一个后台进程在Android设备或模拟器系统中运行。它的作用是连接ADB服务器，并且为运行在主机上的客户端提供一些服务；
 

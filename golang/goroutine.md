@@ -416,7 +416,7 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
 
         close(ch) // panic if ch is closed
         ```
-    2. 使用ok判断：`v, ok := <-ch`， ok is true if v received value，ok is false if channel closed
+    2. 使用ok判断：`v, ok := <-ch`， **ok is true if v received value，ok is false if there are no more values to receive and the channel is closed.**也就是说，ok为false的时候(todo)
     3. 在确定不会向channel写入信息的前提下，可以写一个这样的函数
         ```go
         // 因为如果channel没有关闭，<-ch将不会返回，直到chanel已经被关闭。

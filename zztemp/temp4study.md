@@ -763,7 +763,6 @@ angualr 表单中:#,name等的区别
 1. db
     1. add和create
     1. sql 的seq会回滚吗 
-1. bootstrap为什么依赖jquery?内部实现用到js了?
 1. goalng 类型转换:strconv.ParseFloat
     1. goalng模板
 1. viewport做适配
@@ -973,7 +972,6 @@ const (
         1. http://blog.csdn.net/diquren/article/details/50543610
         2. 有没有办法在js中调用呢
         4. chrome 的开发者工具有此功能。选取元素后可以在右侧的 Event Listeners中看到绑定的事件
-    3. jquery保存了事件的委托，可以获得
     4. Visual Event 2
         1. https://stackoverflow.com/questions/446892/how-to-find-event-listeners-on-a-dom-node-when-debugging-or-from-the-javascript
     5. 当时的业务场景是点击table一行的任意地方（除了超链接这些）会选中此行，后面我用event.
@@ -1331,17 +1329,9 @@ for (let [i, item] of arr.entries()) {
 271. 深入js的for of:[http://www.jb51.net/article/70106.htm](http://www.jb51.net/article/70106.htm)
 272. linux删除后的撤销
 273. es6展开运算符
-275. 项目问题
-
-    1. constructor中注入的服务比如dic,可以直接用dic,不用加this;但是在方法外面必须要加dic?
-    2. 项目中的系统繁忙500错误,通过什么获取
 276. 研究下word等的`1.`,`2.`
-277. 熟悉下ng 时用到的js插件
-278. angular transform的源代码,和项目中ydj写得的区别
-    1. 项目中`{ title: "完成时间", field: "finish_time", pipes: { date: "MM-dd HH:mm",placeholder: "---" } },`这样写可以多重管道?
 279. css里夫优先还是子优先?
 280. 不同的指令和组件加到不同的地方,具体记录
-281. ts中只定义未赋值的值是undefined,js中也是吗
 283. 带_的私有变量是那个语言的语法
 284. console.log多参数的写法
 290. 一键部署和发布(线下)
@@ -1976,7 +1966,7 @@ worker.cancel();
 59. 
 20160520面试题
 	StringBuffer和String;stringbuffer；不用第三个参数实现两个数交换；数组可以用泛型吗？集合内数组的排序；sql查询排序等；双色球；排序；字符操作；字符排序操作；依赖注入的实现方式；java面试题；面试官说觉得自己擅长的，问开发编程中遇到
-的问题；ajax；jQuery；编码问题，各种的默认编码和编码表，字符串拆分；各种Writer的区别和使用；数据库一对多，多对多等；
+的问题；ajax;编码问题，各种的默认编码和编码表，字符串拆分；各种Writer的区别和使用；数据库一对多，多对多等；
 
 61. go编译后的后缀名是什么,在linux和mac中?
 62. js arraybuffer和java ByteBuffer
