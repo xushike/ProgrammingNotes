@@ -73,7 +73,11 @@ Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始
 Go语言的每次版本更新，都会在标准库环节增加强大的功能、提升性能或是提高使用上的便利性。每次版本更新，标准库也是改动最大的部分。
 
 ### 2.1 吉祥物
-以囊地鼠（Gopher）作为它的吉祥物,Rob Pike的妻子 Renee French绘制的
+以囊地鼠（Gopher）作为它的吉祥物,Rob Pike的妻子 Renee French绘制的。
+
+参考：
+1. https://blog.golang.org/gopher 
+2. https://golang.org/doc/gopher/modelsheet.jpg
 
 ## 3 常识
 
@@ -107,7 +111,7 @@ img.SetColorIndex(
 )
 ```
 
-### 3.5 关于go的作者
+### 3.5 go相关人员
 最开始的作者：
 1. 罗伯特·格瑞史莫(Robert Griesemer)：曾协助实现 Java 的 HotSpot 编译器和 JavaScript V8 引擎。
 2. 罗勃·派克(Rob Pike)：曾是贝尔实验室的 Unix 团队和 Plan9 操作系统成员，与Ken Thompson 一起创造了 UTF-8 字符编码。
@@ -117,6 +121,10 @@ img.SetColorIndex(
 后面加入的：
 1. Ian Lance Taylor
 2. Russ Cox
+
+其他人员：
+1. Dave Cheney:Go编程语言的开源贡献者和项目成员
+2. William Kennedy (Bill)：《Go in Action》作者
 
 ### 3.6 空标识符（blank identifier）
 即`_`（也就是下划线），它主要有两个作用：
@@ -861,7 +869,7 @@ var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
    2. `fmt.Sprintf()`:内部使用 []byte 实现
    3. `strings.Join()`：效率比`+`高
    4. `buffer.WriteString()`：不需要复制，只需要将添加的字符串放在缓存末尾即可，所以性能理论上最好，不过和java的StringBuilder一样是线程不安全的
-   5. go1.10开始新增了Builder类型
+   5. go1.10开始新增了Builder类型，也是并发不安全的
 4. 遍历字符串
    1. 按字节遍历 
         
@@ -1755,7 +1763,7 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 命令行参数:
 1. `-args`：传递命令行参数，该标志会将`-args`之后的参数作为命令行参数传递，最好作为最后一个标志。如`go test -args -p=true`
 4. 设置并发执行的测试数量`-parallel n`
-5. 竞争探测`-race`：用于探测高并发的死锁...
+5. 竞争探测`-race`：用于data race
     
     ```golang
     go run -race xxx.go > fileA
@@ -2908,86 +2916,165 @@ cloud.google.com/go/bigquery v1.5.0 [v1.10.0]
 ```
 
 ### 1.3 pprof
+参考：
+1. Go官方
+    1. 详细，含样例：https://blog.golang.org/pprof
+    2. https://golang.org/pkg/net/http/pprof/
+
 用于可视化和性能分析的工具。
 > Profiling 一般翻译为 画像
 
 工具的两个版本：
-1. 从 Go 1.11 开始, 火焰图被集成进入 Go 官方的 pprof 库，直接使用`go tool pprof -http=":8081" [binary] [profile]`
-2. 如果低于1.11版本，可以从git安装`go get -u github.com/google/pprof`，然后使用`pprof -http=":8081" [binary][profile]`。这个版本比官方的pprof精致一些，可以显示火焰图(Flame Graph)，并且是动态的。
+1. 如果低于1.11版本，可以从git安装`go get -u github.com/google/pprof`，然后使用`pprof -http=":8081" [binary][profile]`。这个版本比官方的pprof精致一些，可以显示火焰图(Flame Graph)，并且是动态的。
+2. 从 Go 1.11 开始, 火焰图被集成进入 Go 官方的 pprof 库，直接使用`go tool pprof -http=":8081" [binary] [profile]`
+    
+    ```bash
+    # 先收集pprof信息，比如
+    go tool pprof http://localhost:10001/debug/pprof/goroutine\?debug\=1
+    # Fetching profile over HTTP from http://localhost:10001/debug/pprof/goroutine?debug=1
+    # Saved profile in ~/pprof/pprof.goroutine.016.pb.gz
+    
+    # 在由收集的信息生成图形界面
+    go tool pprof -http=":8201" ~/pprof/pprof.goroutine.016.pb.gz
+    ```
 
-PProf 关注的模块:
+pprof性能优化主要有以下几个方面:
 - CPU profile：报告程序的 CPU 使用情况，按照一定频率去采集应用程序在 CPU 和寄存器上面的数据
 - Memory Profile（Heap Profile）：报告程序的内存使用情况
 - Block Profiling：报告 goroutines 不在运行状态的情况，可以用来分析和查找死锁等性能瓶颈
 - Goroutine Profiling：报告 goroutines 的使用情况，有哪些 goroutine，它们的调用关系是怎样的
 
-使用：支持以下三种使用模式
-1. Report generation：报告生成
+使用(go.11+)：
+1. 原理：pprof开启后，每隔一段时间（10ms）就会收集下当前的堆栈信息，获取格格函数占用的CPU以及内存资源；最后通过对这些采样数据进行分析，形成一个性能分析报告。所以只应该在性能测试的时候才在代码中引入pprof，否则会降低应用的性能。
+2. 如何引入pprof: 有两种使用方式，一种是针对应用，在代码中引入pprof相关标准库包；另外一种是针对测试
+    1. 标准库：内置了获取程序的运行数据的工具，包括以下两个标准库：
+        1. `runtime/pprof`：采集工具型应用运行数据进行分析，也就是对非http服务应用(工具型应用)进行数据分析
+            1. 它用来产生 dump 文件，再使用 Go Tool PProf 来分析这运行日志。
+        
+                ```go
+                import "runtime/pprof"
 
-    ```go
-    // 生成pprof file
-    go test -bench=. -benchmem -cpuprofile profile.out
-    // 同时看内存
-    go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out
+                // 比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 pprof.StopCPUProfile() 即可。
+                f, err := os.Create("xxx")
+                if err != nil {
+                    log.Fatal(err)
+                }
+                defer f.Close()
+                pprof.StartCPUProfile(f)  // 开启CPU性能分析
+                pprof.StopCPUProfile()  // 停止CPU性能分析
+                // 想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了
+                pprof.WriteHeapProfile(w io.Writer)
+
+                ```
+        2. `net/http/pprof`：采集服务型应用运行时数据进行分析，也就是对http服务进行数据分析
+            1. 引入
     
-    // 启动 pprof 可视化界面
-    // 每个方框代表一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系），箭头代表调用关系，箭头上的时间代表被调用函数的执行时间
-    // 如果报错 failed to execute dot. Is Graphviz installed? Error: exec: "dot": executable file not found in $PATH
-    // 需要安装 graphviz
-    // 1. 使用官方的启动
-    go tool pprof profile.out
-    go tool pprof -http=:8080 cpu.prof
-    // 2. 使用git版本启动
-    pprof -http=:8080 cpu.prof
-    
-    // 可视化界面支持多种显示模式:top、graph、peek、source、火焰图等
-    // 支持精确定位: list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时
-    list FuncA
-    // 如果想要了解对应的汇编代码，可以使用 disadm <regex> 命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 weblist 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码
-    ```
-2. Interactive terminal use：交互式终端使用，形如`go tool pprof -http=":8081" [binary] [profile]`
-3. Web interface：Web 界面    
-    
-什么是火焰图：火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表，因为它的样子近似火焰而得名。火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU时间的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。调用顺序由上到下，每一块代表一个函数，越大代表占用 CPU 的时间更长。同时它也支持点击块深入进行分析.
+                ```go
+                // 引入pprof的话，它可以使用http服务不同的端口，也可以使用相同的端口
+                // 方式一：默认
+                // pprof的Handler使用nil的话，表示使用的默认的 http.DefaultServeMux，使用初始化导入的方式使用这个包就行了
+                import _ "net/http/pprof"
+                
+                r := gin.New()
+                httpAddr := ":8001"
+                pprofAddr := ":10001"
+                
+                
+                http.ListenAndServe(addr, r) // http服务监听端口
+                http.ListenAndServe(addr, nil) // pprof监听端口
+                
+                // 方式二：自定义handler
+                // 如果应用使用了自定义的 Mux，则需要手动注册一些路由规则：
+                r.HandleFunc("/debug/pprof/", pprof.Index)
+                r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+                ...
+                // 服务起来之后，就会多多一条路由，如http://127.0.0.1:8000/debug/pprof，有以下输出
+                /debug/pprof/
+                
+                profiles:
+                0    block
+                62    goroutine
+                444    heap
+                30    threadcreate
+                
+                full goroutine stack dump
+                ```
+                
+            2. pprof自带的路由
+                
+                | 路由后缀 | 简介 | 说明 |
+                | --- | --- | --- |
+                | profile   |	CPU占用情况的采样信息，  |  访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载，浏览器打开会下载文件 |
+                | heap   |	堆内存使用情况的采样信息  | 	访问这个链接会得到一个内存 Profiling 结果的文件。可以用浏览器打开，但可读性不高 |
+                | blocks   |	阻塞操作情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | goroutine   |	当前所有协程的堆栈信息  | 	运行的 goroutines 列表，以及调用关系。可以用浏览器打开，但可读性不高 |
+                | allocs   |	内存分配情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | cmdline   |	显示程序启动命令及参数  | 	可以用浏览器打开 |
+                | mutex   |	锁争用情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | threadcreate   |	系统线程创建情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | trace   |	程序运行跟踪信息  | 	浏览器打开会下载文件 |
+    2. 针对测试：Profiling 一般和性能测试一起使用，只有应用在负载高的情况下 Profiling 才有意义
+        1. 参数说明：
+            1. `cpuprofile`：cpu profiling 数据要保存的文件地址
+            2. `memprofile`：memory profiling 数据要报文的文件地址
+        2. 例子
+        
+            ```go
+            // 对普通测试使用
+            go test -cpuprofile profile.out
+            // 和性能测试相结合
+            go test -bench=. -benchmem -cpuprofile profile.out
+            // 同时看内存
+            go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out
+            ```
+3. 收集和展示性能分析数据：
+    1. 收集：收集使用`go tool pprof [binary] [source]`命令，binary 是应用的二进制文件，用来解析各种符号，source 表示 profile 数据的来源，可以是本地的文件，也可以是 http 地址。因为Profiling 数据是动态的，要想获得有效的数据，请保证应用处于较大的负载（比如正在生成中运行的服务，或者通过其他工具模拟访问压力）。如果应用处于空闲状态，得到的结果可能没有任何意义。收集完后会自动进入命令行界面
+        
+        ```bash
+        # 收集20s的CPU中goroutine的运行情况
+        go tool pprof --seconds 20 http://localhost:8080/debug/pprof/goroutine
+        # or
+        go tool pprof http://localhost:8080/debug/pprof/goroutine?second=20
+        ```
+        
+        1. 收集完后命令行的操作
+            1. `top`:`top` 默认查看程序中占用CPU前10位的函数,`top3` 可以查看程序中占用CPU前3位的函数
+                1. `flat`：当前函数占用CPU的耗时
+                1. `flat%`：当前函数占用CPU的耗时百分比
+                1. `sum%`：函数占用CPU的耗时累计百分比
+                1. `cum`：当前函数加上调用当前函数的函数占用CPU的总耗时
+                1. `cum%`：当前函数加上调用当前函数的函数占用CPU的总耗时百分比
+            2. `web`:会自动打开本地浏览器并访问页面(仅限图形化界面系统)
+            3. 精确定位代码块`list FuncA`:list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时，如果函数名不明确，会进行模糊匹配，比如`list main`会列出`main.main`和`runtime.main`
+                1. 如果想要了解对应的汇编代码，可以使用 `disadm <regex>`命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 `weblist` 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码
+            4. `pdf`:在当前目录下生成可视化pdf格式文件
+            5. `traces`:打印所有调用栈，以及调用栈的指标信息
+    1. 展示：启动 pprof 可视化界面
+
+        ```go
+        // 每个方框代表一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系），箭头代表调用关系，箭头上的时间代表被调用函数的执行时间
+        // 如果报错 failed to execute dot. Is Graphviz installed? Error: exec: "dot": executable file not found in $PATH
+        // 需要安装 graphviz
+        // 1. 使用官方的pprof启动
+        go tool pprof profile.out // 使用命令行界面查看
+        go tool pprof -http=:8080 cpu.prof // 使用web界面查看
+        go tool pprof -http=":8201" ~/pprof/pprof.goroutine.016.pb.gz
+        // 2. 使用git版本的pprof启动
+        pprof -http=:8080 cpu.prof
+        
+        // 可视化界面支持多种显示模式:top、graph、peek、source、火焰图(Flame Graph)等
+        ```
+        
+火焰图：火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表，因为它的样子近似火焰而得名。火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU时间的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。调用顺序由上到下，每一块代表一个函数，越大代表占用 CPU 的时间更长。同时它也支持点击块深入进行分析.
 1. flat、flat% 表示函数在 CPU 上运行的时间以及百分比
 2. sum% 表示当前函数累加使用 CPU 的比例
 3. cum、cum%表示该函数以及子函数运行所占用的时间和比例，应该大于等于前两列的值
 
 golang代码中引入pprof包的两种方式：
 1. runtime/pprof：采集程序（非 Server）的运行数据进行分析。
-    1. 它用来产生 dump 文件，再使用 Go Tool PProf 来分析这运行日志。
-        
-        ```go
-        // 比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 StopCPUProfile() 即可。
-        // 想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了
-        ```
+    
 2. net/http/pprof：采集 HTTP Server 的运行时数据进行分析。
-    1. 使用：可以做到直接看到当前 web 服务的状态，包括 CPU 占用情况和内存使用情况等。
-        
-        ```go
-        // 如果使用的默认的 http.DefaultServeMux,只需要这样引入就行了
-        import _ "net/http/pprof"
-        
-        // 如果应用使用了自定义的 Mux，则需要手动注册一些路由规则：
-        r.HandleFunc("/debug/pprof/", pprof.Index)
-        r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-        ...
-        // 服务起来之后，就会多多一条路由，如http://127.0.0.1:8000/debug/pprof，有以下输出
-        /debug/pprof/
-        
-        profiles:
-        0    block
-        62    goroutine
-        444    heap
-        30    threadcreate
-        
-        full goroutine stack dump
-        // 这个路径下还有几个子页面：
-        /debug/pprof/profile：访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载
-        /debug/pprof/heap： Memory Profiling 的路径，访问这个链接会得到一个内存 Profiling 结果的文件
-        /debug/pprof/block：block Profiling 的路径
-        /debug/pprof/goroutines：运行的 goroutines 列表，以及调用关系
-        ```
+    
 
 ## 2 其他与go有关的工具
 ### 2.1 Cgo
@@ -3779,6 +3866,7 @@ go的list的特点：
         fmt.Printf("%v\n", e.Value)
     }
     ```
+3. 移除元素`(*List).Remove(*Element)`：移除之后，在被移除的元素上调用`(*Element).Next()`就返回nil
 
 #### container/ring
 环形链表
@@ -3790,7 +3878,7 @@ go的list的特点：
 #### crypto/hmac
 
 1. `New(h func() hash.Hash, key []byte) hash.Hash`:h只要是哈希函数就行
-2. `Equal(mac1, mac2 []byte) bool`
+2. `Equal(mac1, mac2 []byte) bool`:比较两个hash值是否相同，而不会泄露对比时间信息。比较的时候不会因为后面一组数据第一个值不同就立即返回而使得后面一组数据的比较时间比前面一组的比较时间段。这样做是为了防止黑客用暴力破解的方式不断收集每个hash与正确hash的比较时间，从而来逐步确定正确hash的值，从而达到破解hash密文的目的
 
 ```go
 str := "abc123"
@@ -4166,6 +4254,18 @@ func main() {
 
 `http.Server`结构体相关操作:
 1. `Shutdown(ctx context.Context)`:golang1.8+的方法，可以优雅退出(待整理)
+    
+    ```go
+    signalCh := make(chan os.Signal, 1)
+    signal.Notify(signalCh, syscall.SIGTERM, syscall.SIGINT)
+    <-signalCh
+    cxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := server.Shutdown(cxt)
+	if err != nil {
+        ...
+	}
+    ```
 
 ### httputil
 1. `DumpRequestOut()`
@@ -4426,6 +4526,15 @@ provides HTTP client and server implementations.
     
     ```go
     http.Transport{
+        Proxy: http.ProxyFromEnvironment,
+        DialContext: (&net.Dialer{
+			Timeout:   10 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+        }).DialContext,
+        MaxIdleConns:          100,
+        MaxIdleConnsPerHost:   runtime.GOMAXPROCS(0) + 1,
+        IdleConnTimeout:       60 * time.Second,
 		TLSHandshakeTimeout:    0, // 限制TLS握手使用的时间
 		ResponseHeaderTimeout:  0, // 限制读取响应报文头使用的时间
 		ExpectContinueTimeout:  0, // 限制客户端在发送一个包含：100-continue的http报文头后，等待收到一个go-ahead响应报文所用的时间

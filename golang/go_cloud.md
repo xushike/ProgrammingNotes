@@ -926,10 +926,35 @@ https://github.com/facebookarchive/inject
 1. github.com/labstack/echo-contrib/prometheus
 2. github.com/prometheus/client_golang
 
-Prometheus是由SoundCloud开发的开源监控报警系统和时序列数据库(TSDB)。Prometheus使用Go语言开发，是Google BorgMon监控系统的开源版本。
+Prometheus使用Go语言开发，是Google BorgMon监控系统的开源版本，它是开源监控报警系统和时序列数据库(TSDB)。最初由前谷歌SRE Matt T. Proud开发，并转为一个研究项目。在Proud加入SoundCloud之后，他与另一位工程师Julius Volz合作开发了Prometheus。后来其他开发人员陆续加入了这个项目，并在SoundCloud(SoundCloud是Prometheus的早期采用者)内部继续开发，最终于2015年1月公开发布。与Borgmon一样，Prometheus主要用于提供近实时的，针对动态云环境下的和基于容器的微服务、服务和应用程序的检测监控。
+
+Prometheus专注于现在正在发生的事情，而不是追踪数周或数月前的数据。它基于这样一个前提，即大多数监控查询和警报都是从最近的，通常是一天内的数据生成的。Facebook在其内部时间序列数据库Gorilla的论文中验证了这一观点。Facebook发现85％的查询是针对26小时内的数据。Prometheus假定你尝试修复的问题可能是最近出现的，因此最有价值的是最近时间的数据，这反映在强大的查询语言和通常有限的监控数据保留期上。
+
+部分架构：
+
+![prometheus_architecture](../picture/golang/prometheus_architecture.jpg)
+
+![prometheus_redundancy](../picture/golang/prometheus_redundancy.jpg)
+
 
 使用：
-1. 使用 Prometheus 生成服务级别的指标时，有两个典型的方法：内嵌地运行在一个服务里并在 HTTP 服务器上暴露一个 /metrics 端点，或者创建一个独立运行的进程，建立一个所谓的导出器。
+1. 指标收集：Prometheus称其可以抓取的指标来源为端点（endpoint）。端点通常对应于单个进程、主机、服务或应用程序。为了抓取端点数据，Prometheus定义了名为目标（target）的配置。这是执行抓取所需的信息 - 例如，如何进行连接，要应用哪些元数据，连接需要哪些身份验证，或定义抓取将如何执行的其他信息。一组目标被称为作业（job）。作业通常是具有相同角色的目标组 - 例如，负载均衡器后面的Apache服务器集群，它们实际上是一组相似的进程。生成的时间序列数据将被收集并存储在Prometheus服务器本地，也可以设置从服务器发送数据到外部存储器或其他时间序列数据库。
+    1. 使用 Prometheus 生成服务级别的指标时，有两个典型的方法：内嵌地运行在一个服务里并在 HTTP 服务器上暴露一个 /metrics 端点，或者创建一个独立运行的进程，建立一个所谓的导出器。
+2. 服务发现：可以通过多种方式处理要监控的资源的发现，包括：
+    1. 用户提供的静态资源列表
+    2. 基于文件的发现。例如，使用配置管理工具生成在Prometheus中可以自动更新的资源列表
+    3. 自动发现。例如，查询Consul等数据存储，在Amazon或Google中运行实例，或使用DNS SRV记录生成资源列表
+3. 聚合和警报：
+    1. 聚合：服务器还可以查询和聚合时间序列数据，并创建规则来记录常用的查询和聚合。这允许你从现有的时间序列创建新的时间序列，例如计算变化率和比率或求和等聚合。这样就不必重新创建常用的聚合，例如用于调试，并且预计算可能比每次需要时运行查询性能更好。
+    2. 报警：Prometheus还可以定义警报规则。这些是为系统配置在满足条件时触发警报的标准，例如，资源时间序列开始显示异常的CPU使用率。Prometheus服务器没有内置警报工具，而是将警报从Prometheus服务器推送到名为警报管理器（Alertmanager）的单独服务器。Alertmanager可以管理、整合和分发各种警报到不同目的地 - 例如，它可以在发出警报时发送电子邮件，并能够防止重复发送。
+4. 查询数据和可视化
+    1. 查询数据：Prometheus服务器还提供了一套内置查询语言PromQL，一个表达式浏览器以及用于浏览服务器上数据的图形界面。
+    2. 可视化：可视化通过内置表达式浏览器提供，并与开源仪表板Grafana集成。此外，Prometheus也支持其他仪表板。
+5. 自治：每个Prometheus服务器都设计为尽可能自治，旨在支持扩展到数千台主机的数百万个时间序列的规模。数据存储格式被设计尽可能降低磁盘的使用率，并在查询和聚合期间快速检索时间序列。
+6. 冗余和高可用性：冗余和高可用性侧重弹性而不是数据持久性。Prometheus团队建议将Prometheus服务器部署到特定环境和团队，而不是仅部署一个单体Prometheus服务器。如果你确实要部署高可用模式，则可以使用两个或多个配置相同的Prometheus服务器收集时间序列数据，并且所有生成的警报都由可消除重复警报的高可用Alertmanager集群处理。
+
+
+
 
 Prometheus 客户端公开了在暴露服务指标时能够运用的四种指标类型：
 1. 
