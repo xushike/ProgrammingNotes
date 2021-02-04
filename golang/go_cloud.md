@@ -334,12 +334,18 @@ viper提供的配置方式的优先级顺序如下(由高到低)：
 ## 静态网站生成 hugo
 https://github.com/gohugoio/hugo
 
-## ORM
+## ORM and SQL Builder
 ### gorm
 https://github.com/go-gorm/gorm
 
 中文参考：
 1. https://gorm.io/zh_CN/docs/create.html
+
+优缺点：
+1. 优点
+    1. 存储关系数据时，比Sqlx要少写许多代码
+2. 缺点
+    1. 文档稍微差了一点(细节不够)
 
 使用：
 1. 连接不同数据库的DSN格式和常用参数(todo)
@@ -367,6 +373,18 @@ https://github.com/go-gorm/gorm
         ```go
         db.Raw("SELECT a.serviceId as service_id,a.serviceName as service_name, b.systemId as system_id, b.systemName as system_name FROM go_service_info a LEFT JOIN go_system_info b ON a.systemId = b.systemId").Scan(&results)
         ```
+    3. 使用关联查询(https://gorm.io/zh_CN/docs/preload.html)
+        1. 比如user表和profile表，profile表的UserID是外键，一般情况下，想要把user和对应的profile信息一起查出来，需要先查一次user表，再查一次profile表，再手动整合数据，但是用gorm自带的两种方式会更加便捷(虽然本质上也是查询的两次)
+
+            ```sql
+            -- 两种方式本质是一样的
+            -- 方式一：使用Related
+            DB.Model(&user).Related(&user.Profile, "UserID")
+
+            -- 方式二：使用预加载Preload
+            DB.Model(&user).Preload("Profile").First(&user) -- 单条
+            DB.Model(&user).Preload("Profile").Find(&users) -- 列表
+            ```
 1. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
     1. `FirstOrCreate()`:
     2. 使用`gorm:insert_option`
@@ -392,6 +410,20 @@ https://github.com/go-gorm/gorm
 6. `DB.AutoMigrate(values ...interface{}) *DB`自动迁移,只会创建表、列和缺失索引的缺失，并不会改变现有的列的类型或删除未使用的列
 7. 插入数组
     1. `插入text[]`可以使用`pq.StringArray`
+
+### SQLX
+https://github.com/jmoiron/sqlx
+
+优点：
+1. 文档优秀
+2. 支持问号(?)或命名的Prepared Statements，避免SQL注入的安全问题
+
+### SQL Builer
+有好几个：
+1. dbr: https://github.com/gocraft/dbr
+2. squirrel: https://github.com/lann/squirrel
+3. sqrl: https://github.com/elgris/sqrl
+4. gocu: github.com/doug-martin/goqu - just for SELECT query
 
 ## JWT
 https://github.com/dgrijalva/jwt-go
