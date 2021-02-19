@@ -184,6 +184,7 @@ ADB是什么：全称为Android Debug Bridge：android调试桥梁。具有安�
         1. offline —— 表示设备未连接成功或无响应。
         2. device —— 设备已连接。注意这个状态并不能标识 Android 系统已经完全启动和可操作，在设备启动过程中设备实例就可连接到 adb，但启动完毕后系统才处于可操作状态。
         3. no device —— 没有设备/模拟器连接。
+        4. unauthorized：未授权的意思，应该是未允许USB调试
     
     ```bash
     # 示例

@@ -1141,8 +1141,6 @@ END;
 154. oracle多个and和or
 159. x7f-xff中的￥
 160. js string默认取值是什么
-161. 主从高可用
-162. go grpc为什么啥不用
 163. 在各种语言（js等）的map()等lambda表达式中return的话只会退出lambda？
 164. 没有primarykey,可以插入重复数据吗
 165. go有序列化吗

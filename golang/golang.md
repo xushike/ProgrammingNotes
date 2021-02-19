@@ -263,6 +263,7 @@ Go源码文件包括三种：
 5. `GOCACHE`:`go build`命令现在(go1.10+)总是会把最近的构建结果缓存起来，以便在将来的构建中重用。我们可以通过运行`go env GOCACHE`命令来查看缓存目录的路径。缓存的数据总是能够正确地反映出当时的源码文件、构建环境和编译器选项等的真实情况。一旦有任何变动，缓存数据就会失效，`go build`命令就会再次真正地执行构建。因此，我们并不用担心缓存数据体现的不是实时的结果。实际上，这正是上述改进能够有效的主要原因。`go build`命令会定期地删除最近未使用的缓存数据，但如果你想手动删除所有的缓存数据，运行一下`go clean -cache`命令就好了。而且对于测试成功的结果，go 命令也是会缓存的。运行`go clean -testcache`命令将会删除掉所有的测试结果缓存。
     1. compiler决定是否重新编译包是content based的，而不是依照时间戳比对来决策。也就是说对文件的某一行，如果先删除，再恢复这行，是不会重新编译的。
     2. 缓存目录：Linux上，GOCACHE=`~/.cache/go-build`; 在Mac OS X上，GOCACHE=`~/Library/Caches/go-build`
+6. `GOMODCACHE`:go1.15+开始，设置模块缓存的位置，默认是`$GOPATH/pkg/mod`
 ### 3.19 文件名
 以下划线`_`开头的文件不会被go编译，对golang而言类似于没有该文件
 
@@ -1492,6 +1493,15 @@ for index,ele := range xxx {
 4. `switch`中的`continue`,`break`
 
 ### 3.4 goto
+
+```go
+// 作用域的例子
+prev:
+	var a int
+	fmt.Println("a:", a) // 永远都是0
+	a = 4
+	goto prev
+```
 
 ## 4 function
 基本语法:
@@ -2827,6 +2837,7 @@ In addition to fixing imports, goimports also formats your code in the same styl
     ```bash
     go doc github.com/Shopify/sarama Validate # 查看方法
     go doc github.com/Shopify/sarama Config # 查看结构体
+    go doc sql Tx.Stmt # 查看结构体的方法
     ...
     ```
 
@@ -3968,6 +3979,14 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
 
 结构体：
 1. `sql.DB`
+    1. 设置
+        1. `(*DB) SetConnMaxLifetime(d time.Duration)`:设置连接可以重用的最大时间。一般情况下不要设置得太短。
+            1. 比如设置为一小时
+                1. 这不能保证连接将在连接池中存在一个小时；连接很有可能由于某种原因而变得无法使用，并在此之前被自动关闭。
+                2. 建立连接后仍可以使用超过一小时，然后它就无法 启动 重用。
+                3. 这不是空闲超时。连接将在第一次创建后 1 个小时到期，而不是在上一次空闲后 1 个小时到期
+                4. 每秒自动执行一次清除操作，从连接池中删除 “过期” 的连接
+        2. `(*DB) SetConnMaxIdleTime(d time.Duration)`：设置一个时间，连接空闲一段时间后从连接池中删除，而不考虑连接的总生命周期。DBStats.MaxIdleTimeClosed 字段显示由于 DB.SetConnMaxIdleTime 关闭的连接总数
     1. `Query(query string, args ...interface{}) (*Rows, error)`:执行 SQL 语句, 此方法会返回一个 Rows 作为查询的结果
     2. `QueryRow`：至多一条，没有则报错
     3. `Exec()`
@@ -3983,6 +4002,17 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
         1. 可以实现自定义参数的查询
         2. 通常比手动拼接字符串 SQL 语句高效.
         3. 防止SQL注入攻击
+    1. 生成：有两种方式
+        1. 在DB中生成
+        2. 在tx中生成`(*Tx) Stmt(stmt *Stmt) *Stmt`:似乎一般情况下不需要这样干？
+            
+            ```go
+             updateMoney, err := db.Prepare("UPDATE balance SET money=money+? WHERE id=?")
+            ...
+            tx, err := db.Begin()
+            ...
+            res, err := tx.Stmt(updateMoney).Exec(123.45, 98293203)
+            ```
     1. `Query(args ...interface{}) (*Rows, error)`
     2. `Close() error`
 ### encoding
@@ -4372,9 +4402,18 @@ log相比fmt的优点：
 3. 方便对日志信息进行转存，形成日志文件
 
 ### math
+
+使用：
 1. `Floor()`:向下取整。自己实现四舍五入如下：`math.Floor(xxx+0.5)`
 2. `Round()`：普通四舍五入
 3. `RoundToEven()`：银行家四舍五入
+4. 类型最大值
+    1. `MaxUint64`
+        
+        ```go
+        // 直接打印会报错，因为它是无符号类型的，会默认按int处理
+        fmt.Println(uint64(math.MaxUint64)) // constant 18446744073709551615 overflows int
+        ```
 
 
 #### math/rand
@@ -4453,7 +4492,7 @@ fmt.Println(rand.Intn(100))
             ```
         
     
-2. 建立连接：go提供的几种连接方法返回不同的`Conn`和错误，返回的`Conn`都实现了`Conn`接口，其中`Dial()`是对其他几个`DialXxx()`方法的封装。底层实现基本相同，后续的使用也是类似的。
+2. 建立连接：go提供的几种连接方法返回不同的`Conn`和错误，返回的`Conn`都实现了`Conn`接口，其中`Dial()`是对其他几个`DialXxx()`方法的封装。`laddr`是指本地地址,`raddr`是远程地址。底层实现基本相同，后续的使用也是类似的。
     1. `Dial(network, address string) (Conn, error)`
     2. `DialTCP(network string, laddr, raddr *TCPAddr) (*TCPConn, error)`
     3. `DialUDP(network string, laddr, raddr *UDPAddr) (*UDPConn, error)`
@@ -4461,6 +4500,9 @@ fmt.Println(rand.Intn(100))
     5. `DialUnix(network string, laddr, raddr *UnixAddr) (*UnixConn, error)`
     6. `DialTimeout()`：设置连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。
     7. `FileConn(f *os.File) (c Conn, err error)`返回一个对文件f的网络连接的复制copy，当调用完毕后，用户需要自己关闭文件f，由于是复制关系，所以关闭c和关闭f二者互不影响。
+3. 监听连接：
+    1. `Listen(network, address string) (Listener, error)`
+    1. `ListenTCP(network string, laddr *TCPAddr) (*TCPListener, error)`
 
 工具func：
 1. `JoinHostPort(host, port string) string`:将host和port合并为一个网络地址。如果检测到host包含`:`，则返回`[host]:port`
@@ -4489,12 +4531,59 @@ fmt.Println(rand.Intn(100))
         Timeout :15*time.Second, // 限制创建一个TCP连接使用的时间
     }
     ```
-1. `net.TCPConn`
+5. `net.TCPListener`
+    
+    ```go
+    type TCPListener struct {
+        fd *netFD
+        lc ListenConfig
+    }
+    ```
+    1. 阻塞接收新的连接
+        1. `Accept() (Conn, error)`
+        2. `AcceptTCP() (*TCPConn, error)`
+    3. 关闭监听
+        1. `(l *TCPListener) Accept() (Conn, error)`:已经连接的不受影响
+1. `net.TCPConn`：Multiple goroutines may invoke methods on a Conn simultaneously，所以它的方法调用是并发安全的。由于golang里net.conn内部对文件描述符的所有io操作都有状态保护，所以即使在对端或本端关闭了连接之后，依然可以任意次数调用Read、Write、Close方法。
     1. 获取address(ip和端口)
         1. `LocalAddr() Addr`连接对应的本地address
         1. `RemoteAddr() Addr`连接对应的远程address
-    1. `SetReadDeadline(t time.Time) error`、`SetWriteDeadline(t time.Time) error`:设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。它是比`net/http`包更低层的超时设置。
+    1. 设置写入/读取一个连接的超时时间`SetReadDeadline(t time.Time) error`、`SetWriteDeadline(t time.Time) error`:当超过设置时间时，连接自动关闭。它是比`net/http`包更低层的超时设置。
         1. 一旦被设置，将一直生效（直到再一次调`SetXxxDeadline()`），它并不关心在此期间链接是否存在以及如何使用。因此，你需要在每次进行读/写操作前，使用`SetXxxDeadline()`设定一个超时时长.(待确认)
+    3. 读写
+        1. `(conn) Write(b []byte) (int, error)`
+            1. 如果broken pipe错误，表示本端感知到对端已经关闭连接（本端已接收到对端发送的RST）
+        2. `(*conn) Read(b []byte) (int, error)`
+            1. 对端是不知道什么时候写完的，有两种方式来表示写完了
+                1. 写入之后需要调用`(*TCPConn) CloseWrite() error`
+                2. 使用特定的分隔符，对端根据分隔符来操作
+                    
+                    ```go
+                    // 本端
+                    for {
+                            var data string
+                            fmt.Scan(&data)
+                            if data == "quit"{
+                                break
+                            }
+                            b := []byte(data + "\n") // \n作为分隔符
+                            conn.Write(b)
+                        }
+                    }
+                    // 对端
+                    reader := bufio.NewReader(conn)
+                    for {
+                        msg,err := reader.ReadString('\n') // \n作为分隔符
+                        fmt.Println(msg)
+                        if err!=nil{
+                            fmt.Println("err:",err)
+                            ...
+                        }	
+                    }
+                    ```
+            1. 如果`EOF`错误，表示对端已经关闭连接，本端已接收到对端发送的"FIN"。此后如果本端不调用Close方法，只释放本端的连接对象，则连接处于非完全关闭状态（CLOSE_WAIT）。即文件描述符发生泄漏。
+    2. 关闭连接
+        1. `(*conn) Close() error`
 
 #### net/http
 provides HTTP client and server implementations.
@@ -4678,6 +4767,10 @@ if err != nil {
 fmt.Printf(string(out2))
 ```
 
+#### os/signal
+使用：
+1. `Notify(c chan<- os.Signal, sig ...os.Signal)`
+
 ### path
 #### path/filepath
 1. 转成绝对路径`Abs()`
@@ -4852,6 +4945,12 @@ fmt.Println("所有 goroutine 执行结束")
 系统调用，从名字就能知道，这个包很复杂。系统调用是实现应用层和操作底层的接口(比如使用syscall来调用windows的DLL动态链接库)，不同系统之间的操作常常会有一定的差异，特别是类 Unix 与 Windows 系统之间的差异较大。如果想要寻找 syscall 的使用案例，我们可以看看 net、os、time 这些包的源码。如果要看这部分源码，可以先只看 Linux 的实现，架构的话，如果想看汇编，可以只看 x86 架构。
 
 看源码发现比较晦涩，很正常，再简洁的语言，遇到环境相关，仍然会有很多 tricks，甚至用到 Cgo...
+
+使用：
+1. 信号：实现了`os.Signal`接口
+    1. `SIGTERM`：kill命令缺省带的参数
+    3. `SIGINT`：`ctrl+c`退出
+    2. `SIGQUIT`
 
 ### time
 go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
@@ -5100,6 +5199,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     1. `GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
         1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
         2. `direct`的作用：**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
+        3. 从go1.15开始，代理URL现在可以用逗号`,`或竖线字符`|`分隔。如果代理URL后面带有逗号，则该go命令将仅在404或410 HTTP响应后尝试列表中的下一个代理。如果代理URL后面带有竖线字符，该go命令将在出现任何错误后尝试列表中的下一个代理。
     2. `GONOPROXY`用于设置不走代理的模块
         
         ```bash

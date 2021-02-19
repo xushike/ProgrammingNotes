@@ -426,7 +426,33 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
 
         close(ch) // panic if ch is closed
         ```
-    2. 使用ok判断：`v, ok := <-ch`， **ok is true if v received value，ok is false if there are no more values to receive and the channel is closed.**也就是说，ok为false的时候(todo)
+    2. 使用ok判断：`v, ok := <-ch`， **ok is true if v received value，ok is false if there are no more values to receive and the channel is closed.**也就是说，ok为false的时候，表示已经关闭且已有的数据已经接收完了(而不仅仅是关闭了)，此时虽然还能继续接收，但是接收的都是零值了
+        
+        ```go
+        // 例子1
+        ch := make(chan int, 3)
+        ch <- 42
+        ch <- 7
+        close(ch)
+        num := <-ch
+        fmt.Println(num) // 42
+        num = <-ch
+        fmt.Println(num) // 7
+        num = <-ch
+        fmt.Println(num) // 0
+        
+        // 例子2
+        ch := make(chan int, 3)
+        ch <- 42
+        ch <- 7
+        close(ch)
+        v, ok := <-ch
+        fmt.Println(v, ok) // 42 true
+        v, ok = <-ch
+        fmt.Println(v, ok) // 7 true
+        v, ok = <-ch
+        fmt.Println(v, ok) // 0 false
+        ```
     3. 在确定不会向channel写入信息的前提下，可以写一个这样的函数
         ```go
         // 因为如果channel没有关闭，<-ch将不会返回，直到chanel已经被关闭。

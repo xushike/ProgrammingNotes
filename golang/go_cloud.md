@@ -334,7 +334,7 @@ viper提供的配置方式的优先级顺序如下(由高到低)：
 ## 静态网站生成 hugo
 https://github.com/gohugoio/hugo
 
-## ORM and SQL Builder
+## ORM And Driver
 ### gorm
 https://github.com/go-gorm/gorm
 
@@ -424,6 +424,16 @@ https://github.com/jmoiron/sqlx
 2. squirrel: https://github.com/lann/squirrel
 3. sqrl: https://github.com/elgris/sqrl
 4. gocu: github.com/doug-martin/goqu - just for SELECT query
+
+### mysql
+github.com/go-sql-driver/mysql
+
+![连接池架构图](../picture/golang/mysql_driver_architecture.jpg)
+
+### postgresql 
+1. github.com/lib/pq
+2. github.com/jackc/pgx
+    1. It supports the PostgreSQL logical replication protocol.
 
 ## JWT
 https://github.com/dgrijalva/jwt-go
@@ -827,7 +837,8 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
     1. 指定grpc版本`replace google.golang.org/grpc => google.golang.org/grpc v1.26.0`，然后重新生成.pb文件，不行的话再降级protoc-gen-go的版本`go get github.com/golang/protobuf/protoc-gen-go@v1.3.2`
 2. rpc error: code = DeadlineExceeded desc = context deadline exceeded
     1. 可能原因：超时时间设置得太短
-## 日志 zap
+## 日志 
+### zap
 https://github.com/uber-go/zap
 
 高性能
@@ -854,6 +865,8 @@ https://github.com/uber-go/zap
 	}
 	zap.ReplaceGlobals(logger)
     ```
+### sirupsen/logrus
+https://github.com/sirupsen/logrus
 
 ## 证书
 ### mkcert
@@ -990,6 +1003,21 @@ Prometheus专注于现在正在发生的事情，而不是追踪数周或数月�
 
 Prometheus 客户端公开了在暴露服务指标时能够运用的四种指标类型：
 1. 
+
+## 慢哈希
+为什么需要慢哈希：盐使攻击者无法采用特定的查询表和彩虹表快速破解大量哈希值，但是却不能阻止他们使用字典攻击或暴力攻击。高端的显卡（GPU）和定制的硬件可以每秒进行数十亿次哈希计算，因此这类攻击依然可以很高效。为了降低攻击者的效率，我们可以使用一种叫做密钥扩展的技术。这种技术的思想就是把哈希函数变得很慢，于是即使有着超高性能的GPU或定制硬件，字典攻击和暴力攻击也会慢得让攻击者无法接受。最终的目标是把哈希函数的速度降到足以让攻击者望而却步，但造成的延迟又不至于引起用户的注意。
+
+### bcrypt
+golang.org/x/crypto/bcrypt
+
+使用：
+1. 加密明文`GenerateFromPassword(password []byte, cost int) ([]byte, error)`
+    
+    ```go
+    bcrypt.GenerateFromPassword([]byte(plainPwd), bcrypt.DefaultCost)
+    ```
+2. 比较明文和`CompareHashAndPassword(hashedPassword, password []byte) error`:将哈希密码与其纯文本进行比较
+
 
 # 五 经验
 ## 1 为什么需要框架
