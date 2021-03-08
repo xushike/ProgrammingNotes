@@ -956,6 +956,22 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
 3. `-d 'xxx'`：HTTP POST方式传送的body数据
 4. `-F 'xxx'`:模拟http表单提交数据
 5. `-I`(`--head`)：只显示头信息
+    
+    ```bash
+    curl -I www.baidu.com
+    
+    HTTP/1.1 200 OK
+    Accept-Ranges: bytes
+    Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
+    Connection: keep-alive
+    Content-Length: 277
+    Content-Type: text/html
+    Date: Mon, 01 Mar 2021 03:32:09 GMT
+    Etag: "575e1f72-115"
+    Last-Modified: Mon, 13 Jun 2016 02:50:26 GMT
+    Pragma: no-cache
+    Server: bfe/1.0.8.18
+    ```
 6. `-i/–include`输出时包括protocol头信息
 7. HTTP认证
     1. `--basic`，如`curl --basic  -u user:password http://www.example.com/posts/1`
@@ -1303,6 +1319,11 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
 格式有两种：
 - Seconds Minutes Hours DayofMonth Month DayofWeek Year
 - Seconds Minutes Hours DayofMonth Month DayofWeek
+
+例子：
+```bash
+*/2 * * * * # 每两分钟执行
+```
 
 ## 4 包管理
 ### 4.1 snap

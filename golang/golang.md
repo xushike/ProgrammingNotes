@@ -4671,6 +4671,9 @@ provides HTTP client and server implementations.
 3. `*URL.Query()`：里面调的`ParseQuery()`方法，只不过忽略了错误
 4. `Values.Set()、Get()、Add()、Del()` -->
 
+结构体：
+1. `Values`
+
 ### os
 os包中实现了平台无关的接口，设计向Unix风格，但是错误处理是go风格，当os包使用时，如果失败之后返回错误类型而不是错误数量．
 

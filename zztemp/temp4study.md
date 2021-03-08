@@ -5,8 +5,6 @@
 4. 置顶：坚持阅读英文资料
 5. 置顶：解决问题时，先解决核心问题，不要一开始就追求所有细节，否则效率很难提升
 
-1. vue
-    1. el-dialog的title和`:title`，前者只支持字符串？
 1. psql默认输出调用的系统的什么tool？more不能翻页吗
     1. pgsql 未使用order时的默认顺序，函数的默认顺序
     4. 锁的种类级别，查询的时候会锁吗
@@ -1754,26 +1752,8 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 4.   typescript中funtion(){xxx}和()=>{xxx}写法的不同,前者似乎不能访问全局变量,后者可以访问
     因为this指针的问题?
-
-5.   项目后台如何返回json
-
-6.   ngOnChanges
-7.   map可以被for循环吗
-
-8.   news about ECharts
-    可视化
-
-9.   研究material日期组件的月份写法
-
 10.  angular先渲染父组件还是子组件,html,w3c的标准呢?
     写一个实际的demo来记录下
-11.  时间戳
-
-12.  angular input接受多个参数的时候,如果几个参数传的时间不一样,那么是触发几次ng changes和ng init?总结下规律
-
-13.  NgZone.runOutsideAngular
-14.  for of 遍历map的笔记
-
 15.  window.innerWidth
 
 16.  setTimeout是在页面渲染完之后执行吗?

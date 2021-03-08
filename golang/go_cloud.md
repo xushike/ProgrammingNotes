@@ -129,6 +129,16 @@ https://github.com/gin-gonic/gin
 
 Gin的词源是金酒, 又称琴酒, 是来自荷兰的一种烈性酒
 
+使用：
+1. 遇到错误需要返回的时候要用`gin.Context.AbortXxx()`系列方法
+    
+    ```go
+    if err != nil {
+		c.AbortWithStatus(500)
+		return
+	}
+    ```
+
 ### 静态网站工具 hugo
 https://github.com/gohugoio/hugo
 
@@ -361,6 +371,10 @@ https://github.com/go-gorm/gorm
         3. loc=Local 使用系统本地时区
         1. timeout：建立连接超时时间，比如"30s", "0.5m" or "1m30s",比如`timeout=10s`
         2. readTimeout、writeTimeout:I/O读写超时时间
+            
+        ```bash
+        mysql://root:123456@tcp(127.0.0.1:3306)/yourdbname
+        ```
     2. postgres
 2. 查询
     1. 使用`join()`
@@ -410,6 +424,9 @@ https://github.com/go-gorm/gorm
 6. `DB.AutoMigrate(values ...interface{}) *DB`自动迁移,只会创建表、列和缺失索引的缺失，并不会改变现有的列的类型或删除未使用的列
 7. 插入数组
     1. `插入text[]`可以使用`pq.StringArray`
+    
+问题：
+1. `Record Not Found`错误会打印出来
 
 ### SQLX
 https://github.com/jmoiron/sqlx
@@ -435,8 +452,34 @@ github.com/go-sql-driver/mysql
 2. github.com/jackc/pgx
     1. It supports the PostgreSQL logical replication protocol.
 
+### redis
+github.com/go-redis/redis
+
+参考：
+1. https://redis.uptrace.dev/
+
+使用：
+1. 连接
+    ```go
+    opt, err := redis.ParseURL("redis://localhost:6379/<db>")
+    if err != nil {
+        panic(err)
+    }
+
+    rdb := redis.NewClient(opt)
+    ```
+2. 迭代hash
+    
+    ```go
+    iterator := rdb.HScan(keyA, 0, "", numA).Iterator() // numA只影响第一次取出的数量(且依然不是百分百准备的数量)，后续迭代依然可以把keyA对应的所有hash迭代完，而不是仅仅迭代完第一次取的数量
+	for iterator.Next() { 
+		fmt.Println(iterator.Val())
+	}
+    ```
+
 ## JWT
-https://github.com/dgrijalva/jwt-go
+1. https://github.com/dgrijalva/jwt-go
+2. https://pkg.go.dev/github.com/dgrijalva/jwt-go
 
 问题：
 1. key is of invalid type
@@ -561,7 +604,7 @@ twitter的雪花算法在一个机器，在1秒内 最多可以生成4096*1000�
     ```
 
 使用:
-1. 生成的id是19位的数字
+1. 生成的id是18位+的数字
 
 ## 测试相关
 参考：
@@ -838,17 +881,20 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
 2. rpc error: code = DeadlineExceeded desc = context deadline exceeded
     1. 可能原因：超时时间设置得太短
 ## 日志 
+日志设计：
+1. 
+
 ### zap
 https://github.com/uber-go/zap
 
 高性能
 
 首先了解下常见日志级别：
-1. debug：需要在调试过程中输出的信息，发布后是不需要的，一般在发布后是不输出的
-2. info：需要持续输出的信息（无论调试还是发布状态）
-3. warn：警告级别的信息（不严重），表示系统还可以继续运行下去
-4. error：错误信息（较严重），不知道系统能不能继续运行下去
-5. fatal：严重错误（特别严重，比如引起崩溃式的错误）
+1. debug：需要在调试过程中输出的信息，用于分析应用执行逻辑，不要在生产环境开启
+2. info：需要持续输出的信息（无论调试还是发布状态），一般通过该信息可以看到每个请求的主要执行过程
+3. warn：警告级别的信息（不严重），潜在的危险或值得关注的信息，系统还可以继续运行下去
+4. error：错误信息（较严重），可能导致部分系统异常但不会影响核心业务和系统正常运行
+5. fatal：严重错误（特别严重，比如引起崩溃式的错误），遇到此种错误应当立即报警并人工介入处理
 
 使用：
 1. 首先性能上分几种模式
@@ -865,6 +911,26 @@ https://github.com/uber-go/zap
 	}
 	zap.ReplaceGlobals(logger)
     ```
+3. 注册全局的logger`ReplaceGlobals(logger *Logger) func()`
+3. 重定向标准log库的输出到zap的logger
+    1. `RedirectStdLog(l *Logger) func()`：把标准库的log.Logger的info级别的输出重定向到zap.Logger
+    2. `RedirectStdLogAt(l *Logger, level zapcore.Level) (func(), error)`:把标准库的log.Logger的指定级别的输出重定向到zap.Logger
+    
+```go
+logger, _ := zap.NewProduction()
+defer logger.Sync() // flushes buffer, if any
+zap.ReplaceGlobals(logger)
+zap.S().Info("hello")
+
+stdLog := zap.NewStdLog(logger)
+stdLog.Println("this is standard logger but log with output to zap logger")
+
+undo := zap.RedirectStdLog(logger)
+log.Println("standard log will redirect to zap.Logger")
+undo()
+log.Println("standard log with original output")
+```
+
 ### sirupsen/logrus
 https://github.com/sirupsen/logrus
 
@@ -890,7 +956,29 @@ https://github.com/FiloSottile/mkcert
 https://github.com/json-iterator/go
 
 ## kafka
+### Shopify/sarama
 https://github.com/Shopify/sarama
+
+most popular,但不支持context
+
+结构体等：
+1. `ConsumerGroupHandler`
+
+    ```go
+    type ConsumerGroupHandler interface {
+        // Setup is run at the beginning of a new session, before ConsumeClaim.
+        Setup(ConsumerGroupSession) error
+
+        // Cleanup is run at the end of a session, once all ConsumeClaim goroutines have exited
+        // but before the offsets are committed for the very last time.
+        Cleanup(ConsumerGroupSession) error
+
+        // ConsumeClaim must start a consumer loop of ConsumerGroupClaim's Messages().
+        // Once the Messages() channel is closed, the Handler must finish its processing
+        // loop and exit.
+        ConsumeClaim(ConsumerGroupSession, ConsumerGroupClaim) error
+    }
+    ```
 
 使用：
 1. 连接:golang连接kafka有三种client认证方式：
@@ -899,6 +987,12 @@ https://github.com/Shopify/sarama
     - SASL/PLAIN认证, (其他SASL/SCRAM, SASL/GSSAPI都不支持)
 2. 生产
 3. 消费
+4. error的处理:建议放在单独的一个协程处理，防止影响了message的处理
+
+### segmentio/kafka-go
+https://github.com/segmentio/kafka-go
+
+同时支持集群和context
     
 ## 依赖注入
 uber的dig和Facebook的inject，这两个都是通过运行时注入的，使用运行时注入，会有一些问题，比如不好调试，错误提示不及时等，而wire采用不同的方式来实现，通过生成依赖注入的代码来解决问题，这样就和手写是一样的，只是减轻手写的麻烦
@@ -966,6 +1060,10 @@ func InitializeAllInstance() *Instance {
 ### fackbook的inject
 https://github.com/facebookarchive/inject
 
+## 时间
+### jinzhu/now
+https://github.com/jinzhu/now
+
 ## 监控 prometheus
 参考：
 1. github.com/labstack/echo-contrib/prometheus
@@ -1004,10 +1102,23 @@ Prometheus专注于现在正在发生的事情，而不是追踪数周或数月�
 Prometheus 客户端公开了在暴露服务指标时能够运用的四种指标类型：
 1. 
 
-## 慢哈希
+## 哈希
+哈希和加密的区别(HASHING VS ENCRYPTION):哈希是摘要而不是加密，哈希也是一种单向函数。加密将明文数据转换为密文，然后在提供正确密钥后将其转换回明文，这是一种双向函数。与哈希不同，哈希不能逆转。 这是一个重要的区别。
+
+### 慢哈希
 为什么需要慢哈希：盐使攻击者无法采用特定的查询表和彩虹表快速破解大量哈希值，但是却不能阻止他们使用字典攻击或暴力攻击。高端的显卡（GPU）和定制的硬件可以每秒进行数十亿次哈希计算，因此这类攻击依然可以很高效。为了降低攻击者的效率，我们可以使用一种叫做密钥扩展的技术。这种技术的思想就是把哈希函数变得很慢，于是即使有着超高性能的GPU或定制硬件，字典攻击和暴力攻击也会慢得让攻击者无法接受。最终的目标是把哈希函数的速度降到足以让攻击者望而却步，但造成的延迟又不至于引起用户的注意。
 
-### bcrypt
+慢哈希实现原理：todo
+
+密码设计参考：
+1. 在Web程序中，永远在服务器端进行哈希加密
+    1. 如果在客户端加密，如果有人获取了这个哈希值，他甚至可以在不知道用户密码的情况通过认证
+    2. 兼容性，客户端可能不支持js
+    3. 不能代替HTTPS：如果浏览器和服务器之间的连接是不安全的，那么中间人攻击可以修改JavaScript代码，删除加密函数，从而获取用户密码
+2. 如何重置密码
+    1. 首先，需要随机生成一个一次性的令牌(不要把账户信息和失效时间存储在里面)，它直接关联到用户的账户。然后将这个令牌混入一个重置密码的链接中，发送到用户的电子邮箱。最后当用户点击这个包含有效令牌的链接时，提示他们可以设置新的密码。要确保这个令牌只对一个账户有效，以防攻击者从邮箱获取到令牌后，用来重置其他用户的密码。令牌有失效时间，且使用后立即就失效，当用户重新请求令牌时，或用户登录成功时，使原令牌失效。
+    2. 不要通过电子邮件向用户发送新密码，同时也记得在用户重置密码的时候随机生成一个新的盐值用于加密，不要重复使用之前密码的那个盐值。
+#### bcrypt
 golang.org/x/crypto/bcrypt
 
 使用：
