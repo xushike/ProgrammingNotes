@@ -195,7 +195,7 @@ const nums = [2, ...odd, 4 , 6]; // [2,1,3,5,4,6]
 注意:任何实现了Iterator接口的对象，都可以用展开运算符转为真正的数组.其他的似乎不行.
 
 ### 3.10 宿主对象（host objects）、本地对象（native objects）、内置对象（Build-in objects）和全局对象(global object)
-宿主环境:与大多数编程语言不相同的，JavaScript 语言并没有输入/输出的概念。它被设计成在一个宿主环境下运行的脚本语言，它帮助给宿主环境提供与外界交流的机制。宿主环境有浏览器、操作系统等.
+宿主环境:与大多数编程语言不相同的，JavaScript 语言并没有输入/输出的概念。它被设计成在一个宿主环境下运行的脚本语言，它帮助给宿主环境提供与外界交流的机制。宿主环境有浏览器、Nodejs、操作系统等.
 
 宿主对象（host objects）:由ECMAScript实现的宿主环境提供的对象。包含两大类，一个是宿主提供，一个是自定义类对象，ECMAScript官方未定义的对象都属于宿主对象,**所有非本地对象都是宿主对象**。宿主提供对象原理--->由宿主框架通过某种机制注册到ECscript引擎中的对象。比如宿主浏览器（以远景为参考）会向ECscript注入window对象，构建其实现javascript。同理还有浏览器提供的所有的BOM和DOM都是宿主对象。
 
@@ -683,7 +683,7 @@ for (var i = 0, item; item = a[i]; i++) {
 
 #### 方法属性
 ##### decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
-有效的URI中不能包含某些字符，例如空格、中文。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`）替换所有无效的字符，从而让浏览器能够接受和理解。
+有效的URI中不能包含某些字符，例如空格、中文。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`）替换所有无效的字符，从而让浏览器能够接受和理解。大家通俗地叫这几个方法为`urlencode`方法
 
 ```JavaScript
 var uriStr = "http://www.baidu.com?name=张三&num=001 zs"; 
@@ -702,12 +702,9 @@ document.write("解码后的" + uridc);
 ##### 其他
 `parseInt()`:将字符串转换为整型,第二个参数表示数值的进制，可选填。（待整理）例子如,
 ```javascript
-parseInt("123", 10)
-123
-parseInt("010", 10)
-10
-parseInt("010")
-// 此处未指定进制,该函数根据开头的0来决定将那个字符串转换为八进制数字,所以结果是8
+parseInt("123", 10) // 123
+parseInt("010", 10) // 10
+parseInt("010") // 此处未指定进制,该函数根据开头的0来决定将那个字符串转换为八进制数字,所以结果是8
 ```
 
 `isNaN`:NaN不能通过相等操作符（== 和 ===）来判断 ，因为 NaN == NaN 和 NaN === NaN 都会返回 false。 因此，isNaN()就很有必要了。该方法还是有瑕疵的，所以更推荐用ES6的`Number.isNaN()`，后者更可靠。
@@ -1325,7 +1322,6 @@ console.log(gen_obj.next(10));// 将 10 赋给上一条 yield 'foo' 的左值，
 console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 true
 ```
 
-
 ## 6 事件
 
 
@@ -1675,7 +1671,6 @@ JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,
 11. js的异常
 
     最开始没有,后来加入了,原因呢?效果呢?
-12. 网友: js 引入了 async 和 await ，层层回调的写法，马上就要成为过去式了。
 
 # 七 未整理
 1. this关键字:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this

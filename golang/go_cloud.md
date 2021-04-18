@@ -606,6 +606,18 @@ twitter的雪花算法在一个机器，在1秒内 最多可以生成4096*1000�
 使用:
 1. 生成的id是18位+的数字
 
+```go
+// 初始化
+var sf = sonyflake.NewSonyflake(sonyflake.Settings{})
+
+// 生成id
+id, err := sf.NextID()
+if err != nil {
+    return "", err
+}
+return strconv.FormatUint(id, 16), nil
+```
+
 ## 测试相关
 参考：
 1. https://www.jianshu.com/p/2f675d5e334e?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation

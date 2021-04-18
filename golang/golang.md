@@ -3204,6 +3204,44 @@ if err != nil {
 fmt.Println(*j)
 ```
 
+```go
+// 从json文件中读取
+// 定义格式
+type Rule struct {
+    RuleCode string
+    Script   string
+}
+
+type Res struct {
+    Errcode int
+    Errmsg  string
+    Data    []Rule
+}
+// 读取json文件
+path := "xxx.json"
+f, err := os.Open(path)
+if err != nil {
+    log.Fatal(err)
+}
+buf, err := ioutil.ReadAll(f)
+if err != nil {
+    log.Fatal(err)
+}
+var res Res
+err = json.Unmarshal(buf, &res)
+if err != nil {
+    log.Fatal(err)
+}
+prefix := "tom"
+for _, v := range res.Data {
+    if strings.HasPrefix(v.RuleCode, "marry") {
+        if !strings.HasPrefix(v.Script, prefix) {
+            fmt.Println(v.RuleCode)
+        }
+    }
+}
+```
+
 可以解析到以下三种数据类型里。如果go类型是`interface{}`，而json类型是数字，解析之后默认会变成科学计数法：
 1. （最推荐）解析到结构体(已知被解析的JSON数据结构)，可以直接使用
     1. 例如JSON的key是Foo，那么怎么找对应的字段呢？
@@ -4629,22 +4667,61 @@ provides HTTP client and server implementations.
 		ExpectContinueTimeout:  0, // 限制客户端在发送一个包含：100-continue的http报文头后，等待收到一个go-ahead响应报文所用的时间
 	}
     ```
-1. `http.Request`结构体:
-    1. `URL`
-    2. `RequestURI`
-    3. `Body io.ReadCloser`
-        1. 它是readcloser，默认情况下，readAll之后就无法再次读取，如果我还想把body转发给其他服务怎么办呢：可以使用`ioutil.NopCloser()`实现复用
+4. `http.Request`结构体:
+    1. 字段
+        1. `URL`
+        2. `RequestURI`
+        3. `Body io.ReadCloser`
+            1. 它是readcloser，默认情况下，readAll之后就无法再次读取，如果我还想把body转发给其他服务怎么办呢：可以使用`ioutil.NopCloser()`实现复用
+                
+                ```go
+                // 把request的内容读取出来
+                var bodyBytes []byte
+                if c.Request.Body != nil {
+                    bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+                }
+                // 把刚刚读出来的再写进去
+                c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+                ```
+        4. `Form`:包含了query参数和post中表单的参数，并且以post的参数为先
+        
+            ```go
+            // 如果请求中query和post中表单有相同的参数，比如id，用它就无法获取query的参数了，此时可以
+            queryForm, err := url.ParseQuery(r.URL.RawQuery)
+            if err == nil && len(queryForm["id"]) > 0 {
+                fmt.Fprintln(w, queryForm["id"][0])
+            }
+            ```
+        5. `PostForm`:普通表单请求的参数，对应`Content-Type=application/x-www-form-urlencoded`
             
             ```go
-            // 把request的内容读取出来
-            var bodyBytes []byte
-            if c.Request.Body != nil {
-                bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-            }
-            // 把刚刚读出来的再写进去
-            c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+            r.PostFormValue("id")
             ```
-
+        6. `MultipartForm *multipart.Form`：对应`Content-Type=multipart/form-data`
+            
+            ```go
+            r.ParseMultipartForm(32 << 20)
+            if r.MultipartForm != nil {
+                values := r.MultipartForm.Value["id"]
+                if len(values) > 0 {
+                    fmt.Fprintln(w, values[0])
+                }
+            }
+            ```
+5. `http.Cookie`
+    
+    ```go
+    // 获取request的cookie
+    cookie, err := r.Cookie("id")
+    if err == nil {
+        fmt.Fprintln(w, "Domain:", cookie.Domain)
+        fmt.Fprintln(w, "Expires:", cookie.Expires)
+        fmt.Fprintln(w, "Name:", cookie.Name)
+        fmt.Fprintln(w, "Value:", cookie.Value)
+    }
+    // 设置request的cookie
+    r.AddCookie(c *Cookie)
+    ```
 
 使用：
 1. 启动HTTP server:并不推荐使用形如`http.XxxServeXxx()`的方式来启动，因为这些函数默认关闭了超时设置，也无法手动设置。使用这些函数，可能很快泄露连接，从而耗尽文件描述符。

@@ -369,9 +369,13 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ### 3.1 git fetch：拉取远端到本地仓库
 首先需要明白：**git在本地会保存两个版本的仓库，分为本地仓库和远程仓库**，这里的远程仓库是保存在本地的远程仓库，不是远程的远程仓库。`git fetch`只是更新本地的远程仓库的代码为最新的，而本地的本地仓库的代码还未被更新，使用对应的`git merge`后本地的本地仓库才和远程仓库一样是最新的。
 
-拉取远程主机的**所有更新**到本地:`git fetch`、`git fetch <远程主机名>`
-拉取远程主机的指定分支的更新到本地分支`git fetch <远程主机名> <远程分支名> : <本地分支名>`，比如`git fetch origin master : dev`
-拉取远程主机的指定分支的更新到本地当前分支`git fetch <远程主机名> <分支名>`，比如`git fetch origin master`
+使用：
+1. 拉取远程主机的**所有更新**到本地
+    1. 拉取所有`git fetch`
+    2. 拉取指定上游`git fetch <远程主机名>`
+    3. `git fetch`可以同步到新的分支到本地，但是远端有删除分支，直接`git fetch`是不能将远程已经不存在的branch等在本地删除的，此时可以`git fetch --prune`实现在本地删除远程已经不存在的分支，简写`git fetch -p`
+2. 拉取远程主机的指定分支的更新到本地分支`git fetch <远程主机名> <远程分支名> : <本地分支名>`，比如`git fetch origin master : dev`
+3. 拉取远程主机的指定分支的更新到本地当前分支`git fetch <远程主机名> <分支名>`，比如`git fetch origin master`
 
 取回更新后，会显示被本次操作所影响到的本地仓库里分支的状态，还会返回一个FETCH_HEAD(用小写也可以)，指的是某个branch(如果`git fetch`没有指定远程分支，则是当前分支对应的远程分支，如果指定了，则是指定的远程分支)在服务器上的最新状态，我们可以在本地通过它查看刚取回的更新信息:`git log -p FETCH_HEAD`，然后可以选择是否执行`git merge FETCH_HEAD`来合并到当前分支。
 ```bash
@@ -671,7 +675,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
 
 用法：
-1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`
+1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`、`git cherry-pick aaa..bbb A E`等
 2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，则是合并`(A, B]`（左开右闭）的内容，如果想合并闭区间的内容，可以使用`cherry-pick A^..B`，即是合并`[A, B]`的内容。该命令可以和上面的命令混用。
 3. 合并另外一个分支的最后一次提交到当前分支：`git cherry-pick branchName`
 4. 合并另外一个分支的所有不同提交到当前分支：`git cherry-pick ..branchName`或者`git cherry-pick ^HEAD branchname`
@@ -700,18 +704,33 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 使用两种主要类型的标签：轻量标签（lightweight）与附注标签（annotated）
 
-基本用法：
-1. 查看所有标签:`git tag`
+使用：
+1. 查看
+    1. 查看所有标签:`git tag`
 
-    ```bash
-    v0.0.1-alpha
-    v1.0.1
-    ```
-2. 根据tag_name查看commit信息:`git show tag_name_A`
-3. 创建标签：`git tag v1.0`，在某个commitid上打标签：`git tag tag_name commit_id`
+        ```bash
+        # 默认按名称排序
+        v0.0.1-alpha
+        v1.0.1
+        v1.0.2
+        v2.0.0
+        ```
+    2. 按模式筛选标签`git tag -l 'xxx'`，比如`git tag -l 'v1.7*'`
+    2. 根据tag_name查看commit信息:`git show tag_name_A`，比如`git show v2.0.0`
+2. 创建标签:不加参数的时候默认是打的lightweight标签
+    1. 在本地创建标签
+        1. 在最新commit上打tag`git tag v1.0`
+        2. 在指定commitid上打标签：`git tag tag_name commit_id`
+    2. 推送本地标签到远程
+        1. 简写`git push origin 标签名`，相当于`git push origin refs/tags/源标签名:refs/tags/目的标签名`(删除也是用的这个命令)
+        2. 推送所有本地标签到远程`git push origin --tags`
+    3. 同步远程标签到本地`git fetch 上游`
+3. 删除标签
+    1. 删除本地标签`git tag -d 标签名`，删除本地所有标签`git tag -d`
+    2. 删除远程标签`git push origin :refs/tags/目的标签名`，比如`git push origin :refs/tags/v2.0.0`
 
 参数：   
-1. `-m`：指定标签的附注(annotated，即说明文字)。
+1. `-a`、`-m`：指定标签的附注(annotated，即说明文字)。
 
 ## 10 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
@@ -1100,7 +1119,8 @@ and its host key have changed at the same time.
 因为在修改git的core.autocrlf之前我就已经将fileA clone下来了，所以怎么修改都不对，始终会出这个提示。因为我现在是在windows环境下，所以我把core.autocrlf设置为input，然后删除fileA重新clone，然后就好了。
 
 ### 1.21 windows下git log中文乱码
-在系统环境变量里增加`LESSCHARSET=utf-8`，然后重启相关的IDE就行了。
+方法1：在系统环境变量里增加`LESSCHARSET=utf-8`，然后重启相关的IDE就行了。
+方法2：更新git版本
 
 ### 1.22 拉取gitlab远程仓库的时候出现:warning: redirecting to https://projectA.git/
 参考：https://stackoverflow.com/questions/53012504/what-does-the-warning-redirecting-to-actually-mean
