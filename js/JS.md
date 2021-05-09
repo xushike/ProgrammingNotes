@@ -396,7 +396,7 @@ js去除字符串中空格的几种方法(待补充):
 js判断字符串是否全部为数字的几种方法(待补充):
 1. `isNaN(Number(xxx))`
 
-#### 1.2.2 数字number
+#### 1.2.2 数值number
 支持正负数和任意位的小数,js中不存在整数,所有数字都是64位浮点型.
 (待补充:精确度的计算)
 使用：
@@ -417,7 +417,13 @@ js判断字符串是否全部为数字的几种方法(待补充):
         myNumber.toString(8);    // 返回 200
         myNumber.toString(2);    // 返回 10000000
         ```
-    5. `Infinity`表示无穷大的数字,可带正负.非0除以0可产生无穷大,如`2/0`
+    5. `Infinity`表示无穷大的数字,可带正负.非0除以0可产生无穷大,如`2/0`。注意不能用小写开头，会变成普通字符串
+        
+        ```js
+        console.log("3" < "Infinity"); // true
+        console.log("3" < Infinity); // true
+        console.log(3+Infinity); // Infinity
+        ```
     6. `NaN`表示非数字值,即指示某个值不是数字.可设置number对象为该值,但NaN是不好(toxic)的,把它传给任何一个数学操作，结果都会返回一个NaN.全局函数`isNaN()`可判断一个值是否是NaN.
     7. `new Number(num)`生成数字对象,类似java,如,
 
@@ -437,6 +443,15 @@ js判断字符串是否全部为数字的几种方法(待补充):
         var x = 0.2+0.1; // 输出结果为 0.30000000000000004
         ```
     2. 所以可以引入第三方包，比如decimal.js
+5. 数值和字符串类型的数值
+    
+    ```js
+    // 加运算符和其他运算符不一样
+    console.log("2" + 1); // 21
+    console.log(1 + "2"); // 12
+    console.log("2" * 3); // 6
+    console.log(8/"2"); // 4
+    ```
 
 #### 1.2.3 Date
 采用系统时区，基本是各语言的默认行为，但js并没有这样做，它默认使用UTC时区。
@@ -529,6 +544,38 @@ x // undefined
 
 // 判断一个值是否为undefined
 typeof(xxx) == "undefined"
+```
+
+#### 1.2.6 二进制
+##### 二进制读写
+使用内置的`ArrayBuffer`和`DataView`等来进行二进制读写。使用场景有:
+1. canvas 图像处理。
+2. WebGL 与显卡通信。
+3. 文件操作
+4. Ajax响应
+
+##### 二进制运算
+js共支持5种二进制操作：
+1. `&`与 ：同是高位则返回高位，否则返回低位
+2. `|`或：有一方是高位，则返回高位
+3. `!`非：按位取反
+4. `^`异或：同位相同则返回低位，相反则返回高位
+5. `->>`：按位左移或右移，每移动一位代表乘以或除以2
+
+```js
+// 例子1 获取某个整数对应的二进制形式中含有1的个数
+// 方法一
+n.toString(2).split("0").join("").length 
+
+// 方法二 用二进制运算更高效
+function countBits (n) {
+    for (c = 0; n; n >>= 1) { // 只要n不为0就继续右移，想象碎纸机就好理解了
+        c += n & 1 // 存储统计结果
+    }
+    return c;
+}
+
+console.log(countBits(1234)) // 5
 ```
 
 ### 1.3 类型转换(Type conversion)
@@ -744,10 +791,11 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
 2. `Object.prototype.constructor`:对象的构造函数
 
 #### 4.3.2 方法
-1. `Object.toString()`：每个对象都有一个`toString()`方法，当该对象被表示为一个文本值时，或者一个对象以预期的字符串方式引用时自动调用（和其他语言类似）。默认情况下，toString() 方法被每个 Object 对象继承。如果此方法在自定义对象中未被覆盖，`toString()`返回 "[object obj_type]"，特别的`toString()`调用 null 返回[object Null]，undefined 返回 [object Undefined]。
+1. `Object.toString(numA)`：每个对象都有一个`toString(numA)`方法，当该对象被表示为一个文本值时，或者一个对象以预期的字符串方式引用时自动调用（和其他语言类似）。默认情况下，`toString(numA)` 方法被每个 Object 对象继承。如果此方法在自定义对象中未被覆盖，`toString(numA)`返回 "[object obj_type]"，特别的`toString(numA)`调用 null 返回[object Null]，undefined 返回 [object Undefined]。`numA`是可选的，表示进制,接收区间`[2,36]`中的任意整数作为可选参数。
     ```JavaScript
     var o = new Object();
     o.toString(); // [object Object]
+    (1234).toString(2) // "10011010010"
     ```
 2. `Object.assign()`:通过复制一个或多个对象来创建一个新的对象。
 3. `Object.getPrototypeOf()`
@@ -785,7 +833,37 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
     });
     ```
 5. `Object.getOwnPropertyNames()`:该方法返回一个数组，它包含了对象 o 所有拥有的属性（无论是否可枚举）的名称。
-6. `object.hasOwnProperty() boolean`:判断是否是对象自身的属性,如果是继承的属性则返回false.
+6. 判断对象是否包含某个(字段)属性
+    1. 使用`in`,属性名称需要用字符串
+        
+        ```js
+        var obj = {name:'jack'};
+        console.log(('name' in obj)); // --> true
+        console.log(('toString' in obj)); // --> true
+        console.log((toString in obj)); // --> false
+        console.log(('toString2' in obj)); // --> false     
+        ```
+    2. 和`undefined`作比较来判断是否是非`undefined`的字段，但是本身值是undefined的属性没法判断
+        
+        ```js
+        var o = { x: 1, y: undefined };
+        console.log(o.x !== undefined); //true
+        console.log(o.z !== undefined); //false
+        console.log(o.toString !== undefined);//true
+        console.log(o.toString2 !== undefined);//false
+
+        console.log(o.y !== undefined); //false, 本身值是undefined的就没法判断了
+        console.log("y" in o); // true
+        console.log(o.hasOwnProperty("y")); // true
+        ```
+    3. 使用`object.hasOwnProperty() boolean`判断是否是对象自身的属性,如果是继承的属性则返回false.
+    
+        ```js
+        var obj = {name:'jack'};
+        obj.hasOwnProperty('name'); // --> true
+        obj.hasOwnProperty(name); // --> ReferenceError
+        obj.hasOwnProperty('toString'); // --> false
+        ```
 7. `Object.freeze()`:冻结对象，使其不能被修改。使用场景一般是const声明对象时会用到（还可以使用ts的readonly）。当然这里面有很多细节需要注意，具体参考：[Object.freeze() MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
     1. 该操作不可逆
     2. 该方法只影响对象本身的属性,不影响原型属性

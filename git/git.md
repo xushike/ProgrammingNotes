@@ -118,15 +118,17 @@ parent、child的意思？
 3. 安装完之后记得配置global username和useremail，这两样就是提交时需要记录的名字和邮箱，这样才可以提交到本地仓库；然后就是推送，如果是需要登录的服务器(github等)推送的时候还需要输入账号密码
 
     ```bash
-    #注意没配置的话会报错:unable to auto-detect email address
-    #查看git的user.name和email
+    # 注意没配置的话会报错:unable to auto-detect email address
+    # 查看git的user.name和email
     git config user.name
     git config user.email
-    #配置用户级的git user.name和email
+    # 配置用户级的git user.name和email
     git config --global user.name "<用户名>"
     git config --global user.email "<邮箱>"
+    # 为每个项目单独配置name和email: 使用 --local
+    git config --local user.name "<用户名>"
+    git config --local user.email "<邮箱>"
     ```
-    为每个项目单独配置:(待补充)
 
 ### 1.2 配置ssh Key(可选)
 主要用于ssh方式的秘密登录.    
@@ -328,6 +330,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 - `--pretty=oneline`:只看commit的`-m`信息
 - `--stat`:显示变动文件数和行数
 - `--patch`、`-p`、`-u`：查看具体变更内容。
+- `--reverse`反向排序：默认是最近的提交排在前面，使用`git log --reverse`则是最早的提交排在前面
 - 搜索、过滤
     - `--grep=<xxx>`或`--grep "<xxx>"`：按提交信息过滤，支持正则。如`git log --grep="first"`
     - `--author="<xxx>"`：按提交人过滤
@@ -558,6 +561,8 @@ pick 0325c7f add b.txt for test git rebase
 
 如何解决撤销后再merge部分代码消失的问题：在日后继续merge以前的老版本时，因为`git revert`是用一次逆向的commit“中和”之前的提交，因此日后合并老的branch时，导致这部分改变不会再次出现。
 1. 把之前那个revert再revert掉(待实践)：找到之前revert对应的commit_id，然后按指定版本的撤销方式来撤销，这样第一次revert掉的这部分代码就会恢复回来，但这部分代码对应的commit记录不会显示出来。
+
+也就是说revert是可以套娃的...
 
 ### 7.2 git checkout 检出（该目录待移动）
 有如下多种用法

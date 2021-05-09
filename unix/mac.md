@@ -413,6 +413,23 @@ mac会对图标进行缓存，图标缓存包括finder和dock，一次执行下�
 ### 1.15 你的电脑检测到了潜在的问题 Your computer has detected a potential problem
 参考：https://support.apple.com/zh-cn/HT207475
 
+### 1.16 brew update报错
+```
+brew update
+Error:
+  homebrew-core is a shallow clone.
+  homebrew-cask is a shallow clone.
+To `brew update`, first run:
+...
+```
+需要clone的文件太大了，可以先浅复制，再深复制
+```bash
+git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch # 浅复制
+git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow # 再深复制
+git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch # 浅复制
+git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow # 再深复制
+```
+
 ## 2 未解决
 2. 终端和finder:[http://blog.csdn.net/wang010366/article/details/51873026](http://blog.csdn.net/wang010366/article/details/51873026)
 4. 合上盖子是什么状态?每隔一段时间就会自动联网?
