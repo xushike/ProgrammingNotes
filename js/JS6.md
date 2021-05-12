@@ -45,7 +45,7 @@ ES6的解构赋值给js的语法带来了更多的现代化。它在减少了代
 #### 解构赋值(Destructuring Assignment)
 例子如`const { store, form, loading, errors, entity:contact } = this.props`,其中`entity`是`this.props`的属性,`contact`是新的属性名,访问的时候就可以通过新的属性名访问了.
 
-注意:解构赋值类似Object.assign(),只是第一层深复制.(待验证)
+注意:解构赋值类似`Object.assign()`,只是第一层深复制.(待验证)
 
 参考:[https://segmentfault.com/a/1190000002920859](https://segmentfault.com/a/1190000002920859)
 

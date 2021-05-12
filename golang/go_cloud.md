@@ -1142,6 +1142,10 @@ golang.org/x/crypto/bcrypt
 2. 比较明文和`CompareHashAndPassword(hashedPassword, password []byte) error`:将哈希密码与其纯文本进行比较
 
 
+## OCR
+### [gosseract](https://github.com/otiai10/gosseract)
+基于Tesseract C++ library
+
 # 五 经验
 ## 1 为什么需要框架
 对于golang而言，web框架的依赖要远比Python，Java之类的要小。自身的net/http足够简单，性能也非常不错。框架更像是一些常用函数或者工具的集合。借助框架开发，不仅可以省去很多常用的封装带来的时间，也有助于团队的编码风格和形成规范。

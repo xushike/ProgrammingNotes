@@ -336,6 +336,16 @@ Golang不保证任何单独的操作是原子性的，除非：
 ### 3.29 go有依赖注入吗
 依赖注入跟语言可以说是没关系。
 
+### 3.30 如何字面的方式表示各种进制
+1. 二进制：无
+2. 八进制:以`0`开头
+    
+    ```go
+    var a = 023
+    fmt.Println(a) // 19
+    ```
+3. 十六进制:以`0x`或`0X`开头
+
 ## 4 文档网址视频等
 网址:
 1. golang官方
@@ -851,7 +861,7 @@ var s = "中国人"
 // 2. 码点表示法
 var s1 = "\u4e2d\u56fd\u4eba"
 var s2 = "\U00004e2d\U000056fd\U00004eba"
-// 3. 字节序列表示法（二进制表示法）
+// 3. ASCII码
 var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
 ```
 
@@ -4222,6 +4232,8 @@ type Flag struct {
 ```
 
 ### fmt
+参考:https://golang.org/pkg/fmt
+
 其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
 
 许多类型都会定义一个`String()`方法，当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回的结果打印.
@@ -4252,14 +4264,27 @@ func main() {
     ```
 5. `%t`:格式化布尔值
 6. 进制格式化
-    - `%d`:标准十进制格式化
     - `%b`:二进制，并非真正的二进制，正数会把前面的所有0忽略掉；负数的话前面再多一个`-`
         ```go
         // int8(3) 的二进制是 0000 0011,会输出 11
         // int8(-3) 的二进制是 1111 1101 会输出 -11 (跟负数的二进制可以说没直接关系...)
         ```
-    - `%x`:十六进制，`hex.EncodeToString([]byte) string`方法也是做类似的事。
-7. `%c`:输出给定整数的对应字符
+    - `%o`:输出八进制数
+    - `%d`:标准十进制格式化，输出十进制整数
+    - `%u`:输出无符号十进制数
+    - `%x`:十六进制(小写)，`hex.EncodeToString([]byte) string`方法也是做类似的事。
+    - `%X`:十六进制(大写)
+        
+        ```go
+        fmt.Printf("%12X\n",'中') //         4E2D
+	    fmt.Printf("%012X",'中') // 000000004E2D
+        ```
+7. `%c`:输出相应Unicode码点表示的字符
+    
+    ```go
+    fmt.Printf("%c",'中') // 中
+	fmt.Printf("%c",0x4E2D) // 中
+    ```
 8. 浮点数格式化
     - `%f`:标准十进制格式化，使用银行家四舍五入，比如
 
@@ -4287,7 +4312,12 @@ func main() {
 
     在有宽度的时候,默认是右对齐
 13. 输出左对齐,使用`-`:如`fmt.Printf("|%-6s|%-6s|\n", "foo", "b")`,会输出`|foo   |b     |`
-14. `%U`:输出为Unicode格式
+14. 编码
+    1. `%U`:输出为Unicode格式
+        
+        ```go
+        fmt.Printf("%U", 0x4E2D) // U+4E2D
+        ```
 
 转义：
 1. 对`\n`等转义，有两种方法：
@@ -4958,6 +4988,14 @@ go1.10开始新增了builder类型，用于提高字符串拼接性能，用法�
 3. Parse 系列函数把字符串转换为其他类型
    1. `Atoi()`:string=>int
 4. 查看int的位数`strconv.IntSize`
+5. `QuoteRuneToASCII(r rune) string`:将 Unicode 转换为“单引号”引起来的 ASCII 字符串,非 ASCII 字符和“特殊字符”将被转换为“转义字符”(形如`\t`,`\n`,`\xFF`,`\u0100`)
+    
+    ```go
+    a := strconv.QuoteRuneToASCII('中') 
+	b := strconv.QuoteRuneToASCII('a') 
+	fmt.Println(a) // '\u4e2d'
+	fmt.Println(b) // 'a'
+    ```
 
 ### sync
 参考：
@@ -5159,11 +5197,19 @@ golang 提供了下面几种类型：
     ```
 
 ### unicode
-包含了一些针对测试字符的非常有用的函数.
+变量
+1. `Han`:汉字
+2. `P`:标点符号
 
+包含了一些针对测试字符的非常有用的函数.
 1. 判断是否为字母：`unicode.IsLetter(ch)`
 2. 判断是否为数字：`unicode.IsDigit(ch)`
 3. 判断是否为空白符号：`unicode.IsSpace(ch)`
+4. 判断字符 r 是否在 rangtab 表范围内`func Is(rangeTab *RangeTable, r rune) bool`
+    1. 判断字符是否为汉字`unicode.Is(unicode.Scripts["Han"], runeA)`
+5. 判断字符 r 是否为大写格式`func IsUpper(r rune) bool`
+6. 判断字符 r 是否为一个“图形字符”,“图形字符”包括字母、标记、数字、标点、符号、空格,他们分别对应于 L、M、N、P、S、Zs 类别,这些类别是 RangeTable 类型，存储了相应类别的字符范围:`func IsGraphic(r rune) bool`
+7. 判断 r 是否为一个控制字符`func IsControl(r rune) bool`
 
 ### unsafe
 两个type三个方法

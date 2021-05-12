@@ -86,9 +86,27 @@ console.log(color2)//['red','green','black'] 因为操作的是地址,也就是�
 - 深拷贝:递归复制所有层级,不会出现上面a.x和b.x指向同一引用类型的情况.缺点是会有性能问题(上面那个只复制地址当然很快),特别是层级很多的时候.
 
 #### 实现深拷贝的几种方式
-- `Object.assign(target, ...source)`(es6)
-
-    第一个参数target为拷贝目标，剩余参数...source是拷贝源。此方法可以将...source中的属性复制到target中,然后返回target.同名属性会进行覆盖，缺点是只实现了第一层属性的深拷贝,也就是说对后面的嵌套属性还是浅拷贝.
+- `Object.assign(target, ...source)`(es6):第一个参数target为拷贝目标，剩余参数...source是拷贝源。此方法可以将...source中的属性复制到target中,然后返回target.同名属性会进行覆盖，缺点是只实现了第一层属性的深拷贝,也就是说对后面的嵌套属性还是浅拷贝.
+    
+    ```js
+    // 深拷贝
+    function changeName (obj) {
+    let copy = Object.assign({}, obj)
+    copy.name = "marry"
+    }
+    var a = { name: "tom" }
+    changeName(a)
+    console.log(a); // tom
+    
+    // 浅拷贝
+    function changeName (obj) {
+    let copy = Object.assign(obj)
+    copy.name = "marry"
+    }
+    var a = { name: "tom" }
+    changeName(a)
+    console.log(a); // marry
+    ```
 
 - `JSON.parse(JSON.stringify(foo))`
 
@@ -797,7 +815,20 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
     o.toString(); // [object Object]
     (1234).toString(2) // "10011010010"
     ```
-2. `Object.assign()`:通过复制一个或多个对象来创建一个新的对象。
+2. `Object.assign(targetA, sourceA...)`:对象合并。将源对象的所有可枚举属性，复制到目标对象，它只有第一层的深拷贝。如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
+    1. `Object.assign`拷贝的属性是有限制的，只拷贝源对象的自身属性（不拷贝继承属性），也不拷贝不可枚举的属性（enumerable: false）。
+    
+    ```js
+    // 如果只有一个参数，Object.assign会直接返回该参数。
+    const obj = {a: 1};
+    Object.assign(obj) === obj // true
+    
+    // 如果该参数不是对象，则会先转成对象，然后返回
+    typeof Object.assign(2) // object
+    // 由于undefined和null无法转成对象，所以如果它们作为参数，就会报错。
+    Object.assign(undefined) // 报错
+    Object.assign(null) // 报错
+    ```
 3. `Object.getPrototypeOf()`
 3. `Object.setPrototypeOf(objA, objB)`：设置一个指定对象的原型到另一个对象。该方法性能较差，更推荐用`Object.create()创建新对象的方式代替`它是ES6新增的方法，有个旧方法是`Object.prototype.__proto__`。
     

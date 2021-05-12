@@ -15,6 +15,11 @@
 ### 3.1 c的顺时针/螺旋规则
 参考:[http://c-faq.com/decl/spiral.anderson.html](http://c-faq.com/decl/spiral.anderson.html)
 
+### 3.30 如何字面的方式表示各种进制
+1. 二进制：无
+2. 八进制:以`0`开头
+3. 十六进制:以`0x`开头
+
 # 二 安装配置
 # 三 基础
 # 四 高级
