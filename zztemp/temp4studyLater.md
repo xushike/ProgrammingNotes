@@ -15,8 +15,6 @@
 1. golang 写爬虫
 1. js进阶:
     1. 原型链和普通类的区别
-    2. JSON相关操作
-    1. 逻辑运算符的使用,比如:`&`,两个非`!!`
     4. 正则表达式.熟练这篇中的例子：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace
         1. 比如使用`replace`交换两个单词的位置
     5. 获取命令行输入

@@ -136,8 +136,14 @@ Please be aware that the database can take some time to generate; once the datab
 1. `-name`:按名称查找，和find类似
 2. `-onlyin pathA`:在指定路径下查找
 
-## 2 mac上好用的软件
-### 2.1 spotlight
+### networksetup 
+`networksetup`命令是用来配置 系统偏好设置中的 网络设置，networksetup 需要至少 admin 权限来运行。部分命令需要 root 权限。
+
+参数：
+1. `-listallhardwareports`:Displays list of hardware ports with corresponding device name and ethernet address.
+
+## 3 mac上好用的软件
+### 3.1 spotlight
 mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。它对应的命令行工具是`mdfind`
 
 操作：
@@ -151,25 +157,27 @@ mac上自带的搜索神器,快捷键`cmd+space`,ios上也有。它对应的命�
         1. 参考：https://apple.stackexchange.com/questions/293513/spotlight-and-command-b-shortcut-quirk 
 4. 搜索结果中按分类跳转：`cmd+up/down arrow`
 
-### 2.2 Bootcamp
-用于在mac上安装windows系统,简单方便.安装之后,还会将win的按键映射到mac键盘上,具体参考苹果支持
+### 3.2 Bootcamp
+用于在mac上安装windows系统,简单方便.安装之后,还会将win的按键映射到mac键盘上,具体参考苹果支持。
 
-### 2.3 白噪音
+安装后如何删除windows分区：进入bootcamp => "恢复"
+
+### 3.3 白噪音
 让工作效率更高,[https://zhuanlan.zhihu.com/p/20508353](https://zhuanlan.zhihu.com/p/20508353)
 
-### 2.4 解压缩
+### 3.4 解压缩
 2. The Unarchiver:免费好用
 2. Dr.Unarchiver:免费而且比上面的多预览、指定解压路径等功能
 
-### 2.5 snap
+### 3.5 snap
 快捷键打开dock.默认的cmd键和浏览器有冲突，所以我改成option键了。
 
 注意:windows和ubuntu上不需要按插件，直接就可以win键快捷打开dock
 
-### 2.6 视频播放
+### 3.6 视频播放
 [IINA](https://lhc70000.github.io/iina/zh-cn/)，开源免费
 
-### 2.7 Homebrew
+### 3.7 Homebrew
 mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，相当于apt-get于ubuntu，rpm于centos，Homebrew最棒的一点是：所有的文件在`/usr/local/`（`brew config`里的`HOMEBREW_PREFIX`）一个位置之下。也就是说可以通过Homebrew安装新版软件的同时，保持系统内置的依赖库或其他软件不变。同时如果想彻底删除Homebrew，也变得非常简单。而且它还会自动安装依赖和设置好环境变量。
 
 安装:官网脚本进行安装,我安装时卡在`HEAD is now at b1a92ba1 ...`这步很久(大概1个小时).
@@ -263,7 +271,7 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 1. 为什么取名homebrew：似乎是作者比较关心酒，而且没想到这个软件会这么火，而且文件夹名称也是用的Cella（地窖），预编译的二进制软件包叫bottles(瓶子)
 2. 在更新软件包时，`updating homebrew`总是卡住，这个时候按ctrl+c可以终止更新brew自生，直接跳到更新软件包的部分。
 
-### 2.8 iterm2和on-my-zsh
+### 3.8 iterm2和on-my-zsh
 两者结合食用，效果不错。
 参考：
 1. wiki
@@ -294,7 +302,7 @@ mac下的包管理工具(如其官网所说:macOS缺失的软件包管理器)，
 3. 设置自动补全。注意颜色可能和背景颜色相似，可以设置为“586e75”
 5. 隐藏用户名和主机名
 
-### 2.9 网络实用工具（Network Utility）
+### 3.9 网络实用工具（Network Utility）
 新版本的 macOS 中已经将它从应用程序隐藏了，不能从 Finder 中直接找到，位于`/System/Library/CoreServices/Applications/`
 
 功能有：端口扫描

@@ -180,11 +180,6 @@ non-login shell：取得shell的方法不需要重复登录流程的就是non-lo
 
 注意：linux的shell读取的配置和mac不同。
 
-### 3.17 sh 和 bash
-sh是一种POSIX标准，它有很多种实现，包括ksh88, dash,bash等。
-
-因为sh是一种规范，并不是实现，所以`/bin/sh`实际上是一个硬链接，链接到某种实现上。大多数情况下，`/bin/sh`会链接到`/bin/bash`。所以你执行`sh xx`等价于执行`bash xx`。但是在一些系统中，/bin/sh并没有指向/bin/bash，比如在一些现代的Debian和Ubuntu系统中，sh指向的是dash。
-
 ### 3.18 关于文件的创建时间
 需要内核提供`xstat()`才可以拿到创建时间（但是大部分linux系统似乎都么有），所以一般认为linux没有文件的创建时间，在ext4文件系统下可以试试`debugfs -R 'stat <58826> ' /dev/mapper/tiny--vg-root`命令(未测试)
 
@@ -313,9 +308,69 @@ Change ...
 2. 命令说明
 
 ### 1.12 查看网络接口
-`ifconfig`:是用来配置网络接口的命令，
+`ifconfig`:是用来配置网络接口的命令(linux & mac)
 1. 参数
     1. `-a`:可以显示当前所有的接口。
+2. 显示说明
+    1. `lo0`(`loopback0`)：回环接口、纯软件层面的虚拟网络接口，表示主机的回坏地址。并非真实存在，并不真实地从外界接收和发送数据包，而是在系统内部接收和发送数据包，因此虚拟网络接口不需要驱动程序。一般lo回环ipv4地址为:`127.0.0.1`，子网掩码：`255.255.255.0`
+        1. 特点
+            1. 接口地址永远是UP
+            2. 该接口可以配置地址，甚至配置全1的掩码，节省地址空间
+            3. 不能封装任何链路层协议
+        2. 场景
+            1. 路由器使用loopback接口地址作为该路由器产生的所有IP包的源地址，这样使过滤通信量变得非常简单
+            1. 比如测试一个网络程序，但又不想让局域网或外网的用户能够查看，只能在此台主机上运行和查看所用的网络接口。比如把 HTTPD服务器的指定到回坏地址，在浏览器输入 `127.0.0.1`就能看到你所架WEB网站了。但只是您能看得到，局域网的其它主机或用户无从知道。
+
+    2. `eth0`(`ethernet0`):以太网接口。以太网接口与网卡对应，每个硬件网卡(一个MAC)对应一个以太网接口，其工作完全由网卡相应的驱动程序控制。如果物理网卡只有一个，而却有eth1，eth2等，则可能存在无线网卡或多个虚拟网卡，虚拟网卡由系统创建或通过应用层程序创建，作用与物理网卡类似。比如连接WIFI的时候`eth0`可能就是分配给WIFI用的。字段说明(行数可能变化)
+        1. 第一行
+            1. `Link encap`:连接类型，比如Ethernet（以太网）
+            1. `HWaddr`表示网卡的物理地址
+        2. 第二行
+            1. `inet addr`用来表示网卡的IP地址，比如`192.168.199.238`
+            2. `Bcast`广播地址，比如`192.168.120.255`
+            3. `Mask`掩码地址，比如`255.255.255.0`
+        3. 第三行
+            1. `inet6 addr`ipv6地址  
+        4. 第四行：
+            1. `UP`代表网卡开启状态
+            2. `RUNNING`代表网卡的网线被接上
+            3. `MULTICAST`支持组播`
+            4. `MTU`最大传输单元，比如`1500`1500字节
+        5. 第五、六行：接收、发送数据包情况统计
+        6. 第七行：接收、发送数据字节数统计信息
+
+    3. `br0`or`bridge0`:网桥接口。网桥是一种在链路层实现中继，对帧进行转发的技术，根据MAC分区块，可隔离碰撞，将网络的多个网段在数据链路层连接起来的网络设备。br0可以将两个接口进行连接，如将两个以太网接口eth0进行连接，对帧进行转发。
+    4. `wlan0`:无线接口。无线网卡对应的接口，无线网卡也需要对应的驱动程序才能工作。
+    5. `gif0`(`Software Network Interface 0`):通用 IP-in-IP隧道(RFC2893)
+        1. 参考：https://www.freebsd.org/cgi/man.cgi?gif(4)
+    6. `stf0`(`6to4 tunnel interface 0`):6to4连接(RFC3056),[IPv6 to IPv4 tunnel interface](https://www.freebsd.org/cgi/man.cgi?gif(4)) to support the transition from IPv4 to the IPv6 standard.
+        1. 参考：https://en.wikipedia.org/wiki/6to4
+    7. `fw0`(`Firewire0`)：FireWire network interface.
+    8. `vmnet1`(`Virtual Interface 0`)
+    10. `vlan0`虚拟局域网络
+    11. `p2p0`Point-to-Point 协议
+    9. `awdl0`:airdrop peer to peer(一种mesh network), apple airdrop设备特有，可以看作是一种特殊的WIFI连接
+    12. `llw0`：WLAN low-latency interface。类似于awdl,llw也是一种特殊的WiFi连接，低延迟(不允许省电)
+    13. `utun0`:mac osx+用于VPN
+
+3. 使用
+    1. 启动关闭指定网卡
+        
+        ```bash
+        ifconfig eth0 up
+        ifconfig eth0 down
+        ```
+    2. 为网卡配置和删除IPv6地址
+
+        ```bash
+        ifconfig eth0 add 33ffe:3240:800:1005::2/64
+        ifconfig eth0 del 33ffe:3240:800:1005::2/64
+        ```
+    3. 修改MAC地址`ifconfig  eth0  hw ether  00:AA:BB:CC:DD:EE`
+    4. 修改IP地址:比如给eth0网卡配置IP地址`192.168.120.56`，`ifconfig eth0 192.168.120.56`
+
+
+
 
 ### 1.13 查看系数中安装的所有字体
 `fc-list`
@@ -948,44 +1003,216 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
 3. 重新加载服务配置文件（不重启服务）:`systemctl [reload] [servicename]`
 
 ## 8 curl
-文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等。可惜不支持多线程下载。
+参考：
+1. https://example.net/cookbooks/curl
+
+它的名字就是客户端（client）的 URL 工具的意思。它可以文件下载（包括发送HTTP请求），断点续传，指定cookie，设置用户代理字符串，认证等。可惜不支持多线程下载。
 
 使用和参数：
-1. `-X`:指定request method：POST、GET、DELETE等，默认是GET
-2. `-H 'xxx: xxx'`:自定义头信息传递给服务器
-3. `-d 'xxx'`：HTTP POST方式传送的body数据
-4. `-F 'xxx'`:模拟http表单提交数据
-5. `-I`(`--head`)：只显示头信息
-    
-    ```bash
-    curl -I www.baidu.com
-    
-    HTTP/1.1 200 OK
-    Accept-Ranges: bytes
-    Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
-    Connection: keep-alive
-    Content-Length: 277
-    Content-Type: text/html
-    Date: Mon, 01 Mar 2021 03:32:09 GMT
-    Etag: "575e1f72-115"
-    Last-Modified: Mon, 13 Jun 2016 02:50:26 GMT
-    Pragma: no-cache
-    Server: bfe/1.0.8.18
-    ```
-6. `-i/–include`输出时包括protocol头信息
-7. HTTP认证
-    1. `--basic`，如`curl --basic  -u user:password http://www.example.com/posts/1`
-8. `-v`:显示通信过程
-9. 获取文件内容
-    1. 在版本7.55之前，似乎默认会将二进制输出到终端，可以使用`-o`或`--output`将文件下载到本地，从7.55开始，默认不会将二进制输出到终端，而是提示warn信息`Warning: Binary output can mess up your terminal. Use "--output -" to tell ...`。如果坚持要输出到终端，可以使用`-o -`，也可以使用`-o - > xxx`重定向里面的内容到本地文件中
-10. `-k`：允许curl使用非安全的ssl连接并且传输数据（证书不受信）
-    
-    ```bash
-    curl -k https://localhost:9001 
-    ```
+1. 网络请求
+    1. 指定请求方式request method`-X`:有`POST`、`GET`、`DELETE`等，默认是`GET`
+        
+        ```bash
+        # GET方法相对简单，只要把数据附在网址后面就行
+        curl example.com/orders?data=xxx
+        # 当然GET方法的查询参数也可以结构化，使用`-G`参数
+        # 可以结合`-d`,`--data-urlencode`等一起使用
+        curl -G -d 'q=kitties' -d 'count=20' https://example.com/search
+        curl -G --data-urlencode 'comment=this cookbook is awesome' https://example.net
+        # POST方法必须把数据和网址分开，curl就要用到--data参数。
+        curl -X POST --data "data=xxx" example.com/form.cgi
+        ```
+    2. 请求参数
+        1. `-d 'xxx'`(`--data`)：HTTP POST方式传送的body数据，使用`-d`参数以后，HTTP 请求会自动加上标头`Content-Type : application/x-www-form-urlencoded`,并且会自动将请求转为 POST 方法，因此可以省略`-X POST`，`-d`可以传送本地文件中的数据。
+            
+            ```bash
+            curl -d 'login=xxx' -d 'password=xxx' -X POST  https://example.com/login
+            # -d还可以读取本地文本文件的数据，向服务器发送，比如读取本地的data.txt文件
+            # 数据很多的时候更推荐用这种方式
+            -d @filename.json
+            curl -d '@data.txt' https://example.com/login
+            ```
+        2. `--data-urlencode`等同于`-d`加上对发送的数据进行URL编码
+            
+            ```bash
+            curl -X POST--data-urlencode "date=April 1" example.com/form.cgi
+            ```
+        3. `–data-raw`
+        4. `–data-ascii`
+        5. `–data-binary`
+            
+            ```bash
+            curl -s -XPOST '<jenkinshost>/createItem?name=<jobname>' -u username:API_TOKEN --data-binary @<jobname>.xml -H "Content-Type:text/xml"
+            ```
+    3. 请求头
+        1. `-H 'xxx:xxx'`(`--header`):自定义头信息传递给服务器
+            
+            ```bash
+            -H "Accept-Encoding:gzip"
+            ```
+    4. 响应头
+        1. `-i/–include`输出包括response头信息
+        2. `-I`(`--head`)只显示response的头信息
+            
+            ```bash
+            curl -I www.example.com
+            
+            HTTP/1.1 200 OK
+            Accept-Ranges: bytes
+            Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
+            Connection: keep-alive
+            Content-Length: 277
+            Content-Type: text/html
+            Date: Mon, 01 Mar 2021 03:32:09 GMT
+            Etag: "575e1f72-115"
+            Last-Modified: Mon, 13 Jun 2016 02:50:26 GMT
+            Pragma: no-cache
+            Server: bfe/1.0.8.18
+            ```
+    5. 提交表单
+        1. `-F 'xxx'`(`--form`):模拟http表单提交数据，也可以上传文件，它会给 HTTP 请求加上标头`Content-Type: multipart/form-data`，该参数可以指定 MIME 类型和文件名
+        
+            ```bash
+            # 上传文件
+            curl --form upload=@localfilename --form press=OK [URL]
+            # 上传文件，比如上传photo.png
+            curl -F 'file=@photo.png' https://example.com/profile
+            # 指定MIME类型和文件名
+            curl -F 'file=@photo.png;type=image/png;filename=me.png' https://example.com/profile # 原始文件名为photo.png，但是服务器接收到的文件名为me.png
+            ```
+    6. HTTP认证
+        1. `-u`(`--user`)
+        1. `--basic`
+            
+            ```bash
+            # Authorization: Basic认证
+            curl --basic -u user:password http://www.example.com/posts/1
+            # 也可以写到URL中
+            curl https://user:password@example.com/login
+            # empty password
+            curl -u 'user:' https://example.com/login
+            # 如果不想显示使用密码，Make Curl Prompt for the Password
+            curl -u 'user' https://example.com/login
+            ```
+    7. 请求来源和重定向
+        1. `-e`(`--referer`)有时你需要在http request头信息中，提供一个referer字段，表示你是从哪里跳转过来的。
+        
+            ```bash
+            curl --referer http://www.example.com http://www.example.com
+            ```
+        2. `-L`参数会让 HTTP 请求跟随服务器的重定向。curl 默认不跟随重定向
+    8. User Agent:修改客户端的设备信息
+        1. `-A`(`--user-agent`):`curl --user-agent "[User Agent]" [URL]`
+            
+            ```bash
+            # 假装是谷歌机器人(Pretend to be a Google Bot)
+            curl -A 'Googlebot/2.1 (+http://www.example.com/bot.html)' https://example.com
+            # 请求头不发送用户代理字段
+            curl -A '' https://example.com
+            # 发送空的请求头字段
+            curl -A '' -H 'User-Agent;' https://example.com
+            # 也可以使用`-H`来指定用户代理
+            curl -H 'User-Agent: php/1.0' https://example.com # 网站认为我是PHP
+            ```
+    9. cookie
+        1. 发送cookie:`curl --cookie "name=xxx" www.example.com`
+        3. 在请求里添加cookie`-b 'nameA=valueA'`，也可以将文件作为cookie`-b fileA`
+            ```bash
+            # 添加多个cookie
+            curl -b 'session=abcdef' -b 'loggedin=true' https://example.com
+            # 添加一个空的cookie
+            curl -b 'session=' https://example.com
+            # 文件作为cookie
+            curl -b cookies.txt https://www.example.com
+            ```
+        2. 保存服务器返回的cookie到文件`-c fileA`
+    10. 代理
+        1. `-x`
+            
+            ```bash
+            # socks5 proxy
+            curl -x socks5://user:password@myproxy.com:8080 https://example.net
+            # http proxy
+            curl -x user:password@myproxy.com:8080 https://example.net
+            # 指定代理主机和端口
+            curl -x proxysever.test.com:3128 http://example.com
+            ```
+    11. SSL证书
+        1. `-k`：不会检查服务器的SSL证书是否正确，如果服务器的SSL证书坏了，过时了，或者有一个web服务器配置错误，这个请求仍然会通过，但不会建立信任。
+            
+            ```bash
+            curl -k https://example.com
+            # 指定SSL版本
+            curl -1 https://example.com # 版本1
+            curl -2 https://example.com # 版本2
+            curl -3 https://example.com # 版本3
+            ```
+        2. `--cert`
+        3. `--key`
+    12. 限制带宽：curl默认使用最大带宽，为了测试，有时需要限制带宽，模拟慢网速的环境
+        1. `--limit-rate`限制请求和响应的带宽
+            
+            ```bash
+            # 将请求和响应的速率限制为
+            curl --limit-rate 200k https://example.com # 每秒200千字节
+            curl --limit-rate 200m https://example.com # 每秒200mb
+            curl --limit-rate 200g https://example.com # 每秒200gb
+            ```
+2. 响应处理
+    1. `-o`获取文件内容：在版本7.55之前，似乎默认会将二进制输出到终端，可以使用`-o`或`--output`将文件下载到本地(等同于`wget`)，从7.55开始，默认不会将二进制输出到终端，而是提示warn信息`Warning: Binary output can mess up your terminal. Use "--output -" to tell ...`。如果坚持要输出到终端，可以使用`-o -`，也可以使用`-o - > xxx`重定向里面的内容到本地文件中
+    2. `-O`使用URL中默认的文件名保存文件到本地
+    3. `-C`使用断点续传功能，如`curl -C - -O http://example.com`
+    4. `-w`(`--write-out`):打印信息到标准输出流，可以输出变量`%{variable}`，也可以从文件中读取内容`@filename`，也可以输出到标准错误流`%{stderr}`，具体支持的变量参考手册。通常用于http请求的诊断
+        
+        ```bash
+        # 查看请求的网络耗时情况
+        curl -o /dev/null -s -w "time_connect: %{time_connect}\ntime_starttransfer: %{time_starttransfer}\ntime_nslookup:%{time_namelookup}\ntime_total: %{time_total}\n" "https://example.com"
+        # 输出如下：网络连接时间为0.279720秒（其中DNS解析为0.016326秒），总体请求1.507秒
+        # time_connect: 0.279720 
+        # time_starttransfer: 1.507216
+        # time_nslookup:0.016326
+        # time_total: 1.507452
+        ```
+4. 指定协议：`curl`支持多种协议，包括`DICT`,`FILE`,`FTP`,`MQTT`,`Gopher`(因为HTTP的成功，现在Gopher协议已经很少使用了)等，默认使用`http`
+    1. `--proto`:指定使用的协议，后面可跟`+`(默认),`-`,`=`，协议间使用逗号分隔，后面的设置会覆盖前面的设置
+        
+        ```bash
+        curl --proto -ftps  # uses the default protocols, but disables ftps
+        curl --proto -all,https,+http # only enables http and https
+        curl --proto =http,https # also only enables http and https
+        # 如果使用mac，协议最好用单引号包裹，比如
+        curl --proto '=http,https'
+        # 字典的使用 
+        curl dict://dict.org/d:bash # 查询bash单词的含义
+        curl dict://dict.org/show:db # 列出所有可用词典
+        curl dict://dict.org/d:bash:foldoc # 在foldoc词典中查询bash单词的含义
+        # 读取本地文件
+        curl file:/Users/xxx/fileA
+        curl file:///Users/xxx/fileA
+        # FTP下载，若在url中指定的是某个文件路径而非具体的某个要下载的文件名，CURL则会列出该目录下的所有文件名而并非下载该目录下的所有文件，比如
+        curl -u ftpuser:ftppass -O ftp://ftp_server/public_html/
+        ```
+5. 通信过程
+    1. 详细信息
+        1. `-v`显示通信过程:以`>`为前缀的是发送到服务器的数据，以`<`为前缀的是从服务器接收到的数据，以`*`开头的是misc信息，如连接信息、SSL握手信息、协议信息等。通常用于调试
+        2. `-vv`更详细的信息？
+        2. `--trace`or`--trace-ascii`等于`-v`加上输出原始的二进制数据
+        3. `--trace-time`添加时间戳
+    2. 安静模式
+        1. `-s`：不显示进度和错误信息，但任然打印请求到的数据，除非重定向
+        2. `-S`:打印错误信息，无视`-s`
+    3. `--progress`显示进度条
+    4. `-m`(`--max-time <seconds>`)指定处理的最大时长
+6. IP
+    1. `--resolve`不需要修改`/etc/hosts`直接解析 ip 请求域名
+        
+        ```bash
+        # 将 http://example.com 或 https://example.com 请求指定域名解析的 IP 为 127.0.0.1
+        curl --resolve example.com:80:127.0.0.1 http://example.com/
+        ```
 
 ```bash
-# 例子
+# 更多例子
 # 1
 curl -X GET -H "Sign: 12345672147b8d706e7022ef862b0dec25fce20415263e48ed37b2a17385e41a" -H "Timestamp: 1542102231" -H "Cache-Control: no-cache" -H "Postman-Token: 12345678-e5a2-4c28-26fe-0bf63eeea10f" "https://xxx.com/vin?vin=WAUAMD4L2CD005389"`
 # 2
@@ -1008,6 +1235,10 @@ curl 'http://example.com/foo/bar' \
   YCUBE_TOKEN=xxx.xxx.xxx;' \
   --compressed \
   --insecure
+# 4 获取响应的状态码
+curl -I -m 10 -o /dev/null -s -w %{http_code} www.baidu.com
+# 5 查看网页源代码
+curl www.example.com
 ```
 
 使用：

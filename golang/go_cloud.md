@@ -115,7 +115,8 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 ##### 新版本的DSL
 ![dsl](../picture/golang/goa-dsl.png)
 
-1. API：描述一个服务，可以对应多个环境或服务器
+1. `API`：描述一个服务，可以对应多个环境或服务器
+2. `Pattern`:todo
 
 问题：
 1. attribute does not have "rpc:tag" defined in the meta
@@ -376,6 +377,7 @@ https://github.com/go-gorm/gorm
         mysql://root:123456@tcp(127.0.0.1:3306)/yourdbname
         ```
     2. postgres
+        1. 可知dsn的scheme使用`postgres`或`postgresql`都可以，但是调用`sql.Open(driverName, dataSourceName string) (*DB, error)`方法的时候，driverName要根据驱动来，比如使用`github.com/lib/pq`这个驱动，因为注册的时候使用的`	sql.Register("postgres", &Driver{})`，所以driverName必须是`postgres`
 2. 查询
     1. 使用`join()`
     
@@ -399,6 +401,7 @@ https://github.com/go-gorm/gorm
             DB.Model(&user).Preload("Profile").First(&user) -- 单条
             DB.Model(&user).Preload("Profile").Find(&users) -- 列表
             ```
+3. 创建：版本v2开始才支持批量创建
 1. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
     1. `FirstOrCreate()`:
     2. 使用`gorm:insert_option`
@@ -427,6 +430,7 @@ https://github.com/go-gorm/gorm
     
 问题：
 1. `Record Not Found`错误会打印出来
+2. 什么时候会出现`ErrRecordNotFound`这个错
 
 ### SQLX
 https://github.com/jmoiron/sqlx

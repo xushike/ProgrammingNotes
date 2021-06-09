@@ -7,7 +7,8 @@
     1. 易于部署/分发
     2. 方便交叉编译
 2. 介于偏底层的系统语言（就像 C 或 C++ 语言）和基于运行时的语言（比如 Java 或 Python）之间，但更适用于系统编程领域。它是系统编程语言，系统编程语言说明它有直接操作硬件的能力，就像C/C++一样。(几乎)拥有对硬件的整体控制(内存布局，处理器功能)。相比之下Go 甚至不是系统编程语言，尽管使用它在后端基础架构上编写微服务和工具等非常棒，但我不希望使用它编写内核或内存分配器。
-3. 内存安全。安全应对空指针、竞态条件和各种低级威胁。在C/C++里面，很容易会因为内存管理的问题而出现Segmentation Fault，在Rust中，由于引入了所有权（Ownership）和生存期（Lifetime）的概念，实现了自动内存管理的同时，还避免了各种内存错误。但同时，也提供unsafe块和祼指针（Raw Pointer），提供更多的自由度。可预测的运行时行为(零代价抽象 zero cost abstractions，无垃圾回收)，free of charge。相比之下Go为了保证语言的简洁性和正交性，将很多底层的操作推迟到运行时来进行。
+3. 内存安全（memory-safe）。安全应对空指针、竞态条件和各种低级威胁。在C/C++里面，很容易会因为内存管理的问题而出现Segmentation Fault，在Rust中，由于引入了所有权（Ownership）和生存期（Lifetime）的概念，实现了自动内存管理的同时，还避免了各种内存错误。但同时，也提供unsafe块和祼指针（Raw Pointer），提供更多的自由度。可预测的运行时行为(零代价抽象 zero cost abstractions，无垃圾回收)，free of charge。相比之下Go为了保证语言的简洁性和正交性，将很多底层的操作推迟到运行时来进行。
+    1. 不使用 GC 使 Rust 奇快无比，特别是在需要保证延迟，而不仅仅是高吞吐量的时候
 4. 高性能高并发
     1. 具备更简单的多线程模型，类似于 C++ 或 Java。与go相比，具有更好的线程间通信能力，比如 MPSC channel（非常类似于 Go channel）
 5. 工具:
@@ -24,6 +25,7 @@
     3. Rust 还有一个功能非常强大的宏（macro）系统，可以使编译器做很多工作，比如生成代码，除此之外还有更多可以细粒度控制的细节。所以这意味着 Rust 的学习挑战很大。
 12. Rust 的低开销非常适合嵌入式编程
 13. Rust 已成为编写编译为 WebAssembly 的代码的首选语言
+14. 非面向对象，从它所有权机制的创新可以看出这一点。但是面向对象的珍贵思想(封装和继承)可以在 Rust 实现
 
 ### 1.4 他人评价
 网友:
@@ -37,26 +39,596 @@
 3. 生产率。Rust 拥有出色的文档，友好的编译器以及有用的错误消息以及一流的工具——集成的软件包管理器和构建工具，具有自动完成和类型检查的智能多编辑器支持，自动格式化程序等。
 
 ## 2 历史
-Rust 是由 Mozilla 开发人员 Graydon Hoare 在 2006 年开发的个人项目，从那个时候起，该语言就像它所命名的 Rust 真菌一样，开始传播，它今天被广泛应用于构建网络、嵌入式计算机、分布式服务和命令行。
-
 Rust 编程语言核心团队有：
 1. Carol Nichols--《The Rust Programming Language》一书的合著者
+
+Rust 是由 Mozilla 开发人员 Graydon Hoare 在 2006 年开发的个人项目，从那个时候起，该语言就像它所命名的 Rust 真菌一样，开始传播。它今天被广泛应用于构建网络、嵌入式计算机、分布式服务和命令行。
+
+最早发布于 2014 年 9 月
+
+2015 年，Mozilla 发布了 Rust 的首个稳定版本 v1.0。
+
+2021年2 月 8 日，华为、微软、AWS、谷歌和 Mozilla 五大公司联合成立 Rust 基金会
 
 ## 3 常识
 ### 3.1 模式匹配
 模式匹配：多出现在函数式编程语言之中，为其复杂的类型系统提供一个简单轻松的解构能力。比如从enum等数据结构中取出数据等等。
 
+### 3.2 x..y
+`x..y`，在rust中它是左闭右开的，即数学上的`[x,y)`
+`x..=y`，等价于数学上的`[x,y]`
+`..y`等价于 `0..y`
+`x..`等价于位置 x 到数据结束
+`..`等价于位置 0 到结束
+
+### 3.3 深拷贝和浅拷贝
+rust默认全是浅拷贝，想深拷贝使用`clone()`
+
 ## 4 文档等
 1. 官方
     3. https://www.rust-lang.org/
-    1. start：https://www.rust-lang.org/learn
-    1. 在线练习场：play.rust-lang.org
-2. https://rustlang-cn.org/
-3. 大牛写的：https://rustcc.gitbooks.io/rustprimer/content/
+        1. start：https://www.rust-lang.org/learn
+        1. https://doc.rust-lang.org/book/
+        1. 在线练习场：play.rust-lang.org
+    2. https://rustlang-cn.org/
+3. 大牛写的
+    1. https://rustcc.gitbooks.io/rustprimer/content/
+    2. http://www.sheshbabu.com/posts/rust-for-javascript-developers-tooling-ecosystem-overview/
+    
+## 6 相关项目
+1. servo
+2. deno
+
+# 二 安装配置
+## mac
+1. 安装：有三种方式
+    1. `brew install rust`：这种安装后没有`rustup`，所以不推荐
+    2. `brew install rustup-init`，然后执行`rustup-init`,不过这样安装，要升级 rustup就不能用`rustup self update`，因为brew 接管了 rustup 的更新及卸载。
+    3. `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+2. 查看是否成功安装`rustc --version` or `cargo --version`
+
+## 配置
+1. 设置源
 
 # 三 基础
 
-## 3 流程控制
+## 0 架构和常见词语
+### 组织管理
+Rust 中有三个重要的组织概念：箱(Crate)、包(Package)、模块(Module)
+
+模块
+1. 声明:使用关键字`mod`,模块默认都是私有的，除非带上`pub`
+
+    ```rust
+    // 模块
+    mod nation {
+        mod government {
+            fn govern() {}
+        }
+        mod congress {
+            fn legislate() {}
+        }
+        mod court {
+            fn judicial() {}
+        }
+    }
+    ```
+2. 引入：rust默认将`.rs`文件当做一个模块，模块名就是文件名?但是普通的文件夹不能被rust编译器识别，需要在文件夹下创建`mod.rs`文件或者创建和文件夹同级的同名rs文件
+    
+    ```rust
+    // 文件夹下模块的引入
+    // 在main.rs中引用子目录
+    // 方式一(推荐)：子目录中创建mod.rs文件，并在mod.rs文件中导出对应的模块
+    src
+    ├── main.rs
+    └── user_info
+        ├── mod.rs
+        └── user.rs
+    // user.rs
+    pub fn say() {
+        println!("hello")
+    }
+    // mod.rs
+    pub mod user; // 导出模块，模块名需要和子目录下的文件名(user)相同
+    // main.rs
+    mod user_info; // mod 子目录名(user_info)
+    fn main(){
+        user_info::user::say();
+    }
+
+    // 方式二(不推荐):不使用mod.rs，而是在main.rs所在目录下创建同名的文件并导出对应的模块
+    src
+    ├── main.rs
+    ├── user_info
+    │   └── user.rs
+    └── user_info.rs
+    // user.rs
+    pub fn say() {
+        println!("hello")
+    }
+    // user_info.rs 文件名和子目录名需要一样
+    pub mod user; // 导出模块，模块名需要和子目录下的文件名(user)相同
+    // main.rs
+    mod user_info; // mod 子目录名(user_info)
+    fn main(){
+        user_info::user::say();
+    }
+    ```
+3. 调用
+
+    ```rust  
+    // 绝对路径从`crate`关键字开始, 相对路径从`self`或`super`关键字或一个标识符开始
+    // 绝对路径
+    crate::nation::government::govern();
+    // 相对路径:从当前模块开始
+    nation::government::govern();
+    ```
+4. 简写和别名:使用`use`关键字，它的作用就是简化调用的名称，比如`use std::f64::consts::PI;`然后就可以直接使用`PI`而不用加前面那么长的前缀了
+    
+    ```rust
+    // 引用标准库
+    // 所有的系统库模块都是被默认导入的，所以在使用的时候只需要使用 use 关键字简化路径就可以方便的使用了。
+    use std::f64::consts::PI; 
+    
+    // use 关键字能够将模块标识符引入当前作用域并设置别名
+    use crate::nation::govern as nation_govern;
+    // use 关键字可以与 pub 关键字配合使用
+
+    ```
+
+### 访问权限
+Rust 中有两种简单的访问权：公共（public）和私有（private），在没有声明`pub`的情况，默认都是私有的。
+
+### 所有权(Ownership)
+首先要明白的几点：
+1. 内存安全
+    1. 其他语言可能有的问题
+        1. 空指针和悬空指针
+    2. 其他语言实现内存安全大多是用垃圾回收
+2. 堆栈分配：在Rust里，任何固定大小(在编译期可以知道的大小)，比如机器整数(machine integers)，浮点数类型，指针类型和一些其他类型会被存储在栈上。动态的和“不确定大小(unsized)”数据被存储在堆上。
+
+所有权：
+1. "dropped"丢弃:当某些值的所有者被“释放(freed)”，或者用Rust的术语“丢弃(dropped)”，那么这个被拥有的值也会被丢弃。这些值在什么时候被丢弃？这才是吸引人的地方。当这个程序离开了变量被生命的块(block)，这个变量就会被丢弃，变量的值也会被丢弃。一个块可以是一个函数，一个if语句，或者几乎是任何用大括号引入的代码块。
+2. 如何保证每一个值都被唯一的变量拥有：Rust在进行类似赋值或者给函数传值的行为时，Rust把值移动给了新的拥有者(这是一个非常重要的概念，会影响我们在Rust中写代码的方式)
+    
+    ```rust
+    // 例子1
+    let name = "Pascal".to_string();
+    let a = name;
+    let b = name;
+    // 在其他语言比如js中，可能会认为a和b都有一个对name的引用并且它们都指向相同的数据
+    // 但在rust中会报错,因为把name赋值给b的时候，name实际上已经不再拥有值了。为什么呢？因为在这个时候，所有权已经被移动给a了
+    // 额外很重要的一点是，所有的这种静态分析都是由编译器完成，而实际上并没有运行我们的代码。
+    // 例子2 也是一样
+    fn greet(name: String) {
+        println!("Hello, {}!", name);
+    }
+    let name = "Pascal".to_string();
+    greet(name);
+    greet(name); // Move happened earlier so this won't compile
+    ```
+3. 如果我们真的想要有多个变量指向同一块数据该怎么实现。有两种方法
+    1. 拷贝：对值进行拷贝或者克隆来处理这种情况可能是最简单但是开销最大的方式，因为最终还是要复制内存中的数据
+        
+        ```rust
+        let name = "Pascal".to_string();
+        let a = name;
+        let b = a.clone();
+        ```
+    2. 借用(Borrowing)：使用借用符`&`对变量进行借用。通过`&`的借用，不会得到值的所有权，但是能够引用该变量。
+        
+        ```rust
+        // 例子1 比如你只想打印值，而不想改变值的所有权
+        fn greet(name: &String) {
+            println!("Hello, {}!", name);
+        }
+        let name = "Pascal".to_string();
+        greet(&name);
+        greet(&name); // 可以多次借用
+        // 例子2 
+        let name = "Pascal".to_string();
+        let a = &name;
+        let b = a;
+        ```
+
+## 1 工具生态(Tooling Ecosystem)
+1. Version Manager：`rustup` -- the Rust installer and version management tool
+    1. 更新rust`rustup update`
+2. Package：In Rust, we often refer to packages as “crates.”
+    1. PackageManager：`Cargo`
+        1. create your project with `cargo new projectNameA`
+        2. 格式化`cargo fmt`
+        3. 修复代码警告`cargo fix`
+        1. build your project with `cargo build`
+        2. run your project with `cargo run`
+        3. test your project with `cargo test`
+        4. build documentation for your project with `cargo doc`
+        5. publish a library to crates.io with `cargo publish`
+    2. Package Registry：`crates.io`
+    3. Package Manifest：`Cargo.toml`
+    4. Dependency Lockfile：`Cargo.lock`
+    9. 依赖漏洞检查(Dependency Vulnerability Checker):cargo-audit
+9. compilation tool：`rustc`
+5. Task Runner：`make`, `cargo-make`
+6. Live Reload：`cargo-watch`
+7. Linter：`Clippy`
+8. Formatter:`rustfmt`
+
+## 2 变量和数据类型
+Rust有自动判断变量类型的能力，但它是强类型语言
+
+### 常量,不可变变量和变量
+常量
+
+rust的变量分为不可变变量和可变变量：
+1. 不可变变量：Rust 语言为了高并发安全而做的设计--在语言层面尽量少的让变量的值可以改变。它不可变，但可以重影(Shadowing)--用同一个名字重新代表另一个变量实体，其类型、可变属性和值都可以变化。
+
+    ```rust
+    let a = 123;
+    // 有三个错误的写法和一个正确的写法
+    a = "abc"; // incorrect,a已被确定为整型数字，不能把字符串类型的值赋给它
+    a = 4.56; // incorrect,这个自动转换数字精度有损失，Rust 语言不允许精度有损失的自动数据类型转换(待确认)
+    a = 456; // incorrect,a不是个可变变量
+    let a = 456.2 ; // correct, Shadowing
+    let mut a = "hello" ; // correct, Shadowing
+    ```
+2. 可变变量：使用`mut`(英文mutable的简写)来声明，它仅仅是值可以变化。
+    
+    ```rust
+    let mut a = 123;
+    a = 456;
+    let a = "hello"; // correct, Shadowing
+    ```
+### 2.1 基础数据类型/原始数据类型(primitive type)
+原始类型的值和引用都存储在栈上
+
+#### 字符
+大小为 4 个字节，代表 Unicode标量值
+
+#### 字符串
+首先要明确`str`,`&str`和`String`是三个不同的数据类型。
+1. `str`字符串字面量，它是基本数据类型，通常通过`&str`的方式来使用，也可以字面量的方式来使用
+    1. 有点难解释它是什么：它是引用自“预分配文本(preallocated text)”的字符串切片，这个预分配文本存储在可执行程序的只读内存中(即最终生成的二进制中)。换句话说，这是装载我们程序的内存并且不依赖于在堆上分配的缓冲区。
+    
+    ```rust
+    // 字面量
+    let hello: &'static str = "Hello, world!"; // They are 'static because they’re stored directly in the final binary, and so will be valid for the 'static duration.
+    
+    let hello = "Hello, world!"; // 得到的是 &str 而不是 str
+    ```
+2. `&str`类型：它表示字符串切片的引用，它能够引用String类型而无需复制
+    1. 它占用两个字长
+        1. 指向字符串值的指针
+        2. 长度
+    2. 它没有容量:因为它只是对字符串数组的引用，不管理容量，`String`才管理容量。
+
+        ```rust
+        let s = "Have a nice day";
+        let len = s.len(); // 获取长度
+        assert!(s.is_empty()); // 是否为空
+        s.as_bytes(); // 转换为字节切片
+        s.as_bytes_mut(); // 转换为可变字节切片
+        ```
+    3. 遍历
+        
+        ```rust
+        // 通过字符迭代
+        let word = "goodbye";
+        let mut chars = word.chars();
+        let count = word.chars().count();
+        // 通过字节迭代
+        let mut bytes = "bors".bytes();
+        ```
+3. `String`类型：变量本身存储在栈上,指向的字符串值存储在堆上。因为值在堆上，所以它可以动态增长(前提是设置为mutable)。和`vec`的区别是，`String`只能存储标准UTF-8文本
+    1. 对象存储在栈上，固定的三个字长(word)，分别是
+        1. 实际的值指针：指向的值存储在堆上
+        2. 容量
+        3. 长度
+    ```rust
+    let s = "Have a nice day".to_string(); // 得到的是String类型
+    let mut s = "Have a nice day".to_string();
+    // 追加文本
+    s.push_str( " Precht");
+    ```
+
+Rust为什么同时具有`String`和`&str`:安全性，正确性和性能。
+
+#### 布尔
+#### 整型和浮点数型
+
+```rust
+// 不指定类型的情况下默认会被推导为32位整型
+let a = 123;
+let a: u64 = 123; // 指定类型
+```
+### 2.2 复合数据类型
+#### 元组
+元组用一对`()`包括的一组数据来表示，可以包含不同种类的数据
+
+```rust
+let tup: (i32, f64, u8) = (500, 6.4, 1);
+println!("{}",tup.0); // 500
+
+let (x, y, z) = tup; // 可以用js解构的方式获取其中的数据
+println!("{}",y); // 500
+```
+
+#### 数组
+数组用一对`[ ]`包括的同类型数据来表示
+
+```rust
+// 声明
+let a = [1, 2, 3, 4, 5];
+let c: [i32; 5] = [1, 2, 3, 4, 5]; // c 是一个长度为 5 的 i32 数组
+let d = [3; 5]; // 等同于 let d = [3, 3, 3, 3, 3];
+a[0] = 123; // 错误：数组 a 不可变
+let mut a = [1, 2, 3];
+a[0] = 4; // 正确
+
+// 在函数中传递数组
+fn single_nubmer(arr: [i32; 7]) -> i32 {
+    let mut res = 0;
+    for e in arr.iter() {
+        res = res ^ e;
+    }
+    return res;
+}
+```
+
+使用：
+1. 遍历
+    
+    ```rust
+    // 1. 
+    let a = [10, 20, 30, 40, 50];
+    let mut index = 0;
+    while index < 5 {
+        println!("the value is: {}", a[index]);
+
+        index += 1;
+    }
+    // 2. 
+    let vec = vec!['a', 'b', 'c'];
+    for i in 0..vec.len() {
+        println!("{}", vec[i]);
+    }
+    
+    // 3. 
+    let vec = vec!['a', 'b', 'c'];
+    for i in vec {
+        println!("{}", i);
+    }
+    
+    // 4. 
+    for element in a.iter() {
+        println!("the value is: {}", element);
+    }
+    ```
+
+#### 向量
+向量（Vector）是一个存放多值的单数据结构，该结构将相同类型的值线性的存放在内存中。向量是线性表，在 Rust 中的表示是 `Vec<T>`，向量类似一个数组(array)或者列表(list)，但它是动态增长的。所以向量的长度无法从逻辑上推断。
+
+```rust
+// 声明
+let vector = vec![1, 2, 4, 8];     // 通过数组创建向量
+let vector: Vec<i32> = Vec::new(); // 创建类型为 i32 的空向量
+
+// 取出向量中的值
+v[1]); // 不安全
+v.get(0); // get是一种安全的取值方法,返回值是 Option 枚举类，有可能为空
+
+// 追加单个元素
+vector.push(16);
+
+// 拼接两个向量
+v1.append(&mut v2);
+```
+
+#### 切片(slice)
+rust的切片一定是引用类型，写法是`&T[x..y]`，`T`是某个线性数据结构的变量名
+
+```rust
+// 基于字符串切片
+let s = String::from("broadcast");
+let part1 = &s[0..5];
+let part2 = &s[5..9];
+println!("{}={}+{}", s, part1, part2);
+// 基于数组切片
+let arr = [1, 3, 5, 7, 9];
+let part = &arr[0..3];
+let part2 = &arr;
+
+// 在函数中使用切片
+fn single_nubmer_slice(slice: &[i32]) -> i32 {
+    let mut res = 0;
+    for e in slice.iter() {
+        res = res ^ e;
+    }
+    return res;
+}
+```
+
+#### 结构体
+```rust
+// 一 定义结构体
+// 1. 定义普通结构体
+struct Site { // struct关键字只能用来定义结构体的字段
+    domain: String, // 而且每个字段定义之后用逗号分隔
+    name: String,
+    nation: String, 
+    found: u32
+} // 结尾不需要分号
+
+// 还可以定义没有字段的结构体，这种结构体称为单元结构体（Unit Struct）
+struct UnitStruct;
+
+// 2. 定义元组结构体
+struct Color(u8, u8, u8); // 元组结构体就是为了，所以不需要字段名
+let black = Color(0, 0, 0);
+println!("black = ({}, {}, {})", black.0, black.1, black.2);
+
+// 二 声明结构体实例
+// 1. 声明普通结构体实例
+let name = String::from("RUNOOB");
+let runoob = Site {
+    domain: String::from("www.runoob.com"),
+    name, // 如果实例化的结构体字段名称和现有变量名称一样，可以简化书写
+    nation: String::from("China"),
+    found: 2013
+};
+
+// 三 声明结构体方法(Method)
+impl Rectangle {
+    fn area(&self) -> u32 { // 结构体方法的第一个参数必须是 &self，不需声明类型，self是关键字
+        self.width * self.height
+    }
+    
+    fn wider(&self, rect: &Rectangle) -> bool {
+        self.width > rect.width
+    }
+}
+let rect1 = Rectangle { width: 30, height: 50 };
+println!("rect1's area is {}", rect1.area()); // 在调用结构体方法的时候不需要填写 self ，这是出于对使用方便性的考虑
+
+// 四 声明结构体函数:结构体函数不依赖实例，使用的时候需要声明是在哪个impl块中，比如`String::from`就是结构体函数
+impl Rectangle {
+    fn create(width: u32, height: u32) -> Rectangle {
+        Rectangle { width, height }
+    }
+}
+
+// 五 结构体更新语法：利用已有的结构体实例创建新的结构体实例
+// 不过这种语法不允许一成不变的复制另一个结构体实例，意思就是说至少重新设定一个字段的值才能引用其他实例的值
+let site = Site {
+    domain: String::from("www.runoob.com"),
+    name: String::from("RUNOOB"),
+    ..runoob
+};
+
+// 六 封装结构体：使用pub关键字
+pub struct ClassName {
+    pub field: Type,
+}
+
+impl ClassName {
+    pub fn new(value: i32) -> ClassName {
+        ClassName {
+            field: value
+        }
+    }
+    
+    pub fn public_method(&self) {
+        println!("from public method");
+        self.private_method();
+    }
+
+    fn private_method(&self) {
+        println!("from private method");
+    }
+}
+
+fn main() {
+    let object = ClassName::new(1024);
+    object.public_method();
+}
+
+// 七 继承：Rust 没有提供跟继承有关的语法糖，也没有官方的继承手段（完全等同于 Java 中的类的继承），但灵活的语法依然可以通过特性（trait）实现多态
+```
+
+结构体所有权
+
+关于`self`的几种变体：
+1. `self`允许实现者移动和修改对象，对应的闭包特性为FnOnce
+2. `&self`既不允许实现者移动对象也不允许修改，对应的闭包特性为Fn
+3. `&mut self`允许实现者修改对象但不允许移动，对应的闭包特性为FnMut
+4. 不含self参数的关联函数称为静态方法 (static method)
+
+### 泛型
+Rust的泛型是在编译期自动推导，其他语言大多是利用反射/RTTI之类的在运行期做。(待确认)
+
+```rust
+// 1. 结构体的泛型
+struct Point<T> {
+    x: T,
+    y: T
+}
+// 使用的是自动类型机制，但不允许出现类型不匹配的情况，如
+let p1 = Point {x: 1, y: 2}; // correct
+let p = Point {x: 1, y: 2.0}; // incorrect，因为x与 1 绑定时就已经将 T 设定为 i32，所以不允许再出现 f64 的类型。如果我们想让 x 与 y 用不同的数据类型表示，可以使用两个泛型标识符
+struct Point<T1, T2> {
+    x: T1,
+    y: T2
+}
+
+// 2. 结构体方法的泛型
+impl<T> Point<T> { // impl 关键字的后方必须有 <T>，因为它后面的 T 是以之为榜样的
+    fn x(&self) -> &T {
+        &self.x
+    }
+}
+// 也可以为其中的一种泛型添加方法
+impl Point<f64> {
+    fn x(&self) -> f64 {
+        self.x
+    }
+}
+
+// 3. 函数的泛型
+fn max<T>(array: &[T]) -> T {
+    let mut max_index = 0;
+    let mut i = 1;
+    while i < array.len() {
+        if array[i] > array[max_index] {
+            max_index = i;
+        }
+        i += 1;
+    }
+    array[max_index]
+}
+```
+
+### 特性
+类似于其他语言中接口(interface)的概念，区别在于默认特性: 特性可以定义方法作为默认方法
+```rust
+// 定义特性
+trait Descriptive {
+    fn describe(&self) -> String;
+}
+
+// 定义结构体并实现该特性：语法是 impl <特性名> for <所实现的类型名>
+// 同一个类可以实现多个特性，但每个impl块只能实现一个
+struct Person {
+    name: String,
+    age: u8
+}
+
+impl Descriptive for Person {
+    fn describe(&self) -> String {
+        format!("{} {}", self.name, self.age)
+    }
+}
+
+// 默认特性
+impl Descriptive for Person {} // 块的内容为空
+
+// 特性作为入参: 任何实现了 Descriptive 特性的对象都可以作为这个函数的参数
+fn output(object: impl Descriptive) {
+    println!("{}", object.describe());
+}
+```
+    
+### 变量的引用(references)
+有两种方式:
+1. 不可变的`&T`
+2. 可变的`&mut T`
+
+### 类型转换
+
+```rust
+// 1. 基础类型转换成字符串，使用to_string() ，得到是String类型
+```
+
+## 3 流程控制(Control Flow)
 ### 3.1 match
 match的功能仅仅是匹配，和其他编程语言的switch类似，要想发挥出它全部的威力，需要结合"模式匹配"来使用，从而实现解构等。和switch有两点不同：
 1. match所罗列的匹配，必须穷举出其所有可能。当然，你也可以用 _ 这个符号来代表其余的所有可能性情况，就类似于switch中的default语句。
@@ -67,18 +639,23 @@ match的功能仅仅是匹配，和其他编程语言的switch类似，要想发
 ## 15 注释
 
 # 五 经验
-## 1. 常用标准库
+## 2 常用标准库 std
 ### Rayon
 for writing parallel & data race-free code.
 
 ### serializing
 for serializing and deserializing data.
 
+### string
+
 ### Tokio/async-std
 for writing non-blocking, low-latency network services.
 
 ### tracing
 for instrumenting Rust programs to collect structured, event-based diagnostic information.
+
+# 六 问题
+## 1 warning: spurious network error (2 tries remaining)...
 
 
 # 七 未整理

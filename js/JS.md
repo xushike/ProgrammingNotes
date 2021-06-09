@@ -599,6 +599,10 @@ console.log(countBits(1234)) // 5
 ### 1.3 类型转换(Type conversion)
 js的类型转换包含Type conversion和Type coercion(类型强制转换)，两者的区别是：前者可以是隐式的也可以是显式的，后者是隐式的。
 
+1. number to string
+    1. `toString()`
+    2. 加上空字符串
+
 ### 1.4 局部变量
 ### 1.5 全局变量
 1. 如果您把值赋给尚未声明的变量，该变量将被自动作为全局变量声明
@@ -748,7 +752,7 @@ for (var i = 0, item; item = a[i]; i++) {
 
 #### 方法属性
 ##### decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
-有效的URI中不能包含某些字符，例如空格、中文。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`）替换所有无效的字符，从而让浏览器能够接受和理解。大家通俗地叫这几个方法为`urlencode`方法
+根据HTTP的规范(URL允许的字符集是ISO-8859-1、以及一些其他要求)，所以有效的URI中不能包含空格、中文等。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`，空格会被转换为`%20`）替换所有无效的字符，从而让浏览器能够接受和理解。大家通俗地叫这几个方法为`urlencode`(url编码)方法
 
 ```JavaScript
 var uriStr = "http://www.baidu.com?name=张三&num=001 zs"; 

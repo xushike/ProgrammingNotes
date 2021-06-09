@@ -149,9 +149,6 @@
 1. 前段抓包
 1. bash
     1. set -o vi
-1. db
-    1. 通过执行计划（查询计划？）来分析SQL的执行性能
-        1. 全表扫描的要调整
 1. http 请求方式
     1. http://www.moonsec.com/post-772.html
     2. application/json
@@ -429,7 +426,6 @@ package github.com/cweill/gotests/...: exit status 1
     2. 触发器
     1. postgressql ssl
     1. create table if not exists 。。。
-    1. 流程控制：case when then end
     1. 数据库调优
     2. 缓存到go里面和缓存到redis里面的比较
     1. 定时任务
@@ -1431,8 +1427,6 @@ for (let [i, item] of arr.entries()) {
 331. [github指南?](https://services.github.com/index.html)
 332. linux
     1. 向标准错误流输入了东西之后如何看到?可以看到之前的吗?打印到标准错误流有什么用?
-
-334. `ifconfig.me/all`
 335. `noscript`
 336. png和jpg可以直接修改后缀名转换吗?用go圣经中的转换有何不同?jpg和jepg的区别,以及mp4和mpeg4等
 337. PopCount的原理和实现
@@ -1954,7 +1948,6 @@ worker.cancel();
     2. arraybuffer可以存放object吗?
     3. js 堆栈 内存的笔记,arraybuffer开辟的内存是从哪儿开辟的
     4. arraybuffer和buffer的区别
-    5. buffer和缓冲区
     6. typed array
 
 63. curl 和wget
