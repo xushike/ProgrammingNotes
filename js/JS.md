@@ -1136,7 +1136,15 @@ JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
 ### 4.8 JSON
 包含两个方法: 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，以及将对象/值转换为 JSON字符串的 `stringify()`方法。除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
 
-关于JSON的其他知识参考JSON笔记
+```js
+var a = {
+  "data": "{\"code\":\"200\",\"message\":\"接口掉用成功\",\"success\":true}",
+}
+c = JSON.parse(a.data)
+console.log(c); // { code: '200', message: '接口掉用成功', success: true }
+```
+
+更多关于JSON的其他知识参考JSON笔记
 
 #### 4.8.1 方法
 1. `JSON.stringify(value[, replacer [, space]]) string`:replacer可以是函数、数组、null或省略，space用于指定缩进的字符串，用于美化输出（pretty-print）

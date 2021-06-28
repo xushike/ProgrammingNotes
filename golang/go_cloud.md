@@ -261,14 +261,20 @@ https://github.com/spf13/cobra
         1. single dash，比如`-h`
         2. double dash,比如`--help`
    
-例子
+通常我们见到的命令是怎么使用的：
 1. `server version`中`server`是command，`version`是subCommand,同理`server help`中`help`是subCommand
 2. `git clone URL --bare`,`clone`是一个subCommand，`URL`是参数，`--bare`是选项
 2. `server -h`或`server --help`中的`-h`和`--help`是flags
 
-使用：
+cobra cmd的使用：
 1. 初始化`cobra init projectNameA`
-2. 增加子命令`cobra add subCmdA`
+2. 增加子命令`cobra add subCmdA`，会在cmd子目录下创建`subCmdA.go`文件
+
+cobra库的使用：
+1. 结构体
+    1. `cobra.Command`
+        1. `PreRun func(cmd *Command, args []string)`
+        2. `Run func(cmd *Command, args []string)`
 3. `Flags().String(name string, value string, usage string) *string`:name是参数名称，value是默认值，usage是使用说明
 4. `Flags().StringVarP(p *string, name, shorthand string, value string, usage string)`
 
@@ -450,6 +456,11 @@ https://github.com/jmoiron/sqlx
 github.com/go-sql-driver/mysql
 
 ![连接池架构图](../picture/golang/mysql_driver_architecture.jpg)
+
+问题：
+1. packets.go: busy buffer
+    1. 解决办法
+        1. tx 在执行Query()操作后，rows会维护这个数据库连接，当 tx 想再次调用当前连接进行数据库操作的时候，因为连接还没有断开，没有调用 rows.Close()，tx 无法再从连接池里获取当前连接，所以会提示 busy buffer。
 
 ### postgresql 
 1. github.com/lib/pq
@@ -864,6 +875,23 @@ Paho是 Eclipse 的一个开源 MQTT 项目，包含多种语言实现，比如J
 ## cron
 https://github.com/robfig/cron
 
+```go
+// 1. 最简单的使用
+c := cron.New()
+fn := func() {
+    fmt.Println("hello")
+}
+if _, err := c.AddFunc("*/1 * * * *", fn); err != nil {
+    log.Fatal(err)
+}
+
+c.Start()
+select {}
+```
+
+问题：
+1. expected exactly 5 fields, found 6
+
 ## rpc
 ### protoc
 安装：
@@ -1149,6 +1177,10 @@ golang.org/x/crypto/bcrypt
 ## OCR
 ### [gosseract](https://github.com/otiai10/gosseract)
 基于Tesseract C++ library
+
+## 数据类型
+### 精确的浮点数
+github.com/shopspring/decimal
 
 # 五 经验
 ## 1 为什么需要框架

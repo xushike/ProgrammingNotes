@@ -94,6 +94,10 @@ OpenJDK源代码不完整：这个很容易想到，在采用GPL协议的OpenJDK
 ### 3.30 如何字面的方式表示各种进制
 1. 二进制：以`0b`开头
 
+## 4 文档网址等
+1. 官方
+    1. javase tutorial：https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html
+
 # 二 安装配置
 ## 1 windows
 1. 下载jdk并安装.路径中不能有中文，最好不要有空格
@@ -499,10 +503,15 @@ System.out.println(Byte.toUnsignedInt(a)); // 252
     ```
 
 #### 浮点型
-java默认的浮点数类型是double，如果要用float，应该在尾部加上F或者f。double比float精确，两者都可能不能精确表示一个浮点数，如果需要精确保存一个浮点数，可以用BigDecimal类。
+有两个浮点数：
+1. float:32位，单精度
+2. double:64位，双精度
+
+java默认的浮点数类型是`double`，如果要用`float`，应该在尾部加上`F`或者`f`。虽然double比float更精确，但两者都可能不能精确表示一个浮点数，如果需要精确保存一个浮点数，可以用`BigDecimal`类。
 java表示浮点数的两种形式：
 1. 十进制
 2. 科学计数法形式：如5.12e2（即5.12*10^2^）（而且只有java中只有浮点数才可以用科学计数法表示）
+
 java有三个特殊的浮点数值用来表示溢出和出错：
 1. 正无穷大：POSITIVE_INFINITY
 2. 负无穷大:NEGATIVE_INFINITY
@@ -565,10 +574,12 @@ System.out.println('a'+7+"Hello"); // 104Hello
 
 强制类型转换:
 1. 把浮点整数强制转换成整数时，java将直接截断浮点数的小数部分。
-还有下面这个例子容易出错：
-```java
-float a = 5.6//5.6是double型，应该用强转
-```
+    ```java
+    // 浮点 
+    float a = 5.6//5.6是double型，应该用强转。这里很容易出错
+    // 整形和浮点
+    (float) 10 // 10.0
+    ```
 2. 字符串转基本类型可以通过基本类型对应的包装类实现：
 ```java
 String a = "45";
@@ -586,7 +597,7 @@ int iValue = Integer.parseInt(a);
 3. 相同类型
 4. 基本数据类型
 
-### 2.3 java中的进制
+### 2.3 进制
 java中整型有四种表示方式：二、八、十、十六进制
 1. 二进制：jdk7新增了对二进制整数的支持，以0B、0b开头
 2. 八进制：以0开头
@@ -597,16 +608,27 @@ java中整型有四种表示方式：二、八、十、十六进制
 
 ### 2.5 运算符
 java中运算符分为：算术运算符、赋值运算符、比较运算符、逻辑运算符、位运算符、类型相关运算符
+
 #### 2.5.1 算术运算符
 java的7个基本算术运算符：加减乘除、求余、自加自减
+1. 加减乘除
+
+    ```java
+    System.out.println(10 / 4); // 2 因为java是静态语言，在定义变量时就指定了变量的类型为int，那么系统推导出来的运算结果也会为int。同样的在go中也是一样，但是在python、js中就不会。如果想输出2.5，需要将其中任意一个变量的类型改为浮点型
+    System.out.println((float) 10 / 4);
+    System.out.println(10 / (float) 4); 
+    ```
 1. 求余：求余的结果不一定总是整数
-```java
-double a = 5.2;
-double b = 3.1;
-System.out.println(a%b);//2.1
-```
+
+    ```java
+    double a = 5.2;
+    double b = 3.1;
+    System.out.println(a%b); // 2.1
+    ```
 2. 自加自减;不能操作常量或表达式
+
 #### 2.5.2 位运算符（难点，待补充）
+
 #### 2.5.3 扩展后的赋值运算符
 1. 只要能使用就使用，因为扩展后的赋值运算符性能更好，而且程序会更加健壮
 ```java

@@ -971,8 +971,9 @@ hotfix分支：用于修复线上代码的bug。基于master 分支建立，完�
 ```bash
 node_modules # 匹配所有名称为node_modules的文件，目录，链接
 /node_modules/ # 仅匹配当前目录下名为 node_modules 的目录
-node_modules/ # 匹配当前目录及所有子目录下 名为 node_modules 的目录
+node_modules/ # 匹配所有名为 node_modules 的目录,包括当前目录及所有子目录
 
+conf*/
 /dir/* # 匹配当前目录下dir目录里的所有内容（但不包括 dir 目录本身）
 ```
 

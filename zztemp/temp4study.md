@@ -453,7 +453,6 @@ package github.com/cweill/gotests/...: exit status 1
 2. 回归最优解
 1. js date对象
 3. apply和call
-6. JSON.stringify与JSON.parse
 8. cssText
 9. HTML templates（HTML模板）：<template> 和 <slot> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用
 10. 基于回流的页面渲染,页面渲染的w3c规范和那个女人的博客
@@ -1821,8 +1820,6 @@ chunk    {5} inline.bundle.js, inline.bundle.js.map (inline) 0 bytes [entry]
 
 46.  input抱在label中
 47.  angular 扩展的比如ng... = 后面要带引号,原生html的有些后面不带?
-
-48.  项目中应该有拷贝之类的方法把,而不是用JSON.parse(JSON.stringify(
 
 49.  select如何适应文字长度
 
