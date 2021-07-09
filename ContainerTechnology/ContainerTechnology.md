@@ -18,3 +18,7 @@
 5. 消息代理软件：RabbitMQ。
 
 # 五 经验
+1. docker-compose, k3s, k8s的选择：10个应用内的私有部署，推荐使用docker-compose，再往上的公有项目推荐k8s
+
+# 七 未整理
+1. ansible+ docker

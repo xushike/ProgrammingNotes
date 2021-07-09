@@ -418,14 +418,16 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 #### 2.2.3 关键字（keyword）
 1. java所有关键字都是小写的
 
-## 2 数据类型、进制和运算符
+## 2 变量,数据类型和运算符
 ![](../picture/java/0-4-primitiveType.png "java数据类型")
 
-java是一门强类型语言，强类型的包括两个含义：
+java是一门强类型语言，它的强类型的有两个含义：
 1. 所有变量必须先声明、后使用
 2. 指定类型的变量只能接受类型匹配的值
 
 强类型语言可以在编译时发现代码错误，保证程序更加健壮。
+
+### 变量
 
 ### 2.1 基本数据类型
 jdk7引入了新功能，可以在数值中使用下划线，可以更直观地分辨数值，不影响数值。(待补充)
@@ -614,7 +616,7 @@ java的7个基本算术运算符：加减乘除、求余、自加自减
 1. 加减乘除
 
     ```java
-    System.out.println(10 / 4); // 2 因为java是静态语言，在定义变量时就指定了变量的类型为int，那么系统推导出来的运算结果也会为int。同样的在go中也是一样，但是在python、js中就不会。如果想输出2.5，需要将其中任意一个变量的类型改为浮点型
+    System.out.println(10 / 4); // 2 因为java是静态语言，在定义变量时就指定了变量的类型为int，那么系统推导出来的运算结果也会为int。同样的在go,rust中也是一样，但是在python、js中就不会。如果想输出2.5，需要将其中任意一个变量的类型改为浮点型
     System.out.println((float) 10 / 4);
     System.out.println(10 / (float) 4); 
     ```
@@ -663,37 +665,88 @@ else
 switch的控制表达式的数据类型只能是byte、short、int、char四种，jdk7开始才支持java.lang.String(注意不是StringBuffer或StringBuilder)
 
 ### 3.2 循环结构
-#### 3.2.1 while
-#### 3.2.2 do while
-#### 3.2.3 for循环
-1. 在循环体中加上continue的时候，和上面两个while循环的处理是不一样的：上面两个循环会直接停掉；而for循环因为迭代语句不在循环体中，所以只是会停止本次循环体的剩余部分，然后继续下一次的迭代。
-2. 建议不要在循环体内修改循环变量（也叫循环计数器）
-3. 选择循环变量时，习惯上用i、j、k
+三种循环结构
+1. `while`
 
-### 3.3 控制循环结构
-java提供了continue、break来控制循环结构，还有return可以结束整个方法。
+    ```java
+    int i = 0;
+    while (i < 10) {
+      System.out.println(i);
+      i++;
+    }
+    ```
+2. `do while`
+    
+3. `for循环`
 
-#### 3.3.1 break
-1. 直接使用，可以完全结束其所在的循环
-2. 后面跟标签的时候，可以结束标签所在的外层循环
-```java
-public static void main(String[] args) {
-		outer:
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j <6; j++) {
-				System.out.println(j);//输出：0    1
-				if(j==1){
-					break outer;
-				}
-			}
-		}
-	}
-```
-#### 3.3.2 continue
-用法跟break类似，只不过continue是跳过本次循环剩下的语句，也可以在后面加标签
-
-#### 3.3.3 return
-return直接结束整个方法，不管在多少层循环之内
+三个关键字控制循环结构:
+1. `break`：两种用法
+    1. 直接使用，结束其所在的循环
+        
+        ```java
+        // 输出
+        // i:0
+        // j:0
+        // j:1
+        // i:1
+        // j:0
+        // j:1
+        // i:2
+        // j:0
+        // j:1
+        for (int i = 0; i < 3; i++) {
+            System.out.println("i:" + i);
+            for (int j = 0; j < 3; j++) {
+                System.out.println("j:" + j);// 输出：0 1
+                if (j == 1) {
+                    break;
+                }
+            }
+        }
+        ```
+    2. 后面跟标签的时候，可以结束标签所在的外层循环
+    
+        ```java
+        // 例子1 
+        // 输出
+        // i:0
+        // j:0
+        // j:1
+        // i:1
+        // j:0
+        // j:1
+        // i:2
+        // j:0
+        // j:1
+        for (int i = 0; i < 3; i++) {
+            System.out.println("i:"+i);
+            outer: for (int j = 0; j < 3; j++) {
+                System.out.println("j:"+j);// 输出：0 1
+                if (j == 1) {
+                    break outer;
+                }
+            }
+        }
+        
+        // 例子2
+        // 输出
+        // i:0
+        // j:0
+        // j:1
+        public static void main(String[] args) {
+            outer: for (int i = 0; i < 3; i++) {
+            System.out.println("i:" + i);
+                for (int j = 0; j < 3; j++) {
+                    System.out.println("j:" + j);// 输出：0 1
+                    if (j == 1) {
+                        break outer;
+                    }
+                }
+            }
+        }
+        ```
+2. `continue`:`continue`在for循环和`while`中的表现不一样，for会跳过当前循环，并开始执行下一次循环，而`while`会中断当前的循环，并开始执行循环之后的内容。它也可以在后面跟标签
+3. `return`：return直接结束整个方法，不管在多少层循环之内
 
 ## 4 数组
 1. 定义数组的时候不能指定数组的长度，因为定义时只是定义了一个引用变量，并未指向任何有效的内存。动态初始化的时候可以指定长度。

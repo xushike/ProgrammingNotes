@@ -323,7 +323,7 @@ return结束当前函数,并返回指定值
 
 `panic`的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，待defer函数执行完，将出错信息向其panic调用者传递panic相关信息，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
 
-简单总结就是：`runtime.Goexit`退出当前协程，`panic`清理当前协程，然后退出整个进程，`os.Exit(code int)`退出整个进程。那么如何优雅的退出进程呢?
+简单总结就是：`runtime.Goexit`退出当前协程，`panic`清理当前协程，然后退出整个进程，`os.Exit(code int)`退出整个进程。
 
 ### 3.28 关于并发安全
 Golang不保证任何单独的操作是原子性的，除非：
@@ -806,7 +806,7 @@ Go语言将数据类型分为四类：
 4. 其他
     
     ```go
-    // 1. bool to string
+    // 1. bool to string，默认转换出来是小写，比如false和true
     strconv.FormatBool()
     // or 
     fmt.Sprintf(string, bool) // 用"%t"或"%v"格式化
@@ -852,7 +852,7 @@ go func() {
 }()
 
 // 运算
-fmt.Println(10/4) // 2 因为Go是静态语言，在定义变量时就指定了变量的类型为int，那么系统推导出来的运算结果也会为int。同样的在java中也是一样，但是在python、js中就不会。如果想输出2.5，需要将其中任意一个变量的类型改为float
+fmt.Println(10/4) // 2 因为Go是静态语言，在定义变量时就指定了变量的类型为int，那么系统推导出来的运算结果也会为int。同样的在java,rust中也是一样，但是在python、js中就不会。如果想输出2.5，需要将其中任意一个变量的类型改为float
 fmt.Println(reflect.TypeOf(10/4)) // int
 
 fmt.Println(float64(10) / 4) // 2.5
@@ -1425,29 +1425,39 @@ go的三个流程控制语句后都可以紧跟一个简短的变量声明，一
 go的三个流程控制语句后的条件都不需要加`()`
 
 ### 3.1 for(go中唯一的循环)
-go的for循环主要有两种：普通for循环和for range。
+go的for循环主要有两种：
+1. 普通for循环：用法如下,其中initalization可选,如果有,则必须为简单语句;condition也是可选的,是一个布尔表达式，其值在每次循环迭代开始时计算,如果为true则执行循环体语句;post语句也是可选的,在循环体执行结束后执行,之后再次对conditon求值,condition值为false时，循环结束.
+    
+    ```go
+    // 基本用法
+    for initialization; condition; post {
+        // zero or more statements
+    }
+    
+    // 实现do while
+    i:=0
+    for {
+        do something
+        i++
+        if i <= 10 { 
+            break
+        } 
+    }
+    ```
+    
+2. for range：主要是遍历数组,切片,字符串等，注意其中的ele是**元素的副本而不是指针**，如下
 
-普通for循环：用法如下,其中initalization可选,如果有,则必须为简单语句;condition也是可选的,是一个布尔表达式，其值在每次循环迭代开始时计算,如果为true则执行循环体语句;post语句也是可选的,在循环体执行结束后执行,之后再次对conditon求值,condition值为false时，循环结束.
-
-```go
-for initialization; condition; post {
-    // zero or more statements
-}
-```
-
-for range：主要是遍历数组,切片,字符串等，注意其中的ele是xxx里元素的副本，如下
-
-```go
-for index,ele := range xxx {
-    //...
-}
-```
+    ```go
+    for index,ele := range xxx {
+        //...
+    }
+    ```
 
 注意：
 1. for后面的三个语句(initialization; condition; post)都可以省略，此时可以看做go的`while`
-2. 和其它语言中的`break`以及`continue`一样，`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会中跳过当前循环，并开始执行下一次循环。
+2. 和其它语言在for循环中的`break`以及`continue`一样，go的`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会跳过当前循环，并开始执行下一次循环。
 3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map。
-4. for range中，index后面的ele是元素的副本而不是指针，元素很大的话开销会比较大，有两种优化思路。
+4. for range中，index后面的ele是**元素的副本而不是指针**，元素很大的话开销会比较大，有两种优化思路。
     1. 声明成这样`xxx := make([]*ele,0)`，这样的话传递的虽然还是值，但是是指针的值了，开销更小。
     2. 直接用下标更新：`xxx[index]`
 5. for range中，**xxx是原变量的一个副本**，例子如下
@@ -1799,7 +1809,7 @@ if dog,ok := c.(Dog);ok{
 ## 7 单元测试、go test、Benchmark、Example
 参考：
 1. https://golang.org/pkg/testing/
-2. `go help testflag`
+2. `go help testflag`：go test过程中经常使用到的参数
 
 轻量级的单元测试框架。golang需要测试文件一律用”_test.go”结尾，测试的函数都用Test或Example开头。go test命令默认是以包为单位进行测试的（运行包下所有的"_test.go"结尾的文件），默认不会打印辅助信息。因为go test命令中包含了编译动作，所以它可以接受可用于go build命令的所有参数。go test 命令使用的正则来匹配后面的名字。
 
@@ -1839,11 +1849,61 @@ cached：go1.10开始在go test中引入了cached，规则参考：http://ju.out
 6. `-i`：安装与测试相关的包，不运行测试。
 1. 打印辅助信息`-v`:RUN、PASS、FATAL、SKIP等，如，
 
-    ```bash
-    === RUN   Testxxx
-    ...
-    --- PASS: Testxxx (0.20s)
+    ```go
+    // 假设 unittest/a_test.go文件内容如下
+    package unittest
+
+    import (
+        "fmt"
+        "testing"
+    )
+    func TestMain(m *testing.M) {
+        fmt.Println("清理数据库")
+        m.Run()
+    }
+    func Test(t *testing.T) {
+        fmt.Println("进入测试方法")
+        t.Run("进入sub测试:", testSub)
+    }
+    func testSub(t *testing.T) {
+        t.Log("sub测试完成")
+    }
+    
+    // 执行go test unittest/a_test.go时默认只输出
+    ok      command-line-arguments  0.487s
+    
+    // 执行go test -v unittest/a_test.go时输出
+    清理数据库
+    === RUN   Test
+    进入测试方法
+    === RUN   Test/进入sub测试:
+        a_test.go:19: sub测试完成
+    --- PASS: Test (0.00s)
+        --- PASS: Test/进入sub测试: (0.00s)
+    PASS
+    ok      command-line-arguments  (cached)
     ```
+8. `-c`:编译测试文件成为可执行的二进制文件，但是不运行测试。生成的可执行二进制文件的文件名默认是包名.test
+    
+    ```bash
+    go test unittest/a_test.go -c
+    # 生成的可执行二进制文件的文件名是unittest.test
+    ```
+9. `-test.`系列
+    1. `-test.v` : 是否输出全部的单元测试用例（不管成功或者失败），默认没有加上，所以只输出失败的单元测试用例。
+    2. `-test.run patter`n: 只跑哪些单元测试用例
+    2. `-test.bench patte`n: 只跑那些性能测试用例
+    2. `-test.benchmem` : 是否在性能测试的时候输出内存情况
+    2. `-test.benchtime t` : 性能测试运行的时间，默认是1s
+    2. `-test.cpuprofile cpu.out` : 是否输出cpu性能分析文件
+    2. `-test.memprofile mem.out` : 是否输出内存性能分析文件
+    2. `-test.blockprofile block.out` : 是否输出内部goroutine阻塞的性能分析文件
+    2. `-test.memprofilerate n` : 内存性能分析的时候有一个分配了多少的时候才打点记录的问题。这个参数就是设置打点的内存分配间隔，也就是profile中一个sample代表的内存大小。默认是设置为512 * 1024的。如果你将它设置为1，则每分配一个内存块就会在profile中有个打点，那么生成的profile的sample就会非常多。如果你设置为0，那就是不做打点了。你可以通过设置memprofilerate=1和GOGC=off来关闭内存回收，并且对每个内存块的分配进行观察。
+    2. `-test.blockprofilerate n`: 基本同上，控制的是goroutine阻塞时候打点的纳秒数。默认不设置就相当于`-test.blockprofilera`te=1，每一纳秒都打点记录一下
+    2. `-test.parallel n` : 性能测试的程序并行cpu数，默认等于GOMAXPROCS。
+    2. `-test.timeout t` : 如果测试用例运行时间超过t，则抛出panic
+    2. `-test.cpu 1,2,4` : 程序运行在哪些CPU上面，使用二进制的1所在位代表，和nginx的nginx_worker_cpu_affinity是一个道理
+    2. `-test.short` : 将那些运行时间较长的测试用例运行时间缩短
 
 注意:
 1. go test 命令还会忽略`testdata`目录，该目录用来保存测试需要用到的辅助数据。
@@ -2180,6 +2240,10 @@ type Context interface {
 }
 ```
 
+结构体：
+1. `CancelFunc func()`:可以被多次调用，可以并发调用
+
+使用
 1. `ctx.Done()`方法返回一个关闭的只读chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号(signal)后，就应该做清理操作，然后退出goroutine，释放资源。这个channel有点像广播通知，告诉给context相关的函数要停止当前工作然后返回。
 2. `ctx.Err()`：当Done方法关闭以后，Err方法返回取消的错误原因（因为什么Context被取消）--非nil的错误值。目前该方法之定义了两个返回值：Canceled和DeadlineExceeded
 3. `ctx.Deadline()`方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
@@ -2248,6 +2312,73 @@ go使用三个`With`前缀的函数来派生子context。
 
 ## 11 模板 template
 
+使用：
+1. 新建或者加载一个模板对象
+    1. `func New(name string) *Template`
+    2. `func ParseFiles(filenames ...string) (*Template, error)`
+    3. `func Must(t *Template, err error) *Template`
+2. 加载模板, 定义动态数据占位符
+    1. `func (t *Template) Parse(text string) (*Template, error)`
+    2. `func (t *Template) ParseFiles(filenames ...string) (*Template, error)`
+3. 应用动态数据
+    1. `(t *Template) Execute(wr io.Writer, data interface{}) error`
+1. 模板占位符的几种语法
+    1. 变量
+        1. `{{.}}`表示当前字段
+        1. `{{.Name}}`表示结构体的字段，需要可访问，所以大写开头。`.Name`前后多少个空格都不影响
+    2. 循环
+        
+        ```go
+        // 这里的 .ChildFieldOne 是 .Field的.ChildFieldOne
+        {{range .Field}}
+            {{.ChildFieldOne}}  -- {{.ChildFieldTwo}}
+        {{ end }}
+        ```
+    3. 判断
+        
+        ```go
+        {{if .Field}} if部分的输出 {{else}} else 部分的输出 {{end}}
+        ```
+    4. 管道`|`:用模板函数处理经由前面一个指令传出的正确输出信息，对错误信息信息没有直接处理能力。
+        
+        ```go
+        {{.Field | html }}
+        ```
+    5. 模板函数，分为内置和自定义模板函数
+        1. 内置:见文档
+        2. 自定义
+            
+            ```go
+            {{.Field | handleString }}
+            // 自定义模板函数
+            func handleString(field string) string {
+                if field == "" {
+                    return "NULL"
+                } else {
+                    return field
+                }
+            }
+            ```
+
+```go
+// 简单使用
+// 1. 定义动态数据
+type Inventory struct {
+    Material string
+    Count    uint
+}
+sweaters := Inventory{"wool", 17}
+// 2. 定义模板
+tmpl, err := template.New("test").Parse("{{.Count}} items are made of {{.Material}}")
+if err != nil {
+    panic(err)
+}
+// 3. 应用动态数据到模板
+err = tmpl.Execute(os.Stdout, sweaters)
+if err != nil {
+    panic(err)
+}
+```
 
 ## 12 底层编程
 主要指C语言相关
@@ -2435,16 +2566,17 @@ type _panic struct {
 ```
 
 #### defer
-`defer func(){...}()`
+`defer func(){...}()`，只有一句可以写成`defer xxx`，比如`defer fmt.Println("hello")`
 
 deger的定义：Defer is used to ensure that a function call is performed later in a program’s execution, usually for purposes of cleanup. defer is often used where e.g. ensure and finally would be used in other languages.
 
-defer的执行时机：首先要明白`return xxx`这条语句并不是一条原子指令！函数返回的过程是这样的：先给返回值赋值，然后调用defer表达式，最后才是返回到调用函数中。 也就是说defer表达式可能会在设置函数返回值之后，在返回到调用函数之前，修改返回值，使最终的函数返回值与你想象的不一致。defer在以下三个时机会被调用：
-1. 包裹 defer 的函数返回时
-2. 包裹 defer 的函数执行到末尾时
-3. 所在的 goroutine 发生 panic 时
-
-但调用`os.Exit()`方法将不会触发 defer 函数的执行
+defer的执行时机：首先要明白`return xxx`这条语句并不是一条原子指令！函数返回的过程是这样的：先给返回值赋值，然后调用defer表达式，最后才是返回到调用函数中。 也就是说defer表达式可能会在设置函数返回值之后，在返回到调用函数之前，修改返回值，使最终的函数返回值与你想象的不一致。
+1. 触发时机
+    1. defer在以下三个时机会被调用
+        1. 包裹 defer 的函数返回时
+        2. 包裹 defer 的函数执行到末尾时
+        3. 所在的 goroutine 发生 panic 时
+    2. 在外力作用下程序意外退出不会触发(比如`ctrl+C`)，以及调用`os.Exit()`方法将不会触发 defer 函数的执行
 
 ```golang
 func f1() (r int) {
@@ -2485,12 +2617,22 @@ func main() {
         if err != nil {
             return
         }
-        defer src.Close()
+        defer func() {
+            cerr := src.Close()
+            if err == nil {
+                err = cerr
+            }
+        }()
         dst, err := os.Create(dstName)
         if err != nil {
             return
         }
-        defer dst.Close()
+        defer func() {
+            cerr := dst.Close()
+            if err == nil {
+                err = cerr
+            }
+        }()
         return io.Copy(dst, src)
     }
     
@@ -2533,7 +2675,7 @@ func main() {
     // Deferred print: 1
     ```
 
-#### recover
+#### recover()
 `recover()`
 
 为什么需要`recover()`：触发panic时，进程会中止，所有goroutine也会中止。而写在defer里的`recover()`可以**用来捕捉panic**,捕捉后panic就不继续传递，程序就不会因为panic中止了，不过`recover()`之后，程序并不会返回到触发panic那个点继续执行以后的动作,而是执行完所有defer之后退出.可以看出`recover()`只在defer的函数中有效，如果不是在defer上下文中调用，recover会直接返回nil。
@@ -2613,7 +2755,7 @@ go的注释写法只有两种：`//`和`/**/`，但是用法有好几种：
     ```
 
 注释的最佳实践:
-1. `//`之后应该加一个空格.(其他语言也应该这样))
+1. `//`之后应该加一个空格.(其他语言也应该这样)
 2. 每个包都应有一个包注解，即 package 前的块注解。对多个文件的包，包注解只需出现在一个文件中，随便哪个。包注解应该介绍此包，并作为一个整体提供此包的对应信息。它首先出现在 godoc 页面，来安排好后续的详细文档。 
     1. 比如time包的包注释只出现在time.go文件中，但是版权注释则每个文件都有
 
@@ -2919,6 +3061,9 @@ In addition to fixing imports, goimports also formats your code in the same styl
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
 
 ### 1.11 go env
+参考：
+1. https://golang.org/pkg/runtime/
+
 go env是查看和设置go环境变量。go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`os.UserConfigDir`目录下的`go/env`文件里，比如mac的os.UserConfigDir是是`$HOME/Library/Application Support`，所以在`$HOME/Library/Application Support/go/env`中，注意该命令不会覆盖系统环境变量。
 
 操作:
@@ -2944,6 +3089,8 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 | GORACE	    |用于数据竞争的数据选项（可选）      |
 | GOROOT	    |go 语言安装时所在的目录绝对路径      |
 | GOTOOLDIR	|go 语言工具所在的目录绝对路径       |
+
+GOTRACEBACK
 
 ### 1.12 go list
 List lists the named packages, one per line.列出指定的package，如果未指定任何参数，默认列出的是根module名。
@@ -3032,7 +3179,12 @@ pprof性能优化主要有以下几个方面:
                 if err != nil {
                     log.Fatal(err)
                 }
-                defer f.Close()
+                defer func() {
+                    cerr := f.Close()
+                    if err == nil {
+                        err = cerr
+                    }
+                }()
                 pprof.StartCPUProfile(f)  // 开启CPU性能分析
                 pprof.StopCPUProfile()  // 停止CPU性能分析
                 // 想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了
@@ -3973,6 +4125,10 @@ writer.Write(buf)
     1. 知道大小然后分配固定内存是最快的，在不知道大小的情况下推荐用`bytes.Buffer`来拼接
 
 ### cmd
+
+### compress
+#### compress/gzip
+
 ### container
 #### container/heap
 提供了接口，在实际使用时需要实现
@@ -4102,6 +4258,8 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
 结构体：
 1. `sql.DB`
     1. 设置
+        1. `(*DB)SetMaxOpenConns(n int)`:设置最大连接数
+        1. `(*DB)SetMaxIdleConns(n int)`:设置最大空闲数
         1. `(*DB) SetConnMaxLifetime(d time.Duration)`:设置连接可以重用的最大时间。一般情况下不要设置得太短。
             1. 比如设置为一小时
                 1. 这不能保证连接将在连接池中存在一个小时；连接很有可能由于某种原因而变得无法使用，并在此之前被自动关闭。
@@ -4109,11 +4267,18 @@ Package x509 parses X.509-encoded keys and certificates。它可以生成签发�
                 3. 这不是空闲超时。连接将在第一次创建后 1 个小时到期，而不是在上一次空闲后 1 个小时到期
                 4. 每秒自动执行一次清除操作，从连接池中删除 “过期” 的连接
         2. `(*DB) SetConnMaxIdleTime(d time.Duration)`：设置一个时间，连接空闲一段时间后从连接池中删除，而不考虑连接的总生命周期。DBStats.MaxIdleTimeClosed 字段显示由于 DB.SetConnMaxIdleTime 关闭的连接总数
-    2. `(*DB) Prepare(query string) (*Stmt, error)`:
-    1. `Query(query string, args ...interface{}) (*Rows, error)`:执行 SQL 语句, 此方法会返回一个 Rows 作为查询的结果
-    2. `QueryRow`：至多一条，没有则报错
-    3. `Exec()`
-    2. `Close() error`：关闭数据库连接池，一般不会用到
+    2. 预编译
+        1. `(*DB) Prepare(query string) (*Stmt, error)`:
+    1. 查询
+        1. 查询多行数据`Query(query string, args ...interface{}) (*Rows, error)`:执行 SQL 语句, 此方法会返回一个 Rows 作为查询的结果
+        2. 查询一行数据`QueryRow`：至多一条，没有则报错
+    3. 增删改：都是使用`Exec()`函数
+        1. `Exec()`：看实现可知用到了预编译
+    4. 事务
+        1. 开启事务`(db *DB) Begin() (*Tx, error)`
+        2. 回滚事务`(tx *Tx) Rollback() error`
+        3. 提交事务`(tx *Tx) Commit() error`
+    2. 关闭`Close() error`：关闭数据库连接池，一般不会用到
 2. `sql.Rows`:
     1. `Next() bool`:迭代查询数据
     2. `Scan(dest ...interface{}) error`:读取每一行的值。需要注意顺序，例如`SELECT * FROM user WHERE id = 1`查询的行的 column 顺序是 "id, name, age", 因此 rows.Scan 也需要按照此顺序 `rows.Scan(&id, &name, &age)`, 不然会造成数据读取的错位.
@@ -4464,6 +4629,24 @@ func main() {
 	if err != nil {
         ...
 	}
+    ```
+    
+使用：
+1. 发送http请求
+    
+    ```go
+    // 1. 简单的get请求
+   resp, err := http.Get("https://example.com")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	var bodyBytes []byte
+	if resp.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(resp.Body)
+	}
+	fmt.Println(string(bodyBytes))
     ```
 
 ### httputil
@@ -4898,40 +5081,86 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 2. 操作系统架构:`runtime.GOARCH`
 3. `Getpagesize() int`:获取底层系统内存页的数量
 
+结构体：
+1. `File`
 
-操作目录：
-1. `func Chdir(dir string) error`:chdir将当前工作目录更改为dir目录．
-2. `func Getwd() (dir string, err error)`获取当前目录，类似linux中的pwd
-3. `func Chmod(name string, mode FileMode) error`:更改文件的权限（读写执行，分为三类：all-group-owner)
-4. `func Chown(name string, uid, gid int) error`:更改文件拥有者owner
-5. `func Chtimes(name string, atime time.Time, mtime time.Time) error`:更改文件的访问时间和修改时间，atime表示访问时间，mtime表示更改时间
-6. func Link(oldname, newname string) error       //创建一个从oldname指向newname的硬连接，对一个进行操作，则另外一个也会被修改．
-7. func Mkdir(name string, perm FileMode) error　//创建一个新目录，该目录具有FileMode权限，当创建一个已经存在的目录时会报错
-8. func MkdirAll(path string, perm FileMode) error　//创建一个新目录，该目录是利用路径（包括绝对路径和相对路径）进行创建的，如果需要创建对应的父目录，也一起进行创建，如果已经有了该目录，则不进行新的创建，当创建一个已经存在的目录时，不会报错.
-
-文件操作：
-1. 新建文件
-    1. `Create(file_name string) (file *File, err Error)`：返回一个文件对象，默认权限是0666的文件，返回的文件对象是可读写的，注意会覆盖
-    2. `NewFile(fd uintptr, name string) *File`:根据文件描述符创建相应的文件，返回一个文件对象
-2. 打开文件
-    1. `Open(name string) (file *File, err Error)`：该方法打开一个名称为name的文件，但是是只读方式，内部实现其实调用了OpenFile。
-    2. `OpenFile(name string, flag int, perm uint32) (file *File, err Error)`：打开名称为name的文件，flag是打开的方式，只读、读写等，perm是权限。
+    ```go
+    type File struct {
+        *file // os specific
+    }
+    ```
+    1. 写文件
+        1. `(*File) Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件中
+        2. `(*File) WriteString(s string) (ret int, err Error)`，写入string类型信息到文件
+    2. 读文件
+        1. `(*File) Read(b []byte) (n int, err Error)`，读取文件中的数据到b中，读取后文件指针也会偏移
+        2. `(*File) ReadFrom(r io.Reader) (n int64, err error)`：从io.Reader中读取数据到文件中，内容实现用到了`io.Copy()`
+    3. `(*File) Truncate(size int64) error`:改变文件的大小，它不会改变I/O的当前位置(不会改变当前偏移量)。 如果截断文件，多出的部分就会被丢弃。
+    4. `(*File) Seek(offset int64, whence int) (ret int64, err error)`:Seek设置下一次读/写的位置，并返回新的偏移量(相对于文件的开头)和可能的错误。offset为相对偏移量，而whence决定相对位置(0为相对文件开头，1为相对当前位置，2为相对文件结尾)
+    
+        ```go
+        f.Seek(0, io.SeekCurrent) // 跳转到当前位置（位置不变）
+        cur_offset,_:=f.Seek(0,io.SeekCurrent) // 获取文件指针当前位置
+        ```
+    5. `(*File) Sync()`:把当前内容持久化，一般就是马上写入到磁盘
+    6. `(*File) Fd()`:返回文件的句柄
+    6. `(*File) Close() error`:关闭文件
         
         ```go
-        // 打开或创建文件(使用flag os.O_CREATE)
-        os.OpenFile("notes.txt", os.O_RDWR|os.O_CREATE, 0755)
+        // 关闭文件的最佳实践，分两种情况，一种是读文件，一种是写文件
+        // 读文件的话直接用defer就行了，因为不管是否成功关闭都不影响已经读的内容
+        f, err := os.Open("example.txt")
+        if err != nil {
+            return err
+        }
+        defer f.Close() 
+        
+        // 写文件就不推荐上面这样处理了，因为写文件的时候有缓冲，所以真正的持久化可能在close的时候才发生，这个时候可能发生写错误，比如关闭的时候发现之前缓冲区的数据消失了，写入就不成功。所以需要捕获错误，如下
+        var f *os.File
+        f, err = os.Create("example.txt")
+        if err != nil {
+            return
+        }
+
+        defer func() {
+            cerr := f.Close()
+            if err == nil {
+                err = cerr
+            }
+        }()
+
+        err = io.WriteString(f, "hello world")
+        return
+        
+        // 写文件 还可以这样，会立刻刷新，但是可能会有性能影响
+        f, err := os.Create("example.txt")
+        if err != nil {
+            return err
+        }
+        defer f.Close()
+
+        if err = io.WriteString(f, "hello world"); err != nil {
+            return err
+        }
+
+        return f.Sync()
         ```
-    3. `Stat(name string) (fi FileInfo, err error)`返回了`Fileinfo`这个结构。注意它只代表文件当时的状态--假如后面文件变化了，它不会同步更新，所以需要在每次用的时候再获取
+    7. `(*File) Stat()`:获取文件的Stat信息。注意它只代表文件当时的状态--假如后面文件变化了，它不会同步更新，所以需要在每次用的时候再获取。它可以结合`os.IsNotExist`来判断文件是否存在
         
         ```go
         f, err := os.Create("xxx.txt")
         if err != nil {
             return
         }
-        defer f.Close()
+        defer func() {
+            cerr := f.Close()
+            if err == nil {
+                err = cerr
+            }
+        }()
         stat1, err := f.Stat()
         if err != nil {
-            return
+            return 
         }
         _, err = f.WriteString("\xEF\xBB\xBF")
         if err != nil {
@@ -4945,38 +5174,110 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
         fmt.Println(stat1.Size()) // 0
         fmt.Println(stat2.Size()) // 3
         ```
-3. 写文件：`(file *File)Write(b []byte) (n int, err Error)`，写入byte类型的信息到文件， `(file *File) WriteString(s string) (ret int, err Error)`，写入string信息到文件
-4. 读文件：`(file *File) Read(b []byte) (n int, err Error)`，读取数据到b中，读取后文件指针也会偏移
-5. 删除文件和删除文件夹（同一个函数）：`Remove(name string) Error`，调用该函数就可以删除文件名为name的文件
-6. `func SameFile(fi1, fi2 FileInfo) bool`　　　　　　//查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
+
+操作目录：
+1. `Chdir(dir string) error`:chdir将当前工作目录更改为dir目录．
+2. `Getwd() (dir string, err error)`获取当前目录，类似linux中的pwd
+3. `Chmod(name string, mode FileMode) error`:更改文件的权限（读写执行，分为三类：all-group-owner)
+4. `Chown(name string, uid, gid int) error`:更改文件拥有者owner
+5. `Chtimes(name string, atime time.Time, mtime time.Time) error`:更改文件的访问时间和修改时间，atime表示访问时间，mtime表示更改时间
+6. `Link(oldname, newname string) error`       //创建一个从oldname指向newname的硬连接，对一个进行操作，则另外一个也会被修改．
+7. `Mkdir(name string, perm FileMode) error`　//创建一个新目录，该目录具有FileMode权限，当创建一个已经存在的目录时会报错
+8. `MkdirAll(path string, perm FileMode) error`　//创建一个新目录，该目录是利用路径（包括绝对路径和相对路径）进行创建的，如果需要创建对应的父目录，也一起进行创建，如果已经有了该目录，则不进行新的创建，当创建一个已经存在的目录时，不会报错.
+
+文件操作：
+1. 新建文件
+    1. `Create(file_name string) (file *File, err Error)`：返回一个文件对象，默认权限是0666的文件，返回的文件对象是可读写的，注意会覆盖
+    2. `NewFile(fd uintptr, name string) *File`:根据文件描述符创建相应的文件，返回一个文件对象
+2. 打开或查看文件
+    1. `Open(name string) (file *File, err Error)`：该方法打开一个名称为name的文件，但是是只读(`O_RDONLY`)方式，不能对文件进行写操作，内部实现其实调用了`OpenFile()`。
+        
+        ```go
+        f, err := os.Open("example.txt")
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer func() {
+            cerr := f.Close()
+            if err == nil {
+                err = cerr
+            }
+        }()
+        ```
+    2. `OpenFile(name string, flag int, perm uint32) (file *File, err Error)`：打开名称为name的文件，flag是打开的方式，只读、读写等，perm是权限。
+        1. flag有：
+            1. O_RDONLY	打开只读文件
+            2. O_WRONLY	打开只写文件
+            2. O_RDWR	打开既可以读取又可以写入文件
+            2. O_APPEND	写入文件时将数据追加到文件尾部
+            2. O_CREATE	如果文件不存在，则创建一个新的文件
+            2. O_EXCL	文件必须不存在，然后会创建一个新的文件
+            2. O_SYNC	打开同步I/0
+            2. O_TRUNC	文件打开时可以截断
+        2. perm有：`os.ModeAppend`等
+        
+        ```go
+        // 打开或创建文件(使用flag os.O_CREATE)
+        os.OpenFile("notes.txt", os.O_RDWR|os.O_CREATE, 0755)
+        ```
+    3. `Stat(name string) (fi FileInfo, err error)`返回了`Fileinfo`这个结构。注意它只代表文件当时的状态--假如后面文件变化了，它不会同步更新，所以需要在每次用的时候再获取。它可以结合`os.IsNotExist`来判断文件是否存在
+5. 删除文件和删除文件夹（同一个函数）：`Remove(path string) Error`，调用该函数就可以删除路径为path的文件或文件夹
+6. `SameFile(fi1, fi2 FileInfo) bool`：查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
 7. `Rename(oldname, newname string)`:重命名文件
 8. `Symlink(oldname, newname string)`:创建软连接,不支持windows平台
 9. `Truncate(name string, size int64)`改变文件的`Size()`，改变文件内容的长度
-9. `func (f *File) Truncate(size int64) error`:改变文件的大小，它不会改变I/O的当前位置(不会改变当前偏移量)。 如果截断文件，多出的部分就会被丢弃。
-10. `func (f *File) Seek(offset int64, whence int) (ret int64, err error)`:Seek设置下一次读/写的位置，并返回新的偏移量(相对于文件的开头)和可能的错误。offset为相对偏移量，而whence决定相对位置(0为相对文件开头，1为相对当前位置，2为相对文件结尾)
-    
-    ```go
-    f.Seek(0, io.SeekCurrent) // 跳转到当前位置（位置不变）
-    cur_offset,_:=f.Seek(0,io.SeekCurrent) // 获取文件指针当前位置
-    ```
-    
-文件结构体操作：
-1. `File.Sync()`:把当前内容持久化，一般就是马上写入到磁盘
-2. `File.Fd()`:返回文件的句柄
+
+```go
+// 获取文件行数
+// 方法1
+file,err := os.Open(fileName)
+if err != nil{
+    return
+}
+defer file.Close()
+fd:=bufio.NewReader(file)
+count :=0
+for {
+    _,err := fd.ReadString('\n')
+    if err!= nil{
+        break
+    }
+    count++
+
+}
+fmt.Println(count)
+// 方法2
+buf := make([]byte, 32*1024)
+count := 0
+lineSep := []byte{'\n'}
+
+for {
+    c, err := r.Read(buf)
+    count += bytes.Count(buf[:c], lineSep)
+
+    switch {
+    case err == io.EOF:
+        return count, nil
+
+    case err != nil:
+        return count, err
+    }
+}
+```
 
 操作环境变量：
-1. `func Clearenv()`:清除所有环境变量（慎用）
-2. `func Environ() []string`:返回所有环境变量
-3. `func Getenv(key string) string`:获取系统key的环境变量，如果没有环境变量就返回空
-4. `func Setenv(key, value string) error`           //设定环境变量，经常与Getenv连用，用来设定环境变量的值
+1. `Clearenv()`:清除所有环境变量（慎用）
+2. `Environ() []string`:返回所有环境变量
+3. `Getenv(key string) string`:获取系统key的环境变量，如果没有环境变量就返回空
+4. `Setenv(key, value string) error`           //设定环境变量，经常与Getenv连用，用来设定环境变量的值
 
 
 退出程序：
-1. `func Exit(code int)`：系统退出，并返回code，其中０表示执行成功并退出（正常退出），非０表示错误并退出，其中执行Exit后程序会直接退出，defer函数不会执行．
+1. `Exit(code int)`：系统退出，并返回code，其中０表示执行成功并退出（正常退出），非０表示错误并退出，其中执行Exit后程序会直接退出，defer函数不会执行．
 
 替换字符串中的`$xxx`:
-1. `func Expand(s string, mapping func(string) string) string`:Expand用mapping 函数指定的规则替换字符串中的`${var}`或者`$var`（注：变量之前必须有$符号）。比如，
-2. `func ExpandEnv(s string) string`:ExpandEnv根据当前环境变量的值来替换字符串中的`${var}`或者`$var`。如果引用变量没有定义，则用空字符串替换。
+1. `Expand(s string, mapping func(string) string) string`:Expand用mapping 函数指定的规则替换字符串中的`${var}`或者`$var`（注：变量之前必须有$符号）。比如，
+2. `ExpandEnv(s string) string`:ExpandEnv根据当前环境变量的值来替换字符串中的`${var}`或者`$var`。如果引用变量没有定义，则用空字符串替换。
 
     ```go
     // 下面两个方法等效
@@ -4984,18 +5285,21 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 	fmt.Println(os.ExpandEnv("$HOME"))
     ```
 操作用户/组等信息：
-1. `func Geteuid() int`:获取调用者用户id
-2. `func Getgid() int`:获取调用者的组id
-3. `func Getgroups() ([]int, error)`：返回调用者属于的group，其和chown配合使用，改变文件属于的group．
-3. func Hostname() (name string, err error)    //获取主机名
+1. `Geteuid() int`:获取调用者用户id
+2. `Getgid() int`:获取调用者的组id
+3. `Getgroups() ([]int, error)`：返回调用者属于的group，其和chown配合使用，改变文件属于的group．
+3. `Hostname() (name string, err error)`    //获取主机名
    
 
 操作进程：
-1. func Getpid() int　　　　//获取进程id
-2. func Getppid() int             //获取调用者进程父id
+1. `Getpid() int`　　　　//获取进程id
+2. `Getppid() int`             //获取调用者进程父id
 
 调用外部程序：
 1. `StartProcess()`
+
+错误判断：
+1. `IsNotExist(err error)`
 
 #### os/exec
 
@@ -5021,8 +5325,18 @@ fmt.Printf(string(out2))
 ```
 
 #### os/signal
+信号处理
+
+信号是什么：信号(Signal)是Linux, 类Unix和其它POSIX兼容的操作系统中用来进程间通讯的一种方式。一个信号就是一个异步的通知，发送给某个进程，或者同进程的某个线程，告诉它们某个事件发生了。
+当信号发送到某个进程中时，操作系统会中断该进程的正常流程，并进入相应的信号处理函数执行操作，完成后再回到中断的地方继续执行。
+如果目标进程先前注册了某个信号的处理程序(signal handler),则此处理程序会被调用，否则缺省的处理程序被调用。
+
+常见信号值：参考linux笔记中的信号部分
+1. `syscall.SIGINT`
+
 使用：
-1. `Notify(c chan<- os.Signal, sig ...os.Signal)`
+1. `Notify(c chan<- os.Signal, sig ...os.Signal)`：将输入信号转发到c。如果没有列出要传递的信号，会将所有输入信号传递到c；否则只传递列出的输入信号。它不会为了向c发送信息而阻塞（就是说如果发送时c阻塞了，signal包会直接放弃），所以调用者应该保证c有足够的缓存空间可以跟上期望的信号频率。对使用单一信号用于通知的通道，缓存为1就足够了。
+示例代码：
 
 ### path
 #### path/filepath
@@ -5091,9 +5405,17 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 5. `GOMAXPROCS(int) int`：设置最多可使用的CPU数量（<=逻辑CPU数量）并返回之前设置的数量（没设置过的话就返回逻辑CPU数量），从1.5开始成为默认设置（之前默认是1）。`GOMAXPROCS`可以用在命令行里，比如`GOMAXPROCS=1 go run main.go`
 6. `Gosched()`:用于让出CPU时间片，让出当前goroutine的执行权限，调度器安排其它等待的任务运行，并在下次某个时候从该位置恢复执行。这就像跑接力赛，A跑了一会碰到代码`runtime.Gosched()`就把接力棒交给B了，A歇着了，B继续跑。
 7. `Goexit()`:会立即使当前的goroutine的运行终止（终止协程），而其它的goroutine并不会受此影响。runtime.Goexit在终止当前goroutine前会先执行此goroutine的还未执行的defer语句。请注意千万别在主函数调用runtime.Goexit，因为会引发panic。
-8. 不常用方法
+8. `Stack(buf []byte, all bool) int`:可以得到所有的goroutine的stack trace信息
+99. 不常用方法
     1. `KeepAlive()`:
         1. 参考：https://studygolang.com/articles/28442?fr=sidebar
+        
+        
+#### runtime/debug
+1. `PrintStack()`:当前所在的goroutine的stack trace打印出来。
+
+#### runtime/pprof
+1. `pprof.Lookup("goroutine").WriteTo()`打印所有goroutine的stack trace
 
 ### sort
 排序（相关算法,原理待补充）:
@@ -5103,6 +5425,10 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 3. Strings：`sort.Strings`排序默认是按照Unicode码点的顺序的, 如果需要按照拼音排序, 可以通过GBK转换实现, 自定义一个排序接口
 
 go1.8之前，对一个切片排序，需要以切片为基础定义一个新类型，然后实现sort.Interface接口；go1.8开始，可以直接调用`sort.Slice()`来排序，内部通过反射帮我们做了其他工作，方便很多。
+```go
+// 计算出为true的排在前面
+Slice(slice interface{}, less func(i, j int) bool)
+```
 
 ### strings
 里面的方法主要是字符串的操作
@@ -5215,6 +5541,8 @@ fmt.Println("所有 goroutine 执行结束")
     
 ### text
 #### text/template
+将动态数据填充入静态模板中
+
 更多笔记见模板部分
 
 ### time
@@ -5256,6 +5584,7 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
     var cstZone = time.FixedZone("CST", 8*3600)       // 东八
     fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
     ```
+5. 时间的加减`Add()`,`Sub()`
 
 golang 提供了下面几种类型：
 - 时间点(Time)
@@ -5642,6 +5971,74 @@ go mod命令:
 
 ## 8 自托管 Go 模块代理
 参考：https://goproxy.cn/
+
+## 9 优雅地退出
+
+```go
+
+func openFile(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	f, err := os.Open("./xxx.txt")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer f.Close()
+
+	<-ctx.Done() // 等待退出通知
+}
+
+// 接口服务
+func httpServe(ctx context.Context, wg *sync.WaitGroup, debug bool, host string) {
+	defer wg.Done()
+	// 初始化路由
+	if !debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	r := gin.Default()
+	// 404
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"errcode": 404,
+			"errmsg":  "404 NOT FOUND",
+		})
+	})
+	server := &http.Server{
+		Addr:    host,
+		Handler: r,
+	}
+	go server.ListenAndServe()
+	zap.L().Info("server started", zap.String("addr", server.Addr))
+	<-ctx.Done() // 等待退出通知
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second) // 给它五秒钟的时候来退出
+	defer cancel()
+	err := server.Shutdown(c)
+	if err != nil {
+		zap.L().Error("server shutdown fail", zap.Error(err))
+	}
+}
+
+func gracefullExit() {
+	signals := make(chan os.Signal, 1)                                             // 监听退出的管道
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill) // 需要监听的信号
+
+	var wg sync.WaitGroup // 用于通知退出
+	ctx, cancel := context.WithCancel(context.Background())
+
+	wg.Add(1)
+	go openFile(ctx, &wg) 
+
+	wg.Add(1)
+	go httpServe(ctx, &wg, false, ":8080") // http服务
+
+	sig := <-signals // 等待退出信号
+	log.Println("receive signal", zap.Any("os.Signal", sig))
+	cancel() // 通知退出
+	wg.Wait() // 等待所有任务退出完
+	log.Println("exited", zap.Any("os.Signal", sig))
+}
+```
 
 ## N 其他
 1. 有空的时候可以多看看Google的工程师是如何实现的

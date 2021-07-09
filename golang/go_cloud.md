@@ -373,17 +373,33 @@ https://github.com/go-gorm/gorm
         1. https://www.postgresql.org/docs/current/external-interfaces.html
         1. https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
     1. mysql:
-        1. charset=utf8 客户端字符集为utf8
-        2. parseTime=true 支持把数据库datetime和date类型转换为golang的time.Time类型
-        3. loc=Local 使用系统本地时区
-        1. timeout：建立连接超时时间，比如"30s", "0.5m" or "1m30s",比如`timeout=10s`
-        2. readTimeout、writeTimeout:I/O读写超时时间
+        1. `charset=utf8` 客户端字符集为utf8
+        2. `parseTime=true` 支持把数据库datetime和date类型转换为golang的time.Time类型
+        3. `loc=Local` 使用系统本地时区
+        1. `timeout`：建立连接超时时间，比如"30s", "0.5m" or "1m30s",比如`timeout=10s`
+        2. `readTimeout`、`writeTimeout`:I/O读写超时时间
+        6. `interpolateParams`默认为false
+            1. 为true的时候，表示：
+                1. 不会隐式地使用Prepared Statement，即在`db.Query()`和`db.Exec()`中不会使用Prepared Statement，但会自动转义来防止SQL注入，不能和多字节编码一起使用。
+                2. 但可以显式地使用Prepared Statement，即`DB.Prepare`and `Stmt.Exec`
+            2. 什么时候需要这个
+                1. 在读写分离的架构下，如果prepare的时候sql发给了从库1，但是execute的时候因为从库1压力较大，sql命令发给了从库2，就会报错，这个时候就不能用Prepared Statement
+        7. `maxAllowedPacket`：最大数据包大小，默认4Mb，如果设置为0，则会自动获取服务器的`max_allowed_packet`设置
             
         ```bash
         mysql://root:123456@tcp(127.0.0.1:3306)/yourdbname
         ```
     2. postgres
         1. 可知dsn的scheme使用`postgres`或`postgresql`都可以，但是调用`sql.Open(driverName, dataSourceName string) (*DB, error)`方法的时候，driverName要根据驱动来，比如使用`github.com/lib/pq`这个驱动，因为注册的时候使用的`	sql.Register("postgres", &Driver{})`，所以driverName必须是`postgres`
+2. 预编译
+    
+    ```go
+    // 它支持?作为预编译占位符，这样写的话会用到预编译
+    db = db.Where("merchant_id = ?", merchantId)
+    // 这样写的话就不会用到预编译，可能有SQL注入风险
+    db = db.Where(fmt.Sprintf("merchant_id = %s", merchantId))
+    ```
+    
 2. 查询
     1. 使用`join()`
     
@@ -441,9 +457,15 @@ https://github.com/go-gorm/gorm
 ### SQLX
 https://github.com/jmoiron/sqlx
 
+兼容sql原生包，同时又提供了更为强大的、优雅的查询、插入函数
+
 优点：
 1. 文档优秀
 2. 支持问号(?)或命名的Prepared Statements，避免SQL注入的安全问题
+
+结构体
+1. `sqlx.NamedStmt` – 对特定参数命名并绑定生成 SQL 语句操作。
+
 
 ### SQL Builer
 有好几个：
@@ -886,8 +908,12 @@ if _, err := c.AddFunc("*/1 * * * *", fn); err != nil {
 }
 
 c.Start()
+defer c.Stop()
 select {}
 ```
+
+使用：
+1. 关闭`(*Cron) Stop() context.Context`
 
 问题：
 1. expected exactly 5 fields, found 6
@@ -1181,6 +1207,55 @@ golang.org/x/crypto/bcrypt
 ## 数据类型
 ### 精确的浮点数
 github.com/shopspring/decimal
+
+## zip
+github.com/alexmullins/zip
+
+支持加密的zip包
+
+```go
+// 基本使用
+zipFile, err := os.Create(zipPath)
+if err != nil {
+    svc.logger.Error("create zip file failed", zap.Error(err), zap.String("文件名", zipName))
+    return nil
+}
+defer zipFile.Close()
+archive := zip.NewWriter(zipFile)
+defer archive.Close()
+for _, fileName := range files {
+    f, err := os.Open(filepath.Join(config.C.FilePath, fileName))
+    if err != nil {
+        svc.logger.Error("open csv file failed", zap.Error(err))
+        return "", err
+    }
+    // 加密
+    writer, err := archive.Encrypt(fileName, config.C.Password)
+    if err != nil {
+        svc.logger.Error("create zip writer failed", zap.Error(err), zap.String("文件名", zipName))
+        return "", err
+    }
+    _, err = io.Copy(writer, f)
+    if err != nil {
+        svc.logger.Error("write zip data failed", zap.Error(err), zap.String("文件名", zipName))
+        return "", err
+    }
+}
+```
+
+## ftp
+### ftp server
+https://github.com/fclairamb/ftpserver
+
+### ftp client
+1. https://github.com/jlaffaye/ftp
+    1. 概述：
+    3. 经验
+        1. 出错的时候似乎不是返回最初的错误，比如上传文件，如果文件读取出错了或者`CWD`失败了，返回的是"553 Could not create file."而不是最开始的错误
+2. https://github.com/secsy/goftp
+
+## 文本和编码处理
+golang.org/x/text
 
 # 五 经验
 ## 1 为什么需要框架

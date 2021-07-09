@@ -163,7 +163,7 @@
 1. golang json：https://colobu.com/2017/06/21/json-tricks-in-Go/
 1. https://github.com/avelino/awesome-go
 1. golang 的性能测试例子
-2. pg触发器，存储过程，读写分离
+2. pg触发器，存储过程
 1. https://gobyexample.com/
 1. telnet和ping等
     1. 怎么判断接口是不是通 的

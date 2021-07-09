@@ -668,8 +668,13 @@ tar -zxv -f filename.tar.gz -C 欲解压缩的目录
     1. 参数`-i`:忽略大小写
     2. 参数`-v`:只显示不匹配的行。排除多个可以使用`grep -v 'args1\|args2...'`
 5. 打印文件的开头/结尾部分`head`和`tail`
-    `head`默认打印开头10行,`tail`则是结尾10行,`tail`有个选项`-f`允许实时地浏览文件,观察日志文件时很有用.
-    1. 参数`-n`:指定打印的行数
+    1. `head`默认打印开头10行,`tail`则是结尾10行,`tail`有个选项`-f`允许实时地浏览文件,观察日志文件时很有用.
+        1. 参数`-n`:指定打印的行数
+        
+    ```bash
+    # 实时浏览最后10行
+    tail -f example.txt 
+    ```
 6. 读取数据,同时输出到屏幕和文件`tee`
     比如`ls /usr/bin | tee xxx.txt`,会同时输出到屏幕和文件
 ## 4 (字符)展开
@@ -1173,6 +1178,22 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
         # time_nslookup:0.016326
         # time_total: 1.507452
         ```
+3. `globbing`(URL globbing parser):curl支持URL范围匹配`{}`和`[]`，意味着可以批量处理目标。
+    1. 参考：https://everything.curl.dev/cmdline/globbing
+
+    ```bash
+    # 批量上传
+    ## Numerical ranges: [n-m:i]，左闭右闭，i为增量
+    curl -T 'image[1-99].jpg' ftp://ftp.example.com/upload/
+    curl -T 'image[001-099].jpg' ftp://ftp.example.com/upload/
+    curl -T 'image[1-99:2].jpg' ftp://ftp.example.com/upload/ # 每次递增2
+    
+    ## Alphabetical ranges
+    curl -O "http://example.com/section[a-z].html"
+    
+    ## A list
+    curl -O "http://example.com/{one,two,three}.html"
+    ```
 4. 指定协议：`curl`支持多种协议，包括`DICT`,`FILE`,`FTP`,`MQTT`,`Gopher`(因为HTTP的成功，现在Gopher协议已经很少使用了)等，默认使用`http`
     1. `--proto`:指定使用的协议，后面可跟`+`(默认),`-`,`=`，协议间使用逗号分隔，后面的设置会覆盖前面的设置
         
@@ -1189,8 +1210,66 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
         # 读取本地文件
         curl file:/Users/xxx/fileA
         curl file:///Users/xxx/fileA
-        # FTP下载，若在url中指定的是某个文件路径而非具体的某个要下载的文件名，CURL则会列出该目录下的所有文件名而并非下载该目录下的所有文件，比如
-        curl -u ftpuser:ftppass -O ftp://ftp_server/public_html/
+        ```
+    2. ftp协议
+        1. `–ftp-create-dirs`：默认情况下，使用一个在服务器上当前不存在的路径将会导致失败。带上该参数后会自动创建缺少的文件夹
+        2. `--ftp-method`:控制如何使用`CWD`
+            1. `multicwd`：默认使用该参数。在给定的URL上的每个路径部分都执行一次CWD操作。对于深层次，这意味着很多的命令。这是在 RFC1738上面定义这样的。这是默认行为但是执行会比较慢
+                
+                ```bash
+                # 比如
+                curl --ftp-method multicwd ftp://example.com/one/two/three/file.txt
+                # 等价于 
+                CWD one 
+                CWD two 
+                CWD three 
+                ```
+            2. `nocwd`curl命令根本不执行CWD查找，curl命令将会做SIZE, RETR, STOR等等命令，并且给定一个绝对路径给服务器用于这些命令。这也是执行最快的，但兼容性最差
+                
+                ```bash
+                # 比如
+                curl --ftp-method nocwd ftp://example.com/one/two/three/file.txt
+                # 等价于 
+                RETR one/two/three/file.txt
+                ```
+            3. `singlecwd`curl命令在绝对目标路径执行一次CWD操作，然后在文件上进行“正常”操作（像multicwd情况下）。比'nocwd'更加标准，但是没有'multicwd'兼容性强。
+            
+                ```bash
+                # 比如
+                curl --ftp-method singlecwd ftp://example.com/one/two/three/file.txt
+                # 等价于 
+                CWD one/two/three
+                RETR file.txt
+                ```
+        3. `globbing`
+        
+        ```bash
+        ## 查看服务器文件，比如查看服务器/home/ftp目录下的文件
+        curl ftp://222.221.253.170:1021/home/ftp/ -u user:password
+        ## 上传文件，比如上传example.txt到服务器的/home/ftp文件夹，服务器目录必需以/结尾
+        curl -T example.txt ftp://222.221.253.170:1021/home/ftp/ -u  user:password # 这样上传的话远程服务器文件名会变成example.txt, 等同于curl -T example.txt ftp://222.221.253.170:1021/home/ftp/example.txt -u  user:password 
+        curl -T example.txt ftp://222.221.253.170:1021/home/ftp -u  user:password # 这样写是错的，文件夹后面的一定要带上/
+        curl -T example.txt ftp://222.221.253.170:1021/home/ftp/example2.txt -u  user:password # 这样上传的话远程服务器文件名会变成example2.txt
+        ## 上传文件夹
+        curl -T dirA ftp://222.221.253.170:1021/home/ftp/ -u  user:password
+        ## 下载文件，不支持递归下载
+        curl -u ftpuser:ftppass -O ftp://home/ftp/example.txt
+        ## 下载多个文件
+        curl –u user:passwd ftp://home/ftp/img/[1-10].gif –O  # 下载1-10.gif连续命名的文件
+        curl –u name:passwd ftp://www.xxx.com/img/[one,two,three].jpg –O
+        ## 列出文件。若在url中指定的是某个文件路径而非具体的某个要下载的文件名，CURL则会列出该目录下的所有文件名而并非下载该目录下的所有文件，比如
+        curl -u ftpuser:ftppass -O ftp://home/ftp/
+        ## 更多操作可以使用参数 -Q/–quote  带上ftp命令， 具体命令参考ftp协议
+        ## 创建文件夹 -Q "MKD dirA"
+        curl -u user:password ftp://192.168.1.100 -Q "MKD dirA"
+        ## 删除文件夹 -Q "RKD dirA"
+        curl -u user:password ftp://192.168.1.100 -Q "RKD dirA"
+        ## 删除文件 -Q "DELE fileA"
+        curl -u user:password ftp://192.168.1.100 -Q "DELE fileA"
+        ## 重命名, 重命名需要连续执行两条命令, 使用两个 -Q 参数连续执行两条命令（必须先 RNFR, 后 RNTO）
+        curl -u user:password ftp://192.168.1.100 -Q "RNFR fileA" -Q "RNTO fileB"
+        ## 选项 –ftp-create-dirs 自动创建缺少的文件夹。比如下面这样，当服务器没有home/ftp文件夹，则会自动创建对应的文件夹
+        curl -u user:password --ftp-create-dirs -T file.txt ftp://192.168.1.100/home/ftp/
         ```
 5. 通信过程
     1. 详细信息
@@ -1249,6 +1328,9 @@ curl www.example.com
         1. Connection refused 表示 不通
     2. `telnet ip port`
         1. Connected to 192.168.3.132. Escape character is '^]'. 表示通的
+            1. 连接后怎么退出呢：用`ctrl+c`是不行的，有两种方法
+                1. 可以输入`ctrl+]`进入telnet命令界面，然后输入`quit`就可以退出
+                1. 直接输入`quit`就可以退出
         1. connect to address 192.168.3.132: Connection refused. Unable to connect to remote host 表示不通
 2. 利用`cip.cc`快捷查询IP地址信息
     
@@ -1550,6 +1632,13 @@ OpenSSL有许多的特征，而且还有SSL客户端和服务端特征，OpenSSL
 格式有两种：
 - Seconds Minutes Hours DayofMonth Month DayofWeek Year
 - Seconds Minutes Hours DayofMonth Month DayofWeek
+
+特殊字符说明：
+1. 星号(*)：表示 cron 表达式能匹配该字段的所有值。如在第5个字段使用星号(month)，表示每个月
+2. 斜线(/)：表示增长间隔，如第1个字段(minutes) 值是 3-59/15，表示每小时的第3分钟开始执行一次，之后每隔 15 分钟执行一次（即 3、18、33、48 这些时间点执行），这里也可以表示为：3/15
+3. 逗号(,)：用于枚举值，如第6个字段值是 MON,WED,FRI，表示 星期一、三、五 执行
+4. 连字号(-)：表示一个范围，如第3个字段的值为 9-17 表示 9am 到 5pm 直接每个小时（包括9和17）
+5. 问号(?)：只用于日(Day of month)和星期(Day of week)，\表示不指定值，可以用于代替 *
 
 例子：
 ```bash

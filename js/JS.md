@@ -1134,7 +1134,11 @@ JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
 3. `Number.NaN`:
 
 ### 4.8 JSON
-包含两个方法: 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，以及将对象/值转换为 JSON字符串的 `stringify()`方法。除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
+包含两个方法: 除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
+1. 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，该方法可能返回两种错误
+    1. `TypeError`:JSON对象为null，未定义或者赋值成了其他变量
+    2. `SyntaxError`:被解析的JavaScript Object Notation格式不对
+2. 以及将对象/值转换为 JSON字符串的 `stringify()`方法。
 
 ```js
 var a = {
