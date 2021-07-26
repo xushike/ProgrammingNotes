@@ -310,6 +310,12 @@ age="hello";
 - 声明多个:`var age,mood`
 - 声明并赋值:`var age=1,mood="sad"`
 
+不能跨property赋值：
+```js
+let a = {}
+a.b.c ="1" // TypeError: Cannot set property 'c' of undefined
+```
+
 ### 1.2 数据的类型
 最新的ES标准定义了7种类型:6种原始类型(也称为基本数据类型)(String,Number,Boolean,null,undefined,以及ES6的Symbol)和Object(也称为引用数据类型)（这个Object是广义的，指代除了基本数据类型以外的所有其他类型）.
 
@@ -390,6 +396,7 @@ primitive values(原始值):除 Object 以外的所有类型都是不可变的�
 5. `trim()`:去掉首尾空格,es6新增.
 6. `test()`(待补充)
 7. 转换大小写：`toUpperCase()`和`toLowerCase()`
+8. 字符串的各种编码：参考nodejs的Buffer部分笔记
 
 模板字符串(es6):使用反引号包裹,里面的字符默认不会被转义(意味着**会原样输出**),想转义需要在前面加反斜杠`\`.可以包含特定语法`${expression}`的占位符.
 1. 优点:更加优雅,不再需要考虑反斜杠来处理单引号和双引号。例子如
@@ -735,526 +742,6 @@ for (var i = 0, item; item = a[i]; i++) {
 对于array的遍历,一般情况下`forEach()`比`for ... of`更好用.
 
 ### 3.5 三目（三元）运算符
-
-## 4 JS本地对象
-参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects
-
-### 4.1 Global
-包含值属性和方法属性
-
-#### 值属性
-有以下值属性，它们都是simple value, 它们have no properties or methods。也称为全局变量。
-- Infinity：是一个数值，表示无穷大。初始值是Number.POSITIVE_INFINITY。
-- NaN:全局属性 NaN 的值表示不是一个数字（Not-A-Number），和`Number.NaN`相同。编码中很少直接使用到 NaN。通常都是在计算失败时，作为 Math 的某个方法的返回值出现的（例如：Math.sqrt(-1)）或者尝试将一个字符串解析成数字但失败了的时候（例如：parseInt("blabla")）。**NaN自身永不相等于自身**
-- undefined
-- null literal
-- globalThis
-
-#### 方法属性
-##### decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
-根据HTTP的规范(URL允许的字符集是ISO-8859-1、以及一些其他要求)，所以有效的URI中不能包含空格、中文等。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`，空格会被转换为`%20`）替换所有无效的字符，从而让浏览器能够接受和理解。大家通俗地叫这几个方法为`urlencode`(url编码)方法
-
-```JavaScript
-var uriStr = "http://www.baidu.com?name=张三&num=001 zs"; 
-var uriec = encodeURI(uriStr); 
-document.write("编码后的" + uriec); 
-// 编码后的http://www.baidu.com?name=%E5%BC%A0%E4%B8%89&num=001%20zs 
-var uridc = decodeURI(uriec); 
-document.write("解码后的" + uridc); 
-// 解码后的http://www.baidu.com?name=张三&num=001 zs
-```
-
-两者的区别:
-1. `encodeURIComponent()`和`decodeURIComponent()`:转义除了字母、数字、`(`、`)`、`.`、`!`、`~`、`*`、`'`、`-`和`_`（共71个）之外的所有字符。可知它不适合用于对整个URI进行编码，因为冒号、正斜杠、问号和井字号也会被编码，所以它主要用于对URI中的某一段(比如URI里的查询字符串)进行编码。
-2. `encodeURI()`和`decodeURI()`:不能转义的字符比上面两个方法多，除了上面的两个方法不能转义的，还包括`;`、`/`、`?`、`:`、`@`、`&`、`=`、`+`、`$`和`#`（共82个）。可知它不会对本身属于URI的特殊字符进行编码，例如冒号、正斜杠、问号和井字号，所以`encodeURI()`主要用于整个URI的编码。
-
-##### 其他
-`parseInt()`:将字符串转换为整型,第二个参数表示数值的进制，可选填。（待整理）例子如,
-```javascript
-parseInt("123", 10) // 123
-parseInt("010", 10) // 10
-parseInt("010") // 此处未指定进制,该函数根据开头的0来决定将那个字符串转换为八进制数字,所以结果是8
-```
-
-`isNaN`:NaN不能通过相等操作符（== 和 ===）来判断 ，因为 NaN == NaN 和 NaN === NaN 都会返回 false。 因此，isNaN()就很有必要了。该方法还是有瑕疵的，所以更推荐用ES6的`Number.isNaN()`，后者更可靠。
-
-`eval()`（不推荐使用）:函数会将传入的字符串当做js代码执行，然后返回结果，类似于一个js解析器。它只接受一个参数，多余的参数会被忽略。如果传入的字符串是表达式，它会对表达式求值；如果...在`eval(`)中创建的任何变量以及函数都不会被提升，只有执行到`eval()`时才创建
-```JavaScript
-// 1. 传入的字符串是表达式
-console.log(eval('2 + 2')); // 4
-// 2. 传入的参数不是字符串
-console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包含"2 + 2"的字符串对象
-```
-
-### 4.2 Math
-操作：
-1. 取近似值
-    1. 四舍五入：`Math.round()`，返回一个数字四舍五入后最接近的整数。但是在对小数部分的0.5处理上该方法和其他语言不同，其他语言一般是舍入到远离0的方向，但是该方法是上舍入。比如`Math.round(3.5)`是4，但`Math.round(-3.5)`是-3.
-    2. 向下舍入：`Math.floor()`
-    3. 向上取整：`Math.ceil()`
-2. 取最大值`Math.max()`:如果没有参数，则结果为`-Infinity`,如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
-3. 生成随机数`Math.random()`：生成0~1的pseudorandom number。
-    1. 缺点:非密码学安全，其实现是与宿主对象相关，并且不能保证加密使用的安全性(why?)。
-        
-        ```js
-        // 生成UUID，缺点是重复率较高
-        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        })
-        ```
-    2. 如果在浏览器环境下，更推荐使用加密安全的`window.crypto.getRandomValues()`
-
-### 4.3 Object
-**几乎所有的 JavaScript 对象都是 Object 的实例**
-
-#### 4.3.1 值
-1. `Object.prototype`:表示Object的原型对象
-2. `Object.prototype.constructor`:对象的构造函数
-
-#### 4.3.2 方法
-1. `Object.toString(numA)`：每个对象都有一个`toString(numA)`方法，当该对象被表示为一个文本值时，或者一个对象以预期的字符串方式引用时自动调用（和其他语言类似）。默认情况下，`toString(numA)` 方法被每个 Object 对象继承。如果此方法在自定义对象中未被覆盖，`toString(numA)`返回 "[object obj_type]"，特别的`toString(numA)`调用 null 返回[object Null]，undefined 返回 [object Undefined]。`numA`是可选的，表示进制,接收区间`[2,36]`中的任意整数作为可选参数。
-    ```JavaScript
-    var o = new Object();
-    o.toString(); // [object Object]
-    (1234).toString(2) // "10011010010"
-    ```
-2. `Object.assign(targetA, sourceA...)`:对象合并。将源对象的所有可枚举属性，复制到目标对象，它只有第一层的深拷贝。如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
-    1. `Object.assign`拷贝的属性是有限制的，只拷贝源对象的自身属性（不拷贝继承属性），也不拷贝不可枚举的属性（enumerable: false）。
-    
-    ```js
-    // 如果只有一个参数，Object.assign会直接返回该参数。
-    const obj = {a: 1};
-    Object.assign(obj) === obj // true
-    
-    // 如果该参数不是对象，则会先转成对象，然后返回
-    typeof Object.assign(2) // object
-    // 由于undefined和null无法转成对象，所以如果它们作为参数，就会报错。
-    Object.assign(undefined) // 报错
-    Object.assign(null) // 报错
-    ```
-3. `Object.getPrototypeOf()`
-3. `Object.setPrototypeOf(objA, objB)`：设置一个指定对象的原型到另一个对象。该方法性能较差，更推荐用`Object.create()创建新对象的方式代替`它是ES6新增的方法，有个旧方法是`Object.prototype.__proto__`。
-    
-    ```js
-    // Polyfill
-    // 仅适用于Chrome和FireFox，在IE中不工作：
-    Object.setPrototypeOf = Object.setPrototypeOf || function (obj, proto) {
-    obj.__proto__ = proto;
-    return obj; 
-    }
-    ```
-
-4. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。该方法是数据双向绑定实现的基石.
-
-    ```JavaScript
-    // 1.
-    // 这个例子展示使用getter和setter方法扩展 Date原型
-    var d = Date.prototype;
-    Object.defineProperty(d, "year", {
-        get: function () { return this.getFullYear() },
-        set: function (y) { this.setFullYear(y) }
-    });
-    var now = new Date();
-    console.log(now.year);  // 2000
-    now.year = 2001; 
-    console.log(now); // 987617605170
-    // Wed Apr 18 11:13:25 GMT-0700 (Pacific Daylight Time) 2001
-    // 2.
-    var o = { a:0 }
-    Object.defineProperties(o, {
-        "b": { get: function () { return this.a + 1; } },
-        "c": { set: function (x) { this.a = x / 2; } }
-    });
-    ```
-5. `Object.getOwnPropertyNames()`:该方法返回一个数组，它包含了对象 o 所有拥有的属性（无论是否可枚举）的名称。
-6. 判断对象是否包含某个(字段)属性
-    1. 使用`in`,属性名称需要用字符串
-        
-        ```js
-        var obj = {name:'jack'};
-        console.log(('name' in obj)); // --> true
-        console.log(('toString' in obj)); // --> true
-        console.log((toString in obj)); // --> false
-        console.log(('toString2' in obj)); // --> false     
-        ```
-    2. 和`undefined`作比较来判断是否是非`undefined`的字段，但是本身值是undefined的属性没法判断
-        
-        ```js
-        var o = { x: 1, y: undefined };
-        console.log(o.x !== undefined); //true
-        console.log(o.z !== undefined); //false
-        console.log(o.toString !== undefined);//true
-        console.log(o.toString2 !== undefined);//false
-
-        console.log(o.y !== undefined); //false, 本身值是undefined的就没法判断了
-        console.log("y" in o); // true
-        console.log(o.hasOwnProperty("y")); // true
-        ```
-    3. 使用`object.hasOwnProperty() boolean`判断是否是对象自身的属性,如果是继承的属性则返回false.
-    
-        ```js
-        var obj = {name:'jack'};
-        obj.hasOwnProperty('name'); // --> true
-        obj.hasOwnProperty(name); // --> ReferenceError
-        obj.hasOwnProperty('toString'); // --> false
-        ```
-7. `Object.freeze()`:冻结对象，使其不能被修改。使用场景一般是const声明对象时会用到（还可以使用ts的readonly）。当然这里面有很多细节需要注意，具体参考：[Object.freeze() MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
-    1. 该操作不可逆
-    2. 该方法只影响对象本身的属性,不影响原型属性
-8. `Object.keys(o)`:该方法返回一个对象 o 自身包含（不包括原型中）的所有属性的名称的数组。
-    
-#### 4.3.x 原型链
-一个实例的`__proto__`属性，指向它的原型对象
-
-### 4.4 Array
-特点:
-1. 无类型：可以存储任何类型的JavaScript值。
-    1. 扒开V8里数组的C++源码可以看到，数组JSArray继承自JSObject，也就是说，数组是一个特殊的对象，既然是对象，内部也是key-value的存储形式，所以可以存放不同的数据类型。从注释上还可以看到数组有fast和slow两种模式。
-        1. fast数组：底层结构是FixedArray，是一种线性的存储方式。新创建的空数组，默认的存储方式是快数组，快数组长度是可变的，可以根据元素的增加和删除来动态调整存储空间大小，内部是通过扩容和收缩机制实现。
-            1. 扩容策略:根据最大的索引值来扩容
-                1. 扩容后的新容量 = 旧容量的1.5倍 + 16
-                2. 扩容后会将数组拷贝到新的内存空间中
-            2. 收缩策略：也是根据最大的索引值来判断
-                1.  如果容量 >= length的2倍 + 16，则进行收缩容量调整，否则用holes对象（空洞对象，指的是数组中分配了空间，但是没有存放元素的位置，被访问时会得到undefined）填充未被初始化的位置
-                2. 收缩的大小`elements_to_trim`，根据 length + 1 和 old_length 进行判断，是将空出的空间全部收缩掉还是只收缩二分之一。
-        1. slow数组：底层结构是HashTable，不用开辟大块连续的存储空间，节省了内存，但是由于需要维护这样一个 HashTable，其效率会比快数组低。
-        3. 两种模式的比较：快数组就是以空间换时间的方式，申请了大块连续内存，提高效率。 慢数组以时间换空间，不必申请连续的空间，节省了内存，但需要付出效率变差的代价。
-        4. 两种模式的转换
-            1. 快 -> 慢:当对数组赋值时使用远超当前数组的容量+ 1024时（这样出现了大于等于 1024 个空洞，这时候要对数组分配大量空间则将可能造成存储空间的浪费，为了空间的优化，会转化为慢数组。
-            2. 慢 -> 快: 当慢数组的元素可存放在快数组中且长度在 smi 之间且仅节省了50%的空间,则会转变为快数组(待整理)
-2. 动态：可根据需要增长或缩减
-3. 可能是稀疏的：数组元素的索引不一定是连续的，意味着稀疏数组length属性值大于元素的个数
-
-有以下几种创建方法：
-1. `new Array(length)`：创建指定长度的空数组(可以理解为只有length，没有值和索引)
-    1. **注意是空数组,而不是值为undefined的数组**,虽然打印其中的值时可能为undefined.
-    2. 如果想创建值为单个数字的数组呢?可用js6新增的`Array.of(element...)`,element可以是任意类型
-2. `Array()`:等同于`new Array()`。
-2. `new Array(element0, element1, ..., elementN)`
-3. literal syntax(字面量):`[element0, element1, ..., elementN]`
-4. 通过函数`split()`,`match()`等创建
-
-还有一种额外的但不推荐的定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
-
-几种创建方法的对比：
-1. 在初始化大数组的时候，`new Array()`(以及`Array()`)性能更好。（待验证）
-
-#### 4.4.1 属性
-1. 长度`length`
-
-#### 4.4.2 方法
-1. 读取：
-    1. 下标，JS数组的下标是字符串类型的，所以以下几种方法都可以获得对应的数据，是因为Javascript自动将数字转化为字符串。
-        ```js
-        let arr = [100, 12.3, "red", "blue", "green"];
-        arr[arr.length] = "black";
-        console.log(arr.length);    // 6
-        console.log(arr[5]);  //black
-        console.log(arr['5']);  //black
-        console.log(arr["5"]);  //black
-        ```
-1. 数组和字符串的转换
-    1. `string1.split(string2)`
-    2. `array.join(string)`
-2. `splice()`：从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
-    1. 在头部添加元素可以用:`arr.splice(0,0,xxx)`；删除头部的元素可以使用`arr.splice(0,1)`等等
-3. 在数组头/末尾添加或删除项目
-    1. 这两个方法使它表现得像栈一样
-        1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。
-        2. `pop()`:删除并返回数组的最后一个元素。
-    2. 这两个方法使它表现得像队列一样
-        1. `unshift()`：头部添加
-        2. `shift()`：头部删除
-4. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
-
-    ```JavaScript
-    obj = {divisor: 10}
-    remainder = function (value) {
-        return value % this.divisor;
-    }
-    numbers = [6, 12, 25, 30];
-    result = numbers.map(remainder, obj);
-    console.log(result);
-    ```
-
-    如果把方法写在map的callback()里面,
-
-    ```JavaScript
-    result = numbers.map((ele)=>{
-        return ele % this.divisor;    
-    }, obj);
-    ```
-    则`this`会变成`{}`,目前还不清楚为啥.
-    参考:"回调中所用的 ES2015 箭头函数 比等价的函数表达式更加简洁，能优雅的处理 this 指针。"
-
-3. `filter(callback[, thisArg])`:返回过滤后的新数组,不会改变原数组.简单使用如下
-
-    ```javascript
-    let arr = [xxx].filter((ele)=>{
-        return ele > 10;
-    })
-
-    ```
-4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
-5. `Array.prototype.slice([begin[,end]])`:从数组或类数组中拷贝出新的数组，这个拷贝是对原数组元素的浅拷贝，该方法不会改变原数组。如果不带参数,则是整个复制。begin和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
-6. 排序`sort(sortby)`：对数组进行排序，然后返回对数组的引用。排序是在原数组上进行，不生成副本。sortby参数是可选的，如果没提供，则默认按字符编码的顺序进行排序，如果提供了，则必须是函数。V8版本7.0开始使用Timsort实现。
-    
-    ```js
-    // 例子1 提供了sortby
-    function sortNumber(a,b){
-        return a - b
-    }
-    arr.sort(sortNumber)
-    ```
-
-array常用操作总结
-1. 过滤用`filter()`,需要对元素进行处理用`map()`
-2. 判断数组为空(待补充):
-
-    ```js
-    arr.length == 0
-    ```
-
-注意：
-1. 查看`map()`方法的文档发现：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
-2. 如何获取数组的容量(capacity):目前js似乎没提供相关的方法来获取
-
-#### 4.4.3 类数组（Like Array、Array-Like)
-**只要有一个 length 属性和(0..length-1)范围的整数属性都认为是类数组对象**。比如宿主浏览器提供的HTMLCollection类型、NodeList对象，`{'length': 2, '0': 'eat', '1': 'bananas'}`，方法实例的arguments等。
-
-### 4.5 RegExp对象及正则表达式
-参考：
-1. http://ecma-international.org/ecma-262/5.1/#sec-15.10
-
-字符模式对象,用于正则表达式
-
-使用：
-1. 声明语法：有两种，如下,其中pattern表示模式,是正则表达式的主体；modifiers(修饰符)是可选的，用于指定全局匹配、区分大小写、多行匹配等:
-
-    ```javascript
-    var patt=new RegExp(pattern,modifiers); // 写法一
-    var patt=/pattern/modifiers;  // 写法二：更简洁
-  
-    // 比如
-    var re = new RegExp("\\w+");
-    var re = /\w+/;
-    var re = /hello/i; // i是修饰符，表示不区分大小写，所以整句的意思是不区分大小写地搜索hello字符串
-    ```
-2. 常用方法
-    1. 在字符串上使用
-        1. `stringA.search(pattern)`, 其中的pattern可以是正则也可以是普通字符串，所以它的作用是检索与正则表达式/字符串相匹配的子字符串，并返回子串的起始位置
-        2. `stringA.replace(pattern, target)`，其中的pattern可以是正则也可以是普通字符串，所以它的作用是在字符串中用target替换另一些字符
-    2. 在正则对象上使用
-        1. `regExpA.test(stringA)`:检测一个字符串是否匹配某个模式，如果字符串中含有匹配的文本，则返回 true，否则返回 false
-            
-            ```js
-            // 写法一
-            var patt = /e/;
-            patt.test("The best things in life are free!");
-            
-            // 写法二：更简洁
-            /e/.test("The best things in life are free!")
-            ```
-        2. `regExpA.exec(stringA)`检索字符串中的正则表达式的匹配,该函数返回一个数组，其中存放匹配的结果。如果未找到匹配，则返回值为 null
-            1. 注意返回的数组和普通数组稍有不同，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array
-3. 详细语法
-    1. modifiers(修饰符)
-        1. `i`执行对大小写不敏感的匹配。
-        2. `g`执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。reg对象有个lastIndex属性，只有搭配`g`修饰符一起使用才会生效，在每次匹配成功后更新lastIndex的值为当前成功匹配的下一个位置，下次匹配就从这个位置开始，即使换了stringA对象也是这样。
-        3. `m`执行多行匹配。
-    2. 正则主体
-        1. 分组
-        2. 环视(Look around)，即前瞻后顾(见studyJS笔记)
-            1. 环视匹配的是特定位置，不匹配任何字符，也就是并不会“占用”字符。这一点与单词分界符`\b`，锚点`^`和`$`相似，但是环视更加通用。
-        3. 反向引用
-4. 问题
-    1. 如何一次获取字符串中所有匹配项？目前好像没提供类似的方法，可以使用`g`修饰符和for循环来实现
-        
-        ```js
-         // 1. 查找成对的字母
-        let str = "aabbbbgbddesddfiid"
-        let re = /(\w)(\1)/g
-        let res;
-        while ((res = re.exec(str)) !== null) {
-            console.log(res[0]);
-        }
-        ```
-        
-
-### 4.6 Function
-参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function
-
-#### 4.6.1 属性
-1. `Function.length`:函数签名中入参(形参)的数量。
-
-#### 4.6.2 方法
-1. `Function.prototype.bind()`：该方法创建一个新的函数(称为Bound Function,BF)，在新函数被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
-2. `Function.prototype.call(thisArg, arg1, arg2, ...)`：该方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。简单概括它的作用就是允许其他对象调用某个对象的函数/方法，并且能被继承。
-    1. `thisArg`:在非严格模式下，如果没有指定`thisArg`或者指定为 null 或 undefined 时会自动替换为指向全局对象，原始值会被包装；在严格模式下，不指定`thisArg`则`this`的值是undefined
-    
-    ```js
-    // 例子
-    // 1. 
-    Math.max.call(null, ...[1,2]])
-    Math.max.call(...[1,2]])
-    // 2. 在web浏览器中
-    var forEach = Array.prototype.forEach;
-    var divs = document.getElementsByTagName( 'div' );
-    var firstDiv = divs[ 0 ];
-    forEach.call(firstDiv.childNodes, function( divChild ){ // 将某个宿主对象 （如 NodeList） 作为 this 传递给原生方法 （如 forEach） 不能保证在所有浏览器中工作，已知在一些浏览器中会失败
-        divChild.parentNode.style.color = '#0F0';
-    });
-    ```
-3. `Function.prototype.apply(thisArg, [argsArray])`:该方法调用一个指定的this值，以及一个数组（或类似数组对象（比如数组字面量或Function.arguments））提供的参数。该方法和`call`只有一个区别。
-
-    ```JavaScript
-    // 例子
-    // 1. 可以使用arguments对象作为argsArray来把所有的参数传递给被调用对象，这样在使用apply函数的时候就不需要知道被调用对象的所有参数。
-    ...
-    // 2. 
-    Array.prototype.slice.apply([1,2]) /
-    Math.max.apply(null, [1,2]) // 对于静态方法，thisArgs需要指定为null，因为没有对象去调用
-    Array.apply(null, Array(2))
-    ```
-`call()`和`apply()`异同：
-1. 相同之处：两个函数的作用是相同的。
-2. 不同之处：
-    1. thisArg后面的参数不同：`call()`方法的接受的是多个参数，而`apply()`方法接受的是一个包含多个参数的数组。
-
-#### 4.6.3 arguments
-见arguments部分
-
-### 4.7 Number
-JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
-
-#### 4.7.1 属性
-1. `Number.POSITIVE_INFINITY`:正无穷大
-2. `Number.NEGATIVE_INFINITY`:负无穷大
-3. `Number.NaN`:
-
-### 4.8 JSON
-包含两个方法: 除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
-1. 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，该方法可能返回两种错误
-    1. `TypeError`:JSON对象为null，未定义或者赋值成了其他变量
-    2. `SyntaxError`:被解析的JavaScript Object Notation格式不对
-2. 以及将对象/值转换为 JSON字符串的 `stringify()`方法。
-
-```js
-var a = {
-  "data": "{\"code\":\"200\",\"message\":\"接口掉用成功\",\"success\":true}",
-}
-c = JSON.parse(a.data)
-console.log(c); // { code: '200', message: '接口掉用成功', success: true }
-```
-
-更多关于JSON的其他知识参考JSON笔记
-
-#### 4.8.1 方法
-1. `JSON.stringify(value[, replacer [, space]]) string`:replacer可以是函数、数组、null或省略，space用于指定缩进的字符串，用于美化输出（pretty-print）
-
-### 4.9 ArrayBuffer
-见arraybuffer部分笔记
-
-### 4.10 Proxy
-参考：
-2. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
-
-### 4.11 Symbol
-为什么需要Symbol:ES5对象属性名等都是字符串，如果使用了别人提供的对象，想给这个对象加上新的方法(mixin模式)，而新方法名字可能和原方法相同，很容易冲突。所以ES6引入Symbol来解决这个问题。
-
-什么是Symbol:ES6新引入的原始数据类型，表示一个独一无二的值。
-
-Symbol的使用
-1. 创建:通过`Symbol(descriptionA)`函数生成，不能用`new`命令，因为Symbol是原始类型，不是对象
-    ```js
-    // 1. 字面量创建:descriptionA是描述性的字符串，不影响Symbol的唯一性
-    let s1 = Symbol('foo');
-    let s2 = Symbol('foo');
-    s1.toString() // "Symbol(foo)"
-    s1 === s2 // false
-    // 2. Symbol.for(descriptionA):从已经登记到全局的Symbol中搜索是否已经有该descriptionA的Symbol，如果有就返回该Symbol，否则就创建一个，并将其登记到全局。注意这个登记是全局环境的，不管有没有在全局环境运行，意味着在不同的iframe或 service worker中可以取到同一个值
-    let s1 = Symbol.for('foo');
-    let s2 = Symbol.for('foo');
-    s1 === s2 // true
-    ```
-
-2. 关于descriptionA参数:descriptionA是描述性的字符串，主要是方便我们区分Symbol。
-3. 类型:`typeof symbolA`是"symbol"，所以可以理解Symbol是一个独一无二的类似字符串的一个东西。
-4. 运算：Symbol 值不能与其他类型的值进行运算，会报错。但是可以显式转为字符串(`symbolA.toString()`)和布尔值(默认为true)
-5. 主要使用场景
-    1. 用作对象的属性名
-        1. 注意写法，应该永远用方括号，不能使用点运算符，如果使用了点运算符，因为点运算符后面只能跟字符串，此时用的就是字符串，而不是这个Symbol。
-            ```js
-            // 下面三种写法作用一样
-            let mySymbol = Symbol();
-            // 第一种写法
-            let a = {};
-            a[mySymbol] = 'Hello!';
-            // 第二种写法
-            let a = {
-            [mySymbol]: 'Hello!'
-            };
-            // 第三种写法
-            let a = {};
-            Object.defineProperty(a, mySymbol, { value: 'Hello!' });
-            ```
-            
-            ```js
-            // 点运算符的例子
-            const mySymbol = Symbol();
-            const a = {};
-            
-            a.name = 'Tom';
-            a.mySymbol = 'foo'; // 这里点运算符后的mySymbol是一个字符串，和Symbol类型的mySymbol没有关系
-            a[mySymbol] = 'bar'; // 正确写法
-            console.log(a.mySymbol, a['mySymbol'] == a.mySymbol); // foo true
-            console.log(a[mySymbol]); // bar
-            console.log(a); // { name: 'Tom', mySymbol: 'foo', [Symbol()]: 'bar' }
-            ```
-        2. Symbol作为属性名时，该属性是公开属性，不是私有属性
-        3. 遍历对象的Symbol属性:遍历对象的时候，Symbol属性不会被`for...in`、`for...of`、`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`这些常规方法遍历到，可以通过`Object.getOwnPropertySymbols()`和`Reflect.ownKeys()`方法遍历到。利用这个特性，可以用Symbol定义一些只用于内部的方法。
-            1. `Object.getOwnPropertySymbols()`方法，可以获取指定对象的所有 Symbol 属性名。该方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
-            2. 新的API`Reflect.ownKeys()`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
-    2. 用作常量:可以用来定义一组常量，保证这组常量的值都是不相等的。
-
-Symbol的属性:
-1. `description`(ES2019)
-
-Symbol的方法:
-1. `Symbol.keyFor(symbolA)`:方法返回一个已登记的Symbol类型的key(即descriptionA)。如果Symbol没有被登记，返回undefined
-
-### 4.12 Intl
-它提供了精确的字符串对比、数字格式化，和日期时间格式化(Collator，NumberFormat 和 DateTimeFormat等)，都是language-sensitive(语言敏感的)(或者说本地化)的
-
-参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Intl
-
-使用：
-1. 大部分都有`formatToParts()`方法
-1. `RelativeTimeFormat()`:可以输出短语化的相对时间
-    
-    ```js
-    // 英文相对时间
-    rtf = new Intl.RelativeTimeFormat('en');
-    // output :: 15 minutes ago
-    console.log(rtf.format(-15, 'minute'));
-    // output :: in 8 hours
-    console.log(rtf.format(8, 'hour'));
-
-    // 中文相对时间
-    rtf = new Intl.RelativeTimeFormat('zh-Hans');
-    // output :: 15分钟前
-    console.log(rtf.format(-15, 'minute'));
-    // output :: 8小时后
-    console.log(rtf.format(8, 'hour'));
-    // 1天前
-    console.log(rtf.format(-1, 'day'));
-    // 昨天
-    const rtf = new Intl.RelativeTimeFormat('zh-Hans', {
-        numeric: 'auto', // other values: 'always'
-    });
-    console.log(rtf.format(-1, 'day'));
-    ```
 
 ## 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
@@ -1733,7 +1220,551 @@ test(1)
 1. 不可以用Word或写字板来编写JavaScript或HTML，因为带格式的文本保存后不是纯文本文件，无法被浏览器正常读取
 2. 要理解javaScrip,最核心的就是要理解对象和函数两个部分
 
-## 2 即时编译器JIT(Just in time compiling)
+
+## 2 JS本地对象
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects
+
+### 4.1 Global
+包含值属性和方法属性
+
+#### 值属性
+有以下值属性，它们都是simple value, 它们have no properties or methods。也称为全局变量。
+- Infinity：是一个数值，表示无穷大。初始值是Number.POSITIVE_INFINITY。
+- NaN:全局属性 NaN 的值表示不是一个数字（Not-A-Number），和`Number.NaN`相同。编码中很少直接使用到 NaN。通常都是在计算失败时，作为 Math 的某个方法的返回值出现的（例如：Math.sqrt(-1)）或者尝试将一个字符串解析成数字但失败了的时候（例如：parseInt("blabla")）。**NaN自身永不相等于自身**
+- undefined
+- null literal
+- globalThis
+
+#### 方法属性
+##### decodeURI(),encodeURI(),decodeURIComponent()和encodeURIComponent()
+根据HTTP的规范(URL允许的字符集是ISO-8859-1、以及一些其他要求)，所以有效的URI中不能包含空格、中文等。而这些URI编码方法就可以对URI进行编码或解码，它们用特殊的UTF-8编码（也称为转义序列，本质是把UTF8的每个字节转换成百分号加上对应的16进制，比如"张三"会被替换成`%E5%BC%A0%E4%B8%89`，空格会被转换为`%20`）替换所有无效的字符，从而让浏览器能够接受和理解。大家通俗地叫这几个方法为`urlencode`(url编码)方法
+
+```JavaScript
+var uriStr = "http://www.baidu.com?name=张三&num=001 zs"; 
+var uriec = encodeURI(uriStr); 
+document.write("编码后的" + uriec); 
+// 编码后的http://www.baidu.com?name=%E5%BC%A0%E4%B8%89&num=001%20zs 
+var uridc = decodeURI(uriec); 
+document.write("解码后的" + uridc); 
+// 解码后的http://www.baidu.com?name=张三&num=001 zs
+```
+
+两者的区别:
+1. `encodeURIComponent()`和`decodeURIComponent()`:转义除了字母、数字、`(`、`)`、`.`、`!`、`~`、`*`、`'`、`-`和`_`（共71个）之外的所有字符。可知它不适合用于对整个URI进行编码，因为冒号、正斜杠、问号和井字号也会被编码，所以它主要用于对URI中的某一段(比如URI里的查询字符串)进行编码。
+2. `encodeURI()`和`decodeURI()`:不能转义的字符比上面两个方法多，除了上面的两个方法不能转义的，还包括`;`、`/`、`?`、`:`、`@`、`&`、`=`、`+`、`$`和`#`（共82个）。可知它不会对本身属于URI的特殊字符进行编码，例如冒号、正斜杠、问号和井字号，所以`encodeURI()`主要用于整个URI的编码。
+
+##### 其他
+`parseInt()`:将字符串转换为整型,第二个参数表示数值的进制，可选填。（待整理）例子如,
+```javascript
+parseInt("123", 10) // 123
+parseInt("010", 10) // 10
+parseInt("010") // 此处未指定进制,该函数根据开头的0来决定将那个字符串转换为八进制数字,所以结果是8
+```
+
+`isNaN`:NaN不能通过相等操作符（== 和 ===）来判断 ，因为 NaN == NaN 和 NaN === NaN 都会返回 false。 因此，isNaN()就很有必要了。该方法还是有瑕疵的，所以更推荐用ES6的`Number.isNaN()`，后者更可靠。
+
+`eval()`（不推荐使用）:函数会将传入的字符串当做js代码执行，然后返回结果，类似于一个js解析器。它只接受一个参数，多余的参数会被忽略。如果传入的字符串是表达式，它会对表达式求值；如果...在`eval(`)中创建的任何变量以及函数都不会被提升，只有执行到`eval()`时才创建
+```JavaScript
+// 1. 传入的字符串是表达式
+console.log(eval('2 + 2')); // 4
+// 2. 传入的参数不是字符串
+console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包含"2 + 2"的字符串对象
+```
+
+### 4.2 Math
+操作：
+1. 取近似值
+    1. 四舍五入：`Math.round()`，返回一个数字四舍五入后最接近的整数。但是在对小数部分的0.5处理上该方法和其他语言不同，其他语言一般是舍入到远离0的方向，但是该方法是上舍入。比如`Math.round(3.5)`是4，但`Math.round(-3.5)`是-3.
+    2. 向下舍入：`Math.floor()`
+    3. 向上取整：`Math.ceil()`
+2. 取最大值`Math.max()`:如果没有参数，则结果为`-Infinity`,如果给定的参数中至少有一个参数无法被转换成数字，则会返回 NaN。
+3. 生成随机数`Math.random()`：生成0~1的pseudorandom number。
+    1. 缺点:非密码学安全，其实现是与宿主对象相关，并且不能保证加密使用的安全性(why?)。
+        
+        ```js
+        // 生成UUID，缺点是重复率较高
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        })
+        ```
+    2. 如果在浏览器环境下，更推荐使用加密安全的`window.crypto.getRandomValues()`
+
+### 4.3 Object
+**几乎所有的 JavaScript 对象都是 Object 的实例**
+
+#### 4.3.1 值
+1. `Object.prototype`:表示Object的原型对象
+2. `Object.prototype.constructor`:对象的构造函数
+
+#### 4.3.2 方法
+1. `Object.toString(numA)`：每个对象都有一个`toString(numA)`方法，当该对象被表示为一个文本值时，或者一个对象以预期的字符串方式引用时自动调用（和其他语言类似）。默认情况下，`toString(numA)` 方法被每个 Object 对象继承。如果此方法在自定义对象中未被覆盖，`toString(numA)`返回 "[object obj_type]"，特别的`toString(numA)`调用 null 返回[object Null]，undefined 返回 [object Undefined]。`numA`是可选的，表示进制,接收区间`[2,36]`中的任意整数作为可选参数。
+    ```JavaScript
+    var o = new Object();
+    o.toString(); // [object Object]
+    (1234).toString(2) // "10011010010"
+    ```
+2. `Object.assign(targetA, sourceA...)`:对象合并。将源对象的所有可枚举属性，复制到目标对象，它只有第一层的深拷贝。如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
+    1. `Object.assign`拷贝的属性是有限制的，只拷贝源对象的自身属性（不拷贝继承属性），也不拷贝不可枚举的属性（enumerable: false）。
+    
+    ```js
+    // 如果只有一个参数，Object.assign会直接返回该参数。
+    const obj = {a: 1};
+    Object.assign(obj) === obj // true
+    
+    // 如果该参数不是对象，则会先转成对象，然后返回
+    typeof Object.assign(2) // object
+    // 由于undefined和null无法转成对象，所以如果它们作为参数，就会报错。
+    Object.assign(undefined) // 报错
+    Object.assign(null) // 报错
+    ```
+3. `Object.getPrototypeOf()`
+3. `Object.setPrototypeOf(objA, objB)`：设置一个指定对象的原型到另一个对象。该方法性能较差，更推荐用`Object.create()创建新对象的方式代替`它是ES6新增的方法，有个旧方法是`Object.prototype.__proto__`。
+    
+    ```js
+    // Polyfill
+    // 仅适用于Chrome和FireFox，在IE中不工作：
+    Object.setPrototypeOf = Object.setPrototypeOf || function (obj, proto) {
+    obj.__proto__ = proto;
+    return obj; 
+    }
+    ```
+
+4. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。该方法是数据双向绑定实现的基石.
+
+    ```JavaScript
+    // 1.
+    // 这个例子展示使用getter和setter方法扩展 Date原型
+    var d = Date.prototype;
+    Object.defineProperty(d, "year", {
+        get: function () { return this.getFullYear() },
+        set: function (y) { this.setFullYear(y) }
+    });
+    var now = new Date();
+    console.log(now.year);  // 2000
+    now.year = 2001; 
+    console.log(now); // 987617605170
+    // Wed Apr 18 11:13:25 GMT-0700 (Pacific Daylight Time) 2001
+    // 2.
+    var o = { a:0 }
+    Object.defineProperties(o, {
+        "b": { get: function () { return this.a + 1; } },
+        "c": { set: function (x) { this.a = x / 2; } }
+    });
+    ```
+5. `Object.getOwnPropertyNames()`:该方法返回一个数组，它包含了对象 o 所有拥有的属性（无论是否可枚举）的名称。
+6. 判断对象是否包含某个(字段)属性
+    1. 使用`in`,属性名称需要用字符串
+        
+        ```js
+        var obj = {name:'jack'};
+        console.log(('name' in obj)); // --> true
+        console.log(('toString' in obj)); // --> true
+        console.log((toString in obj)); // --> false
+        console.log(('toString2' in obj)); // --> false     
+        ```
+    2. 和`undefined`作比较来判断是否是非`undefined`的字段，但是本身值是undefined的属性没法判断
+        
+        ```js
+        var o = { x: 1, y: undefined };
+        console.log(o.x !== undefined); //true
+        console.log(o.z !== undefined); //false
+        console.log(o.toString !== undefined);//true
+        console.log(o.toString2 !== undefined);//false
+
+        console.log(o.y !== undefined); //false, 本身值是undefined的就没法判断了
+        console.log("y" in o); // true
+        console.log(o.hasOwnProperty("y")); // true
+        ```
+    3. 使用`object.hasOwnProperty() boolean`判断是否是对象自身的属性,如果是继承的属性则返回false.
+    
+        ```js
+        var obj = {name:'jack'};
+        obj.hasOwnProperty('name'); // --> true
+        obj.hasOwnProperty(name); // --> ReferenceError
+        obj.hasOwnProperty('toString'); // --> false
+        ```
+7. `Object.freeze()`:冻结对象，使其不能被修改。使用场景一般是const声明对象时会用到（还可以使用ts的readonly）。当然这里面有很多细节需要注意，具体参考：[Object.freeze() MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+    1. 该操作不可逆
+    2. 该方法只影响对象本身的属性,不影响原型属性
+8. `Object.keys(o)`:该方法返回一个对象 o 自身包含（不包括原型中）的所有属性的名称的数组。
+    
+#### 4.3.x 原型链
+一个实例的`__proto__`属性，指向它的原型对象
+
+### 4.4 数组
+个人理解数组分为标准数组类型`Array`和`TypedArray`
+
+`TypedArray`是描述一个底层的二进制数据缓冲区（binary data buffer）的一个类数组视图（view），`TypedArray`包含以下具体类型(但不仅仅包含)：
+Int8Array();
+Uint8Array();
+Uint8ClampedArray();
+Int16Array();
+Uint16Array();
+Int32Array();
+Uint32Array();
+Float32Array();
+Float64Array();
+
+#### Array
+特点:
+1. 无类型：可以存储任何类型的JavaScript值。
+    1. 扒开V8里数组的C++源码可以看到，数组JSArray继承自JSObject，也就是说，数组是一个特殊的对象，既然是对象，内部也是key-value的存储形式，所以可以存放不同的数据类型。从注释上还可以看到数组有fast和slow两种模式。
+        1. fast数组：底层结构是FixedArray，是一种线性的存储方式。新创建的空数组，默认的存储方式是快数组，快数组长度是可变的，可以根据元素的增加和删除来动态调整存储空间大小，内部是通过扩容和收缩机制实现。
+            1. 扩容策略:根据最大的索引值来扩容
+                1. 扩容后的新容量 = 旧容量的1.5倍 + 16
+                2. 扩容后会将数组拷贝到新的内存空间中
+            2. 收缩策略：也是根据最大的索引值来判断
+                1.  如果容量 >= length的2倍 + 16，则进行收缩容量调整，否则用holes对象（空洞对象，指的是数组中分配了空间，但是没有存放元素的位置，被访问时会得到undefined）填充未被初始化的位置
+                2. 收缩的大小`elements_to_trim`，根据 length + 1 和 old_length 进行判断，是将空出的空间全部收缩掉还是只收缩二分之一。
+        1. slow数组：底层结构是HashTable，不用开辟大块连续的存储空间，节省了内存，但是由于需要维护这样一个 HashTable，其效率会比快数组低。
+        3. 两种模式的比较：快数组就是以空间换时间的方式，申请了大块连续内存，提高效率。 慢数组以时间换空间，不必申请连续的空间，节省了内存，但需要付出效率变差的代价。
+        4. 两种模式的转换
+            1. 快 -> 慢:当对数组赋值时使用远超当前数组的容量+ 1024时（这样出现了大于等于 1024 个空洞，这时候要对数组分配大量空间则将可能造成存储空间的浪费，为了空间的优化，会转化为慢数组。
+            2. 慢 -> 快: 当慢数组的元素可存放在快数组中且长度在 smi 之间且仅节省了50%的空间,则会转变为快数组(待整理)
+2. 动态：可根据需要增长或缩减
+3. 可能是稀疏的：数组元素的索引不一定是连续的，意味着稀疏数组length属性值大于元素的个数
+
+有以下几种创建方法：
+1. `new Array(length)`：创建指定长度的空数组(可以理解为只有length，没有值和索引)
+    1. **注意是空数组,而不是值为undefined的数组**,虽然打印其中的值时可能为undefined.
+    2. 如果想创建值为单个数字的数组呢?可用js6新增的`Array.of(element...)`,element可以是任意类型
+2. `Array()`:等同于`new Array()`。
+2. `new Array(element0, element1, ..., elementN)`
+3. literal syntax(字面量):`[element0, element1, ..., elementN]`
+4. 通过函数`split()`,`match()`等创建
+
+还有一种额外的但不推荐的定义方法:关联数组.就是把其中的index由数字换成字符串,比如`arr["name"]="tom"`.(但是非常不推荐使用)
+
+几种创建方法的对比：
+1. 在初始化大数组的时候，`new Array()`(以及`Array()`)性能更好。（待验证）
+
+属性：
+1. 长度`length`
+
+方法：
+1. 读取：
+    1. 下标，JS数组的下标是字符串类型的，所以以下几种方法都可以获得对应的数据，是因为Javascript自动将数字转化为字符串。
+        ```js
+        let arr = [100, 12.3, "red", "blue", "green"];
+        arr[arr.length] = "black";
+        console.log(arr.length);    // 6
+        console.log(arr[5]);  //black
+        console.log(arr['5']);  //black
+        console.log(arr["5"]);  //black
+        ```
+1. 数组和字符串的转换
+    1. `string1.split(string2)`
+    2. `array.join(string)`
+2. `splice()`：从原数组中添加/删除项目，然后返回被删除的项目,该方法会改变原数组.注意这个返回不是`return`,而是赋值.意味着不会中断方法的运行,用值去接收的时候才有用.
+    1. 在头部添加元素可以用:`arr.splice(0,0,xxx)`；删除头部的元素可以使用`arr.splice(0,1)`等等
+3. 在数组头/末尾添加或删除项目
+    1. 这两个方法使它表现得像栈一样
+        1. `push()`:向数组的末尾添加一个或更多元素，并返回新的长度。
+        2. `pop()`:删除并返回数组的最后一个元素。
+    2. 这两个方法使它表现得像队列一样
+        1. `unshift()`：头部添加
+        2. `shift()`：头部删除
+4. `map()`:返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值,按照原始数组元素顺序依次处理元素,不会改变原数组.语法:`array.map(function(currentValue,index,arr), thisValue)`,微软js手册的例子如下,
+
+    ```JavaScript
+    obj = {divisor: 10}
+    remainder = function (value) {
+        return value % this.divisor;
+    }
+    numbers = [6, 12, 25, 30];
+    result = numbers.map(remainder, obj);
+    console.log(result);
+    ```
+
+    如果把方法写在map的callback()里面,
+
+    ```JavaScript
+    result = numbers.map((ele)=>{
+        return ele % this.divisor;    
+    }, obj);
+    ```
+    则`this`会变成`{}`,目前还不清楚为啥.
+    参考:"回调中所用的 ES2015 箭头函数 比等价的函数表达式更加简洁，能优雅的处理 this 指针。"
+
+3. `filter(callback[, thisArg])`:返回过滤后的新数组,不会改变原数组.简单使用如下
+
+    ```javascript
+    let arr = [xxx].filter((ele)=>{
+        return ele > 10;
+    })
+
+    ```
+4. `find(func)`:返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined
+5. `Array.prototype.slice([begin[,end]])`:从数组或类数组中拷贝出新的数组，这个拷贝是对原数组元素的浅拷贝，该方法不会改变原数组。如果不带参数,则是整个复制。begin和index一样从0开始算,如果是复数,则表示倒数,-1表示倒数第一个元素,以此类推.
+6. 排序`sort(sortby)`：对数组进行排序，然后返回对数组的引用。排序是在原数组上进行，不生成副本。sortby参数是可选的，如果没提供，则默认按字符编码的顺序进行排序，如果提供了，则必须是函数。V8版本7.0开始使用Timsort实现。
+    
+    ```js
+    // 例子1 提供了sortby
+    function sortNumber(a,b){
+        return a - b
+    }
+    arr.sort(sortNumber)
+    ```
+
+array常用操作总结
+1. 过滤用`filter()`,需要对元素进行处理用`map()`
+2. 判断数组为空(待补充):
+
+    ```js
+    arr.length == 0
+    ```
+
+注意：
+1. 查看`map()`方法的文档发现：callbackfn is called only for elements of the array which actually exist; it is not called for missing elements of the array。可知js数组的undefined元素和空插槽(empty item，不存在任何元素，但是算入了数组长度。类似于golang`make([]int64,0,xxx)`的容量)是不同的，在进行`map()`、`every()`、`filter()`、`forEach()`、`some()`等遍历方法时，是不会对不存在的元素执行回调函数，但是会对undefined元素执行。例子见studyJS项目。
+2. 如何获取数组的容量(capacity):目前js似乎没提供相关的方法来获取
+
+#### TypedArray、Like Array、Array-Like(类型化数组、类数组)
+**只要有一个 length 属性和(0..length-1)范围的整数属性都认为是类数组对象**。比如宿主浏览器提供的HTMLCollection类型、NodeList对象，`{'length': 2, '0': 'eat', '1': 'bananas'}`，方法实例的arguments等。
+
+类型化数组可以和数组互相转换，但是不能直接当做数组使用(TypedArray直接使用是对象类型，不是数组类型)，比如
+```js
+// Array to TypedArray 
+var arr = new Uint8Array([21,31]);
+// TypedArray to Array
+var arr = Array.from(typedArray);
+```
+
+### 4.5 RegExp对象及正则表达式
+参考：
+1. http://ecma-international.org/ecma-262/5.1/#sec-15.10
+
+字符模式对象,用于正则表达式
+
+使用：
+1. 声明语法：有两种，如下,其中pattern表示模式,是正则表达式的主体；modifiers(修饰符)是可选的，用于指定全局匹配、区分大小写、多行匹配等:
+
+    ```javascript
+    var patt=new RegExp(pattern,modifiers); // 写法一
+    var patt=/pattern/modifiers;  // 写法二：更简洁
+  
+    // 比如
+    var re = new RegExp("\\w+");
+    var re = /\w+/;
+    var re = /hello/i; // i是修饰符，表示不区分大小写，所以整句的意思是不区分大小写地搜索hello字符串
+    ```
+2. 常用方法
+    1. 在字符串上使用
+        1. `stringA.search(pattern)`, 其中的pattern可以是正则也可以是普通字符串，所以它的作用是检索与正则表达式/字符串相匹配的子字符串，并返回子串的起始位置
+        2. `stringA.replace(pattern, target)`，其中的pattern可以是正则也可以是普通字符串，所以它的作用是在字符串中用target替换另一些字符
+    2. 在正则对象上使用
+        1. `regExpA.test(stringA)`:检测一个字符串是否匹配某个模式，如果字符串中含有匹配的文本，则返回 true，否则返回 false
+            
+            ```js
+            // 写法一
+            var patt = /e/;
+            patt.test("The best things in life are free!");
+            
+            // 写法二：更简洁
+            /e/.test("The best things in life are free!")
+            ```
+        2. `regExpA.exec(stringA)`检索字符串中的正则表达式的匹配,该函数返回一个数组，其中存放匹配的结果。如果未找到匹配，则返回值为 null
+            1. 注意返回的数组和普通数组稍有不同，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array
+3. 详细语法
+    1. modifiers(修饰符)
+        1. `i`执行对大小写不敏感的匹配。
+        2. `g`执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。reg对象有个lastIndex属性，只有搭配`g`修饰符一起使用才会生效，在每次匹配成功后更新lastIndex的值为当前成功匹配的下一个位置，下次匹配就从这个位置开始，即使换了stringA对象也是这样。
+        3. `m`执行多行匹配。
+    2. 正则主体
+        1. 分组
+        2. 环视(Look around)，即前瞻后顾(见studyJS笔记)
+            1. 环视匹配的是特定位置，不匹配任何字符，也就是并不会“占用”字符。这一点与单词分界符`\b`，锚点`^`和`$`相似，但是环视更加通用。
+        3. 反向引用
+4. 问题
+    1. 如何一次获取字符串中所有匹配项？目前好像没提供类似的方法，可以使用`g`修饰符和for循环来实现
+        
+        ```js
+         // 1. 查找成对的字母
+        let str = "aabbbbgbddesddfiid"
+        let re = /(\w)(\1)/g
+        let res;
+        while ((res = re.exec(str)) !== null) {
+            console.log(res[0]);
+        }
+        ```
+        
+
+### 4.6 Function
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function
+
+#### 4.6.1 属性
+1. `Function.length`:函数签名中入参(形参)的数量。
+
+#### 4.6.2 方法
+1. `Function.prototype.bind()`：该方法创建一个新的函数(称为Bound Function,BF)，在新函数被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
+2. `Function.prototype.call(thisArg, arg1, arg2, ...)`：该方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。简单概括它的作用就是允许其他对象调用某个对象的函数/方法，并且能被继承。
+    1. `thisArg`:在非严格模式下，如果没有指定`thisArg`或者指定为 null 或 undefined 时会自动替换为指向全局对象，原始值会被包装；在严格模式下，不指定`thisArg`则`this`的值是undefined
+    
+    ```js
+    // 例子
+    // 1. 
+    Math.max.call(null, ...[1,2]])
+    Math.max.call(...[1,2]])
+    // 2. 在web浏览器中
+    var forEach = Array.prototype.forEach;
+    var divs = document.getElementsByTagName( 'div' );
+    var firstDiv = divs[ 0 ];
+    forEach.call(firstDiv.childNodes, function( divChild ){ // 将某个宿主对象 （如 NodeList） 作为 this 传递给原生方法 （如 forEach） 不能保证在所有浏览器中工作，已知在一些浏览器中会失败
+        divChild.parentNode.style.color = '#0F0';
+    });
+    ```
+3. `Function.prototype.apply(thisArg, [argsArray])`:该方法调用一个指定的this值，以及一个数组（或类似数组对象（比如数组字面量或Function.arguments））提供的参数。该方法和`call`只有一个区别。
+
+    ```JavaScript
+    // 例子
+    // 1. 可以使用arguments对象作为argsArray来把所有的参数传递给被调用对象，这样在使用apply函数的时候就不需要知道被调用对象的所有参数。
+    ...
+    // 2. 
+    Array.prototype.slice.apply([1,2]) /
+    Math.max.apply(null, [1,2]) // 对于静态方法，thisArgs需要指定为null，因为没有对象去调用
+    Array.apply(null, Array(2))
+    ```
+`call()`和`apply()`异同：
+1. 相同之处：两个函数的作用是相同的。
+2. 不同之处：
+    1. thisArg后面的参数不同：`call()`方法的接受的是多个参数，而`apply()`方法接受的是一个包含多个参数的数组。
+
+#### 4.6.3 arguments
+见arguments部分
+
+### 4.7 Number
+JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
+
+#### 4.7.1 属性
+1. `Number.POSITIVE_INFINITY`:正无穷大
+2. `Number.NEGATIVE_INFINITY`:负无穷大
+3. `Number.NaN`:
+
+### 4.8 JSON
+包含两个方法: 除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。
+1. 用于解析 JavaScript Object Notation  (JSON) 的`parse()`方法，该方法可能返回两种错误
+    1. `TypeError`:JSON对象为null，未定义或者赋值成了其他变量
+    2. `SyntaxError`:被解析的JavaScript Object Notation格式不对
+2. 以及将对象/值转换为 JSON字符串的 `stringify()`方法。
+
+```js
+var a = {
+  "data": "{\"code\":\"200\",\"message\":\"接口掉用成功\",\"success\":true}",
+}
+c = JSON.parse(a.data)
+console.log(c); // { code: '200', message: '接口掉用成功', success: true }
+```
+
+更多关于JSON的其他知识参考JSON笔记
+
+#### 4.8.1 方法
+1. `JSON.stringify(value[, replacer [, space]]) string`:replacer可以是函数、数组、null或省略，space用于指定缩进的字符串，用于美化输出（pretty-print）
+
+### 4.9 ArrayBuffer
+见arraybuffer部分笔记
+
+### 4.10 Proxy
+参考：
+2. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+
+### 4.11 Symbol
+为什么需要Symbol:ES5对象属性名等都是字符串，如果使用了别人提供的对象，想给这个对象加上新的方法(mixin模式)，而新方法名字可能和原方法相同，很容易冲突。所以ES6引入Symbol来解决这个问题。
+
+什么是Symbol:ES6新引入的原始数据类型，表示一个独一无二的值。
+
+Symbol的使用
+1. 创建:通过`Symbol(descriptionA)`函数生成，不能用`new`命令，因为Symbol是原始类型，不是对象
+    ```js
+    // 1. 字面量创建:descriptionA是描述性的字符串，不影响Symbol的唯一性
+    let s1 = Symbol('foo');
+    let s2 = Symbol('foo');
+    s1.toString() // "Symbol(foo)"
+    s1 === s2 // false
+    // 2. Symbol.for(descriptionA):从已经登记到全局的Symbol中搜索是否已经有该descriptionA的Symbol，如果有就返回该Symbol，否则就创建一个，并将其登记到全局。注意这个登记是全局环境的，不管有没有在全局环境运行，意味着在不同的iframe或 service worker中可以取到同一个值
+    let s1 = Symbol.for('foo');
+    let s2 = Symbol.for('foo');
+    s1 === s2 // true
+    ```
+
+2. 关于descriptionA参数:descriptionA是描述性的字符串，主要是方便我们区分Symbol。
+3. 类型:`typeof symbolA`是"symbol"，所以可以理解Symbol是一个独一无二的类似字符串的一个东西。
+4. 运算：Symbol 值不能与其他类型的值进行运算，会报错。但是可以显式转为字符串(`symbolA.toString()`)和布尔值(默认为true)
+5. 主要使用场景
+    1. 用作对象的属性名
+        1. 注意写法，应该永远用方括号，不能使用点运算符，如果使用了点运算符，因为点运算符后面只能跟字符串，此时用的就是字符串，而不是这个Symbol。
+            ```js
+            // 下面三种写法作用一样
+            let mySymbol = Symbol();
+            // 第一种写法
+            let a = {};
+            a[mySymbol] = 'Hello!';
+            // 第二种写法
+            let a = {
+            [mySymbol]: 'Hello!'
+            };
+            // 第三种写法
+            let a = {};
+            Object.defineProperty(a, mySymbol, { value: 'Hello!' });
+            ```
+            
+            ```js
+            // 点运算符的例子
+            const mySymbol = Symbol();
+            const a = {};
+            
+            a.name = 'Tom';
+            a.mySymbol = 'foo'; // 这里点运算符后的mySymbol是一个字符串，和Symbol类型的mySymbol没有关系
+            a[mySymbol] = 'bar'; // 正确写法
+            console.log(a.mySymbol, a['mySymbol'] == a.mySymbol); // foo true
+            console.log(a[mySymbol]); // bar
+            console.log(a); // { name: 'Tom', mySymbol: 'foo', [Symbol()]: 'bar' }
+            ```
+        2. Symbol作为属性名时，该属性是公开属性，不是私有属性
+        3. 遍历对象的Symbol属性:遍历对象的时候，Symbol属性不会被`for...in`、`for...of`、`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`这些常规方法遍历到，可以通过`Object.getOwnPropertySymbols()`和`Reflect.ownKeys()`方法遍历到。利用这个特性，可以用Symbol定义一些只用于内部的方法。
+            1. `Object.getOwnPropertySymbols()`方法，可以获取指定对象的所有 Symbol 属性名。该方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
+            2. 新的API`Reflect.ownKeys()`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
+    2. 用作常量:可以用来定义一组常量，保证这组常量的值都是不相等的。
+
+Symbol的属性:
+1. `description`(ES2019)
+
+Symbol的方法:
+1. `Symbol.keyFor(symbolA)`:方法返回一个已登记的Symbol类型的key(即descriptionA)。如果Symbol没有被登记，返回undefined
+
+### 4.12 Intl
+它提供了精确的字符串对比、数字格式化，和日期时间格式化(Collator，NumberFormat 和 DateTimeFormat等)，都是language-sensitive(语言敏感的)(或者说本地化)的
+
+参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Intl
+
+使用：
+1. 大部分都有`formatToParts()`方法
+1. `RelativeTimeFormat()`:可以输出短语化的相对时间
+    
+    ```js
+    // 英文相对时间
+    rtf = new Intl.RelativeTimeFormat('en');
+    // output :: 15 minutes ago
+    console.log(rtf.format(-15, 'minute'));
+    // output :: in 8 hours
+    console.log(rtf.format(8, 'hour'));
+
+    // 中文相对时间
+    rtf = new Intl.RelativeTimeFormat('zh-Hans');
+    // output :: 15分钟前
+    console.log(rtf.format(-15, 'minute'));
+    // output :: 8小时后
+    console.log(rtf.format(8, 'hour'));
+    // 1天前
+    console.log(rtf.format(-1, 'day'));
+    // 昨天
+    const rtf = new Intl.RelativeTimeFormat('zh-Hans', {
+        numeric: 'auto', // other values: 'always'
+    });
+    console.log(rtf.format(-1, 'day'));
+    ```
+
+
+## 3 即时编译器JIT(Just in time compiling)
 为什么需要JIT:
 首先要了解编程两种翻译机器语言的方法:解释器或编译器.他们有各自的优点和缺点.
 - 解释器:不用经历整个编译步骤,简单说就是一边翻译一边运行.优点是可以快速开始运行代码,缺点是遇到重复代码每次都会去翻译.
@@ -1745,11 +1776,11 @@ test(1)
 
 JIT的引入导致js的性能比之前快了10倍,使得js能做更多的东西,b如NodeJS的服务端编程.
 
-### 2.1 V8中的JIT
+### 3.1 V8中的JIT
 缺点:
 1. JIT 基于运行期分析编译，而 Javascript 是一个没有类型的语言，于是， 大部分时间，JIT 编译器其实是在猜测 Javascript 中的类型
 
-### 2.2 AOT(Ahead of time)
+### 3.2 AOT(Ahead of time)
 
 # 六 问题
 ## 1 已解决

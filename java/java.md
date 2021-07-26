@@ -970,13 +970,43 @@ List就是一个线性表接口，其最常用的是ArrayList和LinkedList；
 2. 类似于HashSet，这两个判断key相等也是要equals和HashCode；但判断value相等只需要equals。
 3. HashMap底层也是用的数组来存储key-value对
 
-##### 7.6.1.1 Properties
-是Hashtable的子类，在处理属性文件时特别方便(比如windows的ini)，由于属性名和值都是字符串，所以Properties的key和value都是字符串类型。也可以操作xml文件。
-主要方法有：
-1. getProperty()
-2. setProperty()
-3. load(InputStream inStream)：从属性文件(以输入流表示)中加载key-value对，追加到Properties里。
-4. store(OutputStream out,String comments)：将Properties的key-value对输出到指定的属性文件中(以输出流表示),comments相当于顶部注释的文字
+##### .properties文件和Properties类
+`.properties`文件：是一种主要在Java相关技术中用来存储应用程序的可配置参数的文件的文件扩展名。它们也可以存储用于国际化和本地化的字符串，这种文件被称为属性资源包（Property Resource Bundles）。每个参数被存储为一对字符串：一个存储名称参数（被称为“键”），另一个存储值。
+1. 注释：使用井号（#）或叹号（!）作为一行中第一个非空白字符来表示它后面的所有文本都是一个注释
+2. 转义：反斜杠（\）用于转义字符
+3. 支持几种书写格式：`key=value`, `key = value`, `key:value`, and `key value`
+    
+    ```properties
+    name tom
+    age = 21
+    age=21
+    ```
+
+Properties类：是Hashtable的子类，在处理属性文件时特别方便(比如windows的ini)，由于属性名和值都是字符串，所以Properties的key和value都是字符串类型。也可以操作xml文件。
+1. 主要方法有：
+    1. `getProperty()`
+    2. `setProperty()`
+    3. `load(InputStream inStream)`：从属性文件(以输入流表示)中加载key-value对，追加到Properties里。
+    4. `store(OutputStream out,String comments)`：将Properties的key-value对输出到指定的属性文件中(以输出流表示),comments相当于顶部注释的文字
+    
+```java
+Properties properties = new Properties();
+BufferedReader reader = null;
+try {
+    reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/a.properties"));
+    properties.load(reader);
+    System.out.println(properties.get("name"));
+    System.out.println(properties.get("age"));
+} catch (FileNotFoundException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+} catch (IOException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+} finally {
+    // closeResource(reader);
+}
+```
 
 #### 7.6.2 LinkedHashMap
 类似LinkedHashSet，可以保持键值对的插入顺序
@@ -1169,9 +1199,24 @@ jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此�
 4. 如果不预编译生成class文件，每次执行都需要重新编译，可能很耗时
 5. java是面向对象语言，涉及到大量的复用(待整理)
 
-注意：参数-d后面跟目录名，代表编译后的class文件的根目录(相当于src目录)。如果java文件在src/demo下,然后我在src/demo下运行.如`javac -d . xxx.java`,那么class文件的目录会变成src/demo/demo/xxx.class，这样就有问题 ，所以最好把-d的参数设置为src目录
+参数：
+1. `-d <directory>`指定放置生成的类文件的位置，可以使用绝对路径或相对路径，文件夹不存在时会自动创建。
+    
+    ```java
+    javac -d math Temp.java // 放置在当前目录下的math文件夹内
+    ```
 
 ### java
+执行`.class`文件
+
+参数
+1. `-cp <directory>`指定classpath
+    
+    ```java
+    // 假设在当前目录下的math文件夹内生成了Temp.class文件，想要运行可以
+    java -cp math Temp
+    ```
+
 ### javap
 jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出来的class文件)分解器，可以反编译，也可以查看java编译器生成的字节码。
 

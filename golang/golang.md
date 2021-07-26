@@ -563,12 +563,38 @@ i, j := 0, 1
     //下面的写法更有效，可以省去对变量表达式的重复计算
     count[x] *= scale
     ```
+2. 指针的赋值
+    
+    ```go
+    x, y := 1, 2
+	m := &x
+	fmt.Println(m, &x) // 0xc0001206a0 0xc0001206a0 是相同的
+	m = &y
+	fmt.Println(m, *m, x) // 0xc0001206a8 2 1 指针的地址变了，指向了另外一个地址
 
+    ```
 2. 元祖赋值：指同时更新多个变量的值,先计算右边再统一更新左边。好处是:
     - 对同时出现在两边的变量很有帮助
     - 可以使一系列琐碎赋值更加紧凑(特别是在for循环的初始化部分)
 
     但如果表达式太复杂的话，应该尽量避免过度使用元组赋值
+    
+    ```go
+    // 例子1 
+    x, y := 1, 2
+	x, y = y,x
+	fmt.Println(x, y) // 2 1
+    
+    // 例子2
+    func swap(a, b *int) {
+        b, a = a, b
+    }
+    func main() {
+        x, y := 1, 2
+        swap(&x, &y)
+        fmt.Println(x, y) // 1 2 因为a和b交换的是指针的地址，但是值并没有变
+    }
+    ```
 
 3. 可赋值性：
     1. nil可以赋值给任何指针或引用类型的变量。常量则有更灵活的赋值规则，因为这样可以避免不必要的显式的类型转换
@@ -1228,7 +1254,36 @@ map的键的特性:
 
 Struct embedding：包含这个匿名字段的struct能调用匿名字段的函数和字段。灵活使用可以模拟面向对象里继承的一部分功能，但不要强行用java的方式去使用go。
 
-重载：假如Student和Human都有phone字段，go的规则是最外层的优先访问。所以`student.phone`访问的是Student中的phone,访问student中Human的phone用`student.human.phone`,对于函数也是一样。
+重载：go的规则是
+1. 默认情况下调用当前类型的字段/方法，如果当前类型没有，则调用嵌套类型的字段/方法，以此类推。如果指定了当前类型，则调用指定类型的方法
+    ```go
+    type Human struct {}
+
+    func (p *Human) SayA() {
+        fmt.Println("sayA")
+        p.SayB()
+    }
+    func (p *Human) SayB() {
+        fmt.Println("sayB")
+    }
+
+    type Student struct {
+        Human
+    }
+
+    func (t *Student) SayB() {
+        fmt.Println("student sayB")
+    }
+
+    func main() {
+        t := Student{}
+        t.SayA()
+    }
+    
+    // sayA
+    // sayB 
+    // 因为在(*Human)SayA(){}里面的时候，它认为自己当前是*Human类型，所以会优先调用*Human类型的方法
+    ```
 
 注：
 1. 数组也可以看作是一种结构体类型，不过它使用下标而不是具名的字段。
@@ -1460,6 +1515,36 @@ go的for循环主要有两种：
 4. for range中，index后面的ele是**元素的副本而不是指针**，元素很大的话开销会比较大，有两种优化思路。
     1. 声明成这样`xxx := make([]*ele,0)`，这样的话传递的虽然还是值，但是是指针的值了，开销更小。
     2. 直接用下标更新：`xxx[index]`
+    
+    ```go
+    // 例子1
+    var (
+		a, b, c int64 = 1, 2, 3
+	)
+	s := []int64{a, b, c}
+	res := make([]*int64, 0)
+	for _, v := range s {
+		res = append(res, &v) // &v每次获取到的是同一个地址
+	}
+
+	for _, v := range res {
+		fmt.Println(*v) // 3 3 3
+	}
+    
+    // 例子2
+    var (
+		a, b, c int64 = 1, 2, 3
+	)
+	s := []*int64{&a, &b, &c}
+	res := make([]*int64, 0)
+	for _, v := range s {
+		res = append(res, v) // 这里的v每次指向的是不同的地址
+	}
+
+	for _, v := range res {
+		fmt.Println(*v)
+	}
+    ```
 5. for range中，**xxx是原变量的一个副本**，例子如下
     
     ```go
@@ -2664,15 +2749,36 @@ func main() {
     ```
 注意：
 1. 不要滥用defer：defer是有开销的，用在热代码中的话需要谨慎。
-2. defer调用的函数的参数值在defer定义时就被确定了，而 defer 函数内部所使用的变量的值需要在这个函数运行时才确定。如
+2. defer调用的函数的入参在defer定义时就被确定了，而 defer 函数内部所使用的变量的值需要在这个函数运行时才确定。如
 
     ```golang
+    // 例子1
     i := 1
     defer fmt.Println("Deferred print:", i)
     i++
     fmt.Println("Normal print:", i)
     // Normal print: 2
     // Deferred print: 1
+    
+    
+    // 例子2
+    func calc(index string, a, b int) int {
+        ret := a + b
+        fmt.Println(index, a, b, ret)
+        return ret
+    }
+    func main() {
+        a := 1
+        b := 2
+        defer calc("1", a, calc("10", a, b)) 
+        a = 0
+        defer calc("2", a, calc("20", a, b))
+        b = 1
+    }
+    // "10" 1 2 3
+    // "20" 0 2 2
+    // "2"  0 2 2
+    // "1"  1 3 4
     ```
 
 #### recover()
@@ -3313,9 +3419,6 @@ go的版本管理工具，项目地址：https://github.com/moovweb/gvm
 
 配置：该工具是用shell写的，默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以应该修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。
 
-## 3 go runtime运行时
-尽管 Go 编译器产生的是本地可执行代码，这些代码仍旧运行在 Go 的 runtime（这部分的代码可以在 runtime 包中找到）当中。这个 runtime 类似 Java 和 .NET 语言所用到的虚拟机，它负责管理包括内存分配、垃圾回收、栈处理、goroutine、channel、切片（slice）、map 和反射（reflection）等等。
-
 ## 3 源码分析
 ### 3.1 待整理
 编译器源码目录下，src/cmd/compile/internal
@@ -3532,6 +3635,9 @@ for _, v := range res.Data {
 `MarshalIndent`和`Decode`的选择：
 1. 如果数据来自io.Reader流，或者需要从数据流中解码多个值，请使用json.Decoder。
 2. 如果已经在内存中有JSON数据，请使用json.Unmarshal
+
+## 5 go runtime运行时
+尽管 Go 编译器产生的是本地可执行代码，这些代码仍旧运行在 Go 的 runtime（这部分的代码可以在 runtime 包中找到）当中。这个 runtime 类似 Java 和 .NET 语言所用到的虚拟机，它负责管理包括内存分配、垃圾回收、栈处理、goroutine、channel、切片（slice）、map 和反射（reflection）等等。
 
 ## 6 正则表达式（regular expression）和regexp包
 参考：
@@ -4693,7 +4799,11 @@ func main() {
 3. `RuneReader`、`stringWriter`
 
 基于上面的接口，实现了常见（实用）的IO处理函数：
-1. `func Copy(dst Writer, src Reader) (written int64, err error)`:阻塞式的从src输入流读数据到dst输出流。看源码可知，它是按默认的缓冲区32k循环操作的，不会将内容一次性全写入内存中,这样就能解决大文件的问题，防止内存溢出。
+1. `Copy(dst Writer, src Reader) (written int64, err error)`:阻塞式的从src输入流读数据到dst输出流。看源码可知，它是按默认的缓冲区32k循环操作的，不会将内容一次性全写入内存中,这样就能解决大文件的问题，防止内存溢出。
+    
+    ```go
+    io.Copy(ioutil.Discard,resp.Body) 
+    ```
 
 以及不常用的接口：
 1. `io.Pipe()`提供了 线程安全 的管道服务，“Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”，适合于产生了一条数据，紧接着就要处理掉这条数据的场景。因为其内部是一把大锁，因此是线程安全的
@@ -4988,6 +5098,7 @@ provides HTTP client and server implementations.
     ```
 4. `http.Request`结构体:
     1. 字段
+        1. `Close`: 对应请求头`Connection: close`
         1. `URL`
         2. `RequestURI`
         3. `Body io.ReadCloser`
@@ -5028,8 +5139,10 @@ provides HTTP client and server implementations.
             }
             ```
     2. 方法
-        1. `func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)`:返回以key为键查询request.MultipartForm字段（是解析好的多部件表单，包括上传的文件，只有在调用`ParseMultipartForm`后才有效）得到结果中的第一个文件和它的信息。如果必要，本函数会隐式调用`ParseMultipartForm`和`ParseForm`
-5. `http.Cookie`
+        1. `(*Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)`:返回以key为键查询request.MultipartForm字段（是解析好的多部件表单，包括上传的文件，只有在调用`ParseMultipartForm`后才有效）得到结果中的第一个文件和它的信息。如果必要，本函数会隐式调用`ParseMultipartForm`和`ParseForm`
+5. `http.Response`
+    1. 每次使用完后记得加上
+6. `http.Cookie`
     
     ```go
     // 获取request的cookie

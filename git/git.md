@@ -25,16 +25,16 @@ git是linus用c写的，是他为了帮助管理Linux内核开发而开发的一
 个人：储藏区算不算第四棵树？
 
 ### 3.3 git支持多种协议:https,git和ssh
-git允许我们用ssh url或者http url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
+git允许我们用ssh url或者https url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 
 ### 3.4 凭证助手credential helper(待测试)
 用于存储git的凭证,Git现在默认包含如下几个helper:
-- Cache
+1. Cache
     
     将凭据在内存中进行短时间的缓存,默认15分钟
     1. 使用`git config --global credential.helper cache`
     2. 参数`cache –timeout=[num]`:设置时间,如`git config credential.helper cache –timeout=3600`
-- Store(待测试)
+2. Store(待测试)
     
     将凭据保存在磁盘上,明文存储,所以不安全.
     1. 指定凭证助手:`git config --global credential.helper store`    
@@ -49,10 +49,11 @@ git允许我们用ssh url或者http url来管理代码,两种不同的协议.如
             
             再次push，便会将账户信息存至`D:/credential/cred1.txt`中.如果想清除账户，删除指定的文件即可。.
 
-- mananger
+3. mananger
 
     安装了GitGUI，自动会在system级别中设置credential.helper为manager
-- wincred
+4. wincred
+5. `osxkeychain`:mac特有的，附加到系统的keychain，是加密保存在硬盘上
 
 取消设置凭证助手命令形如:`git config --<级别,如system> --unset credential.helper`
 
@@ -1037,12 +1038,9 @@ conf*/
 解决方法就是先把本地缓存删除（改变成未track状态），然后再提交,比如
 ```
 git rm -r --cached <文件路径>
-git add <文件路径>
 git commit -m 'update .gitignore'
 ```
 如果还是不行的话,在先将想要取消追踪的文件移到项目目录外)，并提交，然后提交后再将刚刚移出的文件再移入项目中即可
-
-(该解决办法为测试,但感觉比较靠谱)
 
 ### 1.5 unable to get credential storage lock: File exists
 我当时出现这个问题可能是因为我配置了凭证助手,但github的账号密码和gitlab的账号密码不一样,所以`git pull`后提示我输入gitlab的密码,我输入之后就出现这个错误.

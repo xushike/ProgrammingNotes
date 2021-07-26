@@ -1194,10 +1194,16 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
     ## A list
     curl -O "http://example.com/{one,two,three}.html"
     ```
-4. 指定协议：`curl`支持多种协议，包括`DICT`,`FILE`,`FTP`,`MQTT`,`Gopher`(因为HTTP的成功，现在Gopher协议已经很少使用了)等，默认使用`http`
+4. 协议：`curl`支持多种协议，包括`DICT`,`FILE`,`FTP`,`MQTT`,`Gopher`(因为HTTP的成功，现在Gopher协议已经很少使用了)等，默认使用`http`
+    1. 查看支持的协议
+        
+        ```bash
+        curl-config --protocols
+        ```
     1. `--proto`:指定使用的协议，后面可跟`+`(默认),`-`,`=`，协议间使用逗号分隔，后面的设置会覆盖前面的设置
         
         ```bash
+        # 查看支持的协议
         curl --proto -ftps  # uses the default protocols, but disables ftps
         curl --proto -all,https,+http # only enables http and https
         curl --proto =http,https # also only enables http and https
@@ -1211,7 +1217,7 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
         curl file:/Users/xxx/fileA
         curl file:///Users/xxx/fileA
         ```
-    2. ftp协议
+    2. ftp协议：curl的FTP连接默认使用`passive`模式
         1. `–ftp-create-dirs`：默认情况下，使用一个在服务器上当前不存在的路径将会导致失败。带上该参数后会自动创建缺少的文件夹
         2. `--ftp-method`:控制如何使用`CWD`
             1. `multicwd`：默认使用该参数。在给定的URL上的每个路径部分都执行一次CWD操作。对于深层次，这意味着很多的命令。这是在 RFC1738上面定义这样的。这是默认行为但是执行会比较慢
@@ -1271,6 +1277,7 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
         ## 选项 –ftp-create-dirs 自动创建缺少的文件夹。比如下面这样，当服务器没有home/ftp文件夹，则会自动创建对应的文件夹
         curl -u user:password --ftp-create-dirs -T file.txt ftp://192.168.1.100/home/ftp/
         ```
+    3. IMTP
 5. 通信过程
     1. 详细信息
         1. `-v`显示通信过程:以`>`为前缀的是发送到服务器的数据，以`<`为前缀的是从服务器接收到的数据，以`*`开头的是misc信息，如连接信息、SSL握手信息、协议信息等。通常用于调试
@@ -1289,6 +1296,7 @@ HUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TST
         # 将 http://example.com 或 https://example.com 请求指定域名解析的 IP 为 127.0.0.1
         curl --resolve example.com:80:127.0.0.1 http://example.com/
         ```
+7. `-v`：可以看到执行的所有命令和响应
 
 ```bash
 # 更多例子

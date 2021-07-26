@@ -726,7 +726,6 @@ console.log(view.getFloat32(4))
     1. exit 0 和 1
 2. linux操作系统日志:var/log/messages
 2. 哨兵
-2. 各种协议
 3. 通过这种方式来学习源码:自己写一个简易的springmvc,mybatis,tomcat
     1. tomcat时序图
 1. angualr摇树优化
@@ -796,7 +795,7 @@ angualr 表单中:#,name等的区别
 	ctx.Info("返回结果")
 	response.Success()
 
-1. blob,dataview,轮询
+1. blob,dataview,
 1. js有类型的概念吗
     1. js引擎能区分不同的基本数据类型吗
 1. vscode 中go怎么自动导包
@@ -1592,7 +1591,6 @@ for (let [i, item] of arr.entries()) {
             }
         }
         ```
-    5. `def ...int`是什么意思
     6. 判断数据类型的方法
     7. go install的细节(比如再main同级目录还是上一层执行该命令,执行了之后默认会覆盖安装吗);可以多个src打包吗?
 
