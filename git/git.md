@@ -443,7 +443,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 也可以在压制前新建一个分支备份下.
 1. 两种用法
     1. 选择压制哪些commit
-        1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,参数`-i`表示交互式,推荐加上
+        1. 比如压制最后的三个commit:`git rebase -i HEAD~3`,
+            1. 参数`-i`会出现统一设置这几个commit的交互界面,推荐加上，否则就要在压制过程中一个一个设置
         2. 极端情况是想从当前分支的第一个提交开始rebase，可以使用`git rebase -i --root`
     2. 选择远程分支和本地分支的压制
         1. 比如`git rebase upstream/branchA <local_branch_B>`会执行以下操作
@@ -794,7 +795,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 2. 肯定要和原作者的仓库同步，所以需要再设置一个源绑定到原作者的仓库:`git remote add upstream source_rep_url`
 3. 和原仓库同步
     1. `git fetch upstream`，也可以`git fetch --dry-run`先检查远端是否有变动
-    2. 然后选择想要合并的分支，比如想把develop合并到当前分支，可以`git pull upstream/develop`
+    2. 然后选择想要合并的分支，比如想把develop合并到当前分支，可以`git pull upstream develop`
 4. 提交MR到原仓库
     1. 先add，commit自己本地的修改，过程中最好使用`rebase`(待补充)
         1. `rebase`可以将多个commit合并成一个，会让Code Review非常直观

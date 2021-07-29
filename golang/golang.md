@@ -383,6 +383,9 @@ Golang不保证任何单独的操作是原子性的，除非：
         1. https://github.com/uber-go/guide/blob/master/style.md#reduce-scope-of-variables
         2. 官方的style：https://github.com/golang/go/wiki/CodeReviewComments
 文档:
+1. Uber的go风格指南：
+    1. https://github.com/uber-go/guide/blob/master/style.md
+    2. 中文版：https://github.com/xxjwxc/uber_go_guide_cn
 1. 英文的免费电子书，DigitalOcean 发布的。Go 语言编程: https://www.digitalocean.com/community/books/how-to-code-in-go-ebook
 1.  _Effective Go_(中文名《高效Go编程》)
 2.  Go语言大神亲述:历七劫方可成为程序员!（看完我怎么感觉有点像是在扯淡）：http://developer.51cto.com/art/201710/553448.htm
