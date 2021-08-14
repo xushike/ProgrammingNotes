@@ -167,8 +167,9 @@ mac上可以同时安装多个版本的jdk，但是现在的mac都没有自带jd
 1. 如果是prm文件安装，则检查是否在`/usr/java/jdk1.8_version`下；但是推荐下载.tar.gz格式的文件安装，可以直接解压到任何地方
 
 # 三 基础
-## 1 面向对象
-### 1.1 类和对象
+## 0 架构
+### 面向对象
+#### 类和对象
 定义类的主要作用就是定义变量、创建实例和作为父类被继承。
 
 ##### 对象的this引用
@@ -417,6 +418,68 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 3. 不能包含空格和特殊符号（@、#等）
 #### 2.2.3 关键字（keyword）
 1. java所有关键字都是小写的
+
+## 1 工具生态
+1. version manager
+    1. sdkman:is a tool for managing parallel versions of multiple Software Development Kits on most Unix-based systems.它是一个可以方便管理jdk,spring等软件的第三方工具。前身是GVM
+        2. 自身的安装：参考官网https://sdkman.io/
+            1. 默认的安装目录为`~/.sdkman`,如果要切换安装目录，在安装之前修改SDKMAN_DIR的值，比如`export SDKMAN_DIR="/usr/local/sdkman"`
+        2. 使用
+            1. 查看支持安装的软件`sdk list`
+                1. 查看具体某个软件支持安装的版本`sdk list candidate`，比如`sdk list java`
+            2. 安装sdk`sdk install candidate`，默认安装的是stable版本，可以指定版本安装`sdk install candidate versionA`
+
+                ```bash
+                # 安装springboot
+
+                # 安装gradle
+                sdk install gradle 7.1.1
+                ```
+            3. 卸载sdk：语法和安装类似
+            4. 更新
+                1. 自我更新`sdk`
+            4. 指定使用的版本
+                1. 指定默认使用的版本`sdk default candidate`
+                2. 指定当前shell环境使用的版本`sdk use candidate`，仅在当前shell环境生效
+            5. 脱机模式`sdk offline enable`
+
+
+### jar（Java Archive File）
+意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
+
+### jusched
+jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
+
+### javac
+为什么需要预编译、为什么不把预编译和解释执行合在一起、为什么需要class文件(字节码文件)，这几个问题都可以从class文件的作用中找到答案。class文件是作为jvm的可执行文件，它的作用如下
+1. 对源代码文件进行语法检查、语义分析，这一步骤消耗了大量的时间和资源，所以对jvm来说就要轻松多了。
+2. 解耦
+    1. 字节码文件是描述性的，与平台无关，一次编译到处执行
+    2. 其它语言(比如Scala)只要编译生成的class代码符合jvm的规范，就可以在jvm上运行。同样的道理，假如有第三方更好用的编译工具，也可以代替javac。
+3. 字节码文件可以看作是对源代码文件的精炼，去掉了注释等，占用更少的存储空间
+4. 如果不预编译生成class文件，每次执行都需要重新编译，可能很耗时
+5. java是面向对象语言，涉及到大量的复用(待整理)
+
+参数：
+1. `-d <directory>`指定放置生成的类文件的位置，可以使用绝对路径或相对路径，文件夹不存在时会自动创建。
+    
+    ```java
+    javac -d math Temp.java // 放置在当前目录下的math文件夹内
+    ```
+
+### java
+执行`.class`文件
+
+参数
+1. `-cp <directory>`指定classpath
+    
+    ```java
+    // 假设在当前目录下的math文件夹内生成了Temp.class文件，想要运行可以
+    java -cp math Temp
+    ```
+
+### javap
+jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出来的class文件)分解器，可以反编译，也可以查看java编译器生成的字节码。
 
 ## 2 变量,数据类型和运算符
 ![](../picture/java/0-4-primitiveType.png "java数据类型")
@@ -1182,43 +1245,6 @@ java将异常分为两种:
 1. 可以认为JDBC模仿了ODBC，前者安全性更高、更易部署，后者更复杂。
 
 # 四 高级
-## 1 工具链
-### jar（Java Archive File）
-意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
-
-### jusched
-jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
-
-### javac
-为什么需要预编译、为什么不把预编译和解释执行合在一起、为什么需要class文件(字节码文件)，这几个问题都可以从class文件的作用中找到答案。class文件是作为jvm的可执行文件，它的作用如下
-1. 对源代码文件进行语法检查、语义分析，这一步骤消耗了大量的时间和资源，所以对jvm来说就要轻松多了。
-2. 解耦
-    1. 字节码文件是描述性的，与平台无关，一次编译到处执行
-    2. 其它语言(比如Scala)只要编译生成的class代码符合jvm的规范，就可以在jvm上运行。同样的道理，假如有第三方更好用的编译工具，也可以代替javac。
-3. 字节码文件可以看作是对源代码文件的精炼，去掉了注释等，占用更少的存储空间
-4. 如果不预编译生成class文件，每次执行都需要重新编译，可能很耗时
-5. java是面向对象语言，涉及到大量的复用(待整理)
-
-参数：
-1. `-d <directory>`指定放置生成的类文件的位置，可以使用绝对路径或相对路径，文件夹不存在时会自动创建。
-    
-    ```java
-    javac -d math Temp.java // 放置在当前目录下的math文件夹内
-    ```
-
-### java
-执行`.class`文件
-
-参数
-1. `-cp <directory>`指定classpath
-    
-    ```java
-    // 假设在当前目录下的math文件夹内生成了Temp.class文件，想要运行可以
-    java -cp math Temp
-    ```
-
-### javap
-jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出来的class文件)分解器，可以反编译，也可以查看java编译器生成的字节码。
 
 # 五 经验
 ## 2 java基础类库

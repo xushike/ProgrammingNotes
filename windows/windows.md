@@ -44,13 +44,8 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 
 # 二 安装配置
 # 三 基础
-## 1 DOS
-### 查看相关
-### 文件操作相关
-### 安全相关
-### 网络相关
-### 其他
-1. TYPE
+## 1 DOS、命令行和运行程序
+见DOS.md
 
 ## 2 windows消息模型
 它是事件驱动的编程模型，应用程序通过处理操作系统发送来的消息来响应事件。事件可能是用户的一次鼠标移动，键盘敲击，或者是系统要求窗口重绘的消息，程序员所需要做的事就是处理应用程序感兴趣的消息。
@@ -73,6 +68,7 @@ windows是一个消息驱动的系统，它使用两种方式把各种事件通�
 1. 把消息放在应用程序的消息队列中 
 2. 向适当的窗口过程直接发消息
 
+
 # 四 高级
 ## 1 快捷键
 1. 调出程序最小化、最大化、移动(m，非全屏时可用)、关闭(c)等命令面板：`alt+空格`，而且可以在程序没有边框的时候使用
@@ -88,7 +84,9 @@ https://github.com/lukesampson/scoop
 
 windows命令行包管理工具，简单执行`scoop install xxx`，它就会把软件检车、下载、安装、更新、配置等步骤全部帮你做完。它不仅轻量，还将软件默认安装到我们的用户目录下，安装过程不需要申请管理员权限（UAC）也不会污染系统环境变量。
 
-使用：
+缺点：需要科学上网？
+
+安装：
 1. 安装scoop的两种方法(详细见github)
         1. 实测出现了
     ```bash
@@ -111,24 +109,33 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     # 查看是否安装成功
     scoop help
     ```
-2. scoop安装包的位置:用户安装的程序和scoop本身位于`C:\Users<user>\scoop`。全局安装的程序位于`C:\ProgramData\scoop`。可以通过环境变量更改这些设置。
+2. 安装包的位置:用户安装的程序和scoop本身位于`C:\Users<user>\scoop`。全局安装的程序位于`C:\ProgramData\scoop`。可以通过环境变量更改这些设置。
+
+使用：
 3. bucket:Scoop的设计初衷是为了方便 Windows 开发者安装和配置开发工具，其默认软件仓库的收录条件也就很苛刻，导致了它默认软件仓库（main bucket）里软件数量有限。bucket可以理解为软件库，类似于brew的tap,我们可以通过添加“软件库”来找到自己想要的软件.
     1. 查看可以直接识别并添加的bucket:`scoop bucket known`，简单介绍如下
         1. `nirsoft`:是一个 NirSoft 开发的小工具的安装合集。NirSoft 制作了大量的（dozens and dozens）小工具，包括系统工具、网络工具、密码恢复等等，孜孜不倦、持续更新。
     2. 添加bucket，`scoop bucket add bucketnameA`
         1. 比如添加extras存储库(https://github.com/lukesampson/scoop-extras.git，类似于brew的cask)可以轻松添加对流行的Windows桌面程序的支持:`scoop bucket add extras`
 4. 搜索:`scoop search xxx`
+7. 查看软件详情`scoop info xxx`
+    1. `Manifest`:路径指向的文件是 Scoop 具体读取的配置文件
 5. 安装,同理卸载是`uninstall`
     1. `scoop install xxx`
     2. `scoop install -g xxx`:安装到全局目录
 6. 更新
     1. 更新scoop自身到最新版`scoop update`
     2. 更新某app`scoop update xxx`
-7. 查看软件详情`scoop info xxx`
-    1. `Manifest`:路径指向的文件是 Scoop 具体读取的配置文件
-8. 查看软件状态`scoop status xxx`
+8. 查看状态和更新`scoop status`
+
+软件推荐：
+1. `make`
+2. `nginx`
 
 ### Chocolatey
+参考：
+1. https://chocolatey.org/
+2. https://github.com/chocolatey/choco
 
 ## 2 Windows Terminal
 主要功能包括多选项卡、窗格、Unicode/UTF-8字符支持、GPU加速文本渲染引擎，运行速度更快，Unicode、UTF-8字符的支持则方便在多种语言环境中使用，并显示表情符号，以及自定义主题、样式和配置等。
@@ -149,3 +156,4 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 
 # 七 未整理
 1. wintogo的实际体验效果如何,和在mac上装双系统相比呢?
+2. `rd \s`命令在powershell中不生效

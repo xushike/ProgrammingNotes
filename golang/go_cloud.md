@@ -115,8 +115,22 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 ##### 新版本的DSL
 ![dsl](../picture/golang/goa-dsl.png)
 
-1. `API`：描述一个服务，可以对应多个环境或服务器
-2. `Pattern`:todo
+1. 数据类型
+    1. `Enum()`枚举
+2. `API`：描述一个服务，可以对应多个环境或服务器
+3. `Pattern`:todo
+4. `View()`：设置不同的可见字段
+    
+    ```go
+    View("tiny", func() {
+		Attribute("id")
+    })
+    
+    View("default", func() {
+		Attribute("id")
+		Attribute("name")
+    })
+    ```
 
 问题：
 1. attribute does not have "rpc:tag" defined in the meta
@@ -457,11 +471,14 @@ https://github.com/go-gorm/gorm
 ### SQLX
 https://github.com/jmoiron/sqlx
 
-兼容sql原生包，同时又提供了更为强大的、优雅的查询、插入函数
+兼容sql原生包，同时又提供了更为强大的、优雅的查询、插入函数，高性能。
 
-优点：
-1. 文档优秀
-2. 支持问号(?)或命名的Prepared Statements，避免SQL注入的安全问题
+优缺点
+- 优点：
+    1. 文档优秀
+    2. 支持问号(?)或命名的Prepared Statements，避免SQL注入的安全问题
+- 缺点
+    1. 因为它是SQL Builder不是ORM，所以不提供`Upsert`等函数
 
 结构体
 1. `sqlx.NamedStmt` – 对特定参数命名并绑定生成 SQL 语句操作。

@@ -438,16 +438,18 @@ go的环境变量说明:
 
 go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 
+多版本管理使用gvm:https://github.com/moovweb/gvm(似乎没有win版本，待整理)
+
 ## 1 windows
-1. 下载安装
+### .msi文件安装
+.msi的好处是安装后可以方便的修复和卸载
 
 3. 配置GOROOT(C:\Go)并将%GOROOT%\bin)加入PATH中，不过现在go语言安装工具会自动帮我们加入进去.这样就可以在任意地方运行go开头的命令了
-
 4. 配置GOPATH.默认是`~/go`,想修改的话在系统变量新增一个GOPATH就行.
-
 5. 配置gobin(需不需要看情况)
 
-多版本管理使用gvm:https://github.com/moovweb/gvm(似乎没有win版本，待整理)
+### scoop
+安装后默认GOROOT是`C:\Users\xxx\scoop\apps\go\current`，会自动为`go.exe`和`gofmt.exe`创建shim到`/c/Users/xxx/scoop/shims/`目录下
 
 ## 2 mac
 ### 2.1 二进制发行版安装
@@ -2952,7 +2954,7 @@ go run *.go
 主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
 1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译。
 2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。
-3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。
+3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。跟module名称也是一样。
 
 结果文件的路径
 1. 未指定的话默认是当前路径
@@ -2961,15 +2963,29 @@ go run *.go
 参数:
 1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
 2. `-v`：见`go run`
-1. `-o`：指定生成的可执行文件的名字，可以包含路径。
+1. `-o`：指定生成的可执行文件的路径或名称
     1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。(待确认)
+    2. 注意：该参数在win平台的规则不太一样，不加该参数的时候，在win平台会自动给生成的可执行文件加上`.exe`后缀，但是加上了该参数就变成
+        1. 如果给定的路径是一个文件，golang 会创建不存在的文件夹并直接写入，并不会增加后缀
+        2. 如果给定的路径是一个目录
+            1. 如果路径不存在，golang 在创建完文件夹之后并不会会回到路径存在的逻辑，而是会直接写这个路径，并返回一个 dir exists 错误
+            2. 如果路径存在，golang 会在该目录下创建文件并附加后缀
+
+        所以在win平台最好不指定结果文件名称，只指定路径。
 2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
-    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值，比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量，执行
+    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值
 
         ```bash
+        # 比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量
+        var (
+            VERSION   = "major.minor.patch"
+            BUILD_TIME = "yyyy-mm-dd hh:mm:ss"
+            GO_VERSION = runtime.Version()
+        )
+        # 执行
         go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
+        # 会给这三个变量设置对应的值
         ```
-        会给这三个变量设置对应的值。
 
         注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
 
@@ -2993,6 +3009,9 @@ go run *.go
     1. `vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译，在开启模块支持的情况下，用这个可以退回到使用 vendor 的时代
     2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
     3. `mod`
+
+问题：
+1. 执行`go build`时报错"package xxx is not in GOROOT"
 
 ### 1.3 go install
 用于编译并安装代码包或源码文件。
@@ -5337,7 +5356,22 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
         os.OpenFile("notes.txt", os.O_RDWR|os.O_CREATE, 0755)
         ```
     3. `Stat(name string) (fi FileInfo, err error)`返回了`Fileinfo`这个结构。注意它只代表文件当时的状态--假如后面文件变化了，它不会同步更新，所以需要在每次用的时候再获取。它可以结合`os.IsNotExist`来判断文件是否存在
-5. 删除文件和删除文件夹（同一个函数）：`Remove(path string) Error`，调用该函数就可以删除路径为path的文件或文件夹
+5. 删除文件和删除文件夹（同一个函数）：`Remove(path string) Error`，调用该函数就可以删除路径为path的文件或文件夹。
+    1. 实测在win系统下，如果文件处于打开状态，需要先关闭文件再删除。其他系统没这个问题。
+
+        ```go
+        // in windows os
+        filePath := "./tmp.txt"
+        f, err := os.Open(filePath)
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer f.Close()
+        err = os.Remove(filePath)
+        if err != nil {
+            log.Fatal(err) //  remove ./tmp.txt: The process cannot access the file because it is being used by another process.
+        }
+        ```
 6. `SameFile(fi1, fi2 FileInfo) bool`：查看f1和f2这两个是否是同一个文件，如果再Unix系统，这意味着底层结构的device和inode完全一致，在其他系统上可能是基于文件绝对路径的．SameFile只适用于本文件包stat返回的状态，其他情况下都返回false
 7. `Rename(oldname, newname string)`:重命名文件
 8. `Symlink(oldname, newname string)`:创建软连接,不支持windows平台
@@ -6390,6 +6424,9 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 
 ### 1.31 warning: ignoring symlink example.dSYM
 只是警告，存在symlink
+
+### 1.32 The process cannot access the file because it is being used by another process
+1. 在win系统下，需要先关闭打开的文件再删除
 
 ## 2 未解决
 ### note: module requires Go 1.14

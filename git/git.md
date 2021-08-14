@@ -434,7 +434,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
 3. `-m`：commit message，用双引号的话默认输入的所有内容会变成一行
     1. 实现commit message多行的方法
-        1. 多次调用`-m`，比如`git commit -m "commit title" -m "commit description"`
+        1. 在一个commit命令内多次调用`-m`，比如`git commit -m "commit title" -m "commit description"`
         2. 使用单引号
 4. `--author="username <xxx@xxx.com>"`:以此作者信息提交。假如某个commit用userA信息提交了，想改成userB，就可以参考这个命令`git commit --amend --author="username <xxx@xxx.com>"`，直接用`git commit --amend`是不行的
 
