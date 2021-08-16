@@ -6,7 +6,10 @@ DOS和命令行相关
 # 二 安装配置
 
 ## N 配置和使用
-powershell
+windows terminal:
+1. 安装：从应用商店安装
+
+powershell:
 1. 设置以管理员身份启动
     1. 右键快捷方式 -> 高级 -> 勾选"以管理员身份运行"
 2. 查看版本`$PSVersionTable`
