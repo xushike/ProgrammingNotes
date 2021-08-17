@@ -30,6 +30,8 @@ powershell:
             ```bash
             # 实现linux &&的管道操作
             command1; if ($?) {command2}
+            # 比如
+            docker build . -t bridge;if($?) {docker run -p 8081:8081 --env-file .env.local bridge}
             ```
 
 # 三 基础(命令)

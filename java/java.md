@@ -421,27 +421,29 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 
 ## 1 工具生态
 1. version manager
-    1. sdkman:is a tool for managing parallel versions of multiple Software Development Kits on most Unix-based systems.它是一个可以方便管理jdk,spring等软件的第三方工具。前身是GVM
+    1. sdkman:is a tool for managing parallel versions of multiple Software Development Kits on most Unix-based systems.它是一个可以方便管理jdk,spring等软件(主要是java系)的第三方工具。前身是GVM
         2. 自身的安装：参考官网https://sdkman.io/
             1. 默认的安装目录为`~/.sdkman`,如果要切换安装目录，在安装之前修改SDKMAN_DIR的值，比如`export SDKMAN_DIR="/usr/local/sdkman"`
         2. 使用
-            1. 查看支持安装的软件`sdk list`
+            1. 查看支持安装的软件`sdk list`，也可以通过https://api.sdkman.io/2/candidates/all查看
                 1. 查看具体某个软件支持安装的版本`sdk list candidate`，比如`sdk list java`
-            2. 安装sdk`sdk install candidate`，默认安装的是stable版本，可以指定版本安装`sdk install candidate versionA`
+            2. 安装sdk
+                1. 安装命令`sdk install candidate`，默认安装的是stable版本，可以指定版本安装`sdk install candidate versionA`
 
-                ```bash
-                # 安装springboot
-
-                # 安装gradle
-                sdk install gradle 7.1.1
-                ```
-            3. 卸载sdk：语法和安装类似
+                    ```bash
+                    # 安装springboot
+                    sdk install springboot
+                    # 安装gradle
+                    sdk install gradle 7.1.1
+                    ```
+                2. 安装后的环境配置：默认配置在`~/.sdkman`下
+            3. 卸载sdk：`sdk uninstall`or`sdk rm`
             4. 更新
                 1. 自我更新`sdk`
-            4. 指定使用的版本
+            4. 切换：指定使用的版本
                 1. 指定默认使用的版本`sdk default candidate`
                 2. 指定当前shell环境使用的版本`sdk use candidate`，仅在当前shell环境生效
-            5. 脱机模式`sdk offline enable`
+            5. 脱机模式`sdk offline enable`，反之则是联机模式
 
 
 ### jar（Java Archive File）
