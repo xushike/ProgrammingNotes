@@ -336,27 +336,6 @@ Golang不保证任何单独的操作是原子性的，除非：
 ### 3.29 go有依赖注入吗
 依赖注入跟语言可以说是没关系。
 
-### 3.30 如何字面的方式表示各种进制
-1. 二进制：无
-2. 八进制:
-
-    ```go
-    // 八进制整数
-    var a = 023
-    fmt.Println(a) // 19
-    // 八进制字符
-	fmt.Println("\044") // $
-    ```
-3. 十六进制
-    
-    ```go
-    // 十六进制整数
-    var a = 0x23
-    fmt.Println(a) // 35
-    // 十六进制字符
-	fmt.Println("\x23") // #
-    ```
-
 ## 4 文档网址视频等
 网址:
 1. golang官方
@@ -502,16 +481,15 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 ### 3.3 第三方工具安装（apt、wget等）
 
 # 三 基础
-## 0 Go程序的执行（程序启动）顺序
+## 0 架构
+### 1 Go程序的执行（程序启动）顺序
 编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，然后对最后的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。但是每个包只会被导入一次。
 
-## 1 程序结构
-
-### 1.2 声明
+### 2 声明
 Go主要有四种类型的声明语句：var、const、type和func，分别对应变量、常量、类型和函数实体对象的声明。
 
-### 1.3 变量
-#### 1.3.1 变量声明
+### 3 变量
+#### 3.1 变量声明
 其中“类型”或“= 表达式”两个部分可以省略其中的一个。如果省略的是类型信息，那么将根据初始化表达式来推导变量的类型信息。如果初始化表达式被省略，那么将用零值初始化该变量。
 ```go
 //声明变量的方式1:一般是变量类型和初值类型不同时才使用
@@ -547,7 +525,7 @@ i, j := 0, 1
 1. 简短变量声明语句中必须至少要声明一个新的变量,对于其他已经声明过的变量，则只有赋值操作
 2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
 
-#### 1.3.2 变量的初始值
+#### 3.2 变量的初始值
 零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以简化很多代码，而且可以在没有增加额外工作的前提下确保边界条件下的合理行为。
 1. 数值类型变量对应的零值是0，
 2. 布尔类型变量对应的零值是false，
@@ -561,7 +539,7 @@ i, j := 0, 1
 5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
 6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
 
-#### 1.3.3 赋值
+#### 3.3 赋值
 1. 更有效的赋值写法,比如
     ```go
     count[x] = count[x] * scale // 数组、slice或map的元素赋值
@@ -614,12 +592,12 @@ i, j := 0, 1
     } 
     ```             
 
-#### 1.3.4 变量的生命周期
+#### 3.4 变量的生命周期
 对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，在局部变量的声明周期则是动态的：从每次创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。
 
 因为一个**变量的有效周期只取决于是否可达**，因此一个循环迭代内部的局部变量的生命周期可能超出其局部作用域。同时，局部变量可能在函数返回之后依然存在。
 
-#### 1.3.5 变量的存储位置
+#### 3.5 变量的存储位置
 编译器会自动选择在栈上还是在堆上分配局部变量的存储空间，但可能令人惊讶的是，这个选择并不是由用var还是new声明变量的方式决定的。圣经中的例子如下,
 ```go
 var global *int
@@ -637,7 +615,7 @@ func g() {
 ```
 分析:f函数里的x变量必须在堆上分配，因为它在函数退出后依然可以通过包一级的global变量找到，虽然它是在函数内部定义的；用Go语言的术语说，这个x局部变量从函数f中逃逸了。相反，当g函数返回时，变量`*y`将是不可达的，也就是说可以马上被回收的。因此，`*y`并没有从函数g中逃逸，编译器可以选择在栈上分配`*y`的存储空间（也可以选择在堆上分配，然后由Go语言的GC回收这个变量的内存空间），虽然这里用的是new方式。不过一般情况下编程不需要想这么多.
 
-### 1.4 常量
+### 4 常量
 使用`const`声明,只可以是字符串、布尔或数字类型的值,不能用`:=`定义.语法形如`const xxx [type] = xxx`,如
 ```go
 const Pi = 3.14159
@@ -654,7 +632,7 @@ const (
 
 常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。(why)
 
-### 1.5 指针
+### 5 指针
 指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言里可以对指针进行加或减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
 
 并不是每一个值都会有一个内存地址，但是对于每一个变量必然有对应的内存地址。(?)
@@ -679,7 +657,7 @@ fmt.Println(p == q) // "false"
 1. 在C/C++中,局部变量分配在栈里,函数返回后，局部变量是被系统自动回收的(其他好几种语言也是这样).返回局部变量的指针是不安全的,但返回局部变量的值是安全的,因为返回的是值的副本
 2. 在go中,局部变量可能分配到栈or堆中,而且两者都可以返回.具体参考垃圾回收的堆栈分配笔记
 
-### 1.6 类型
+### 6 类型
 新声明的类型提供了一个方法(我还不知道什么方法,底层的一些东西?)，用来分隔不同概念的类型，这样即使它们底层类型相同也是不兼容的,例子如下,
 
 ```go
@@ -704,7 +682,7 @@ fmt.Println(c == Celsius(f)) // "true"!
     - 可以提供书写方便,如果是复杂的类型将会简洁很多，比如结构体类型
     - 为该类型的值定义新的行为
 
-### 1.9 包
+### 9 包
 一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.
 
 1. 目录结构
@@ -780,10 +758,546 @@ A.go 依赖 B.go，而 B.go 又依赖 C.go：
 
     当标识符（包括常量、变量、类型、函数名、结构字段等等）以一个大写字母开头，如：Group1，那么使用这种形式的标识符的对象就可以被外部包的代码所使用（客户端程序需要先导入这个包），这被称为导出（像面向对象语言中的 public）；标识符如果以小写字母开头，则对包外是不可见的，但是他们在整个包的内部是可见并且可用的（像面向对象语言中的 private ）。
 
-### 1.10 作用域
+### 10 作用域
 go的作用域和生命周期是不同的概念
 1. go的三个流程控制语句紧跟的初始化块声明的变量,其作用域和声明在语句`{}`中变量一样.
 2. 在包级别，声明的顺序并不会影响作用域范围，因此一个先声明的可以引用它自身或者是引用后面的一个声明，这可以让我们定义一些相互嵌套或递归的类型或函数。
+
+## 1 工具生态
+### 1 go自带的工具链（go tool套件、go Toolchain）
+参考赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
+
+Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
+
+查看帮助：`go help xxx`，比如`go help generate`
+
+写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
+
+#### 1.1 go run
+`go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
+```golang
+go run main.go a.go
+// 或者
+go run *.go
+```
+
+参数：
+1. `-a`：强制编译，不管编译结果是不是最新的
+2. `-n`：打印编译过程中所需运行的命令，但不真正执行
+2. `-x`：打印编译过程中所需运行的命令，且真正执行
+3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
+4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它
+
+#### 1.2 go build
+主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。针对编译目标的不同，会有如下几种情况：
+1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译：
+    1. 如果当前目录是main包所在的目录(`package main`)
+        1. 如果当前目录有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是go.mod的module名
+        1. 如果当前目录没有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是main方法所在的目录名
+    2. 如果当前目录不是main包所在的目录，`build`会编译里面的非命令源码文件，但是会丢掉结果对象。该操作仅用来检查这些非命令源码文件是否可以被编译
+2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。
+3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。跟module名称也是一样。
+
+结果文件的路径
+1. 未指定的话默认是当前路径
+2. 也可以指定结果文件的路径，使用`-o`
+
+参数:
+1. 和`go run`相同的参数
+    1. `-a`
+    2. `-n`
+    3. `-x`
+    4. `-v`
+    5. `-work`
+1. `-o`：指定生成的可执行文件的路径或名称
+    1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。(待确认)
+    2. 注意：该参数在win平台的规则不太一样，不加该参数的时候，在win平台会自动给生成的可执行文件加上`.exe`后缀，但是加上了该参数就变成
+        1. 如果给定的路径是一个文件，golang 会创建不存在的文件夹并直接写入，并不会增加后缀
+        2. 如果给定的路径是一个目录
+            1. 如果路径不存在，golang 在创建完文件夹之后并不会会回到路径存在的逻辑，而是会直接写这个路径，并返回一个 dir exists 错误
+            2. 如果路径存在，golang 会在该目录下创建文件并附加后缀
+
+        所以在win平台最好不指定结果文件名称，只指定路径。
+2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
+    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值
+
+        ```bash
+        # 比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量
+        var (
+            VERSION   = "major.minor.patch"
+            BUILD_TIME = "yyyy-mm-dd hh:mm:ss"
+            GO_VERSION = runtime.Version()
+        )
+        # 执行
+        go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
+        # 会给这三个变量设置对应的值
+        ```
+
+        注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
+
+    2. `-w`去掉调试信息（无法使用gdb调试）
+    3. `-s` 禁用符号表
+3. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
+    1. `-N` 禁用优化
+    2. `-l` disable inlinin，禁用函数内联
+    3. `-u` 禁用unsafe代码
+    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析。比如
+        
+        ```bash
+        go build -gcflags -m concurrent_demo/cmd/main.go
+        
+        # command-line-arguments
+        concurrent_demo/cmd/main.go:5:6: can inline main 
+        concurrent_demo/cmd/main.go:7:21: inlining call to goroutine_demo.Init # 表示内联调用了
+        ```
+    5. `-S` 输出汇编代码
+4. `-mod`
+    1. `vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译，在开启模块支持的情况下，用这个可以退回到使用 vendor 的时代
+    2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
+    3. `mod`
+5. `-buildmode`
+
+问题：
+1. 执行`go build`时报错"package xxx is not in GOROOT"
+
+#### 1.3 go install
+用于编译并安装代码包或源码文件。
+1. 安装代码包或者库，会在`$GOPATH/pkg`生成目标库文件(`.a`文件)
+2. 安装命令源码文件会在`$GOBIN`目录生成可执行文件。
+
+有如下几种执行情况：
+1. 执行`go install`且不加任何参数时，默认会把当前目录作为代码包并安装。
+2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
+3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
+
+参数:注意它不支持`-o`参数
+
+使用：
+1. 静态库的编译和使用例子如下：（待补充）
+    1. 假设代码目录如下
+        
+        ```
+        studyGo/go_cloud
+        ├── cmd
+        │   └── main.go
+        └── lovego_demo
+            ├── err.go
+            └── init.go
+        ```
+
+    2. 进入studyGo目录
+        1. 执行`go install ./go_cloud/lovego_demo`，会在`$GOROOT/pkg/$GOOS_$GOARCH`目录下生成`studyGo/go_cloud/lovego_demo.a`静态库文件
+        2. 执行`go tool compile -I $GOPATH/pkg/darwin_amd64 go_cloud/cmd/main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
+    3. TODO
+2. 安装可执行文件
+
+    ```bash
+    # 例子1 安装croc
+    go install github.com/schollz/croc/v9@latest # 执行完后会在$GOBIN目录下生成可执行文件croc
+    ```
+
+#### 1.4 go get(待整理)
+通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。`go get`可以下载一个单一的包或者整个子目录里面的每个包
+
+注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
+
+如何判断当前Go modules是否启用:
+1. 根据环境变量和当前的路径
+2. 一个更简单的方法，使用`go get -f`，根据错误信息来判断。`-f`参数在go modules未启用才有效，且要和`-u`一起使用；而在go modules启用时，没有`-f`这个参数。
+
+##### Go modules未启用
+简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
+
+具体实现代码参考：`$GOROOT/src/cmd/go/internal/get/get.go`，会将包下载到`$GOPATH/src`，且会对其repo下的submodule进行循环拉取
+
+参数说明:
+- `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
+- `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
+- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包同时Go不会去对下载的依赖包做安全校验。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。使用它可能存在安全隐患，所以请在确定安全的情况下使用它。
+- `...`：在后面加上三个点表示。。。
+- `-d`：只下载，不执行安装动作。
+- `-fix`：下载后执行修正动作再执行安装动作。
+
+注意:
+1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
+
+如果不能编译和安装，还会获取吗？
+
+##### Go modules 启用
+具体实现代码参考：`$GOROOT/src/cmd/go/internal/modget/get.go`,会将包下载到`$GOPATH/pkg/mod`，不会对其repo下的submodule进行循环拉取
+
+`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认查找规则参考:[https://golang.org/cmd/go/#hdr-Add_dependencies_to_current_module_and_install_them]()，除此之外有以下几种用法：
+1. `go get xxx@latest`：拉取最新的tag
+    1. 如果没有tag，可能会拉取失败or按分支表现不同(todo)
+2. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
+3. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
+
+版本选择:最小版本选择算法”(The minimal version selection algorithm: https://github.com/golang/go/wiki/Modules#version-selection ),算法名字叫“最小版本选择算法”，然而内容却是“最高版本选择算法”。
+1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
+2. 如果您的模块依赖于具有require D v1.0.0的模块A，并且您的模块还依赖于具有require D v1.1.1的模块B，则最小版本选择将会选择D的v1.1.1版本用以构建（使用最高版本）  
+
+可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本，比如`go get foo@'<v1.6.2'`
+
+参数：
+1. `-u=patch`将只更新小版本，例如从v1.2.4到v1.2.5   
+2. `go get -u`：更新次级或补丁版本号，忽略单元测试
+2. `go get -u ./...`：递归更新所有子目录的所有模块，忽略单元测试
+2. `go get -u -t`：更新主要模块，包括单元测试
+2. `go get -u -t ./...`：递归更新所有子目录的所有模块，包括单元测试
+6. `go get -u all`：更新所有模块（推荐）
+
+除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
+
+```bash
+# 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢。这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
+
+# 在GO111MODULE=on的情况下想按非go mod的方式拉取包怎么办呢
+GO111MODULE=off go get xxx -v
+```
+
+#### 1.5 go clean
+清理go编译生成的文件，如`.go`、`.out`、`.a`等
+
+参数:
+1. 
+
+#### 1.6 go generate
+参考：
+1. 两篇使用文章
+    1. https://go.dev/blog/generate：Rob Pike's original blog post on this feature (from which the example comes) initially talks about using Yacc for Go (now called goyacc)
+    2. http://kelcecil.com/golang/2015/01/09/using-go-generate-in-go-1-dot-4.html：Kel Cecil describes using the Go text/template facility in a custom Go command-line app, combined with go generate, to automatically generate calls to the GamesDB web service.
+在执行go generate时将会加入些信息到环境变量，可在命令程序中使用。$GOARCH 架构 (arm, amd64, etc.)、$GOOS OS (linux, windows, etc.)、$GOFILE 当前处理中的文件名$GOLINE 当前命令在文件中的行号、$GOPACKAGE 当前处理文件的包名、$DOLLAR 一个美元符号（？），同时该命令是在所处理文件的目录下执行，故利用上述信息和当前目录，边可获得丰富的DIY功能。
+
+参数：
+`-run` 正则表达式匹配命令行，仅执行匹配的命令
+`-v` 打印已被检索处理的文件。
+`-n` 打印出将被执行的命令，此时将不真实执行命令
+`-x` 打印已执行的命令
+
+本人感觉该命令很像hook，即使不用它你也可以直接用shell命令等来完成你想做的事情，但是适用情况不一样：
+1. 熟悉go并不一定熟悉shell，学习成本不同
+2. 提供了方便的环境变量
+
+（待研究）There are already a number of tools available that are designed to be run by the go:generate directive, such as `stringer`, `jsonenums`, and `schematyper`.
+
+
+#### 1.7 go vet
+作用是检查Go语言源代码并且报告可疑的代码编写问题,可以捕获一些常见的错误，如格式化字符串等。
+
+#### 1.8 go fmt、gofmt和goimports
+代码格式化.开发工具中一般都集成了保存的时候自动格式化.以法令方式规定标准的代码格式可以避免无尽的无意义的琐碎争执,更重要的是，这样可以做多种自动源码转换，如果放任Go语言代码格式，这些转换就不大可能了。
+
+##### gofmt
+参考:
+1. https://golang.org/cmd/gofmt/
+
+##### go fmt
+它是对`gofmt`的简单封装，直接运行等同于`gofmt -l -w`。指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
+
+参数说明:
+1. `-n`:仅打印出内部要执行的go fmt的命令，但不执行
+2. `-x`：既打印出go fmt命令又执行它
+
+##### goimports
+https://pkg.go.dev/golang.org/x/tools/cmd/goimports
+
+In addition to fixing imports, goimports also formats your code in the same style as gofmt so it can be used as a replacement for your editor's gofmt-on-save hook.( goimports = gofmt + 依赖包管理)
+
+未包含在标准库中，需要自己安装。
+
+1. help:`goimports -h`
+
+#### 1.9 go doc和godoc
+两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器。感觉前者用起来更方便。。。
+
+##### go doc
+查看文档，可以查看项目里的第三方包(需要在项目下运行该命令)
+
+使用：
+1. 查看包的说明：`go doc pkg_name`,如`go doc http`可以直接看到整个包的概述和所有导出方法
+    
+    ```bash
+    # 查看第三方包
+    go doc github.com/Shopify/sarama
+    # or
+    go doc sarama
+    ```
+2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
+    
+    ```bash
+    go doc github.com/Shopify/sarama Validate # 查看方法
+    go doc github.com/Shopify/sarama Config # 查看结构体
+    go doc sql Tx.Stmt # 查看结构体的方法
+    ...
+    ```
+
+<!-- ##### godoc
+使用：
+1. 查看包说明：和`go doc`一样
+2. 查看具体方法/变量等的说明：`godoc pkg_name xxx...`，和`go doc`略有不同,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
+3. 启动本地文档服务器`godoc -http=:6060`：默认只扫描`$GOPATH`和`GOROOT`下所有的包(https://github.com/golang/go/issues/26827)，然后通过`localhost:6060`就可以访问本地go的文档了
+    1. 如果想扫描其他目录下的包
+        1. 可以建立软链接放入这两个目录下(mac下实测不行！)
+4. 在命令行中打印源代码`-src`
+5. 查看文档和示例代码`-ex`
+6. 显示更多信息`-v`：包括扫描进度等
+7. 开启playground`-play`:可以运行Example代码等 -->
+
+#### 1.10 go fix
+用于将你的 Go 代码从旧的发行版迁移到最新的发行版
+
+#### 1.11 go env
+参考：
+1. https://golang.org/pkg/runtime/
+
+go env是查看和设置go环境变量。go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`os.UserConfigDir`目录下的`go/env`文件里，比如mac的os.UserConfigDir是是`$HOME/Library/Application Support`，所以在`$HOME/Library/Application Support/go/env`中，注意该命令不会覆盖系统环境变量。
+
+操作:
+1. 查看go环境变量，可以带上格式化参数
+    1. `go env`：查看所有go环境变量
+    2. `go env var_name`:查看指定的环境变量，比如`go env -json GOROOT`
+1. 设置go环境变量
+    1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
+2. `-u`:和`-w`作用相反，会将其变量设置为默认值，如`go env -u GOPROXY`
+
+环境变量说明:
+
+|变量|说明|
+|---|:---|
+| GCCGO	    | 构建时时候所用编译器      |
+| GOARCH	    |计算机处理器的架构（比如：amd64,386,arm 等）      |
+| GOBIN	    |go install 安装可执行文件所在的目录      |
+| GOCACHE	    |存储编译后信息的缓存目录（比如C:\Users\my\AppData\Local\go-build）      |
+| GOFLAGS	    |go 命令能够识别的标记（可以是多个，中间用空格隔开）      |
+| GOOS	    |编译代码的操作系统名称（比如：linux,windows,darwin 等）      |
+| GOPATH	    |工作区所在的绝对目录      |
+| GOPROXY	    |go module 目录所在的地址（URL）      |
+| GORACE	    |用于数据竞争的数据选项（可选）      |
+| GOROOT	    |go 语言安装时所在的目录绝对路径      |
+| GOTOOLDIR	|go 语言工具所在的目录绝对路径       |
+
+GOTRACEBACK
+
+#### 1.12 go list
+List lists the named packages, one per line.列出指定的package，如果未指定任何参数，默认列出的是根module名。
+
+参数：
+1. `all`：列出所有依赖的packages
+1. `-m`：list modules instead of packages
+2. `-f`:格式化，比如`-f={{.Dir}}`:查看主模块的根目录
+4. `-versions packageA`:显示包的版本历史
+5. `-u`:显示包的可用latest版本
+
+使用：
+```bash
+# 不带任何参数，显示根module名，比如当前项目的module叫projectA
+# go list 
+projectA
+
+# go list all
+archive/tar
+archive/zip
+bufio
+bytes
+compress/bzip2
+compress/flate
+...
+
+# go list -m all
+cloud.google.com/go v0.57.0
+cloud.google.com/go/bigquery v1.5.0
+cloud.google.com/go/datastore v1.1.0
+cloud.google.com/go/firestore v1.1.0
+...
+
+# 查看包的版本历史
+# go list -m -versions github.com/Azure/go-autorest/autorest 
+github.com/Azure/go-autorest/autorest v0.1.0 v0.2.0 v0.3.0 v0.4.0 v0.5.0 v0.6.0 v0.7.0 v0.8.0 v0.9.0 v0.9.1 v0.9.2 v0.9.3 v0.9.4 v0.9.5 v0.9.6 v0.9.7 v0.9.8 v0.10.0 v0.10.1 v0.10.2 v0.11.0 v0.11.1 v0.11.2 v0.11.3 v0.11.4
+
+# 查看包的可用latest版本
+# go list -u -m all
+cloud.google.com/go v0.57.0 [v0.65.0]
+cloud.google.com/go/bigquery v1.5.0 [v1.10.0]
+...
+```
+
+#### 1.3 pprof
+参考：
+1. Go官方
+    1. 详细，含样例：https://blog.golang.org/pprof
+    2. https://golang.org/pkg/net/http/pprof/
+
+用于可视化和性能分析的工具。
+> Profiling 一般翻译为 画像
+
+工具的两个版本：
+1. 如果低于1.11版本，可以从git安装`go get -u github.com/google/pprof`，然后使用`pprof -http=":8081" [binary][profile]`。这个版本比官方的pprof精致一些，可以显示火焰图(Flame Graph)，并且是动态的。
+2. 从 Go 1.11 开始, 火焰图被集成进入 Go 官方的 pprof 库，直接使用`go tool pprof -http=":8081" [binary] [profile]`
+    
+    ```bash
+    # 先收集pprof信息，比如
+    go tool pprof http://localhost:10001/debug/pprof/goroutine\?debug\=1
+    # Fetching profile over HTTP from http://localhost:10001/debug/pprof/goroutine?debug=1
+    # Saved profile in ~/pprof/pprof.goroutine.016.pb.gz
+    
+    # 在由收集的信息生成图形界面
+    go tool pprof -http=":8201" ~/pprof/pprof.goroutine.016.pb.gz
+    ```
+
+pprof性能优化主要有以下几个方面:
+- CPU profile：报告程序的 CPU 使用情况，按照一定频率去采集应用程序在 CPU 和寄存器上面的数据
+- Memory Profile（Heap Profile）：报告程序的内存使用情况
+- Block Profiling：报告 goroutines 不在运行状态的情况，可以用来分析和查找死锁等性能瓶颈
+- Goroutine Profiling：报告 goroutines 的使用情况，有哪些 goroutine，它们的调用关系是怎样的
+
+使用(go.11+)：
+1. 原理：pprof开启后，每隔一段时间（10ms）就会收集下当前的堆栈信息，获取格格函数占用的CPU以及内存资源；最后通过对这些采样数据进行分析，形成一个性能分析报告。所以只应该在性能测试的时候才在代码中引入pprof，否则会降低应用的性能。
+2. 如何引入pprof: 有两种使用方式，一种是针对应用，在代码中引入pprof相关标准库包；另外一种是针对测试
+    1. 标准库：内置了获取程序的运行数据的工具，包括以下两个标准库：
+        1. `runtime/pprof`：采集工具型应用运行数据进行分析，也就是对非http服务应用(工具型应用)进行数据分析
+            1. 它用来产生 dump 文件，再使用 Go Tool PProf 来分析这运行日志。
+        
+                ```go
+                import "runtime/pprof"
+
+                // 比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 pprof.StopCPUProfile() 即可。
+                f, err := os.Create("xxx")
+                if err != nil {
+                    log.Fatal(err)
+                }
+                defer func() {
+                    cerr := f.Close()
+                    if err == nil {
+                        err = cerr
+                    }
+                }()
+                pprof.StartCPUProfile(f)  // 开启CPU性能分析
+                pprof.StopCPUProfile()  // 停止CPU性能分析
+                // 想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了
+                pprof.WriteHeapProfile(w io.Writer)
+
+                ```
+        2. `net/http/pprof`：采集服务型应用运行时数据进行分析，也就是对http服务进行数据分析
+            1. 引入
+    
+                ```go
+                // 引入pprof的话，它可以使用http服务不同的端口，也可以使用相同的端口
+                // 方式一：默认
+                // pprof的Handler使用nil的话，表示使用的默认的 http.DefaultServeMux，使用初始化导入的方式使用这个包就行了
+                import _ "net/http/pprof"
+                
+                r := gin.New()
+                httpAddr := ":8001"
+                pprofAddr := ":10001"
+                
+                
+                http.ListenAndServe(addr, r) // http服务监听端口
+                http.ListenAndServe(addr, nil) // pprof监听端口
+                
+                // 方式二：自定义handler
+                // 如果应用使用了自定义的 Mux，则需要手动注册一些路由规则：
+                r.HandleFunc("/debug/pprof/", pprof.Index)
+                r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+                ...
+                // 服务起来之后，就会多多一条路由，如http://127.0.0.1:8000/debug/pprof，有以下输出
+                /debug/pprof/
+                
+                profiles:
+                0    block
+                62    goroutine
+                444    heap
+                30    threadcreate
+                
+                full goroutine stack dump
+                ```
+                
+            2. pprof自带的路由
+                
+                | 路由后缀 | 简介 | 说明 |
+                | --- | --- | --- |
+                | profile   |	CPU占用情况的采样信息，  |  访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载，浏览器打开会下载文件 |
+                | heap   |	堆内存使用情况的采样信息  | 	访问这个链接会得到一个内存 Profiling 结果的文件。可以用浏览器打开，但可读性不高 |
+                | blocks   |	阻塞操作情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | goroutine   |	当前所有协程的堆栈信息  | 	运行的 goroutines 列表，以及调用关系。可以用浏览器打开，但可读性不高 |
+                | allocs   |	内存分配情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | cmdline   |	显示程序启动命令及参数  | 	可以用浏览器打开 |
+                | mutex   |	锁争用情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | threadcreate   |	系统线程创建情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
+                | trace   |	程序运行跟踪信息  | 	浏览器打开会下载文件 |
+    2. 针对测试：Profiling 一般和性能测试一起使用，只有应用在负载高的情况下 Profiling 才有意义
+        1. 参数说明：
+            1. `cpuprofile`：cpu profiling 数据要保存的文件地址
+            2. `memprofile`：memory profiling 数据要报文的文件地址
+        2. 例子
+        
+            ```go
+            // 对普通测试使用
+            go test -cpuprofile profile.out
+            // 和性能测试相结合
+            go test -bench=. -benchmem -cpuprofile profile.out
+            // 同时看内存
+            go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out
+            ```
+3. 收集和展示性能分析数据：
+    1. 收集：收集使用`go tool pprof [binary] [source]`命令，binary 是应用的二进制文件，用来解析各种符号，source 表示 profile 数据的来源，可以是本地的文件，也可以是 http 地址。因为Profiling 数据是动态的，要想获得有效的数据，请保证应用处于较大的负载（比如正在生成中运行的服务，或者通过其他工具模拟访问压力）。如果应用处于空闲状态，得到的结果可能没有任何意义。收集完后会自动进入命令行界面
+        
+        ```bash
+        # 收集20s的CPU中goroutine的运行情况
+        go tool pprof --seconds 20 http://localhost:8080/debug/pprof/goroutine
+        # or
+        go tool pprof http://localhost:8080/debug/pprof/goroutine?second=20
+        ```
+        
+        1. 收集完后命令行的操作
+            1. `top`:`top` 默认查看程序中占用CPU前10位的函数,`top3` 可以查看程序中占用CPU前3位的函数
+                1. `flat`：当前函数占用CPU的耗时
+                1. `flat%`：当前函数占用CPU的耗时百分比
+                1. `sum%`：函数占用CPU的耗时累计百分比
+                1. `cum`：当前函数加上调用当前函数的函数占用CPU的总耗时
+                1. `cum%`：当前函数加上调用当前函数的函数占用CPU的总耗时百分比
+            2. `web`:会自动打开本地浏览器并访问页面(仅限图形化界面系统)
+            3. 精确定位代码块`list FuncA`:list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时，如果函数名不明确，会进行模糊匹配，比如`list main`会列出`main.main`和`runtime.main`
+                1. 如果想要了解对应的汇编代码，可以使用 `disadm <regex>`命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 `weblist` 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码
+            4. `pdf`:在当前目录下生成可视化pdf格式文件
+            5. `traces`:打印所有调用栈，以及调用栈的指标信息
+    1. 展示：启动 pprof 可视化界面
+
+        ```go
+        // 每个方框代表一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系），箭头代表调用关系，箭头上的时间代表被调用函数的执行时间
+        // 如果报错 failed to execute dot. Is Graphviz installed? Error: exec: "dot": executable file not found in $PATH
+        // 需要安装 graphviz
+        // 1. 使用官方的pprof启动
+        go tool pprof profile.out // 使用命令行界面查看
+        go tool pprof -http=:8080 cpu.prof // 使用web界面查看
+        go tool pprof -http=":8201" ~/pprof/pprof.goroutine.016.pb.gz
+        // 2. 使用git版本的pprof启动
+        pprof -http=:8080 cpu.prof
+        
+        // 可视化界面支持多种显示模式:top、graph、peek、source、火焰图(Flame Graph)等
+        ```
+        
+火焰图：火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表，因为它的样子近似火焰而得名。火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU时间的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。调用顺序由上到下，每一块代表一个函数，越大代表占用 CPU 的时间更长。同时它也支持点击块深入进行分析.
+1. flat、flat% 表示函数在 CPU 上运行的时间以及百分比
+2. sum% 表示当前函数累加使用 CPU 的比例
+3. cum、cum%表示该函数以及子函数运行所占用的时间和比例，应该大于等于前两列的值
+
+golang代码中引入pprof包的两种方式：
+1. runtime/pprof：采集程序（非 Server）的运行数据进行分析。
+    
+2. net/http/pprof：采集 HTTP Server 的运行时数据进行分析。
+    
+
+### 2 其他与go有关的工具
+#### 2.1 Cgo
+编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
+
+#### 2.2 gb
+社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
+
+#### 2.3 GVM
+go的版本管理工具，项目地址：https://github.com/moovweb/gvm
+
+配置：该工具是用shell写的，默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以应该修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。
 
 ## 2 数据类型
 Go语言将数据类型分为四类：
@@ -889,6 +1403,37 @@ fmt.Println(reflect.TypeOf(10/4)) // int
 fmt.Println(float64(10) / 4) // 2.5
 fmt.Println(10 / float64(4)) // 2.5
 ```
+
+Integer literals(整数字面值)
+1. 参考
+    1. https://golang.org/ref/spec#Integer_literals
+    2. ASCII码表
+2. 使用
+    1. binary(二进制)：`0b`或`0B开头`
+
+        ```go
+        var a = 0b1001
+	    fmt.Println(a) // 9
+        ```
+    2. octal(八进制):整数以`0`, `0o`, or `0O`开头；字符以`\`开头，后面跟三个八进制数字
+
+        ```go
+        // 八进制整数
+        var a = 023
+        fmt.Println(a) // 19
+        // 八进制字符
+        fmt.Println("\044") // $
+        fmt.Println("\111") // I
+        ```
+    3. hexadecimal(十六进制):整数以`0x` or `0X`开头；字符以`\x`开头，后面跟两个十六进制数字
+        
+        ```go
+        // 十六进制整数
+        var a = 0x23
+        fmt.Println(a) // 35
+        // 十六进制字符
+        fmt.Println("\x23") // #
+        ```
 
 #### 2.1.2 浮点数
 有`float32`和`float64`，默认使用`float64`
@@ -1643,6 +2188,20 @@ go的for循环主要有两种：
     }
     ```
 4. `switch`中的`continue`,`break`
+
+
+    ```golang
+    // for switch的例子
+    loop:
+    for {
+        switch {
+            case a:
+            case b:
+            default:
+                break loop // 退出for循环
+        }
+    }
+    ```
 
 ### 3.4 goto
 
@@ -2926,521 +3485,6 @@ func enterOrbit() error {
 了解就行
 
 # 四 高级
-## 1 go自带的工具链（go tool套件、go Toolchain）
-参考赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
-
-Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
-
-查看帮助：`go help xxx`，比如`go help generate`
-
-写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
-
-### 1.1 go run
-`go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
-```golang
-go run main.go a.go
-// 或者
-go run *.go
-```
-
-参数：
-1. `-a`：强制编译，不管编译结果是不是最新的
-2. `-n`：打印编译过程中所需运行的命令，但不真正执行
-2. `-x`：打印编译过程中所需运行的命令，且真正执行
-3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
-4. `-work`:显示编译时临时工作目录的路径，并且不删除它
-
-### 1.2 go build
-主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。有如下几种编译情况：
-1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译。
-2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。
-3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。跟module名称也是一样。
-
-结果文件的路径
-1. 未指定的话默认是当前路径
-2. 也可以指定结果文件的路径，使用`-o`
-
-参数:
-1. `-a`：所有涉及到的代码包都会被重新编译，不加该参数则只编译归档文件不是最新的代码包。
-2. `-v`：见`go run`
-1. `-o`：指定生成的可执行文件的路径或名称
-    1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。(待确认)
-    2. 注意：该参数在win平台的规则不太一样，不加该参数的时候，在win平台会自动给生成的可执行文件加上`.exe`后缀，但是加上了该参数就变成
-        1. 如果给定的路径是一个文件，golang 会创建不存在的文件夹并直接写入，并不会增加后缀
-        2. 如果给定的路径是一个目录
-            1. 如果路径不存在，golang 在创建完文件夹之后并不会会回到路径存在的逻辑，而是会直接写这个路径，并返回一个 dir exists 错误
-            2. 如果路径存在，golang 会在该目录下创建文件并附加后缀
-
-        所以在win平台最好不指定结果文件名称，只指定路径。
-2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
-    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值
-
-        ```bash
-        # 比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量
-        var (
-            VERSION   = "major.minor.patch"
-            BUILD_TIME = "yyyy-mm-dd hh:mm:ss"
-            GO_VERSION = runtime.Version()
-        )
-        # 执行
-        go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
-        # 会给这三个变量设置对应的值
-        ```
-
-        注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
-
-    2. `-w`去掉调试信息（无法使用gdb调试）
-    3. `-s` 禁用符号表
-3. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
-    1. `-N` 禁用优化
-    2. `-l` disable inlinin，禁用函数内联
-    3. `-u` 禁用unsafe代码
-    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析。比如
-        
-        ```bash
-        go build -gcflags -m concurrent_demo/cmd/main.go
-        
-        # command-line-arguments
-        concurrent_demo/cmd/main.go:5:6: can inline main 
-        concurrent_demo/cmd/main.go:7:21: inlining call to goroutine_demo.Init # 表示内联调用了
-        ```
-    5. `-S` 输出汇编代码
-4. `-mod`
-    1. `vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译，在开启模块支持的情况下，用这个可以退回到使用 vendor 的时代
-    2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
-    3. `mod`
-
-问题：
-1. 执行`go build`时报错"package xxx is not in GOROOT"
-
-### 1.3 go install
-用于编译并安装代码包或源码文件。
-1. 安装代码包或者库，会在`$GOPATH/pkg`生成目标库文件(`.a`文件)
-2. 安装命令源码文件会在`$GOBIN`目录生成可执行文件。
-
-有如下几种执行情况：
-1. 执行`go install`且不加任何参数时，默认会把当前目录作为代码包并安装。
-2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
-3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
-
-参数:注意它不支持`-o`参数
-
-静态库的编译和使用例子如下：（待补充）
-1. 假设代码目录如下
-    
-    ```
-    studyGo/go_cloud
-    ├── cmd
-    │   └── main.go
-    └── lovego_demo
-        ├── err.go
-        └── init.go
-    ```
-
-2. 进入studyGo目录
-    1. 执行`go install ./go_cloud/lovego_demo`，会在`$GOROOT/pkg/$GOOS_$GOARCH`目录下生成`studyGo/go_cloud/lovego_demo.a`静态库文件
-    2. 执行`go tool compile -I $GOPATH/pkg/darwin_amd64 go_cloud/cmd/main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
-3. TODO
-
-### 1.4 go get(待整理)
-通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。`go get`可以下载一个单一的包或者整个子目录里面的每个包
-
-注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
-
-如何判断当前Go modules是否启用:
-1. 根据环境变量和当前的路径
-2. 一个更简单的方法，使用`go get -f`，根据错误信息来判断。`-f`参数在go modules未启用才有效，且要和`-u`一起使用；而在go modules启用时，没有`-f`这个参数。
-
-#### Go modules未启用
-简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
-
-具体实现代码参考：`$GOROOT/src/cmd/go/internal/get/get.go`，会将包下载到`$GOPATH/src`，且会对其repo下的submodule进行循环拉取
-
-参数说明:
-- `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
-- `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
-- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包同时Go不会去对下载的依赖包做安全校验。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。使用它可能存在安全隐患，所以请在确定安全的情况下使用它。
-- `...`：在后面加上三个点表示。。。
-- `-d`：只下载，不执行安装动作。
-- `-fix`：下载后执行修正动作再执行安装动作。
-
-注意:
-1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
-
-如果不能编译和安装，还会获取吗？
-
-#### Go modules 启用
-具体实现代码参考：`$GOROOT/src/cmd/go/internal/modget/get.go`,会将包下载到`$GOPATH/pkg/mod`，不会对其repo下的submodule进行循环拉取
-
-`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认查找规则参考:[https://golang.org/cmd/go/#hdr-Add_dependencies_to_current_module_and_install_them]()，除此之外有以下几种用法：
-1. `go get xxx@latest`：拉取最新的tag
-    1. 如果没有tag，可能会拉取失败or按分支表现不同(todo)
-2. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
-3. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3
-
-版本选择:最小版本选择算法”(The minimal version selection algorithm: https://github.com/golang/go/wiki/Modules#version-selection ),算法名字叫“最小版本选择算法”，然而内容却是“最高版本选择算法”。
-1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
-2. 如果您的模块依赖于具有require D v1.0.0的模块A，并且您的模块还依赖于具有require D v1.1.1的模块B，则最小版本选择将会选择D的v1.1.1版本用以构建（使用最高版本）  
-
-可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本，比如`go get foo@'<v1.6.2'`
-
-参数：
-1. `-u=patch`将只更新小版本，例如从v1.2.4到v1.2.5   
-2. `go get -u`：更新次级或补丁版本号，忽略单元测试
-2. `go get -u ./...`：递归更新所有子目录的所有模块，忽略单元测试
-2. `go get -u -t`：更新主要模块，包括单元测试
-2. `go get -u -t ./...`：递归更新所有子目录的所有模块，包括单元测试
-6. `go get -u all`：更新所有模块（推荐）
-
-除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
-
-```bash
-# 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢。这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
-
-# 在GO111MODULE=on的情况下想按非go mod的方式拉取包怎么办呢
-GO111MODULE=off go get xxx -v
-```
-
-### 1.5 go clean
-清理go编译生成的文件，如`.go`、`.out`、`.a`等
-
-参数:
-1. 
-
-### 1.6 go generate
-在执行go generate时将会加入些信息到环境变量，可在命令程序中使用。$GOARCH 架构 (arm, amd64, etc.)、$GOOS OS (linux, windows, etc.)、$GOFILE 当前处理中的文件名$GOLINE 当前命令在文件中的行号、$GOPACKAGE 当前处理文件的包名、$DOLLAR 一个美元符号（？），同时该命令是在所处理文件的目录下执行，故利用上述信息和当前目录，边可获得丰富的DIY功能。
-
-参数：
-`-run` 正则表达式匹配命令行，仅执行匹配的命令
-`-v` 打印已被检索处理的文件。
-`-n` 打印出将被执行的命令，此时将不真实执行命令
-`-x` 打印已执行的命令
-
-本人感觉该命令很像hook，即使不用它你也可以直接用shell命令等来完成你想做的事情，但是适用情况不一样：
-1. 熟悉go并不一定熟悉shell，学习成本不同
-2. 提供了方便的环境变量
-
-（待研究）There are already a number of tools available that are designed to be run by the go:generate directive, such as `stringer`, `jsonenums`, and `schematyper`.
-
-
-### 1.7 go vet
-作用是检查Go语言源代码并且报告可疑的代码编写问题,可以捕获一些常见的错误，如格式化字符串等。
-
-### 1.8 go fmt、gofmt和goimports
-代码格式化.开发工具中一般都集成了保存的时候自动格式化.以法令方式规定标准的代码格式可以避免无尽的无意义的琐碎争执,更重要的是，这样可以做多种自动源码转换，如果放任Go语言代码格式，这些转换就不大可能了。
-
-#### gofmt
-参考:
-1. https://golang.org/cmd/gofmt/
-
-#### go fmt
-它是对`gofmt`的简单封装，直接运行等同于`gofmt -l -w`。指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
-
-参数说明:
-1. `-n`:仅打印出内部要执行的go fmt的命令，但不执行
-2. `-x`：既打印出go fmt命令又执行它
-
-#### goimports
-https://pkg.go.dev/golang.org/x/tools/cmd/goimports
-
-In addition to fixing imports, goimports also formats your code in the same style as gofmt so it can be used as a replacement for your editor's gofmt-on-save hook.( goimports = gofmt + 依赖包管理)
-
-未包含在标准库中，需要自己安装。
-
-1. help:`goimports -h`
-
-### 1.9 go doc和godoc
-两个命令能做的事大部分相同，go doc属于老版本（1.2）的命令，默认不区分大小写；而godoc是新版命令，默认区分大小写，后者可以启动本地文档服务器。感觉前者用起来更方便。。。
-
-#### go doc
-查看文档，可以查看项目里的第三方包(需要在项目下运行该命令)
-
-使用：
-1. 查看包的说明：`go doc pkg_name`,如`go doc http`可以直接看到整个包的概述和所有导出方法
-    
-    ```bash
-    # 查看第三方包
-    go doc github.com/Shopify/sarama
-    # or
-    go doc sarama
-    ```
-2. 查看具体方法/变量等的说明：`go doc pkg_name.xxx`,比如`go doc http.ListenAndServe`可以看到该函数的说明,`go doc builtin.make`查看内建函数的说明.
-    
-    ```bash
-    go doc github.com/Shopify/sarama Validate # 查看方法
-    go doc github.com/Shopify/sarama Config # 查看结构体
-    go doc sql Tx.Stmt # 查看结构体的方法
-    ...
-    ```
-
-<!-- #### godoc
-使用：
-1. 查看包说明：和`go doc`一样
-2. 查看具体方法/变量等的说明：`godoc pkg_name xxx...`，和`go doc`略有不同,比如`godoc http ListenAndServe`可以看到该函数的说明,`godoc builtin make`查看内建函数的说明.
-3. 启动本地文档服务器`godoc -http=:6060`：默认只扫描`$GOPATH`和`GOROOT`下所有的包(https://github.com/golang/go/issues/26827)，然后通过`localhost:6060`就可以访问本地go的文档了
-    1. 如果想扫描其他目录下的包
-        1. 可以建立软链接放入这两个目录下(mac下实测不行！)
-4. 在命令行中打印源代码`-src`
-5. 查看文档和示例代码`-ex`
-6. 显示更多信息`-v`：包括扫描进度等
-7. 开启playground`-play`:可以运行Example代码等 -->
-
-### 1.10 go fix
-用于将你的 Go 代码从旧的发行版迁移到最新的发行版
-
-### 1.11 go env
-参考：
-1. https://golang.org/pkg/runtime/
-
-go env是查看和设置go环境变量。go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`os.UserConfigDir`目录下的`go/env`文件里，比如mac的os.UserConfigDir是是`$HOME/Library/Application Support`，所以在`$HOME/Library/Application Support/go/env`中，注意该命令不会覆盖系统环境变量。
-
-操作:
-1. 查看go环境变量，可以带上格式化参数
-    1. `go env`：查看所有go环境变量
-    2. `go env var_name`:查看指定的环境变量，比如`go env -json GOROOT`
-1. 设置go环境变量
-    1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
-2. `-u`:和`-w`作用相反，会将其变量设置为默认值，如`go env -u GOPROXY`
-
-环境变量说明:
-
-|变量|说明|
-|---|:---|
-| GCCGO	    | 构建时时候所用编译器      |
-| GOARCH	    |计算机处理器的架构（比如：amd64,386,arm 等）      |
-| GOBIN	    |go install 安装可执行文件所在的目录      |
-| GOCACHE	    |存储编译后信息的缓存目录（比如C:\Users\my\AppData\Local\go-build）      |
-| GOFLAGS	    |go 命令能够识别的标记（可以是多个，中间用空格隔开）      |
-| GOOS	    |编译代码的操作系统名称（比如：linux,windows,darwin 等）      |
-| GOPATH	    |工作区所在的绝对目录      |
-| GOPROXY	    |go module 目录所在的地址（URL）      |
-| GORACE	    |用于数据竞争的数据选项（可选）      |
-| GOROOT	    |go 语言安装时所在的目录绝对路径      |
-| GOTOOLDIR	|go 语言工具所在的目录绝对路径       |
-
-GOTRACEBACK
-
-### 1.12 go list
-List lists the named packages, one per line.列出指定的package，如果未指定任何参数，默认列出的是根module名。
-
-参数：
-1. `all`：列出所有依赖的packages
-1. `-m`：list modules instead of packages
-2. `-f`:格式化，比如`-f={{.Dir}}`:查看主模块的根目录
-4. `-versions packageA`:显示包的版本历史
-5. `-u`:显示包的可用latest版本
-
-使用：
-```bash
-# 不带任何参数，显示根module名，比如当前项目的module叫projectA
-# go list 
-projectA
-
-# go list all
-archive/tar
-archive/zip
-bufio
-bytes
-compress/bzip2
-compress/flate
-...
-
-# go list -m all
-cloud.google.com/go v0.57.0
-cloud.google.com/go/bigquery v1.5.0
-cloud.google.com/go/datastore v1.1.0
-cloud.google.com/go/firestore v1.1.0
-...
-
-# 查看包的版本历史
-# go list -m -versions github.com/Azure/go-autorest/autorest 
-github.com/Azure/go-autorest/autorest v0.1.0 v0.2.0 v0.3.0 v0.4.0 v0.5.0 v0.6.0 v0.7.0 v0.8.0 v0.9.0 v0.9.1 v0.9.2 v0.9.3 v0.9.4 v0.9.5 v0.9.6 v0.9.7 v0.9.8 v0.10.0 v0.10.1 v0.10.2 v0.11.0 v0.11.1 v0.11.2 v0.11.3 v0.11.4
-
-# 查看包的可用latest版本
-# go list -u -m all
-cloud.google.com/go v0.57.0 [v0.65.0]
-cloud.google.com/go/bigquery v1.5.0 [v1.10.0]
-...
-```
-
-### 1.3 pprof
-参考：
-1. Go官方
-    1. 详细，含样例：https://blog.golang.org/pprof
-    2. https://golang.org/pkg/net/http/pprof/
-
-用于可视化和性能分析的工具。
-> Profiling 一般翻译为 画像
-
-工具的两个版本：
-1. 如果低于1.11版本，可以从git安装`go get -u github.com/google/pprof`，然后使用`pprof -http=":8081" [binary][profile]`。这个版本比官方的pprof精致一些，可以显示火焰图(Flame Graph)，并且是动态的。
-2. 从 Go 1.11 开始, 火焰图被集成进入 Go 官方的 pprof 库，直接使用`go tool pprof -http=":8081" [binary] [profile]`
-    
-    ```bash
-    # 先收集pprof信息，比如
-    go tool pprof http://localhost:10001/debug/pprof/goroutine\?debug\=1
-    # Fetching profile over HTTP from http://localhost:10001/debug/pprof/goroutine?debug=1
-    # Saved profile in ~/pprof/pprof.goroutine.016.pb.gz
-    
-    # 在由收集的信息生成图形界面
-    go tool pprof -http=":8201" ~/pprof/pprof.goroutine.016.pb.gz
-    ```
-
-pprof性能优化主要有以下几个方面:
-- CPU profile：报告程序的 CPU 使用情况，按照一定频率去采集应用程序在 CPU 和寄存器上面的数据
-- Memory Profile（Heap Profile）：报告程序的内存使用情况
-- Block Profiling：报告 goroutines 不在运行状态的情况，可以用来分析和查找死锁等性能瓶颈
-- Goroutine Profiling：报告 goroutines 的使用情况，有哪些 goroutine，它们的调用关系是怎样的
-
-使用(go.11+)：
-1. 原理：pprof开启后，每隔一段时间（10ms）就会收集下当前的堆栈信息，获取格格函数占用的CPU以及内存资源；最后通过对这些采样数据进行分析，形成一个性能分析报告。所以只应该在性能测试的时候才在代码中引入pprof，否则会降低应用的性能。
-2. 如何引入pprof: 有两种使用方式，一种是针对应用，在代码中引入pprof相关标准库包；另外一种是针对测试
-    1. 标准库：内置了获取程序的运行数据的工具，包括以下两个标准库：
-        1. `runtime/pprof`：采集工具型应用运行数据进行分析，也就是对非http服务应用(工具型应用)进行数据分析
-            1. 它用来产生 dump 文件，再使用 Go Tool PProf 来分析这运行日志。
-        
-                ```go
-                import "runtime/pprof"
-
-                // 比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 pprof.StopCPUProfile() 即可。
-                f, err := os.Create("xxx")
-                if err != nil {
-                    log.Fatal(err)
-                }
-                defer func() {
-                    cerr := f.Close()
-                    if err == nil {
-                        err = cerr
-                    }
-                }()
-                pprof.StartCPUProfile(f)  // 开启CPU性能分析
-                pprof.StopCPUProfile()  // 停止CPU性能分析
-                // 想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了
-                pprof.WriteHeapProfile(w io.Writer)
-
-                ```
-        2. `net/http/pprof`：采集服务型应用运行时数据进行分析，也就是对http服务进行数据分析
-            1. 引入
-    
-                ```go
-                // 引入pprof的话，它可以使用http服务不同的端口，也可以使用相同的端口
-                // 方式一：默认
-                // pprof的Handler使用nil的话，表示使用的默认的 http.DefaultServeMux，使用初始化导入的方式使用这个包就行了
-                import _ "net/http/pprof"
-                
-                r := gin.New()
-                httpAddr := ":8001"
-                pprofAddr := ":10001"
-                
-                
-                http.ListenAndServe(addr, r) // http服务监听端口
-                http.ListenAndServe(addr, nil) // pprof监听端口
-                
-                // 方式二：自定义handler
-                // 如果应用使用了自定义的 Mux，则需要手动注册一些路由规则：
-                r.HandleFunc("/debug/pprof/", pprof.Index)
-                r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-                ...
-                // 服务起来之后，就会多多一条路由，如http://127.0.0.1:8000/debug/pprof，有以下输出
-                /debug/pprof/
-                
-                profiles:
-                0    block
-                62    goroutine
-                444    heap
-                30    threadcreate
-                
-                full goroutine stack dump
-                ```
-                
-            2. pprof自带的路由
-                
-                | 路由后缀 | 简介 | 说明 |
-                | --- | --- | --- |
-                | profile   |	CPU占用情况的采样信息，  |  访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载，浏览器打开会下载文件 |
-                | heap   |	堆内存使用情况的采样信息  | 	访问这个链接会得到一个内存 Profiling 结果的文件。可以用浏览器打开，但可读性不高 |
-                | blocks   |	阻塞操作情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
-                | goroutine   |	当前所有协程的堆栈信息  | 	运行的 goroutines 列表，以及调用关系。可以用浏览器打开，但可读性不高 |
-                | allocs   |	内存分配情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
-                | cmdline   |	显示程序启动命令及参数  | 	可以用浏览器打开 |
-                | mutex   |	锁争用情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
-                | threadcreate   |	系统线程创建情况的采样信息  | 	可以用浏览器打开，但可读性不高 |
-                | trace   |	程序运行跟踪信息  | 	浏览器打开会下载文件 |
-    2. 针对测试：Profiling 一般和性能测试一起使用，只有应用在负载高的情况下 Profiling 才有意义
-        1. 参数说明：
-            1. `cpuprofile`：cpu profiling 数据要保存的文件地址
-            2. `memprofile`：memory profiling 数据要报文的文件地址
-        2. 例子
-        
-            ```go
-            // 对普通测试使用
-            go test -cpuprofile profile.out
-            // 和性能测试相结合
-            go test -bench=. -benchmem -cpuprofile profile.out
-            // 同时看内存
-            go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out
-            ```
-3. 收集和展示性能分析数据：
-    1. 收集：收集使用`go tool pprof [binary] [source]`命令，binary 是应用的二进制文件，用来解析各种符号，source 表示 profile 数据的来源，可以是本地的文件，也可以是 http 地址。因为Profiling 数据是动态的，要想获得有效的数据，请保证应用处于较大的负载（比如正在生成中运行的服务，或者通过其他工具模拟访问压力）。如果应用处于空闲状态，得到的结果可能没有任何意义。收集完后会自动进入命令行界面
-        
-        ```bash
-        # 收集20s的CPU中goroutine的运行情况
-        go tool pprof --seconds 20 http://localhost:8080/debug/pprof/goroutine
-        # or
-        go tool pprof http://localhost:8080/debug/pprof/goroutine?second=20
-        ```
-        
-        1. 收集完后命令行的操作
-            1. `top`:`top` 默认查看程序中占用CPU前10位的函数,`top3` 可以查看程序中占用CPU前3位的函数
-                1. `flat`：当前函数占用CPU的耗时
-                1. `flat%`：当前函数占用CPU的耗时百分比
-                1. `sum%`：函数占用CPU的耗时累计百分比
-                1. `cum`：当前函数加上调用当前函数的函数占用CPU的总耗时
-                1. `cum%`：当前函数加上调用当前函数的函数占用CPU的总耗时百分比
-            2. `web`:会自动打开本地浏览器并访问页面(仅限图形化界面系统)
-            3. 精确定位代码块`list FuncA`:list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时，如果函数名不明确，会进行模糊匹配，比如`list main`会列出`main.main`和`runtime.main`
-                1. 如果想要了解对应的汇编代码，可以使用 `disadm <regex>`命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 `weblist` 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码
-            4. `pdf`:在当前目录下生成可视化pdf格式文件
-            5. `traces`:打印所有调用栈，以及调用栈的指标信息
-    1. 展示：启动 pprof 可视化界面
-
-        ```go
-        // 每个方框代表一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系），箭头代表调用关系，箭头上的时间代表被调用函数的执行时间
-        // 如果报错 failed to execute dot. Is Graphviz installed? Error: exec: "dot": executable file not found in $PATH
-        // 需要安装 graphviz
-        // 1. 使用官方的pprof启动
-        go tool pprof profile.out // 使用命令行界面查看
-        go tool pprof -http=:8080 cpu.prof // 使用web界面查看
-        go tool pprof -http=":8201" ~/pprof/pprof.goroutine.016.pb.gz
-        // 2. 使用git版本的pprof启动
-        pprof -http=:8080 cpu.prof
-        
-        // 可视化界面支持多种显示模式:top、graph、peek、source、火焰图(Flame Graph)等
-        ```
-        
-火焰图：火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表，因为它的样子近似火焰而得名。火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU时间的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。调用顺序由上到下，每一块代表一个函数，越大代表占用 CPU 的时间更长。同时它也支持点击块深入进行分析.
-1. flat、flat% 表示函数在 CPU 上运行的时间以及百分比
-2. sum% 表示当前函数累加使用 CPU 的比例
-3. cum、cum%表示该函数以及子函数运行所占用的时间和比例，应该大于等于前两列的值
-
-golang代码中引入pprof包的两种方式：
-1. runtime/pprof：采集程序（非 Server）的运行数据进行分析。
-    
-2. net/http/pprof：采集 HTTP Server 的运行时数据进行分析。
-    
-
-## 2 其他与go有关的工具
-### 2.1 Cgo
-编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
-
-### 2.2 gb
-社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
-
-### 2.3 GVM
-go的版本管理工具，项目地址：https://github.com/moovweb/gvm
-
-配置：该工具是用shell写的，默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以应该修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。
-
 ## 3 源码分析
 ### 3.1 待整理
 编译器源码目录下，src/cmd/compile/internal
@@ -6427,6 +6471,9 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 
 ### 1.32 The process cannot access the file because it is being used by another process
 1. 在win系统下，需要先关闭打开的文件再删除
+
+### 1.33 go build: no main packages to build
+
 
 ## 2 未解决
 ### note: module requires Go 1.14

@@ -224,6 +224,8 @@ SSH不使用任何类型的证书，而是使用公钥和私钥。如果正确�
 ### POP
 POP算是一个“只读”权限的邮件协议
 
+#### POP3
+
 ### IMAP(Internet Message Access Protocol,互联网邮件访问协议)
 比POP更新一点，是“读写”权限的邮件协议
 

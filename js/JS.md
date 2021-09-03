@@ -397,6 +397,15 @@ primitive values(原始值):除 Object 以外的所有类型都是不可变的�
 6. `test()`(待补充)
 7. 转换大小写：`toUpperCase()`和`toLowerCase()`
 8. 字符串的各种编码：参考nodejs的Buffer部分笔记
+9. 填充
+    1. `padStart()`:从当前字符串的左侧开始填充
+    2. `padEnd()`
+
+        ```js
+        const str1 = '5';
+        console.log(str1.padStart(2, '0'));
+        // expected output: "05"
+        ```
 
 模板字符串(es6):使用反引号包裹,里面的字符默认不会被转义(意味着**会原样输出**),想转义需要在前面加反斜杠`\`.可以包含特定语法`${expression}`的占位符.
 1. 优点:更加优雅,不再需要考虑反斜杠来处理单引号和双引号。例子如

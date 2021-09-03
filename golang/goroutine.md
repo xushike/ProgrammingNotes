@@ -195,7 +195,7 @@ channel的方向。默认是双向的，可以用注解来表示只发送或者�
 
 关于chan类型的chan：（待补充）
 
-channel的发送和接收。使用通信操作符`<-`。通道的发送和接收操作都是自动的，一般两个协程需要通信的话，我们是把channel作为参数传给协程。当channel被装满之后如果无协程接收，则channel的发送操作变成阻塞的，此时无法再往里面发送，同理，如果channel是空的且没有协程往里面发送，则它的接收操作是阻塞的：
+channel的发送和接收：使用通信操作符`<-`,通道的发送和接收操作属于IO操作,都是自动的，一般两个协程需要通信的话，我们是把channel作为参数传给协程。当channel被装满之后如果无协程接收，则channel的发送操作变成阻塞的，此时无法再往里面发送，同理，如果channel是空的且没有协程往里面发送，则它的接收操作是阻塞的：
 1. 往channel中发送数据，此时的协程可以称为生产者：形如`ch <- int`，比如`ch1 <- 100`
 2. 从channel中接收数据，有两种方式，此时的协程可以称为消费者：
     1. 接收并赋值：如`int1 := <- ch1`
@@ -526,6 +526,18 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
     .. [chan send]:
     ```
 
+```go
+// 例子2 其他协程有发送，main协程没有接收。此时不会报错，相当于只是其他协程一直阻塞在发送的地方
+c := make(chan int)
+
+go func() {
+    c <- 1
+    c <- 2
+    c <- 3
+    c <- 4
+}()
+```
+
 注意：
 1. 不要使用打印状态来表明通道的发送和接收顺序，因为fmt不是线程安全的，打印状态和通道实际发生读写的时间延迟会导致和真实发生的顺序不同。
 
@@ -562,18 +574,139 @@ channel的发送和接收。使用通信操作符`<-`。通道的发送和接收
     ```
 
 ### 7.3 使用select切换通信
-源码在/src/runtime/select.go
+1. 参考
+    1. 源码在/src/runtime/select.go
+    2. https://golang.org/ref/spec#Select_statements
 
 为什么需要`select`：一个channel的时候很好操作，存在多个channel的时候，我们该如何判断并在其中操作呢，通过select可以监听channel上的数据流动(或者说select就是用来监听和channel有关的IO操作)。select也称为通信开关，**默认是阻塞的**，只有当监听的channel中有发送或接收可以进行时才会运行，当多个channel都准备好的时候，select是随机的选择一个执行的。golang引入的select为我们提供了一种在多个channel间实现“多路复用”的一种机制。select还可用于协程的完美退出(待整理)。
 
-`select`的语法:它是go中的一个控制结构，类似于用于通信的switch语句。每个case必须是一个通信操作，要么是发送要么是接收。如果没有case可运行，它将阻塞，直到有case可运行时，如果多个case都可执行时，select随机选一个可运行的case执行。default就是当监听的channel都没有准备好的时候，默认执行的（此时select不再阻塞等待channel）。所以它有如下特点:
+`select`的语法:它是go中的一个控制结构，类似于用于通信的switch语句。每个case必须是一个通信操作，要么是发送要么是接收。如果没有case可运行，它将执行default，如果没有default，它将阻塞，直到有case可运行时，**如果多个case都可执行时，select随机选一个可运行的case执行**。default就是当监听的channel都没有准备好的时候，默认执行的（此时select不再阻塞等待channel）。所以它有如下特点:
+1. 对比其他语言
+    1. 类似于c的epoll和c++里面的eventloop
 1. 每个 case 都必须是一个通信
+    1. 如果某个缓冲channel永远都是满的，那么其他channel的数据可能就得不到处理
 2. 所有channel表达式都会被求值、所有被发送的表达式都会被求值。
     1. 细节见例子4
-3. 所有被发送的表达式都会被求值
-4. 如果有多个 case 都可以运行，Select 会随机公平地选出一个执行。其他不会执行。否则：
-    1. 如果有 default 子句，则执行该语句。
-    2. 如果没有 default 子句，select 将阻塞，直到某个通信可以运行，Go 不会重新对 channel 或值进行求值。
+4. 如果有多个 case 都可以运行，Select 会随机公平地选出一个执行。其他不会执行。
+    1. 否则：
+        1. 如果有 default 子句，则执行该语句。
+        2. 如果没有 default 子句，select 将阻塞，直到某个通信可以运行，Go 不会重新对 channel 或值进行求值。
+    2. 多个case同时都可以运行时，很可能会丢失数据
+
+        ```go
+        // 例子1 随机发送的例子 使用缓冲管道
+        chanCap := 5
+		ch := make(chan int, chanCap)
+		for i := 0; i < chanCap; i++ {
+			select {
+			case ch <- 10 + i:
+			case ch <- 20 + i:
+			case ch <- 30 + i:
+			}
+		}
+		for i := 0; i < chanCap; i++ {
+			fmt.Printf("%v\n", <-ch) // 每次输出都是随机的，每次循环只有一个case发送成功了，另外两个被丢弃了。说明发送的时候可能丢失
+		}
+        
+        // 例子2 随机接收的例子 使用非缓冲管道
+        chanCap := 1
+		ch1 := make(chan int)
+		ch2 := make(chan int)
+		ch3 := make(chan int)
+
+		go func() {
+			for i := 0; i < chanCap; i++ {
+				ch1 <- 10 + i
+			}
+			close(ch1)
+		}()
+		go func() {
+			for i := 0; i < chanCap; i++ {
+				ch2 <- 20 + i
+			}
+			close(ch2)
+		}()
+		go func() {
+			for i := 0; i < chanCap; i++ {
+				ch3 <- 30 + i
+			}
+			close(ch3)
+		}()
+		time.Sleep(time.Millisecond * 500) // sleep保证三个管道都就绪了
+
+        var forNum = 5
+		for i := 0; i < forNum; i++ {
+			select {
+			case num := <-ch1:
+				fmt.Printf("num1 %v\n", num)
+			case num := <-ch2:
+				fmt.Printf("num2 %v\n", num)
+			case num := <-ch3:
+				fmt.Printf("num3 %v\n", num)
+			}
+		}
+		// 检查数据是否接收完
+		for {
+			num1, ok := <-ch1
+			if !ok {
+				break
+			}
+			if ok {
+				fmt.Println("remain num1:", num1)
+			}
+		}
+		for {
+			num2, ok := <-ch2
+			if !ok {
+				break
+			}
+			if ok {
+				fmt.Println("remain num2:", num2)
+			}
+		}
+		for {
+			num3, ok := <-ch3
+			if !ok {
+				break
+			}
+			if ok {
+				fmt.Println("remain num3:", num3)
+			}
+		}
+
+        // 输出可能是这样，如果把接收的循环次数forNum改大，可以降低remain出现的概率。说明接收的时候数据不会丢失，但是处理时间是未知的，可能很久后才会处理。
+        num2 20
+        num2 0
+        num2 0
+        num1 10
+        num2 0
+        remain num3: 30
+
+        // 例子3  随机接收的例子 使用非缓冲管道
+        // 通过输出也可以看出接收的时候不会丢弃
+        ch1 := make(chan int)
+		ch2 := make(chan int)
+		for i := 0; i < 10; i++ {
+			go func(c1 chan int) {
+				c1 <- 100 + i
+			}(ch1)
+			go func(c2 chan int) {
+				c2 <- 200 + i
+			}(ch2)
+
+			//等10毫秒，确保两个channel都已准备就绪
+			time.Sleep(10 * time.Millisecond)
+
+			var index int
+
+			select {
+			case index = <-ch1:
+				fmt.Println(index)
+			case index = <-ch2:
+				fmt.Println(index)
+			}
+		}
+        ```
 
 ```golang
 // 简单使用的例子1
@@ -602,14 +735,28 @@ func main() {
 	fibonacci(c, quit)
 }
 
-// 例子2
-// 如果没有case，就单单一个select{}，会panic
+// 例子2 空select，没有case也没有default
+// 例子2-1 当前程序中没有协程在跑，会直接死锁
 func main() {
     select {} // panic
 }
+// 例子2-2 结合协程使用，当协程结束的时候，也会死锁
+go func() {
+    time.After(time.Second*5)
+}()
+select {} // 5秒后死锁
+// 例子2-3 协程只要一直在跑，就可以实现一直阻塞
+func main() {
+    go func() {
+		for {
+		}
+	}()
+	select {} // 一直阻塞，除非手动退出
+}
 
 // 例子3
-// select常配合for循环来监听channel有没有传输发生，需要注意在这个场景下，break只是退出当前select而不会退出for，需要用break break、goto或者return的方式。
+// select常配合for循环来监听channel有没有传输发生，需要注意在这个场景下，break只是退出当前select而不会退出for，需要用break break、break scope、goto或者return的方式。
+// 例子3-1 break break
 ch := make(chan interface{})
 go func() {
     for {
@@ -624,6 +771,22 @@ for {
     }
     break
 }
+// 例子3-2 break scope
+ch := make(chan interface{})
+go func() {
+    for {
+        ch <- 1
+    }
+}()
+loop:
+for {
+    select {
+    case i := <-ch:
+        fmt.Println(i)
+        break loop
+    }
+}
+
 
 // 例子4 
 // 所有channel表达式都会被求值、所有被发送的表达式都会被求值。有两个细节
@@ -672,11 +835,206 @@ case takeASendChannel() <- getANumToChannel():
 // recv something from a recv channel
 
 // 例子5 
-// 基于select可以实现一些有用的操作,比如超时：
+// 基于select可以实现一些有用的操作,比如超时控制：
 select {
-    case <- time.After(5 * time.Second):
+    case <- chan1:
+    // 每次执行到select就开始计时，假如过了5秒都没有收到chan1数据，那么就会走time.After里面的代码；如果收到了chan1的数据，那么会重置time.After的计时
+    // 可以很容易地模拟心跳检测
+    case <- time.After(5 * time.Second): 
     println("timeout")
 }
+
+
+// 例子6 某个case的条件永远是blocked
+ch1 = nil // disables this channel
+select {
+case <-ch1:
+    fmt.Println("Received from ch1") // forever blocked，相当于永远跳过了这个case
+case <-ch2:
+    fmt.Println("Received from ch2")
+}
+
+
+// 例子7 优先级 有缓冲和无缓冲管道的优先级实现思路是不一样的
+// 思路一 case的优先级比default高
+// 例子7-1 参考nsq的代码: 当memoryMsgChan满了之后default的代码才会执行
+func (t *Topic) put(m *Message) error {
+	select {
+	case t.memoryMsgChan <- m:
+	default:
+		err := writeMessageToBackend(m, t.backend)
+		t.nsqd.SetHealth(err)
+		if err != nil {
+			t.nsqd.logf(LOG_ERROR,
+				"TOPIC(%s) ERROR: failed to write message to backend - %s",
+				t.name, err)
+			return err
+		}
+	}
+	return nil
+}
+// 同样的也可以实现非阻塞读写
+select {
+    case writeChan <- msg:
+        // do something write successed
+    default:
+        // drop msg, or log err
+}
+// 例子7-2 K8s 
+// 代码地址 https://github.com/kubernetes/kubernetes/blob/7a0638da76cb9843def65708b661d2c6aa58ed5a/pkg/controller/nodelifecycle/scheduler/taint_manager.go#L244
+func (tc *NoExecuteTaintManager) worker(worker int, done func(), stopCh <-chan struct{}) {
+	defer done()
+
+	// When processing events we want to prioritize Node updates over Pod updates,
+	// as NodeUpdates that interest NoExecuteTaintManager should be handled as soon as possible -
+	// we don't want user (or system) to wait until PodUpdate queue is drained before it can
+	// start evicting Pods from tainted Nodes.
+	for {
+		select {
+		case <-stopCh:
+			return
+		case nodeUpdate := <-tc.nodeUpdateChannels[worker]:
+			tc.handleNodeUpdate(nodeUpdate)
+			tc.nodeUpdateQueue.Done(nodeUpdate)
+		case podUpdate := <-tc.podUpdateChannels[worker]:
+			// If we found a Pod update we need to empty Node queue first.
+		priority:
+			for {
+				select {
+				case nodeUpdate := <-tc.nodeUpdateChannels[worker]: // 这里tc.nodeUpdateChannels[worker]是有缓冲管道
+					tc.handleNodeUpdate(nodeUpdate)
+					tc.nodeUpdateQueue.Done(nodeUpdate)
+				default:
+					break priority
+				}
+			}
+			// After Node queue is emptied we process podUpdate.
+			tc.handlePodUpdate(podUpdate)
+			tc.podUpdateQueue.Done(podUpdate)
+		}
+	}
+}
+// 例子7-3 和k8s代码一样的思路
+// 这里ch1是有缓冲管道
+for {
+    select {
+    case <-stopCh:
+        return
+    case job1 := <-ch1:
+        fmt.Println(job1)
+    case job2 := <-ch2:
+    priority:
+        for {
+            select {
+            case job1 := <-ch1:
+                fmt.Println(job1)
+            default:
+                break priority
+            }
+        }
+        fmt.Println(job2)
+    }
+}
+
+// 例子7-4 思路是t1和t2比t3多了一次被处理的机会，不过实测下来感觉这个优先级并不是很明显
+t1 := time.NewTicker(1*time.Second)
+t2 := time.NewTicker(2*time.Second)
+t3 := time.NewTicker(3*time.Second)
+
+for {
+    select{
+    case <- t1.C :
+        fmt.Println("tick1:",time.Now())
+    case <- t2.C :
+        fmt.Println("tick2:",time.Now())
+    default:
+        select {
+        case <- t1.C :
+            fmt.Println("tick1:",time.Now())
+        case <- t2.C :
+            fmt.Println("tick2:",time.Now())
+        case <- t3.C:
+            fmt.Println("tick3:",time.Now())
+        }
+    }
+}
+
+// 例子7-5 思路是两者同时准备好的
+
+// 例子8 实现几个ch的动态平衡，保证接收的概率大致相等
+getCh := func(i int, ch <-chan struct{}) <-chan struct{} {
+    if i > 0 {
+        return nil
+    }
+    return ch
+}
+
+i := 0
+for {
+    select {
+    case <-getCh(i, ch1):
+        // do something
+        i++
+    case <-ch2:
+        // do something else
+        i--
+    }
+}
+
+// 例子9 select原理分析
+// 执行会发现，永远只会打印250 TODO
+var count int
+for {
+    select {
+    case <-time.Tick(time.Millisecond * 500):
+        fmt.Println("500执行")
+        count++
+        fmt.Println("count--->" , count)
+    case <-time.Tick(time.Millisecond * 499) :
+        fmt.Println("499执行")
+        count++
+        fmt.Println("count--->" , count)
+    case <-time.Tick(time.Millisecond * 250) :
+    fmt.Println("499执行")
+    count++
+    fmt.Println("count--->" , count)
+    }
+}
+
+// 例子10
+for {
+	select {
+	case v1, ok := <-c1:
+        // 如果c1被关闭(ok==false)，每次从c1读取都会立即返回，将导致死循环
+        // 可以通过将c1置为nil来让select ignore掉这个case，继续评估其它case
+		if !ok {
+			c1 = nil
+		}
+	}
+	
+	case v2 := <- c2:
+	    // 同样，如果c2被关闭，每次从c1读取都会立即返回对应元素类型的零值(如空字符串)，导致死循环
+	    // 解决方案仍然是置c2为nil，但是有可能误判(写入方是写入了一个零值而不是关闭channel，比如整数0)
+	    
+	case c3 <- v3:
+	    // 如果c3已经关闭，则报错 panic: send on closed channel
+	    // 如果c3为nil，则ignore该case	    
+}
+
+// 例子11 案例分析
+// 例子11-1 会panic吗，可能会也可能不会，因为多个case就绪时，select是随机选择一个执行
+runtime.GOMAXPROCS(1)
+int_chan := make(chan int, 1)
+string_chan := make(chan string, 1)
+int_chan <- 1
+string_chan <- "hello"
+select {
+case value := <-int_chan:
+    fmt.Println(value)
+case value := <-string_chan:
+    panic(value)
+}
+
 ```
 
 ## 8 基于共享变量的并发

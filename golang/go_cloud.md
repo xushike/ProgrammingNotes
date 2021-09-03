@@ -1274,6 +1274,29 @@ https://github.com/fclairamb/ftpserver
 ## 文本和编码处理
 golang.org/x/text
 
+## 文件传输 croc
+https://github.com/schollz/croc
+
+概述：
+1. 简单，安全，快速，跨平台
+2. 传输中断可以恢复
+1. 由于此工具是通过 relay server 方式来进行传送，所以指令会预设连到官方所搭建的服务器。
+
+
+使用：
+1. 传送和接收文件
+
+    ```bash
+    croc send ~/Downloads/file.txt # 默认会生成随机的secret code
+    # 接收的时候就使用这个secret code来接收
+    croc secret-code
+
+    # 也可以自定义secret code(必需超过6个字符)
+    croc send --code abcdef ~/Downloads/file.txt
+    ```
+2. 自己架设relay server：`croc relay`，默认会启动多个端口，也可以指定单一端口`croc relay --ports 8001`
+2. 使用自己搭建的relay server`croc --relay 127.0.0.1:8001 send ~/Downloads/file.txt`
+
 # 五 经验
 ## 1 为什么需要框架
 对于golang而言，web框架的依赖要远比Python，Java之类的要小。自身的net/http足够简单，性能也非常不错。框架更像是一些常用函数或者工具的集合。借助框架开发，不仅可以省去很多常用的封装带来的时间，也有助于团队的编码风格和形成规范。
