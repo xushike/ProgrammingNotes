@@ -121,8 +121,12 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 
 使用：
 1. bucket:Scoop的设计初衷是为了方便 Windows 开发者安装和配置开发工具，其默认软件仓库的收录条件也就很苛刻，导致了它默认软件仓库（main bucket）里软件数量有限。bucket可以理解为软件库，类似于brew的tap,我们可以通过添加“软件库”来找到自己想要的软件.
-    1. 查看可以直接识别并添加的bucket:`scoop bucket known`，简单介绍如下
+    1. 查看可以直接识别并添加的bucket:`scoop bucket known`，常见bucket简单介绍如下
+        1. `extras`
         1. `nirsoft`:是一个 NirSoft 开发的小工具的安装合集。NirSoft 制作了大量的（dozens and dozens）小工具，包括系统工具、网络工具、密码恢复等等，孜孜不倦、持续更新。
+        2. `gams`：包含了大量免费开源的游戏
+        3. `dorado`:添加了一些国内的app，比如 qqplayer ️
+            1. https://github.com/chawyehsu/dorado
     2. 添加bucket
         1. 分两种情况
             1. 对于能直接识别的bucket可以直接用名称安装`scoop bucket add bucketnameA`
@@ -153,13 +157,18 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     1. `vscode`：成功安装后根据提示可以添加它到上下文，安装后启动的命令是`code`，not `vscode`
     2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文
     3. `googlechrome`:安装后启动命令是`chrome`
+    4. `ventoy`
 
 ### Chocolatey
 参考：
 1. https://chocolatey.org/
 2. https://github.com/chocolatey/choco
 
-也是优秀的软件，只是比scoop臃肿了一些
+也是优秀的软件，比scoop更臃肿，相比之下有一些缺点：
+1. 很多软件安装位置不固定, 会污染Path
+
+### winget-cli
+https://github.com/microsoft/winget-cli
 
 ## 2 Windows Terminal
 主要功能包括多选项卡、窗格、Unicode/UTF-8字符支持、GPU加速文本渲染引擎，运行速度更快，Unicode、UTF-8字符的支持则方便在多种语言环境中使用，并显示表情符号，以及自定义主题、样式和配置等。

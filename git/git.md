@@ -28,35 +28,34 @@ git是linus用c写的，是他为了帮助管理Linux内核开发而开发的一
 git允许我们用ssh url或者https url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 
 ### 3.4 凭证助手credential helper(待测试)
-用于存储git的凭证,Git现在默认包含如下几个helper:
-1. Cache
-    
-    将凭据在内存中进行短时间的缓存,默认15分钟
+用于存储git的凭证(认证信息--账号密码等),Git有以下几种helper:
+
+1. Cache：将凭据在内存中进行短时间的缓存,不会持久化到磁盘上，15分钟自动删除。
     1. 使用`git config --global credential.helper cache`
     2. 参数`cache –timeout=[num]`:设置时间,如`git config credential.helper cache –timeout=3600`
-2. Store(待测试)
-    
-    将凭据保存在磁盘上,明文存储,所以不安全.
+2. Store：将凭据明文保存在磁盘上,永不过期。但是明文存储不安全.
     1. 指定凭证助手:`git config --global credential.helper store`    
-    2. 指定明文密码保存位置
-        可以为不同项目指定不同的文件从而达到使用多账号的目的.
+    2. 指定明文密码保存位置:可以为不同项目指定不同的文件从而达到使用多账号的目的.
         1. `git config --global credential.helper store --file=~/cred.txt`,但是该命令似乎并不生效,可以通过修改config文件达到目的,
 
-            ```
+            ```bash
             [credential]
             helper = store --file=D:/credential/cred1.txt
+            # 再次push，便会将账户信息存至`D:/credential/cred1.txt`中.如果想清除账户，删除指定的文件即可。.
             ```
-            
-            再次push，便会将账户信息存至`D:/credential/cred1.txt`中.如果想清除账户，删除指定的文件即可。.
-
-3. mananger
-
-    安装了GitGUI，自动会在system级别中设置credential.helper为manager
+3. mananger:安装了GitGUI，自动会在system级别中设置credential.helper为manager
 4. wincred
-5. `osxkeychain`:mac特有的，附加到系统的keychain，是加密保存在硬盘上
+5. `osxkeychain`:mac特有的，附加到系统的keychain，和`store`相似，不过`osxkeychain`是加密保存在硬盘上。这种加密方式与存放 HTTPS 凭证以及 Safari 的自动填写是相同的。
 
-取消设置凭证助手命令形如:`git config --<级别,如system> --unset credential.helper`
-
+使用：
+1. 取消设置凭证助手:`git config --<级别,如system> --unset credential.helper`
+2. 删除已有的凭证：有两种方式
+    1. 修改配置文件
+    2. 命令行
+    3. 手动删除
+        1. win系统 => 控制面板 => 凭据管理 => 找到对应的凭据并删除
+        2. mac => 钥匙串中操作
+            1. 有可能遇到无法删除的情况，临时解决方案是用新的token替换原来的密码
 
 ### 3.5 ssh-agent
 安装了git之后就会有ssh-agent(windows是),ssh-agent 是用于管理SSH private keys的, 长时间持续运行的守护进程（daemon）. 唯一目的就是对解密的私钥进行高速缓存.
@@ -422,6 +421,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 移动或重命名文件并添加到暂存:`git mv fileA fileB`,等价于:移动或重命名文件+添加到暂存(即`git add`)
 
 `git rm --cached <file_path>`:删除暂存区或分支上的文件, 但本地又需要使用, 只是不希望这个文件被版本控制
+`git rm -r --cached <dir_path>`:如果是目录。
 
 ## 5 git commit
 作动词时表示做一个版本，作名词表示版本。Git每次提交操作保存的提交对象包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针（首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象，而由多个分支合并产生的提交对象有多个父对象，父对象可以简单理解为父commit）
@@ -554,15 +554,28 @@ pick 0325c7f add b.txt for test git rebase
 
 对于已经push到远程的，使用`reset`命令可以本地回滚，但是push的时候会被拒绝，必需使用强制推送，如果是多人合作的话，强制推送可能导致别人的本地和远程不一致的问题。这种情况推荐用`git revert <HEAD~n>`，具体自己斟酌。
 
-然后看下`git revert`的用法:
-1. 撤销指定的版本
-    1. ` git revert HEAD`撤销前一次commit
-    1. ` git revert HEAD~1`撤销前前次commit。比如提交了版本一、版本二、版本三，想撤销版本二但是又想保留版本三，就可以用这个。
-    1. ` git revert commit_id`撤销指定的版本
-    1. ` git revert -n commit_id`撤销指定的版本
-2. 撤销merge
-    1. 可以像撤销指定版本那样来撤销merge（待实践）
-    2. `git revert commit_id -m num`：假设当前分支(分支A)的最新commit_id是commitA，分支B的最新commit_id是commitB,把分支B合并到分支A之后生成的新的commit_id是commitC，则`git revert commitC -m 1`是撤销到commitA，`git revert commitC -m 2`是撤销到commitB。如果不指定`-m`参数会报错"... 是一个合并提交但未提供 -m"
+然后看下`git revert`的用法:默认情况下会自动提交，带上`-n`就不会自动提交
+1. 撤销单个commit：有两种情况
+    1. 该commit是merge，此时需要借助参数`-m`:`git revert commit_id -m num`：假设当前分支(分支A)的最新commit_id是commitA，分支B的最新commit_id是commitB,把分支B合并到分支A之后生成的新的commit_id是commitC，则`git revert commitC -m 1`是撤销到commitA，`git revert commitC -m 2`是撤销到commitB。如果不指定`-m`参数会报错"... 是一个合并提交但未提供 -m"
+    2. 该commit不是merge
+        1. ` git revert HEAD`撤销前一次commit
+        1. ` git revert HEAD~1`撤销前前次commit。比如提交了版本一、版本二、版本三，想撤销版本二但是又想保留版本三，就可以用这个。
+        1. ` git revert commit_id`撤销指定的版本
+        1. ` git revert -n commit_id`撤销指定的版本并且不自动提交
+            
+            ```bash
+            # revert 三个commit但是又不想生成三个新的commit
+            git revert -n a b c 
+            git commit -m "revert a b c"
+            ```
+2. 撤销多个commit
+    
+    ```bash
+    # 撤销(A,..,B] 左开右闭
+    git revert A..B
+    # 撤销[A,..,B]
+    git revert A^..B
+    ```
     
 撤销时的冲突解决：撤销时如果有冲突，需要解决冲突，否则需要取消这次撤销，使用`git revert --abort`
 
