@@ -12,6 +12,8 @@ Go Cloud Project是一项计划，允许应用程序开发人员在任何云提�
 
 Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 
+## 4 文档网址等
+
 # 三 基础
 
 # 四 高级
@@ -134,6 +136,8 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 
 问题：
 1. attribute does not have "rpc:tag" defined in the meta
+2. 在windows下执行相关命令报错：failed to run protoc: exit status 1: 'protoc-gen-go-grpc' .... --go-grpc_out: protoc-gen-go-grpc: Plugin failed with status code 1.
+    1. 可能是protoc-gen-go-grpc没有安装，执行`go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1`安装一下
 
 #### 问题
 1. panic: view "default" on field "nextNode" cannot be computed: view "default" on field "branches" cannot be computed: unknown view "default"
@@ -491,6 +495,16 @@ https://github.com/jmoiron/sqlx
 3. sqrl: https://github.com/elgris/sqrl
 4. gocu: github.com/doug-martin/goqu - just for SELECT query
 
+
+#### squirrel
+使用：
+1. 如何实现`Upsert`:没有内置方法，但是可以借助`Suffix()`来实现
+    
+    ```go
+    InsertBuilder.Suffix(ON DUPLICATE KEY UPDATE a = values.a ...)
+    ```
+2. 如何实现`IN`:借助`Or{}`
+
 ### mysql
 github.com/go-sql-driver/mysql
 
@@ -531,6 +545,34 @@ github.com/go-redis/redis
 	}
     ```
 
+### mongodb
+参考：
+1. driver:
+    1. https://github.com/mongodb/mongo-go-driver
+    2. https://pkg.go.dev/go.mongodb.org/mongo-driver#section-readme
+1. BSON类型
+    1. https://docs.mongodb.com/manual/reference/bson-types/
+    2. https://www.mongodb.com/json-and-bson
+
+
+几个类型的区别：
+1. `bson.M`:无序的bson文档，是一个map，属性是`bson.E`类型
+1. `bson.D`:有序的bson文档，元素是`bson.E`类型
+1. `bson.A`:bson文档中的数组类型
+1. `bson.E`：
+
+    ```go
+    type E struct {
+        Key   string
+        Value interface{}
+    }
+    ```
+
+使用：
+1. json转bson：使用`func UnmarshalExtJSON(data []byte, canonical bool, val interface{}) error`
+    1. 参数canonical参考：https://docs.mongodb.com/manual/reference/mongodb-extended-json/
+
+
 ## JWT
 1. https://github.com/dgrijalva/jwt-go
 2. https://pkg.go.dev/github.com/dgrijalva/jwt-go
@@ -538,10 +580,6 @@ github.com/go-redis/redis
 问题：
 1. key is of invalid type
     1. key要用`[]byte`类型
-
-## NoSQL
-### Redis
-https://github.com/go-redis/redis
 
 ## migrate工具
 参考：
@@ -574,6 +612,9 @@ https://github.com/go-redis/redis
         # postgresql in mac 
         migrate -source file://./migrations -database "postgres://postgres:@localhost:5432/hello?sslmode=disable" up 
         
+        # postgresql in win
+        migrate -source file://./migrations -database "postgres://postgres:@localhost:5432/example?sslmode=disable" up
+
         # mysql in mac
         migrate -source file://./migrations -database "mysql://root:123456@tcp(localhost:3306)/hello?" up
         ```
@@ -619,7 +660,8 @@ https://github.com/golangci/golangci-lint
 
 问题:
 1. "File is not `goimports`-ed with -local (goimports)"
-    1. 可能原因，包的引入代码的位置格式化不对
+    1. 可能原因1：包的引入代码的位置格式化不对
+    2. 可能原因2：格式化方式配置得不正确。如果在goland中可能需要把Group勾选上
 2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
 3. no such linter goerr113
     1. 可能原因:golangci-lint版本太低
@@ -688,6 +730,7 @@ https://github.com/golang/mock
     3. `Times(number)`预计调用次数
     4. `Do()`类似于钩子的作用
 2. gomock代码生成工具
+    1. 安装`go install github.com/golang/mock/mockgen@v1.6.0`
     1. 生成mock代码
         1. 直接命令行使用，比如`mockgen --source .../xxx.go --destination .../xxx.go`
         2. (推荐)mockgen还提供了一种通过注释及`go generate`生成mock文件的方式，比如在接口文件的注释里面增加：`//go:generatemockgen --source .../xxx.go --destination .../xxx.go`，然后执行`go generate`命令就可以自动生成mock文件了。
@@ -704,6 +747,8 @@ https://github.com/golang/mock
     1. `Call.Times(int)`:expected execute timers
 2. Loading input failed: loading package failed certificate.go:1: running "mockgen": exit status 1
     1. 可能原因：我的文件名称是certificate.go，但是要generate的文件名称是cert.go。最后把我的文件改成cert.go就好了
+3. `mockgen`生成的空xxx.mock.go引用了`gomock "github.com/golang/mock/gomock"`但是并没有使用
+    1. 当时的版本是v1.4.3,升级到v1.6.0就好了
     
 ### sqlmock
 https://github.com/DATA-DOG/go-sqlmock
@@ -935,6 +980,14 @@ select {}
 问题：
 1. expected exactly 5 fields, found 6
 
+## HTTP&REST
+### Resty
+https://github.com/go-resty/resty
+
+使用
+1. SetDebug
+2. R()
+
 ## rpc
 ### protoc
 安装：
@@ -959,6 +1012,11 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
 
 使用：
 1. 安装`go get -u github.com/golang/protobuf/protoc-gen-go`
+2. 查看版本`-version`：在较新的版本才支持
+
+问题：
+1. The import path must contain at least one forward slash ('/') character.
+    1. 网友说的,2020年4月14日发布的v1.4.0以上的版本就要求必须加/了。所以最简单的解决办法是降级版本，比如`go get github.com/golang/protobuf/protoc-gen-go@v1.1.0`
 
 ### grpc
 
@@ -967,6 +1025,7 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
     1. 指定grpc版本`replace google.golang.org/grpc => google.golang.org/grpc v1.26.0`，然后重新生成.pb文件，不行的话再降级protoc-gen-go的版本`go get github.com/golang/protobuf/protoc-gen-go@v1.3.2`
 2. rpc error: code = DeadlineExceeded desc = context deadline exceeded
     1. 可能原因：超时时间设置得太短
+
 ## 日志 
 日志设计：
 1. 
@@ -1041,6 +1100,11 @@ https://github.com/FiloSottile/mkcert
 ## json
 ### jsoniter
 https://github.com/json-iterator/go
+
+### Jeffail/gabs
+https://github.com/Jeffail/gabs
+
+用于处理冬天或未知json结构
 
 ## kafka
 ### Shopify/sarama

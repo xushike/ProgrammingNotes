@@ -188,6 +188,9 @@ reference from StackOverflow：https://stackoverflow.com/questions/13790592/how-
 大意是：Since Git 2.16.1(2) you can use`git update-git-for-windows`,In versions between 2.14.2 and 2.16.1, the command was`git update`，更早的版本没有提供git update命令，只有去官网下载。
 
 也可以直接github上下载：https://github.com/git-for-windows/git/releases
+
+### 1.4卸载
+
 ## 2 mac
 安装：
 1. 方式一(推荐):Homebrew安装
@@ -264,6 +267,23 @@ mac按以下步骤操作：
 mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以，清除方法是，在钥匙串程序黎搜索github, 结果中种类为互联网密码的条目即为所需, 删除它即可。
 
 # 三 基础
+## 0 架构和名称
+## 1 工具生态
+### git bash
+
+使用：
+1. 配置：老版本配置起来比较麻烦，推荐先升级到最新的git版本，然后再配置
+
+    ```bash
+    # 解决windows下使用git bash中文乱码的配置(待整理)
+    git config --global gui.encoding utf-8 # 代码库编码
+    git config --global i18n.commitencoding utf-8 # log编码
+    git config --global core.quotepath false # 支持中文路径
+
+    git config --global i18n.logoutputencoding utf-8
+    export LESSCHARSET=utf-8
+    ```
+
 ## 1 开始
 ### 1.1 git init 初始化仓库
 官网说的初始化命令默认会创建master分支,但实践发现,在第一次commit之前很多命令都报错(比如`git branch`,`git checkout`,远程仓库的命令等),所以最佳实践是第一次commit之后再去操作分支和远程仓库。
@@ -293,6 +313,7 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 - `git remote show <远程仓库名>`:查看远程仓库详细信息,如`git remote show origin`。可查看的信息包括:
     * 远程仓库地址
     * 远程分支的绑定和同步情况
+    * 最新的commit在哪个分支:`HEAD branch: master`表示最新的commit在master分支上，`HEAD branch: develop`表示最新的commit在develop分支上，
 
 添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库或核心库.`远程仓库地址`最好以`.git`后缀结尾，比如`https://github.xxx.git`，如果是`https://github.xxx`，虽然也能重定向过去，但是会有warn提示。
 
@@ -375,8 +396,8 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 使用：
 1. 拉取远程主机的**所有更新**到本地
-    1. 拉取所有`git fetch`
-    2. 拉取指定上游`git fetch <远程主机名>`
+    1. 拉取绑定的远程主机的所有更新`git fetch`，一般等于`git fetch origin`
+    2. 拉取指定上游`git fetch <远程主机名>`，比如`git fetch upstream`
     3. `git fetch`可以同步到新的分支到本地，但是远端有删除分支，直接`git fetch`是不能将远程已经不存在的branch等在本地删除的，此时可以`git fetch --prune`实现在本地删除远程已经不存在的分支，简写`git fetch -p`
 2. 拉取远程主机的指定分支的更新到本地分支`git fetch <远程主机名> <远程分支名> : <本地分支名>`，比如`git fetch origin master : dev`
 3. 拉取远程主机的指定分支的更新到本地当前分支`git fetch <远程主机名> <分支名>`，比如`git fetch origin master`
@@ -666,6 +687,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 恢复储藏:
 1. `git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)。
+    1. "error: unknown switch `e'"
 2. 恢复并删除储藏`git stash pop [stash@{numA}]`: 不指定的话(`git stash pop`)则默认恢复并删除最前面的储藏(`stash@{0}`)，如果恢复的时候产生了冲突，不会删除该储藏，需要自己手动去删除。
 3. 恢复时产生了冲突，如果想全部采用某一方的更改，可以用`git checkout --ours .`或`git checkout --theirs .`
 
@@ -722,7 +744,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 #### 只合并部分文件
 参考`git checkout branch_name file_name`部分
 
-## 9 git标签 git tag
+## 9 git版本和标签
+### git标签/git tag/锚点
 指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
 
 既然有commitid为什么还要git tag：tag可以取有意义的的名字，比commitid更易记住。
@@ -731,7 +754,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 使用：
 1. 查看
-    1. 查看所有标签:`git tag`
+    1. 查看所有标签:`git tag`，默认只会显示标签，如果想同时看annotation，可以带上参数`-n99`(表示查看99行的commit或annotation信息，99行妥妥地够用了)
 
         ```bash
         # 默认按名称排序
@@ -756,6 +779,31 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 参数：   
 1. `-a`、`-m`：指定标签的附注(annotated，即说明文字)。
+
+### git describe
+显示离当前提交最近的(历史向后最近，而不是历史向前最近)标签的一些信息。用来描述离你最近的标签。一般是在历史commit里移动后找到自己的方向
+
+使用：
+1. 直接使用`git describe`，等同于`git describe HEAD`:只会列出带有注释的tag
+2. 一般使用`git describe refA`:refA可以是任何能被 Git 识别成提交记录的引用，如果你没有指定的话，Git会使用你目前所检出的位置(HEAD)，它输出的结果可能是这样的：`<tag>_<numCommits>_g<hash>`，tag 表示的是离 ref 最近的标签， numCommits 是表示这个 ref 与 tag 相差有多少个提交记录， hash 表示的是你所给定的 ref 所表示的提交记录哈希值的前几位。
+
+```bash
+git describe --tags
+
+# 情况1 项目没有任何tag，则会显示
+fatal: No names found, cannot describe anything.
+
+# 情况2 当前commit上有tag且带注释，则只会显示tag
+v1.1.1
+# 当前commit上有tag但不带注释，则显示的是这样
+v1.1.1-0-gxxxx
+
+# 情况3 当前commit距离最新的tag已经过了很多个提交了，则会显示
+v1.0.0-18-g7cb5639 # 表示最新的tag是v1.0.0，距离这个tag到现在已经有18个提交，g是git的缩写(在多版本管理工具中会有用)，最新的commit是7cb5639
+```
+
+问题：
+1. 实际使用发现它是跳着来的，不知道为啥
 
 ## 10 多人协作
 1. 查看每位贡献者的commit统计`git shortlog`:会显示commit数量和信息,按作者排序
@@ -805,7 +853,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 
 一般流程是这样:
 1. fork代码,clone，此时本地代码地址是.../myNameA/projectA，orgin是.../myNameA/projectA
-2. 肯定要和原作者的仓库同步，所以需要再设置一个源绑定到原作者的仓库:`git remote add upstream source_rep_url`
+2. 肯定要和原作者的仓库同步，所以需要再设置一个源绑定到原作者的仓库:`git remote add upstream source_rep_url`，比如`git remote add upstream https://github.com/xushike/toy.git`
 3. 和原仓库同步
     1. `git fetch upstream`，也可以`git fetch --dry-run`先检查远端是否有变动
     2. 然后选择想要合并的分支，比如想把develop合并到当前分支，可以`git pull upstream develop`
@@ -833,25 +881,8 @@ git gc 将“重复的”松散的对象变成一个单独的包文件，除非�
 
 bundle 命令会将 git push 命令所传输的所有内容打包成一个二进制文件，你可以将这个文件通过邮件或者闪存传给其他人，然后解包到其他的仓库中。
 
-### git describe
-显示离当前提交最近的标签的一些信息。用来描述离你最近的标签
-
-使用：
-1. 直接使用`git describe`:只会列出带有注释的tag
-2. 一般使用`git describe refA`:refA可以是任何能被 Git 识别成提交记录的引用，如果你没有指定的话，Git会使用你目前所检出的位置(HEAD)，它输出的结果可能是这样的：`<tag>_<numCommits>_g<hash>`，tag 表示的是离 ref 最近的标签， numCommits 是表示这个 ref 与 tag 相差有多少个提交记录， hash 表示的是你所给定的 ref 所表示的提交记录哈希值的前几位。
-
-```bash
-git describe --tags
-
-# 情况1 项目没有任何tag，则会显示
-fatal: No names found, cannot describe anything.
-
-# 情况2 当前commit上有tag，则只会显示tag
-v1.1.1
-
-# 情况3 当前commit距离最新的tag已经过了很多个提交了，则会显示
-v1.0.0-18-g7cb5639 # 表示最新的tag是v1.0.0，距离这个tag到现在已经有18个提交，g是git的缩写(在多版本管理工具中会有用)，最新的commit是7cb5639
-```
+### git bisect 二分法定位问题
+参考：http://www.ruanyifeng.com/blog/2018/12/git-bisect.html
 
 # 四 高级
 ## 1 git submodules
@@ -1127,11 +1158,6 @@ and its host key have changed at the same time.
 
 方法二:也可以设置` git config core.ignorecase false`使其对大小写敏感，但是提交上去会被认为是重写，多人协作可能就差生了冲突。所以在大小写敏感的情况下，可以先备份文件，然后删除文件在重新提交。
 
-### 1.19 使用有些git命令的时候出现 warning: LF will be replaced by CRLF ...
-问题原因: windows中的换行符为 CRLF， 而在linux下的换行符为LF
-
-解决方法:git config --global core.autocrlf false
-
 ### 1.20 换行符
 参考：http://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
 
@@ -1149,6 +1175,15 @@ and its host key have changed at the same time.
 - true:git add是会将CRLF转换成LF，checkout时git会将LF转换为CRLF
 - false不做任何转换，文本保持本来的样子
 - input:git add是会将CRLF转换成LF，checkout时任然是LF
+
+具体应该设置哪个值呢？看场景：
+1. 在windows下新建了文件，提交时出现"CRLF will be replaced by LF in Dockerfile. The file will have its original line endings in your working directory"
+    
+    ```bash
+    git rm -r --cached .
+    git config core.autocrlf false
+    git add .
+    ```
 
 #### warning: LF will be replaced by CRLF in fileA. The file will have its original line endings in your working directory
 因为在修改git的core.autocrlf之前我就已经将fileA clone下来了，所以怎么修改都不对，始终会出这个提示。因为我现在是在windows环境下，所以我把core.autocrlf设置为input，然后删除fileA重新clone，然后就好了。

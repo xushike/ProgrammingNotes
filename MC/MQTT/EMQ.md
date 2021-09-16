@@ -25,16 +25,15 @@ EMQX消息服务器特点：
 
 相关软件：
 1. 客户端
-    1. MQTTX(https://mqttx.app/cn/):MQTT X 的 UI 采用了聊天界面形式，简化了页面操作逻辑，用户可以快速创建连接，允许保存多个客户端，方便用户快速测试 MQTT/MQTTS 连接，及 MQTT 消息的订阅和发布。
+    1. MQTTX(https://mqttx.app):MQTT X 的 UI 采用了聊天界面形式，简化了页面操作逻辑，用户可以快速创建连接，允许保存多个客户端，方便用户快速测试 MQTT/MQTTS 连接，及 MQTT 消息的订阅和发布。
     2. MQTT 在线测试工具（http://tools.emqx.io/）
 2. 服务器
     1. EMQX
 
 ## 4 文档网址等
-emqx官方文档：
-1. https://docs.emqx.io/tutorial/v3/zh/
-2. https://docs.emqx.io/broker/latest/en/
-3. https://docs.emqx.io/broker/latest/cn/
+1. 官网
+    1. https://www.emqx.io/
+    2. https://www.emqx.com/
 
 EMQ简书账号：https://www.jianshu.com/u/9cbcdf094d33
 
@@ -62,33 +61,31 @@ docker中使用:
         1. 延迟发布模块
     3. 端口
 
+## linux
+1. 安装
+2. 如果有防火墙，需要开放端口18083才能访问dashboard
+3. 启动
+    1. 进入dashboard后动作、资源等都为空(todo)
+
 # 三 基础
-## 1 插件和内置模块
-### 插件
-1. WebHook:WebHook 是由 emqx_web_hook 插件提供的 将 EMQ X 中的**钩子**事件通知到某个 Web 服务 的功能。
-1. Delayed Publish：emqx_delayed_publish 提供了延迟发送消息的功能。当客户端使用特殊主题前缀 `$delayed/secondsA/` 发布消息到 EMQ X 时，EMQ X 将在secondsA秒后发布该主题消息。
-    1. 参考：https://docs.emqx.io/broker/latest/cn/advanced/delay-publish.html
-    2. 注意topic匹配的时候，`$delayed/secondsA/xxx`不会被算在内，还是算的后面的`xxx`
-        1. 比如发布`$delayed/3/world`,如果订阅了`world`会匹配到，如果订阅了`$delayed/3/world`或`/world`则不会被匹配到。
-3. 多语言支持插件：emqx_extension_hook
-4. 插件模版：emqx_plugin_template
-5. emqx_auth_http:HTTP 认证使用外部自建 HTTP 应用认证授权数据源，根据 HTTP API 返回的数据判定授权结果，能够实现复杂的 ACL 校验逻辑。
 
-### 内置模块
-参考:https://docs.emqx.io/broker/latest/cn/advanced/internal-modules.md
+## 0 架构
 
-1. emqx_mod_delayed 
-2. 代理订阅emqx_mod_subscription：EMQ X 的代理订阅功能使得客户端在连接建立时，不需要发送额外的 SUBSCRIBE 报文，便能自动建立用户预设的订阅关系。此功能默认关闭，支持在 EMQ X Broker 运行期间动态启停。
+### EMQ X 分布集群设计
+https://docs.emqx.cn/broker/v4.3/getting-started/cluster.html#emq-x-%E5%88%86%E5%B8%83%E9%9B%86%E7%BE%A4%E8%AE%BE%E8%AE%A1
 
-## 2 钩子
-参考：https://docs.emqx.io/broker/latest/cn/advanced/hooks.html
 
-采用职责链设计模式(Chain-of-responsibility_pattern)
+## 1 工具生态
+### EMQ X Broker
+1. `emqx`：服务的基本命令
+    1. 启动broker`emqx start`
+2. `emqx_ctl`：用于对 EMQ X 进行管理、配置、查询
+    1. 直接使用
+        1. 查看broker版本和状态`emqx_ctl status`
+    2. 子命令`mgmt`：应用程序管理
+        1. `emqx_ctl mgmt list`
+    3. 子命令`broker`：查询服务器基本信息，启动时间，统计数据与性能数据
 
-注意：
-1. 尽量不要在钩子内部使用阻塞函数，这会影响系统的吞吐。
-
-## 3 命令行接口
 1. trace
     
     ```bash
@@ -106,6 +103,31 @@ message.acked	MQTT 消息回执
 
 ### session
 消息保存在哪儿
+
+## 2 插件和内置模块
+### 插件
+1. WebHook:WebHook 是由 emqx_web_hook 插件提供的 将 EMQ X 中的**钩子**事件通知到某个 Web 服务 的功能。
+1. Delayed Publish：emqx_delayed_publish 提供了延迟发送消息的功能。当客户端使用特殊主题前缀 `$delayed/secondsA/` 发布消息到 EMQ X 时，EMQ X 将在secondsA秒后发布该主题消息。
+    1. 参考：https://docs.emqx.io/broker/latest/cn/advanced/delay-publish.html
+    2. 注意topic匹配的时候，`$delayed/secondsA/xxx`不会被算在内，还是算的后面的`xxx`
+        1. 比如发布`$delayed/3/world`,如果订阅了`world`会匹配到，如果订阅了`$delayed/3/world`或`/world`则不会被匹配到。
+3. 多语言支持插件：emqx_extension_hook
+4. 插件模版：emqx_plugin_template
+5. emqx_auth_http:HTTP 认证使用外部自建 HTTP 应用认证授权数据源，根据 HTTP API 返回的数据判定授权结果，能够实现复杂的 ACL 校验逻辑。
+
+### 内置模块
+参考:https://docs.emqx.io/broker/latest/cn/advanced/internal-modules.md
+
+1. emqx_mod_delayed 
+2. 代理订阅emqx_mod_subscription：EMQ X 的代理订阅功能使得客户端在连接建立时，不需要发送额外的 SUBSCRIBE 报文，便能自动建立用户预设的订阅关系。此功能默认关闭，支持在 EMQ X Broker 运行期间动态启停。
+
+## 3 钩子
+参考：https://docs.emqx.io/broker/latest/cn/advanced/hooks.html
+
+采用职责链设计模式(Chain-of-responsibility_pattern)
+
+注意：
+1. 尽量不要在钩子内部使用阻塞函数，这会影响系统的吞吐。
 
 
 ## 4 指标监控
