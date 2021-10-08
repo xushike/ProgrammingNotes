@@ -1004,8 +1004,11 @@ GO111MODULE=off go get xxx -v
 参考:
 1. https://golang.org/cmd/gofmt/
 
+参数说明：
+1. `-l`：被重新格式化的会被打印到stdout
+
 ##### go fmt
-它是对`gofmt`的简单封装，直接运行等同于`gofmt -l -w`。指定包名时,`fmt`会格式化包中所有`.go`文件,否则格式化当前目录
+它是对`gofmt`的简单封装，直接运行等同于`gofmt -l -w`，直接使用是格式化当前目录下的`.go`文件.`go fmt ./...`格式化当前目录(及子目录)下所有`.go`文件
 
 参数说明:
 1. `-n`:仅打印出内部要执行的go fmt的命令，但不执行
@@ -5669,6 +5672,21 @@ Slice(slice interface{}, less func(i, j int) bool)
 4. `Repeat(s string, count int) string`:重复s字符串count次，最后返回重复的字符串
 5. `Fields(s string) []string`:去除s字符串的空格符，并且按照空格分割返回slice
 6. 使用`strings.TrimPrefix／strings.TrimSuffix`掐头去尾
+7. `TrimLeft(s, cutset string)`和`TrimRight(s, cutset string)`:只要包含在cutset中，就会被去掉，直到遇到第一个不在cutset中的为止
+
+    ```go
+    words := "https://example/aor"
+	prefix := "https://example/"
+	fmt.Println(strings.TrimLeft(words, prefix)) // or
+
+	words = "https://example/for"
+	prefix = "https://example/"
+	fmt.Println(strings.TrimLeft(words, prefix)) // for
+
+	words = "ttps:e//xample/for"
+	prefix = "https://example/"
+	fmt.Println(strings.TrimLeft(words, prefix)) // for
+    ```
 
 go1.10开始新增了builder类型，用于提高字符串拼接性能，用法类似buffer
 
@@ -6147,7 +6165,7 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     example.com/apple v0.1.2/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
     ```
 go mod命令:
-1. `go mod init <project_name>`
+1. `go mod init <project_name>`:比如`go mod init checkin`
 2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。和`go get`不同的是`go mod download`只会下载，不会编译安装。
 2. `go mod tidy`：整理依赖，整理项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
     1. 只是整理，并不会更新依赖版本

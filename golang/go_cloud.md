@@ -165,6 +165,11 @@ Gin的词源是金酒, 又称琴酒, 是来自荷兰的一种烈性酒
 https://github.com/gohugoio/hugo
 
 ### echo
+参考
+1. 官方
+    1. https://github.com/labstack/echo
+    2. https://echo.labstack.com/
+
 主要面向API
 
 ### micro/go-micro
@@ -754,8 +759,10 @@ https://github.com/golang/mock
     3. `Times(number)`预计调用次数
     4. `Do()`类似于钩子的作用
 2. gomock代码生成工具
-    1. 安装`go install github.com/golang/mock/mockgen@v1.6.0`
-    1. 生成mock代码
+    1. 安装配置
+        1. 安装`go install github.com/golang/mock/mockgen@v1.6.0`(注意不要使用`go install github.com/golang/mock/mockgen`来安装，安装完版本是`v1.4.4`)
+        2. 查看版本`mockgen -version`
+    1. 生成mock代码:生成的代码格式和命令以及mockgen的版本有关，注意保持mockgen的版本一致
         1. 直接命令行使用，比如`mockgen --source .../xxx.go --destination .../xxx.go`
         2. (推荐)mockgen还提供了一种通过注释及`go generate`生成mock文件的方式，比如在接口文件的注释里面增加：`//go:generatemockgen --source .../xxx.go --destination .../xxx.go`，然后执行`go generate`命令就可以自动生成mock文件了。
     2. 常用参数
@@ -1011,6 +1018,11 @@ https://github.com/go-resty/resty
 使用
 1. SetDebug
 2. R()
+3. 自动Unmarshal`SetResult()`:resty可以自动将响应数据 Unmarshal 到对应的结构体对象中
+    
+    ```go
+    resty Request.Result
+    ```
 
 ## rpc
 ### protoc
@@ -1129,6 +1141,8 @@ https://github.com/json-iterator/go
 https://github.com/Jeffail/gabs
 
 用于处理冬天或未知json结构
+
+### gjson
 
 ## kafka
 ### Shopify/sarama

@@ -397,7 +397,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 使用：
 1. 拉取远程主机的**所有更新**到本地
-    1. 拉取绑定的远程主机的所有更新`git fetch`，一般等于`git fetch origin`
+    1. 拉取绑定的远程主机的所有更新`git fetch`，默认是`git fetch origin`，拉其他上游的时候需要指定上游。
     2. 拉取指定上游`git fetch <远程主机名>`，比如`git fetch upstream`
     3. `git fetch`可以同步到新的分支到本地，但是远端有删除分支，直接`git fetch`是不能将远程已经不存在的branch等在本地删除的，此时可以`git fetch --prune`实现在本地删除远程已经不存在的分支，简写`git fetch -p`
 2. 拉取远程主机的指定分支的更新到本地分支`git fetch <远程主机名> <远程分支名> : <本地分支名>`，比如`git fetch origin master : dev`
@@ -1009,6 +1009,10 @@ hotfix分支：用于修复线上代码的bug。基于master分支建立，完�
 
 注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
 
+问题：
+1. mac打开gitk一片空白，报错如下：Error in startup script: window "." was deleted before its visibility changed while executing "tkwait visibility ." (file "/usr/local/bin/gitk" line 12629)
+    1. 更新gitk版本`git upgrade git-gui`：实测从2.27.0 -> 2.33.0就好了
+
 ### 4.1 git gui
 主要用于制作提交
 
@@ -1227,6 +1231,9 @@ unset ALL_PROXY
 
 ### 1.28 fatal: 不支持 'https' 协议
 在我`git remote add upstream xxx`之后出现的，应该是xxx的地址写错了，`git remote rm upstream`然后重新`git remote add upstream xxx`就好了
+
+### 1.29 ... SSL_ERROR_SYSCALL ...
+多试几次
 
 ## 2 未解决
 ### 2.N 其他

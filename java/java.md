@@ -103,9 +103,9 @@ OpenJDK源代码不完整：这个很容易想到，在采用GPL协议的OpenJDK
 1. 下载jdk并安装.路径中不能有中文，最好不要有空格
 
 2. 配置JAVA_HOME、PATH和CLASSPATH（ClASSPATH在1.5之后可以不用配置）
-- JAVA_HOME一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
-- PATH的目的是将`%JAVA_HOME%/bin`目录添加到执行路径中，
-- CLASSPATH的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置CLASSPATH环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
+    - JAVA_HOME一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
+    - PATH的目的是将`%JAVA_HOME%/bin`目录添加到执行路径中，
+    - CLASSPATH的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置CLASSPATH环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
 
 3. 安装库源文件和文档:库源文件在是jdk目录中src.zip;文档去官网下载，一般是jdk-version-docs-all.zip
 
@@ -447,7 +447,7 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 
 
 ### jar（Java Archive File）
-意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了META-INF/MANIFEST.MF的清单文件，该文件在生成jar文件时自动创建。
+意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了`META-INF/MANIFEST.MF`的清单文件，该文件在生成jar文件时自动创建。
 
 ### jusched
 jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
@@ -467,6 +467,10 @@ jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此�
     
     ```java
     javac -d math Temp.java // 放置在当前目录下的math文件夹内
+    ```
+2. `-cp`：zip/jar 文件的类搜索路径
+    
+    ```java
     ```
 
 ### java

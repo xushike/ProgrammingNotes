@@ -82,6 +82,13 @@ Pythonic 就是很 Python 的 Python 代码，一般用来形容python特有的�
 python3的字符串默认使用Unicode编码。
 
 ## 4 流程控制
+### 4.1 if else
+使用：
+1. python的if可以后置
+
+    ```py
+    return a if a>b else b
+    ```
 
 ## 5 函数
 参考：
@@ -159,6 +166,16 @@ python3的字符串默认使用Unicode编码。
 # 六 问题
 1. pip是啥
 2. interpreter是啥,IDLE是啥
+
+## 1 已解决
+### 1.1 更新pip和pip3
+mac正确更新pip3的方法`sudo python3 -m pip install --upgrade pip`
+
+#### 提示 SSL: TLSV1_ALERT_PROTOCOL_VERSION
+出现这个错误的原因是python.org已经不支持TLSv1.0和TLSv1.1了。更新pip可以解决这个问题。但是如果使用传统的`python -m pip install --upgrade pip`的方式，还是会出现那个问题。这是一个鸡和蛋的问题，你因为TLS证书的问题需要去升级pip，升pip的时候又因为TLS证书的原因不能下载最新版本的pip。最后只能手动的去升级pip：`curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python`
+1. 如果是在mac，可能提示使用`/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python -m pip install --upgrade pip`这个命令来切换到最新的pip
+
+todo
 
 # 七 待整理
 ## 1 已整理
