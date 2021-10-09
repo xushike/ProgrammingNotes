@@ -8,5 +8,12 @@ Nginx ("engine x") 是一个轻量级、高性能的HTTP和反向代理服务器
 ### 3.1 nginx怎么读
 参考：https://www.nginx.com/resources/wiki/community/faq/
 
+# 三 基础
+## 0 架构
+什么是反向代理(todo)：
+通过反向代理可以提供更干净的URL来访问，而不用记住特定的端口。
+
+## 1 工具生态
+
 # 六 问题
 1. OpenResty

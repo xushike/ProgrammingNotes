@@ -139,9 +139,12 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 2. 在windows下执行相关命令报错：failed to run protoc: exit status 1: 'protoc-gen-go-grpc' .... --go-grpc_out: protoc-gen-go-grpc: Plugin failed with status code 1.
     1. 可能是protoc-gen-go-grpc没有安装，执行`go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1`安装一下
 
-#### 问题
+问题
 1. panic: view "default" on field "nextNode" cannot be computed: view "default" on field "branches" cannot be computed: unknown view "default"
 2. invalid CollectionOf argument: not a result type and not a known result type identifier (top level)
+3. 文档中输入参数名称后面显示的是`any`
+    1. `type(name, ...)`中name是`application/vnd.tsl.template`，应该把前缀``application/vnd.`去掉
+4. collectionof 和arrayof
 
 ### gin
 https://github.com/gin-gonic/gin
@@ -381,6 +384,7 @@ https://github.com/go-gorm/gorm
     1. 存储关系数据时，比Sqlx要少写许多代码
 2. 缺点
     1. 文档稍微差了一点(细节不够)
+    2. bug略多
 
 使用：
 1. 连接不同数据库的DSN格式和常用参数(todo)
@@ -470,7 +474,9 @@ https://github.com/go-gorm/gorm
     
 问题：
 1. `Record Not Found`错误会打印出来
-2. 什么时候会出现`ErrRecordNotFound`这个错
+2. 什么时候会出现`ErrRecordNotFound`这个错?当结果是struct类型，而没有查询到数据的时候就会抛出这个错误；当结果是slice类型，则不会抛出这个错误
+3. all expectations were already fulfilled, call to Query ... was not expected
+    1. 正常情况下是写漏了expect才会出现，但我当时是因为忘了mock方法出现的
 
 ### SQLX
 https://github.com/jmoiron/sqlx
@@ -575,7 +581,25 @@ github.com/go-redis/redis
 
 ## JWT
 1. https://github.com/dgrijalva/jwt-go
-2. https://pkg.go.dev/github.com/dgrijalva/jwt-go
+
+```go
+// parse without validation and secret
+var (
+tokenString = ""
+)
+
+token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+if err != nil {
+    fmt.Println(err)
+    return
+}
+
+if claims, ok := token.Claims.(jwt.MapClaims); ok {
+    fmt.Println(claims)
+} else {
+    fmt.Println(err)
+}
+```
 
 问题：
 1. key is of invalid type
@@ -1360,6 +1384,11 @@ https://github.com/schollz/croc
     ```
 2. 自己架设relay server：`croc relay`，默认会启动多个端口，也可以指定单一端口`croc relay --ports 8001`
 2. 使用自己搭建的relay server`croc --relay 127.0.0.1:8001 send ~/Downloads/file.txt`
+
+## 规则引擎
+
+### gengine
+https://github.com/bilibili/gengine
 
 # 五 经验
 ## 1 为什么需要框架

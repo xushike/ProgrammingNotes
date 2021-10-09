@@ -359,6 +359,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
     - `-- <file_path>`或`<file_path>`：按文件过滤
     - 按修改的文本内容过滤
         - `git log -G <pattern>`：支持正则查找。如`git log -G '配件编码'`，会搜索所有改动文本包含"配件编码"的commit。如`git log -G "fmt.Println"`
+    - 按提交时间过滤`git log --since='2020-08-25' --until='2020-09-21'`
 
 ### 2.5 git diff 查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名或commit_id,不跟的话就默认列出当前工作区的所有更改.
@@ -997,6 +998,8 @@ hotfix分支：用于修复线上代码的bug。基于master分支建立，完�
 参数：
 - `--simplify-by-decoration`
 - `--all`
+- 搜索
+    - 按提交时间过滤`gitk --since='2020-08-25' --until='2020-09-21'`
 
 图形界面说明：
 1. `Parent`：父commit，如果在commit1的基础上做了修改（也可以不做修改）然后提交生成了commit2，那么commit1就是commit2的parent，commit1的hash值会被记录在commit2里面，但commit1里面不会记录commit2的hash值。如果commit是多个分支合并的（称为octopus merge），则有多个父commit。

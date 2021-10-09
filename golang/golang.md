@@ -5259,6 +5259,9 @@ provides HTTP client and server implementations.
     3. 复杂的请求:`http.Do()`
 
 
+问题：
+1. named cookie not present
+
 #### net/url
 1. 将字符串转成url类型:`Parse()`
 2. 获取:`Scheme`、`User`（包含所有认证信息）、`User.Username()`、`User.Password()`、`Host`（包括主机名和端口信息）、`Path`（Host后面的）、`Fragment`、`RawQuery`（将查询参数解析成map）
@@ -5726,7 +5729,38 @@ wg.Wait()
 fmt.Println("所有 goroutine 执行结束")
 ```
 
-`Cond`唤醒锁
+`Cond`唤醒锁：等待或宣布事件发生的 goroutines 的会合点
+1. `func NewCond(l Locker) *Cond`
+2. `func (c *Cond) Broadcast()`:广播通知
+3. `func (c *Cond) Signal()`:单发通知
+4. `func (c *Cond) Wait()`:等待通知
+
+```go
+// Cond简单示例
+var locker sync.Mutex
+var cond = sync.NewCond(&locker)
+func main() {
+    for i := 0; i < 10; i++ {
+        go func(x int) {
+            cond.L.Lock()         // 获取锁
+            defer cond.L.Unlock() // 释放锁
+            cond.Wait()           // 等待通知，阻塞当前 goroutine
+            // 通知到来的时候, cond.Wait()就会结束阻塞, do something. 这里仅打印
+            fmt.Println(x)
+        }(i)
+    }
+    time.Sleep(time.Second * 1) // 睡眠 1 秒，等待所有 goroutine 进入 Wait 阻塞状态
+    fmt.Println("Signal...")
+    cond.Signal()               // 1 秒后下发一个通知给已经获取锁的 goroutine
+    time.Sleep(time.Second * 1)
+    fmt.Println("Signal...")
+    cond.Signal()               // 1 秒后下发下一个通知给已经获取锁的 goroutine
+    time.Sleep(time.Second * 1)
+    cond.Broadcast()            // 1 秒后下发广播给所有等待的goroutine
+    fmt.Println("Broadcast...")
+    time.Sleep(time.Second * 1) // 睡眠 1 秒，等待所有 goroutine 执行完毕
+}
+```
 
 `Once`：可以使得函数多次调用只执行一次，只有一个`Do(func())`方法
 
@@ -5739,7 +5773,7 @@ fmt.Println("所有 goroutine 执行结束")
 ```
 
 #### sync/atomic
-提供了一个Value类型用于原子操作
+提供了一个Value类型用于更底层的(相对于go的sync包和channel)原子操作
 1. `Value`:可以操作任意类型
     1. 使用
         1. `Value.Store()`：原子存储任意值。可以存储任意类型的值，但是对于某个Value v1，如果开始存储了类型typeA，后续也只能存储typeA，否则会panic
