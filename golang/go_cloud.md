@@ -1015,14 +1015,33 @@ select {}
 ### Resty
 https://github.com/go-resty/resty
 
-使用
+使用:
 1. SetDebug
-2. R()
-3. 自动Unmarshal`SetResult()`:resty可以自动将响应数据 Unmarshal 到对应的结构体对象中
-    
-    ```go
-    resty Request.Result
-    ```
+1. 客户端
+    1. 设置代理
+
+        ```go
+        client := resty.New()
+        client.SetProxy("http://proxyserver:8888")
+        client.RemoveProxy()
+        ```
+
+2. 生成新的实例`R()`
+1. 请求设置
+    1. 请求头
+        1. 请求头的`User-Agent`默认是"go-resty/2.3.0 (https://github.com/go-resty/resty)"
+        2. `Authorization`：使用`SetAuthToken()`
+    2. 请求体
+        1. SetBody 参数类型为结构体或 map[string]interface{} 时， Resty 自动附加HTTP头 Content-Type: application/json ，当参数为string或[]byte类型时由于很难推断内容的类型，所以需要手动设置 Content-Type 请求头
+    2. 请求结果
+        1. 自动Unmarshal`SetResult()`:resty可以自动将响应数据 Unmarshal 到对应的结构体对象中
+
+            ```go
+            resty Request.Result
+            ```
+        2. `SetErro()`设置响应状态码非正常时返回的存储结构。if response status code is greater than 399 and content type either JSON or XML.
+5. 钩子操作
+    1. OnBeforeRequest 和 OnAfterResponse 回调方法，可以在请求之前和响应之后加入自定义逻辑
 
 ## rpc
 ### protoc

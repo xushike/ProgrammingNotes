@@ -81,6 +81,11 @@ rust默认全是浅拷贝，想深拷贝使用`clone()`
 2. deno
 
 # 二 安装配置
+## windows
+1. 安装
+    1. 使用安装文件安装
+2. 可能需要自己去系统环境变量`PATH`里加上安装后的bin目录，比如`C:\Users\user_name\.cargo\bin`
+
 ## mac
 1. 安装：有三种方式
     1. `brew install rust`：这种安装后没有`rustup`，所以不推荐

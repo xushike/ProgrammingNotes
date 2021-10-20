@@ -63,7 +63,7 @@ Pythonic 就是很 Python 的 Python 代码，一般用来形容python特有的�
 1. python命令行交互：命令行模式下输入`python`回车，就进入到Python交互模式，它的提示符是`>>>`
 2. `python example.py`运行指定的`.py`文件
 
-### pip
+### pip and pip3
 使用：
 1. 查看已安装package的信息`pip show package_name`
     1. `location`本地安装位置
@@ -161,7 +161,15 @@ python3的字符串默认使用Unicode编码。
     The area of a circle with radius 2.5 is 19.62
     ```
 
+### requests
+`requests.get()`等方法是短连接，而`requests.Session().get()`是长连接
 
+```py
+import requests
+
+r = requests.get('https://github.com/Ranxf')       # 最基本的不带参数的get请求
+r1 = requests.get(url='http://dict.baidu.com/s', params={'wd': 'python'})      # 带参数的get请求
+```
 
 # 六 问题
 1. pip是啥

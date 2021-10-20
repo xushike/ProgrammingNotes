@@ -439,7 +439,6 @@ package github.com/cweill/gotests/...: exit status 1
     3. s := []int{1,2,3}到底是切片还是数组
 2. JSON风格指南:https://github.com/darcyliu/google-styleguide/blob/master/JSONStyleGuide.md
     1. 设计更为规范的JSON（这个会森森影响到Mongo的存储，查询效率，React的性能）
-2. 网络安全
 1. 数据库
     1. 索引的方式
         1. btree

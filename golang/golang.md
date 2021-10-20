@@ -72,12 +72,28 @@ Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始
 
 Go语言的每次版本更新，都会在标准库环节增加强大的功能、提升性能或是提高使用上的便利性。每次版本更新，标准库也是改动最大的部分。
 
-### 2.1 吉祥物
-以囊地鼠（Gopher）作为它的吉祥物,Rob Pike的妻子 Renee French绘制的。
+### 2.17 go1.17
+https://tip.golang.org/doc/go1.17
 
-参考：
-1. https://blog.golang.org/gopher 
-2. https://golang.org/doc/gopher/modelsheet.jpg
+部分变化：
+1. 语言类型转换规则的扩展：允许从切片到数组指针的转换
+2. unsafe包增加了两个函数：Add与Slice
+3. go module的变化
+    1. pruned module graph（修剪的module依赖图）：Go 1.17之前的版本某个module的依赖图由该module的直接依赖以及所有间接依赖组成，无论某个间接依赖是否真正为原module的构建做出贡献，这样go命令在解决依赖时会读取每个依赖的go.mod，包括那些没有被真正使用到的module，这样形成的module依赖图被称为完整module依赖图（complete module graph)。go1.17开始不再使用complete module graph,而是使用pruned module graph,副作用是go.mod size变大了。go mod tidy对main module的依赖做一次深度扫描(deepening scan)，并将main module的所有直接和间接依赖都记录在go.mod中（之前版本只记录直接依赖）。考虑到内容较多，go 1.17将直接依赖和间接依赖分别放在两个不同的require块儿中。
+4. 编译器
+    1. 引入了`//go:build`形式的构建约束指示符，以替代原先易错的`// +build`
+5. go test
+    1. 引入-shuffle的洗牌标志位，用以控制单元测试或benchmark的执行顺序。
+    2. T和B两个类型分别都增加了Setenv方法用于在test和benchmark执行期间设置环境变量。
+6. time包增加Time对象的GoString形式输出
+
+    ```go
+    fmt.Printf("%#v:",time.Now())
+    // go1.17之前
+    time.Time{wall:0xc03f08c0d06c9ed0, ext:83078, loc:(*time.Location)(0x11620e0)}
+    // go1.17 
+    time.Date(2021, time.October, 14, 16, 34, 32, 333240500, time.Local):
+    ```
 
 ## 3 常识
 
@@ -335,6 +351,17 @@ Golang不保证任何单独的操作是原子性的，除非：
 
 ### 3.29 go有依赖注入吗
 依赖注入跟语言可以说是没关系。
+
+### 3.30 吉祥物
+以囊地鼠（Gopher）作为它的吉祥物,Rob Pike的妻子 Renee French绘制的。
+
+参考：
+1. https://blog.golang.org/gopher 
+2. https://golang.org/doc/gopher/modelsheet.jpg
+
+
+### 3.31 零值初始化的问题
+比如`http.DefaultClient`使用的是零值初始化，会导致它的Timeout是0.也就是不会超时。所以最好不要直接使用`http.DefaultClient`,而应该自定义
 
 ## 4 文档网址视频等
 网址:
@@ -3788,7 +3815,26 @@ for _, v := range res.Data {
         text := `aabbbbgbddesddfiid${name}, ${  age }你好啊
         「」${中国人}} ${} ${titles.1}`
         reg := regexp.MustCompile(`\$\{([^}]+)\}`)
-        bar = reg.ReplaceAllString(text, "$1")
+        
+        // 例子1 ReplaceAllString
+        fmt.Println(reg.ReplaceAllString(text, "$0")) 
+        // aabbbbgbddesddfiid${name}, ${  age }你好啊
+        //「」${中国人}} ${} ${titles.1}
+
+        fmt.Println(reg.ReplaceAllString(text, "$1")) 
+        // aabbbbgbddesddfiidname,   age 你好啊
+        //「」中国人} ${} titles.1
+
+        fmt.Println(reg.ReplaceAllString(text, "$2")) 
+        // aabbbbgbddesddfiid, 你好啊
+        // 「」} ${}
+
+        fmt.Println(reg.ReplaceAllString(text, "tom")) 
+        // aabbbbgbddesddfiidtom, tom你好啊
+        // 「」tom} ${} tom
+
+        // 例子2 FindAllString
+        // 例子3 
         ```
     2. `(?:xxx)`是非捕获分组，不会保存起来。
 6. 环视：写法和分组有点像，但是用法不一样。环视匹配的是特定位置，不匹配任何字符，也就是并不会“占用”字符。这一点与单词分界符`\b`，锚点`^`和`$`相似，所以环视更加通用。不过google的re2不支持环视，所以golang没有，想了解的话可以参考js正则里的前瞻后顾。
@@ -3946,6 +3992,10 @@ regexp.MatchString("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$", ip)
 
 // 判断是不是合法的数字
 regexp.MatchString("^[0-9]+$", os.Args[1])
+
+// 查找字符串中的数字
+re := regexp.MustCompile("[0-9]+")
+nums := re.FindAllString("abc123def987asdf", -1)
 
 // 查找连续的非单词字母、非空白字符
 text := `Hello 世界！123 Go.`
@@ -4845,6 +4895,20 @@ func main() {
 	}
 	fmt.Println(string(bodyBytes))
     ```
+2. 保持长连接:一定要close body
+
+    ```go
+    res, _ := client.Do(req)
+    defer res.Body.Close() // 一定要close body
+    ```
+3. 短连接:有两种方式
+    1. 请求的头里加上`connection:close`
+    2. 设置request结构体Close成员变量为true
+
+        ```go
+        req, _ := http.NewRequest("Get", "http://example.com", nil)
+        req.Close = true
+        ```
 
 ### httputil
 1. `DumpRequestOut()`
@@ -4917,11 +4981,10 @@ fmt.Println(string(fd))
 // 写文件的例子
 func writeFile(path string, b []byte) {
     file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
-    defer file.Close()
-
     if err != nil {
         panic(err)
     }
+    defer file.Close()
 
     file.Write(b)
 }
@@ -5167,6 +5230,7 @@ provides HTTP client and server implementations.
         Transport: nil,
         CheckRedirect: nil, // 
 		Jar:           nil,
+        CheckRedirect:func(req *Request, via []*Request) error, // 处理重定向，默认不做任何处理
     }
     ```
 3. `http.Transport`:For control over proxies, TLS configuration, keep-alives, compression, and other settings
