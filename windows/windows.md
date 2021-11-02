@@ -149,6 +149,7 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 6. 更新
     1. 更新scoop自身到最新版`scoop update`,依赖git
     2. 更新某app`scoop update xxx`
+    3. 更新所有app`scoop update *`
 8. 查看状态和更新`scoop status`
 
 软件推荐：
@@ -158,6 +159,7 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文
     3. `googlechrome`:安装后启动命令是`chrome`
     4. `ventoy`
+    5. `Fluent Terminal`:好用的终端
 
 ### Chocolatey
 参考：

@@ -99,7 +99,10 @@ powershell:
 windows terminal:
 1. 安装：从应用商店安装
 
-# 三 基础(命令)
+# 三 基础
+## 0 架构
+powershell的Verb-Noun
+
 查看某个命令的用法
 1. `help cmd_name`
 2. `cmd_name /?`

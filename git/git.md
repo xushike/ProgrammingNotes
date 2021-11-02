@@ -77,7 +77,6 @@ git允许我们用ssh url或者https url来管理代码,两种不同的协议.�
 2. 重新生成秘钥：`ssh-keygen -t rsa -C 'foo@example.com'`，一般情况下一路回车就行
 3. 打开gitlab,找到Profile Settings-->SSH Keys--->Add SSH Key,并把`id_rsa.pub`中的内容粘贴到Key所对应的文本框，在Title对应的文本框中给这个sshkey设置一个名字，点击Add key，搞定
 
-### 3.12 detached
 ### 3.13 分支状态：active（活动）、stale（过时的）、traced
 Active branches（活动分支）：表示过去三个月内任何人提交的所有分支，按最近的提交最先显示的顺序排序分支。
 
@@ -268,6 +267,14 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 
 # 三 基础
 ## 0 架构和名称
+
+### 1 detached HEAD状态
+什么是`detached HEAD`:也称为游离状态/游离指针状态，detached HEAD 状态是指 HEAD 指针不指在任何分支的索引.进入 detached HEAD 状态后 git 会创建一个临时分支，会看到提示信息"You are in 'detached HEAD' state...",一般是用于草稿。
+
+草稿想转正怎么操作：git add、git commit 然后 git checkout -b 新的分支，不然临时分支会被 git 删除。
+
+草稿不想要了怎么操作(退出该状态最优雅的处理方法):切换回原来的分支`git checkout -`
+
 ## 1 工具生态
 ### git bash
 
@@ -284,13 +291,13 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
     export LESSCHARSET=utf-8
     ```
 
-## 1 开始
-### 1.1 git init 初始化仓库
+## 2 仓库操作
+### 2.1 git init 初始化仓库
 官网说的初始化命令默认会创建master分支,但实践发现,在第一次commit之前很多命令都报错(比如`git branch`,`git checkout`,远程仓库的命令等),所以最佳实践是第一次commit之后再去操作分支和远程仓库。
 
 注意:如果在Windows系统，请确保目录名（包括父目录）不包含中文
 
-### 1.2 git clone 克隆仓库
+### 2.2 git clone 克隆仓库
 克隆仓库的所有内容,克隆后当前在默认分支(一般是master分支).
 
 `git clone <远程仓库地址> [本地仓库名称]`:克隆,并将库放到`[本地仓库名称]`文件夹中.如`git clone https://github.com/xushike/study.git studyNote`
@@ -306,7 +313,7 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
     ```
 3. `-b`:克隆指定的分支,比如`git clone -b 分支名  仓库地址`。克隆某分支到本地目录，然后在该目录下push时，对应的就是push到远端的对应分支。
 
-### 1.3 git remote:远程仓库相关
+### 2.3 git remote:远程仓库相关
 查看远程仓库:
 - `git remote -v`:查看所有关联的远程仓库的名称和地址(拉取和推送)。在对远程仓库有修改后可以用该命令判断是否修改正确。
 - `git remote show`:查看有那些远程仓库，一般单远程库的显示可能是`origin`，多远程库可能`origin upstream ...`等。
@@ -331,10 +338,96 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 
 取消(删除)远程仓库的关联:`git remote rm <远程仓库名>`,注意每次取消再重新关联远程仓库之后,都需要重新推送并关联分支.
 
-## 2 查看
-### 2.1 git status:检查更新和工作区状态
+## 3 分支管理
+Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
 
-### 2.2 git log:查看提交日志
+### 3.1 创建和查看分支git branch
+查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号.注意才clone完之后只会显示默认分支,实际上其他分支还是存在的.
+
+参数说明:
+- 不带任何参数：列出所有本地分支
+- `-l <pattern>`、`--list <pattern>`:不带`<pattern>`的话是列出所有本地分支。
+    
+    ```git
+    git branch --list "*zhangsan*" 或者 git branch --list *zhangsan*
+    ```
+    
+- `-r`、`--remote`:列出所有远程分支（包括已被删除但缓存还在的）
+- `-a`、`--all`:列出所有远程分支（包括已被删除但缓存还在的）和所有本地分支
+- `-v`:查看所有分支最后一次commit信息;`-vv`:同时还能查看对应的远程分支
+- `-m old_name new_name`：重命名分支
+
+查看远程所有现在还存在的分支：`git ls-remote`
+
+新建分支:
+1. `git branch <分支名>`:通过复制当前分支的所有commit和暂存区来生成一个新分支,不会复制工作区的文件
+2. 创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
+3. 从指定的commit创建分支:`git checkout -b <分支名> <commit_id>`
+
+更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
+
+### 3.2 切换分支/签出分支/进入游离状态（git checkout和git switch）
+对本地而言，可以直接切换到本地以及所有的远程(orgin、upstream等)的分支，如果切换远程时提示没有对应的分支，需要先同步一下远程信息，比如`git fetch upstreamA`，单远程库的情况下这样使用没问题，如果是多远程库，可能会提示`git checkout --track origin/<name>`，意思是git并不清楚你要检出哪个远程库的分支，所以要用提示的命令，比如`git checkout --track origin/develop`
+
+使用：
+1. 切换分支`git checkout branch_name`：工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。所以对于新增的文件,如果目标分支没有该文件,切换成功;有该文件,切换失败.
+2. 进入游离状态`git checkout commit_id`:因为分支其实是指向某个commitid的指针，所以checkout也可以切换到一个commmitid，它会根据这个commit生成一个暂时的branch(此时处于游离状态，还不是真正的branch)，具体参考架构部分的detached HEAD状态笔记
+
+`git switch`:因为git checkout有点复杂了，所以git又新增了一个命令`git switch`用于切换分支。除了不能切换到commitid，其他和`git branch`用法一样。
+
+### 3.3 删除分支
+不能删除当前分支,所以要删除的时候需要先切换到其他分支.
+
+删除本地分支:
+1. `git branch -d <分支名>`，删除的时候可以先切换到其他分支，如果被删的分支没有合并到master会有警告，如“xxx is not fully merged”，没有推送到关联的远程分支则会有警告，这两种情况想继续删除可以先处理了该分支或者使用强制删除`git branch -D <分支名>`。
+
+删除远程分支:
+1. `git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
+
+删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。也不会删除未追踪的本地分支。
+1. 参数`--dry-run`:打印执行信息,但并不真正执行 
+
+### 3.4 合并分支
+合并时正确做法是不要修改vi中默认的`Merge branch 'other_branch_name'`，只解决合并相关的冲突，等合并完之后再做其他修改。这样方便后续跟踪分析。
+
+合并目标分支到当前分支:`git merge <目标分支名>`,默认是快进模式(Fast-forward)
+
+如果想全部采用某一方的更改，可以用`git checkout --ours .`或`git checkout --theirs .`
+
+撤销上次的分支合并：`git merge --abort`
+
+合并远程的其他分支到当前分支：
+
+#### cherry-pick
+非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
+
+用法：
+1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`、`git cherry-pick aaa..bbb A E`等
+2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，则是合并`(A, B]`（左开右闭）的内容，如果想合并闭区间的内容，可以使用`cherry-pick A^..B`，即是合并`[A, B]`的内容。该命令可以和上面的命令混用。
+3. 合并另外一个分支的最后一次提交到当前分支：`git cherry-pick branchName`
+4. 合并另外一个分支的所有不同提交到当前分支：`git cherry-pick ..branchName`或者`git cherry-pick ^HEAD branchname`
+
+参数：
+1. `--continue`：参考解决冲突的步骤
+1. `--abort`:取消这次cherry-pick,这种情况下当前分支恢复到cherry-pick前的状态，没有改变.
+1. `--quit`:中断这次cherry-pick,这种情况下当前分支中未冲突的内容状态将为modified
+1. `-n`（`--no-commit`）:不自动提交
+2. `-e`(`--edit`):编辑提交信息
+
+解决冲突的步骤：pick多个时如果有冲突，需要用显示冲突的文件，解决冲突之后(解决冲突后执行了`git commit`或`git add`)如果还有冲突，似乎需要再执行这个命令来解决下一个冲突。
+
+经验：
+1. 重复pick：pick过的commit_id,再次pick时，不会像Fast-forward那样做智能判断，依然是按顺序来判断是否有冲突。比如A和B对同一个文件有修改，B时间在后面，先执行一次`git cherry-pick A B`，然后在执行`git cherry-pick A`，那么需要再解决一次冲突。如果重复pick没有冲突的话，会提示空提交，可以使用`git reset`来跳过这个pick或者`git commit --allow-empty`强行提交这个空pick。
+2. 非纯净pick：假如当前分支在branchA，合并branchB时如果有冲突并解决了冲突然后提交生成了commitA，那么branchC在pick commitA的时候，实际上会引入branchB里面冲突的那部分代码。
+
+
+#### 只合并部分文件
+参考`git checkout branch_name file_name`部分
+
+## 4 查看
+### 4.1 git status:检查更新和工作区状态
+
+### 4.2 git log:查看提交日志
 直接使用是查看当前分支的本地提交日志，默认reverse chronological order排列。
 
 查看远程分支的提交日志：`git log [origin]/[master]`，本地很久没有更新过远程仓库的信息了，看到的日志可能就不是最新的，所以在查看之前需要先运行`git fetch `或者`git fetch origin`(待补充)
@@ -361,7 +454,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
         - `git log -G <pattern>`：支持正则查找。如`git log -G '配件编码'`，会搜索所有改动文本包含"配件编码"的commit。如`git log -G "fmt.Println"`
     - 按提交时间过滤`git log --since='2020-08-25' --until='2020-09-21'`
 
-### 2.5 git diff 查看变更(主要用于查看冲突)
+### 4.5 git diff 查看变更(主要用于查看冲突)
 `git diff`顾名思义就是查看difference，显示的格式正是Unix通用的diff格式.后面可跟某个文件名或commit_id,不跟的话就默认列出当前工作区的所有更改.
 
 `git diff HEAD`:对比workspace与最后一次commit。以此类推，`git diff HEAD~1`是比较最后一次commit_id和倒数第二次commit_id。
@@ -371,28 +464,28 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 参数:
 1. `-p`:Generate patch (see section on generating patches). 默认参数.
 
-### 2.6 git blame（查看文件的每个部分是谁修改的）
+### 4.6 git blame（查看文件的每个部分是谁修改的）
 `git blame <filename>`
 
-### 2.6 git show 查看提交的内容
+### 4.6 git show 查看提交的内容
 直接使用是查看当前分支最新commit的内容
 
 查看某个commit的内容（与分支无关）:`git show <commit id>`
 
 查看某个commit中某个文件的变化（与分支无关）:`git show <commit id> <文件名>`
 
-### 2.7 查看命令帮助信息
+### 4.7 查看命令帮助信息
 查看所有命令：`git --help`
 
 查看某个具体命令的帮助：`git command_name -h`,比如`git fetch --help`
 
-### 2.8 git reflog:查看关键命令(commit,pull,checkout)的记录
+### 4.8 git reflog:查看关键命令(commit,pull,checkout)的记录
 出现错误的时候很有用。
 
-## 3 拉取
+## 5 同步和推送
 一图胜千言：![git 概念图](../picture/git/git-fetch-and-pull.jpg)
 
-### 3.1 git fetch：拉取远端到本地仓库
+### 5.1 git fetch：拉取远端到本地仓库
 首先需要明白：**git在本地会保存两个版本的仓库，分为本地仓库和远程仓库**，这里的远程仓库是保存在本地的远程仓库，不是远程的远程仓库。`git fetch`只是更新本地的远程仓库的代码为最新的，而本地的本地仓库的代码还未被更新，使用对应的`git merge`后本地的本地仓库才和远程仓库一样是最新的。
 
 使用：
@@ -411,7 +504,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 ```
 
 对比`git pull`：可以自己选择合并或者不合并，所以更加可控。
-### 3.1 git pull = git fetch + git merge
+### 5.2 git pull = git fetch + git merge
 默认是快速合并(fast-forward)，有冲突的话需要手动解决。
 
 默认是拉取远程主机所有更新,但只merge当前分支跟踪的远程到当前分支：`git pull`。如果当前分支没有跟踪的远程分支，该命令不会生效，会出现警告。
@@ -421,7 +514,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 2. 对于上面的命令，如果远程分支是与当前分支合并，则冒号后面的部分可以省略，可以简写为`git pull <远程仓库名> <远程分支名>`
 3. 对于上面的命令，如果远程分支是与当前分支合并，且远程分支就是当前分支对应的远程分支，则可以进一步省略，简写为`git pull`
 
-## 4 git add:暂存(stage)
+### 5.3 git add暂存 
 工作目录的文件只有两种状态:已跟踪(tracked)和未跟踪(untracked),加入过暂存的都是已跟踪文件,初次clone后的所有文件都是已跟踪的.
 
 所以暂存有两层意思:对于未跟踪的文件是将其跟踪,对于已跟踪的,是跟踪其最新变动.
@@ -445,7 +538,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
 `git rm --cached <file_path>`:删除暂存区或分支上的文件, 但本地又需要使用, 只是不希望这个文件被版本控制
 `git rm -r --cached <dir_path>`:如果是目录。
 
-## 5 git commit
+### 5.4 git commit
 作动词时表示做一个版本，作名词表示版本。Git每次提交操作保存的提交对象包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针（首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象，而由多个分支合并产生的提交对象有多个父对象，父对象可以简单理解为父commit）
 
 最佳实践:请确保在对项目 commit 更改时，使用短小的 commit。不要进行大量 commit，记录 10 多个文件和数百行代码的更改。最好频繁多次地进行小的 commit，只记录很少数量的文件和代码更改。
@@ -460,7 +553,7 @@ git remote set-url origin git@gitlab.abc.com:go/goods-stocks.git
         2. 使用单引号
 4. `--author="username <xxx@xxx.com>"`:以此作者信息提交。假如某个commit用userA信息提交了，想改成userB，就可以参考这个命令`git commit --amend --author="username <xxx@xxx.com>"`，直接用`git commit --amend`是不行的
 
-### 5.1 git rebase 变基/压制/衍合
+### 5.5 git rebase 变基/压制/衍合
 将 commit结合在一起是一个称为压制(squash)的过程,我的理解就是将多个commit合成一个commit(会生成新的SHA,同时原来的多个就会消失掉),当然该命令是强大且危险的.
 也可以在压制前新建一个分支备份下.
 1. 两种用法
@@ -532,7 +625,7 @@ pick 0325c7f add b.txt for test git rebase
 1. 暂停commit等的意义是什么
 2. 取消`git rebase`事务是用`git rebase –abort`?
 
-## 6 git push:推送
+### 5.6 git push:推送
 默认是推送当前所在的分支.注意如果在推送的同一时刻有其他人也在推,那么自己的推送就会被驳回,需要先合并别人的更新再推送.
 
 参数说明:
@@ -549,9 +642,12 @@ pick 0325c7f add b.txt for test git rebase
     # 设置为跟踪来自 'origin' 的远程分支 'hotfix/hello'
     git branch --set-upstream-to origin/hotfix/hello
     ```
-## 7 撤销和回滚
 
-### 7.1 git reset
+## 6 撤销，回滚和文件恢复
+
+### 6.1 git reset
+用于从仓库区恢复版本
+
 分为已push和未push两种情况。
 
 #### 未push
@@ -606,67 +702,55 @@ pick 0325c7f add b.txt for test git rebase
 
 也就是说revert是可以套娃的...
 
-### 7.2 git checkout 检出（该目录待移动）
-有如下多种用法
+### 6.2 git checkout 
+它有两个功能：分支操作和文件恢复
+1. 分支操作：见分支管理部分笔记
+2. 文件恢复：
+    1. 用版本库里的某个版本覆盖索引区(staged or index)和工作区(work tree)的版本，无论工作区是修改还是删除
+    2. 用索引区的版本覆盖工作区的版本
+
+文件恢复有如下多种用法
 
 #### git checkout 
 后面不带任何参数，相当于检查工作区，暂存区，HEAD间的差别。等于`git status`?
 
-#### git checkout -- file_name
+#### git checkout -- file_name(todo)
 用暂存区的文件覆盖工作区中的文件，即只撤销工作区的文件修改，对没有暂存过（tracked）的文件是不生效的。
 
-写法:`git checkout -- file_name`，省略`--`(double hyphen)也可以，`git checkout file_name`，`--`是为了避免路径、分支名和引用（或者提交ID）同名而发生冲突，如果冲突就必须用`-- HEAD`而不是只用`HEAD`。如果写成`git checkout .`，会在当前目录下用暂存区的文件覆盖工作区中的所有文件，即将文件工作区的修改全部丢弃(不包括没暂存过的文件)，慎用!
+用法
+1. `git checkout -- file_name`(注意不是两个下划线)，省略`--`(double hyphen)也可以，`git checkout file_name`，`--`是为了避免路径、分支名和引用（或者提交ID）同名而发生冲突，如果冲突就必须用`-- HEAD`而不是只用`HEAD`。如果写成`git checkout .`，会在当前目录下用暂存区的文件覆盖工作区中的所有文件，即将文件工作区的修改全部丢弃(不包括没暂存过的文件)，慎用! 还有一种情况
 
-还有一种情况,就是误删了某个文件,可以用该命令恢复,但是会丢失该文件上所有未提交的修改。
+    ```bash
+    # 检出所有.c文件
+    git checkout -- '*.c' 
+    ```
+2. 恢复删除的文件:但是会丢失该文件上所有未提交的修改
+    1. 文件没有被tracked`git checkout -- <file_path>`
+    2. 文件已经被tracked`git checkout head -- <file_path>`
 
 #### git checkout commit_id file_name
 和`git checkout -- file_name`类似，用指定提交中的文件覆盖暂存区和工作区中的文件
 
-#### git checkout branch_name
-见切换分支部分笔记
-
-#### git checkout commit_id
-根据这个commit生成一个暂时的branch，现在的确在一个branch上，只是这个branch没有名字，我们可以马上`checkout -b`生成一个新的branch，也可以在这个没有名字的branch上面做修改、提交等像正常branch一样的操作（还有说是进入了游离状态，待验证）
-
 #### git checkout branch_name file_name
 将其他分支repo的文件覆盖到当前分支，即将其对应文件覆盖到工作区和暂存区(注意是覆盖，不是合并）。可以使用参数`-p`
 
-## 8 git branch:分支管理
-Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在master分支上工作效果是一样的，但过程更安全。
 
-### 8.1 创建和查看分支
-查看分支:`git branch`,列出本地的所有分支,在当前分支前面会有一个星号.注意才clone完之后只会显示默认分支,实际上其他分支还是存在的.
+### 6.3 git restore
+`git reset`和`git checkout`有点复杂了，所以git又新增了一个`git restore`命令专门用来恢复staged和worktree的文件，它提供更好的语义。
 
-参数说明:
-- 不带任何参数：列出所有本地分支
-- `-l <pattern>`、`--list <pattern>`:不带`<pattern>`的话是列出所有本地分支。
-    
-    ```git
-    git branch --list "*zhangsan*" 或者 git branch --list *zhangsan*
-    ```
-    
-- `-r`、`--remote`:列出所有远程分支（包括已被删除但缓存还在的）
-- `-a`、`--all`:列出所有远程分支（包括已被删除但缓存还在的）和所有本地分支
-- `-v`:查看所有分支最后一次commit信息;`-vv`:同时还能查看对应的远程分支
-- `-m old_name new_name`：重命名分支
+```bash
+git restore [--worktree] aaa # 从staged中恢复aaa到worktree 
+git restore --staged aaa # 从repo中恢复aaa到staged 
+git restore --staged --worktree aaa # 从repo中恢复aaa到staged和worktree 
+git restore --source dev aaa # 从指定commit中恢复aaa到worktree
+```
 
-查看远程所有现在还存在的分支：`git ls-remote`
+## 7 草稿和储藏
 
-新建分支:
-1. `git branch <分支名>`:通过复制当前分支的所有commit和暂存区来生成一个新分支,不会复制工作区的文件
-2. 创建并切换分支:`git checkout -b <分支名>`,等于执行`git branch <分支名>`加`git checkout <分支名>`
-3. 从指定的commit创建分支:`git checkout -b <分支名> <commit_id>`
+### 7.1 detached HEAD 状态
+见架构部分笔记
 
-更新所有分支:`git remote update [远程分支名]`,会更新远程仓库的所有分支,没用过,感觉可能会有问题,(待研究).
-
-### 8.2 切换/签出分支（git checkout）
-对本地而言，可以直接切换到本地以及所有的远程(orgin、upstream等)的分支，如果切换远程时提示没有对应的分支，需要先同步一下远程信息，比如`git fetch upstreamA`，单远程库的情况下这样使用没问题，如果是多远程库，可能会提示`git checkout --track origin/<name>`，意思是git并不清楚你要检出哪个远程库的分支，所以要用提示的命令，比如`git checkout --track origin/develop`
-
-使用：
-1. 切换分支：工作目录会恢复到该分支最后一次提交时的样子(暂存区和工作目录是干净的),如果Git不能干净利落地完成这个任务，它将禁止切换分支。所以对于新增的文件,如果目标分支没有该文件,切换成功;有该文件,切换失败.
-    1. `git checkout branch_name`,
-
-### 8.3 git stash 储藏修改
+### 7.2 git stash 储藏修改
 当某个分支改到一半需要切换到另一个分支时,有些文件只更改到一半,这个时候有两种解决方法:commit和stash,使用stash最好.注意新增的文件不受影响.
 
 创建储藏:
@@ -695,55 +779,6 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 删除储藏:删除之后，其他储藏名字的号码会自动更新。
 1. 按名字删除储藏:`git stash drop <储藏的名字>`,比如`git stash drop stash@{0}`
 2. 删除所有储藏:`git stash clear`、`git stash drop`
-
-### 8.3 删除分支
-不能删除当前分支,所以要删除的时候需要先切换到其他分支.
-
-删除本地分支:
-1. `git branch -d <分支名>`，删除的时候可以先切换到其他分支，如果被删的分支没有合并到master会有警告，如“xxx is not fully merged”，没有推送到关联的远程分支则会有警告，这两种情况想继续删除可以先处理了该分支或者使用强制删除`git branch -D <分支名>`。
-
-删除远程分支:
-1. `git push origin --delete <远程分支名>`,此时该远程分支(假设是dev1.0)的状态是stale,如果本地重新clone该项目则该分支将不存在;如果本地之前拉取过该分支,那么再次推送本地的dev1.0会导致远程的dev1.0再次变成tracked状态(相当于没有删除),所以此时需要执行`git remote prune <远程名>`,此时本地库上该远程分支就真正删除了.
-
-删除本地库上失效的远程追踪分支:`git remote prune <远程仓库名>`，但如果已经先删除了远程的分支，该命令不会删除对应的本地分支，仍然需要手动删除。也不会删除未追踪的本地分支。
-1. 参数`--dry-run`:打印执行信息,但并不真正执行 
-
-### 8.4 合并分支
-合并时正确做法是不要修改vi中默认的`Merge branch 'other_branch_name'`，只解决合并相关的冲突，等合并完之后再做其他修改。这样方便后续跟踪分析。
-
-合并目标分支到当前分支:`git merge <目标分支名>`,默认是快进模式(Fast-forward)
-
-如果想全部采用某一方的更改，可以用`git checkout --ours .`或`git checkout --theirs .`
-
-撤销上次的分支合并：`git merge --abort`
-
-合并远程的其他分支到当前分支：
-
-#### cherry-pick
-非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
-
-用法：
-1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`、`git cherry-pick aaa..bbb A E`等
-2. 范围merge：两个commit中间的所有内容用`..`代替。如`cherry-pick A..B`，则是合并`(A, B]`（左开右闭）的内容，如果想合并闭区间的内容，可以使用`cherry-pick A^..B`，即是合并`[A, B]`的内容。该命令可以和上面的命令混用。
-3. 合并另外一个分支的最后一次提交到当前分支：`git cherry-pick branchName`
-4. 合并另外一个分支的所有不同提交到当前分支：`git cherry-pick ..branchName`或者`git cherry-pick ^HEAD branchname`
-
-参数：
-1. `--continue`：参考解决冲突的步骤
-1. `--abort`:取消这次cherry-pick,这种情况下当前分支恢复到cherry-pick前的状态，没有改变.
-1. `--quit`:中断这次cherry-pick,这种情况下当前分支中未冲突的内容状态将为modified
-1. `-n`（`--no-commit`）:不自动提交
-2. `-e`(`--edit`):编辑提交信息
-
-解决冲突的步骤：pick多个时如果有冲突，需要用显示冲突的文件，解决冲突之后(解决冲突后执行了`git commit`或`git add`)如果还有冲突，似乎需要再执行这个命令来解决下一个冲突。
-
-经验：
-1. 重复pick：pick过的commit_id,再次pick时，不会像Fast-forward那样做智能判断，依然是按顺序来判断是否有冲突。比如A和B对同一个文件有修改，B时间在后面，先执行一次`git cherry-pick A B`，然后在执行`git cherry-pick A`，那么需要再解决一次冲突。如果重复pick没有冲突的话，会提示空提交，可以使用`git reset`来跳过这个pick或者`git commit --allow-empty`强行提交这个空pick。
-2. 非纯净pick：假如当前分支在branchA，合并branchB时如果有冲突并解决了冲突然后提交生成了commitA，那么branchC在pick commitA的时候，实际上会引入branchB里面冲突的那部分代码。
-
-
-#### 只合并部分文件
-参考`git checkout branch_name file_name`部分
 
 ## 9 git版本和标签
 ### git标签/git tag/锚点
@@ -871,6 +906,7 @@ v1.0.0-18-g7cb5639 # 表示最新的tag是v1.0.0，距离这个tag到现在已�
 可以fork空仓库吗:似乎不行，好像必须要有README.md或者lisence文件(待验证)
 
 ## 其他命令
+
 ### git fsck:文件系统检测
 `git fsck --lost-found`:找回git add过但是已经不存在文件中的内容。可以通过运行 `git show commit_hash`查看提交之后的改变或者运行`git merge commit_hash`来恢复到之前的提交。git fsck 相对reflog是有优势的，比方说你删除一个远程的分支然后关闭仓库，用fsck 你可以搜索和恢复已删除的远程分支。
 

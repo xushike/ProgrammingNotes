@@ -13,6 +13,15 @@
 ## 4 文档视频网址等
 1. Windows 10 ISO 映像官方下载地址：https://www.microsoft.com/zh-cn/software-download/windows10ISO
 
+# 三 基础
+## 1 工具生态
+shell:
+1. cmd
+2. powershell
+3. windows terminal
+4. (推荐)fluent terminal
+    1. 安装：win10 store直接可以安装
+
 # 四 高级
 ## 1 windows to go
 能将win8和win10装在U盘里跑,根据网友的评价来看,效果还可以

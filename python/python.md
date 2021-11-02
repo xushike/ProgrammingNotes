@@ -162,14 +162,23 @@ python3的字符串默认使用Unicode编码。
     ```
 
 ### requests
-`requests.get()`等方法是短连接，而`requests.Session().get()`是长连接
+使用：
+1. `requests.get()`等方法是短连接，而`requests.Session().get()`是长连接
 
-```py
-import requests
+    ```py
+    import requests
 
-r = requests.get('https://github.com/Ranxf')       # 最基本的不带参数的get请求
-r1 = requests.get(url='http://dict.baidu.com/s', params={'wd': 'python'})      # 带参数的get请求
-```
+    r = requests.get('https://github.com/Ranxf')       # 最基本的不带参数的get请求
+    r1 = requests.get(url='http://dict.baidu.com/s', params={'wd': 'python'})      # 带参数的get请求
+    ```
+2. `s = requests.Session()`会话对象，能够跨请求保持某些参数
+
+    ```py
+    s.auth = ('auth','passwd')
+    s.headers = {'key':'value'}
+    r = s.get('url')
+    r1 = s.get('url1')  # 也带上了上面的auth和header
+    ```
 
 # 六 问题
 1. pip是啥

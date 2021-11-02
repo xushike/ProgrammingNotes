@@ -958,6 +958,7 @@ for {
 }
 
 // 例子7-5 思路是两者同时准备好的
+// 例子7-6 添加相同的case，(参考轮询顺序)不过这种方式太low了
 
 // 例子8 实现几个ch的动态平衡，保证接收的概率大致相等
 getCh := func(i int, ch <-chan struct{}) <-chan struct{} {
@@ -1034,6 +1035,36 @@ case value := <-string_chan:
 }
 
 ```
+
+
+select的顺序：轮询顺序（poll order）和加锁/解锁顺序(lock order)
+1. 轮询顺序：go的实现是每次轮询的时候将所有case分支进行随机排序，然后按照这个随机顺序来遍历case分支，选择第一个符合条件（就绪或关闭或缓冲区有值）的channel即返回不再遍历后面的case分支。源码参考runtime/select.go
+    1. go不会删除重复的case，所以可以多次添加相同的case来增加权重
+
+select具体分析：以无default，两个channel为例
+```go
+func main() {
+   a := make(chan bool, 100)
+   b := make(chan bool, 100)
+   go func() {
+      time.Sleep(time.Minute)
+      for i := 0; i < 10; i++ {
+         a <- true
+         b <- true
+      }
+   }()
+
+   for i := 0; i < 10; i++ {
+      select {
+      case <-a:
+         print("< a")
+      case <-b:
+         print("< b")
+      }
+   }
+}
+```
+在计时没到一分钟时，select阻塞在 channel上。这种情况下，处理select的函数将会订阅所有channel并且等待，如果channel发送了一条消息，channel将通知已在等待该消息的另一个Goroutine。一旦收到通知，select 将取消订阅所有channel，并且返回到代码运行。
 
 ## 8 基于共享变量的并发
 

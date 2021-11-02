@@ -723,6 +723,46 @@ Math.floor(4.9) === 4  //true
 
 
 ### 3.2 switch case default
+1. 每个`case`执行完后都要带上`break`；`default`如果不是在最后也要带上`break`
+```js
+// 错误例子1
+int a=3;
+switch (a){
+    case 1:
+        System.out.println("1");
+        break;
+    case 2:
+        System.out.println("2");
+        break;
+    case 3:
+        System.out.println("3");
+    default:
+        System.out.println("default");
+        break;
+}
+// 输出
+// 3
+// default
+
+// 错误例子2 
+int a=4;
+switch (a){
+    default:
+        System.out.println("default");
+    case 1:
+        System.out.println("1");
+    case 2:
+        System.out.println("2");
+        break;
+    case 3:
+        System.out.println("3");
+        break;
+}
+// 打印结果：
+// default
+// 1
+// 2
+```
 
 ### 3.3 while和do ... while
 
