@@ -6622,6 +6622,9 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 
 ### 1.33 go build: no main packages to build
 
+### 1.34 下载包的时候出现 "A connection attempt failed because the connected party did not properly respond after a period of time..."
+可能是未设置goproxy，使用`go env -w GOPROXY=https://goproxy.cn,direct`
+
 
 ## 2 未解决
 ### note: module requires Go 1.14

@@ -15,12 +15,49 @@
 
 # 三 基础
 ## 1 工具生态
-shell:
+### shell
 1. cmd
 2. powershell
 3. windows terminal
 4. (推荐)fluent terminal
     1. 安装：win10 store直接可以安装
+
+### 分屏
+自带的分屏：可以分二分之一或者四分之一，快捷键win+方向。想恢复原窗口大小，从屏幕一角拖离即可。
+
+PowerToys的FancyZones分屏：
+1. 使用
+    1. 设置布局:快捷键`win+shift+~`。支持多个布局方案，每个布局的区域大小随意调整，且可以重叠
+    2. 拖动应用到对应的区域:拖动的时候按住shift键
+    3. 恢复原窗口大小：取消贴靠
+    4. 替代windows snap
+2. 缺点
+    1. 支持记录布局方案，但是不支持记录应用上次分屏的位置
+    2. 分配不是对所有应用都有效
+
+### PowerToys
+参考：
+1. 官方
+    1. https://github.com/microsoft/PowerToys
+    2. https://docs.microsoft.com/zh-cn/windows/powertoys/
+
+微软为Windows系统推出的一系列免费实用工具合集(比如分屏--FancyZones窗口增强管理器)。PowerToys早在win95年代就已经推出，更新到了winXP以后就悄无声息了，到了win10时代，微软官方再次重启了这个项目，并将其开源。
+
+优缺点：
+1. 优点
+    1. 支持第三方集成
+    2. 资源占用非常低
+2. 缺点
+    2. only support win10
+
+主要工具：
+3. awake:防止操作系统进入睡眠状态，并提供设置计时器的选项，以便何时可以重新进入睡眠状态
+2. 颜色选择器
+1. FancyZones窗口增强管理器：分屏神器，见分屏部分笔记
+2. Windows Key Shortcut Guide (Win热键快捷键指南)：可以让用户在长按 Windows 键超过 1 秒时，显示出当前桌面状态下可用的快捷键列表。
+3. PowerToys Run：类似于anywhere，默认快捷键`alt+空格`
+4. 图片处理：支持一键修改图片尺寸
+5. 文件批量重命名
 
 # 四 高级
 ## 1 windows to go

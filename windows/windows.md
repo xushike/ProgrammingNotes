@@ -80,7 +80,10 @@ windows是一个消息驱动的系统，它使用两种方式把各种事件通�
 最热门的软件包管理工具就属Scoop和Chocolatey，不过两者的定位稍有不同
 
 ### scoop 
-https://github.com/lukesampson/scoop
+参考：
+1. 官方
+    1. https://github.com/lukesampson/scoop
+    2. 一个按照 Github score（由 Star 数量、Fork 数量和 App 数量综合决定的 Github score）排列的 bucket 列表：https://github.com/rasa/scoop-directory/blob/master/by-score.md
 
 windows命令行包管理工具，简单执行`scoop install xxx`，它就会把软件检车、下载、安装、更新、配置等步骤全部帮你做完。它不仅轻量，还将软件默认安装到我们的用户目录下，安装过程不需要申请管理员权限（UAC）也不会污染系统环境变量。
 
@@ -114,19 +117,30 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     ```
 2. 安装包的位置:用户安装的程序和scoop本身位于`C:\Users<user>\scoop`。全局安装的程序位于`C:\ProgramData\scoop`。可以通过环境变量更改这些设置。
 3. 配置
-    1. (不推荐)`aria2`：安装后scoop会默认使用它来加速，它提供多线程下载。虽然网上都是建议安装aria2，但是本人实测发现对于新手并不好用，所以暂时不推荐安装。
-    2. 开发相关`sudo scoop install make git 7zip nginx curl less go vim mysql`
-    3. 安装额外的bucket`scoop bucket add extras`
-    4. 桌面应用相关`scoop install vscode potpalyer googlechrome`
+    1. (可省略)安装后的自检`scoop checkup`，根据自检结果进行操作
+        1. ...
+        1. `scoop install innounp`
+        2. `scoop install wixtoolset`
+    1. 应用推荐
+        1. (不推荐)`aria2`：安装后scoop会默认使用它来加速，它提供多线程下载和断点续传。虽然网上都是建议安装aria2，但是本人实测发现对于新手并不好用，所以暂时不推荐安装。
+        2. 开发相关`sudo scoop install make git 7zip nginx curl less go vim mysql`
+        4. 桌面应用相关,先安装extras bucket`scoop bucket add extras`，然后再安装`scoop install vscode potpalyer googlechrome`
+            1. `vscode`：成功安装后根据提示可以添加它到上下文，安装后启动的命令是`code`，not `vscode`；然后执行它的reg文件添加到右键上下文
+            2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文，需要自己进入应用设置里面关联视频文件格式。
+            3. `googlechrome`:安装后启动命令是`chrome`
+            4. `ventoy`
+            5. `Fluent Terminal`:好用的终端
+    2. 安装后快捷方式目录`~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Scoop Apps`
 
 使用：
 1. bucket:Scoop的设计初衷是为了方便 Windows 开发者安装和配置开发工具，其默认软件仓库的收录条件也就很苛刻，导致了它默认软件仓库（main bucket）里软件数量有限。bucket可以理解为软件库，类似于brew的tap,我们可以通过添加“软件库”来找到自己想要的软件.
     1. 查看可以直接识别并添加的bucket:`scoop bucket known`，常见bucket简单介绍如下
-        1. `extras`
+        1. `extras`：Scoop 官方维护的一个仓库，涵盖了大部分因为种种原因不能被收录进主仓库的常用软件
         1. `nirsoft`:是一个 NirSoft 开发的小工具的安装合集。NirSoft 制作了大量的（dozens and dozens）小工具，包括系统工具、网络工具、密码恢复等等，孜孜不倦、持续更新。
         2. `gams`：包含了大量免费开源的游戏
         3. `dorado`:添加了一些国内的app，比如 qqplayer ️
             1. https://github.com/chawyehsu/dorado
+        4. `java`：可以通过它安装各种 jdk 、 jre
     2. 添加bucket
         1. 分两种情况
             1. 对于能直接识别的bucket可以直接用名称安装`scoop bucket add bucketnameA`
@@ -146,20 +160,25 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 5. 安装,同理卸载是`uninstall`
     1. `scoop install xxx`
     2. `scoop install -g xxx`:安装到全局目录
-6. 更新
+6. 更新和保持
     1. 更新scoop自身到最新版`scoop update`,依赖git
     2. 更新某app`scoop update xxx`
     3. 更新所有app`scoop update *`
-8. 查看状态和更新`scoop status`
+    4. 保持住版本`hold`，一般开发环境的工具软件建议保持住
 
-软件推荐：
-1. 开发相关
-2. 桌面应用相关:先安装extras bucket，然后再安装
-    1. `vscode`：成功安装后根据提示可以添加它到上下文，安装后启动的命令是`code`，not `vscode`
-    2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文
-    3. `googlechrome`:安装后启动命令是`chrome`
-    4. `ventoy`
-    5. `Fluent Terminal`:好用的终端
+        ```bash
+        scoop hold mysql
+        scoop hold nodejs
+        scoop hold maven
+        ```
+7. 版本切换：`scoop reset`的作用是重置应用程序来解决冲突，借助这个命令可以在不同版本之间进行切换
+
+    ```bash
+    # 切换java版本
+    # 切换phthon版本
+    todo
+    ```
+8. 查看状态和更新`scoop status`
 
 ### Chocolatey
 参考：

@@ -613,8 +613,6 @@ package github.com/cweill/gotests/...: exit status 1
 99.  事件和观察者模式
 100. json的语法和js普通对象的语法有没有什么区别
 101. 什么是全拼和双拼
-102. 打开csdn blog后cpu占用很高,是什么原因, 重启浏览器后打开相同的网页还是这个情况
-    flash? 网页开太多了?设置了chrome的最新特性?
 103. .pyc和.tmp
 104. 苹果发布会的ar文件格式
 
