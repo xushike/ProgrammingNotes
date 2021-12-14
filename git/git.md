@@ -770,6 +770,11 @@ git restore --source dev aaa # 从指定commit中恢复aaa到worktree
 1. 查看stash列表`git stash list`，可以查看储藏版本信息.
 2. 查看具体stash里的内容：`git stash show xxx`，支持所有`git diff`的参数，比如`-p`
 
+    ```bash
+    # 查看第一个stash的变更内容
+    git stash show 0 -p
+    ```
+
 恢复储藏:
 1. `git stash apply <储藏的名字>`从指定版本中恢复,如`git stash apply stash@{3}`.注意储藏是不区别分支的,也就是可以恢复到任何分支上,所以分支很多时的最佳实践是储藏时带上当前分支的信息.(新版似乎自带分支信息)。
     1. "error: unknown switch `e'"

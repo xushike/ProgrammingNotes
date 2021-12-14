@@ -5173,7 +5173,7 @@ fmt.Println(rand.Intn(100))
         1. 一旦被设置，将一直生效（直到再一次调`SetXxxDeadline()`），它并不关心在此期间链接是否存在以及如何使用。因此，你需要在每次进行读/写操作前，使用`SetXxxDeadline()`设定一个超时时长.(待确认)
     3. 读写
         1. `(conn) Write(b []byte) (int, error)`
-            1. 如果broken pipe错误，表示本端感知到对端已经关闭连接（本端已接收到对端发送的RST）
+            1. 如果**broken pipe**错误，表示本端感知到对端已经关闭连接（本端已接收到对端发送的RST）
         2. `(*conn) Read(b []byte) (int, error)`
             1. 对端是不知道什么时候写完的，有两种方式来表示写完了
                 1. 写入之后需要调用`(*TCPConn) CloseWrite() error`
@@ -5202,7 +5202,7 @@ fmt.Println(rand.Intn(100))
                         }	
                     }
                     ```
-            1. 如果`EOF`错误，表示对端已经关闭连接，本端已接收到对端发送的"FIN"。此后如果本端不调用Close方法，只释放本端的连接对象，则连接处于非完全关闭状态（CLOSE_WAIT）。即文件描述符发生泄漏。
+            1. 如果**EOF**错误，表示对端已经关闭连接，本端已接收到对端发送的"FIN"。此后如果本端不调用Close方法，只释放本端的连接对象，则连接处于非完全关闭状态（CLOSE_WAIT）。即文件描述符发生泄漏。
     2. 关闭连接
         1. `(*conn) Close() error`
 
@@ -5321,7 +5321,25 @@ provides HTTP client and server implementations.
 1. 发起http请求:
     1. Get:`http.Get()`
     2. Post:
-        1. `http.Post()`:第二个参数要设置成”application/x-www-form-urlencoded”，否则post参数无法传递
+        1. `http.Post(url, contentType string, body io.Reader)`
+
+            ```go
+            // 发送 application/x-www-form-urlencoded 格式的请求示例
+            url := "https://example.com"
+            resp, err := http.Post(url,
+                "application/x-www-form-urlencoded",
+                strings.NewReader("name=tom"))
+            if err != nil {
+                log.Fatal(err)
+            }
+
+            defer resp.Body.Close()
+            body, err := ioutil.ReadAll(resp.Body)
+            if err != nil {
+                log.Fatal(err)
+            }
+            fmt.Println(string(body))
+            ```
         2. `http.PostForm()`
     3. 复杂的请求:`http.Do()`
 
@@ -5714,6 +5732,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 1. 对整数切片排序`sort.Ints(slice []int)`
 2. Float64
 3. Strings：`sort.Strings`排序默认是按照Unicode码点的顺序的, 如果需要按照拼音排序, 可以通过GBK转换实现, 自定义一个排序接口
+4. SliceStabl():稳定排序，排序完结构体中的元素保持在原来的位置?
 
 go1.8之前，对一个切片排序，需要以切片为基础定义一个新类型，然后实现sort.Interface接口；go1.8开始，可以直接调用`sort.Slice()`来排序，内部通过反射帮我们做了其他工作，方便很多。
 ```go

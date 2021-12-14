@@ -133,6 +133,7 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
 		Attribute("name")
     })
     ```
+5. 字段复用
 
 问题：
 1. attribute does not have "rpc:tag" defined in the meta
@@ -293,7 +294,7 @@ https://github.com/spf13/cobra
 2. `server -h`或`server --help`中的`-h`和`--help`是flags
 
 cobra cmd的使用：
-1. 初始化`cobra init projectNameA`
+1. 初始化`cobra init --pkg-name projectNameA`
 2. 增加子命令`cobra add subCmdA`，会在cmd子目录下创建`subCmdA.go`文件
 
 cobra库的使用：
@@ -497,6 +498,11 @@ https://github.com/jmoiron/sqlx
 
 结构体
 1. `sqlx.NamedStmt` – 对特定参数命名并绑定生成 SQL 语句操作。
+
+使用：
+1. 查询
+    1. 查询单个：`db.Get()`
+    2. 查询多个: `db.Select()`
 
 
 ### SQL Builer
@@ -1034,12 +1040,14 @@ https://github.com/go-resty/resty
     2. 请求体
         1. SetBody 参数类型为结构体或 map[string]interface{} 时， Resty 自动附加HTTP头 Content-Type: application/json ，当参数为string或[]byte类型时由于很难推断内容的类型，所以需要手动设置 Content-Type 请求头
     2. 请求结果
-        1. 自动Unmarshal`SetResult()`:resty可以自动将响应数据 Unmarshal 到对应的结构体对象中
+        1. 自动Unmarshal`SetResult(res)`:resty可以自动将响应数据 Unmarshal到res，如果res是结构体或者`map[string]interface{}`时，Resty自动附加HTTP头Content-Type: application/json，当参数为string或[]byte类型时由于很难推断内容的类型，所以需要手动设置Content-Type请求头
 
             ```go
             resty Request.Result
             ```
         2. `SetErro()`设置响应状态码非正常时返回的存储结构。if response status code is greater than 399 and content type either JSON or XML.
+        3. `body`
+            1. 需要defer 关闭吗
 5. 钩子操作
     1. OnBeforeRequest 和 OnAfterResponse 回调方法，可以在请求之前和响应之后加入自定义逻辑
 
@@ -1130,6 +1138,10 @@ undo := zap.RedirectStdLog(logger)
 log.Println("standard log will redirect to zap.Logger")
 undo()
 log.Println("standard log with original output")
+```
+
+```
+// 基本使用：生成一个全局的logger然后传递给后续的服务
 ```
 
 ### sirupsen/logrus
@@ -1389,7 +1401,9 @@ https://github.com/fclairamb/ftpserver
 1. https://github.com/jlaffaye/ftp
     1. 概述：
     3. 经验
-        1. 出错的时候似乎不是返回最初的错误，比如上传文件，如果文件读取出错了或者`CWD`失败了，返回的是"553 Could not create file."而不是最开始的错误
+        1. 报错
+            1. 登录时EOF
+            1. 上传文件:如果文件读取出错了或者`CWD`失败了，返回的是"553 Could not create file."而不是最开始的错误
 2. https://github.com/secsy/goftp
 
 ## 文本和编码处理
