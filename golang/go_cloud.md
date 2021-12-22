@@ -1020,6 +1020,7 @@ select {}
 ```
 
 使用：
+1. cron表达式：它的cron表达式是五个单位(从左到右分别是Minutes Hours DayofMonth Month DayofWeek)(待确认)，和linux的cron表达式不一样，linux的cron表达式是6个或7个单位
 1. 关闭`(*Cron) Stop() context.Context`
 
 问题：
