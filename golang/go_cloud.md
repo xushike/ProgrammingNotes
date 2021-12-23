@@ -681,33 +681,40 @@ if claims, ok := token.Claims.(jwt.MapClaims); ok {
 ### golangci-lint
 https://github.com/golangci/golangci-lint
 
+目前唯一的选择，缺点是坑很多：安装，使用各种坑
+
 参考：
 1. https://golangci-lint.run/
 2. https://go-critic.github.io/overview
 
-安装:windows的话可以去[release](https://github.com/golangci/golangci-lint/releases)下载对应版本,mac可以使用`brew install golangci-lint`，官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
-1. 本人实测，`go get`安装的确实可能有bug。比如
-    1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
-    2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
+安装:
+1. windows
+    1. 去[release](https://github.com/golangci/golangci-lint/releases)下载对应版本,mac可以使用`brew install golangci-lint`，官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
+    2. 本人实测，`go get`安装的确实可能有bug。比如
+        1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
+        2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
 
-基本使用
+使用
 1. 指定配置文件运行，比如`golangci-lint run -c .golangci.yml ./...`
 
 问题:
-1. "File is not `goimports`-ed with -local (goimports)"
-    1. 可能原因1：包的引入代码的位置格式化不对
-    2. 可能原因2：格式化方式配置得不正确。如果在goland中可能需要把Group勾选上
-2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
-3. no such linter goerr113
-    1. 可能原因:golangci-lint版本太低
-4. level=error msg="Running error: context loading failed: no go files to analyze"
-    1. 场景一：更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了
-    2. 场景二：更新了go mod的某个包之后出现，同样执行下go build就好了
-    3. 场景三：运行下go test后又好了
-        1. 参考：https://github.com/golangci/golangci-lint/issues/825
-5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
-    1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
-6. ERRO Running error: context loading failed: failed to load program with go/packages: could not determine GOARCH and Go compiler
+1. 安装问题
+    1. 安装时提示"undefined: bidichk.Analyzer"等。主要是golang版本和golangci-lint版本不一致导致的
+2. 使用问题
+    1. "File is not `goimports`-ed with -local (goimports)"
+        1. 可能原因1：包的引入代码的位置格式化不对
+        2. 可能原因2：格式化方式配置得不正确。如果在goland中可能需要把Group勾选上
+    2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
+    3. no such linter goerr113
+        1. 可能原因:golangci-lint版本太低
+    4. level=error msg="Running error: context loading failed: no go files to analyze"
+        1. 场景一：更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了
+        2. 场景二：更新了go mod的某个包之后出现，同样执行下go build就好了
+        3. 场景三：运行下go test后又好了
+            1. 参考：https://github.com/golangci/golangci-lint/issues/825
+    5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
+        1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
+    6. ERRO Running error: context loading failed: failed to load program with go/packages: could not determine GOARCH and Go compiler
 
 ## sonyflake
 参考
