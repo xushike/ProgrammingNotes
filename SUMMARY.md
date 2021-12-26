@@ -19,6 +19,7 @@
     * [6.MySQL](db/6.MySQL.md)
     * [7.Oracle](db/7.Oracle.md)
     * [8.OceanBase](db/8.OceanBase.md)
+    * [9.InfluxDB](db/9.InfluxDB.md)
     * [DatabaseSecurity数据库安全](db/DatabaseSecurity.md)
     * [pl/sql](db/PLSQL.md)
 * [cache](cache/cache.md)
