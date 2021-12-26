@@ -12,8 +12,10 @@
         2. Go 语言可以在 Intel 或 ARM 处理器上运行，因此它也可以在安卓系统下运行（待测试）
 2. 超多的架构支持
 2. 介于偏底层的系统语言（就像 C 或 C++ 语言）和基于运行时的语言（比如 Java 或 Python）之间，但更适用于系统编程领域。
-3. 高性能高并发
+3. 原生支持高性能高并发
     1. goroutine+channel
+        1. 分段栈(splitstacks)技术
+        2. 多路复用
 1. 工具:go提供了软件生命周期各个环节的工具(开发,测试,部署,维护等)，目前是够用但还不够强大。
 1. Go语言的标准库强大（难以置信的强大）且完善，常被称为语言自带的电池（Batteries Included）
 1. Go语言在语言层面解决软件工程问题的设计哲学（比如？）
@@ -249,18 +251,6 @@ fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
     2. 用于传递时：slice可以被打散进行传递，比如`append()`处。
 2. 作为命令行参数:一般放在目录后，表示递归，比如`golangci-lint run dir`，只会检查dir下面的文件，不会递归更下面一层，但是`golangci-lint run dir/...`会一直递归下去
 
-### 3.16 go源码文件(待补充)
-Go源码文件包括三种：
-1. 命令源码文件：
-    1. 独立程序的入口
-    2. 属于main包，包含无参数和无结果的main函数
-    3. main函数执行的结果意味着当前程序运行的结束
-    4. 同一个代码包中不要放多个命令源码文件，同时命令源码文件和库源码文件也不要放在同一个代码包下。b站的的项目似乎就是这么做的。如果违反此条，`go run`和`go build`分别运行这些文件的时候不会报错，但是`go build`和`go install`运行整个包的时候会报错。
-    5. 可以通过`go run`命令来执行，可接受命令参数
-2. 库源码文件
-3. 测试源码文件
-
-
 ### 3.17 平行赋值
 `i, j = i+1, j-1`
 
@@ -444,7 +434,7 @@ go的环境变量说明:
 
 go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 
-多版本管理使用gvm:https://github.com/moovweb/gvm(似乎没有win版本，待整理)
+多版本管理使用[gvm]:(https://github.com/moovweb/gvm)(似乎没有win版本，待整理)
 
 ## 1 windows
 ### .msi文件安装
@@ -509,14 +499,33 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 
 # 三 基础
 ## 0 架构
-### 1 Go程序的执行（程序启动）顺序
+### 1 文件类型
+go里的文件大概分为以下几种：
+1. 源码文件：以`.go`结尾的文件
+2. 目标库文件/静态库文件/静态文件/代码包归档文件:以`.a`结尾的文件,`.a`文件是编译过程中生成的，每个package都会生成对应的`.a`文件，Go在编译的时候先判断package的源码是否有改动，如果没有的话，就不再重新编译`.a`文件，这样可以加快速度。同时，有静态库文件的时候，不需要
+    1. 如何生成`.a`文件：参考`go install`
+2. todo:以`.out`结尾的文件
+2. todo:以`.h`结尾的文件
+2. 目标文件:以`.o`结尾的文件
+
+Go源码文件包括三种：
+1. 命令源码文件：
+    1. 独立程序的入口
+    2. 属于main包，包含无参数和无结果的main函数
+    3. main函数执行的结果意味着当前程序运行的结束
+    4. 同一个代码包中不要放多个命令源码文件，同时命令源码文件和库源码文件也不要放在同一个代码包下。b站的的项目似乎就是这么做的。如果违反此条，`go run`和`go build`分别运行这些文件的时候不会报错，但是`go build`和`go install`运行整个包的时候会报错。
+    5. 可以通过`go run`命令来执行，可接受命令参数
+2. 库源码文件
+3. 测试源码文件:以`_test.go`为后缀的
+
+### 2 Go程序的执行（程序启动）顺序
 编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，然后对最后的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。但是每个包只会被导入一次。
 
-### 2 声明
+### 3 声明
 Go主要有四种类型的声明语句：var、const、type和func，分别对应变量、常量、类型和函数实体对象的声明。
 
-### 3 变量
-#### 3.1 变量声明
+### 4 变量
+#### 4.1 变量声明
 其中“类型”或“= 表达式”两个部分可以省略其中的一个。如果省略的是类型信息，那么将根据初始化表达式来推导变量的类型信息。如果初始化表达式被省略，那么将用零值初始化该变量。
 ```go
 //声明变量的方式1:一般是变量类型和初值类型不同时才使用
@@ -552,7 +561,7 @@ i, j := 0, 1
 1. 简短变量声明语句中必须至少要声明一个新的变量,对于其他已经声明过的变量，则只有赋值操作
 2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
 
-#### 3.2 变量的初始值
+#### 4.2 变量的初始值
 零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以简化很多代码，而且可以在没有增加额外工作的前提下确保边界条件下的合理行为。
 1. 数值类型变量对应的零值是0，
 2. 布尔类型变量对应的零值是false，
@@ -566,7 +575,7 @@ i, j := 0, 1
 5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
 6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
 
-#### 3.3 赋值
+#### 4.3 赋值
 1. 更有效的赋值写法,比如
     ```go
     count[x] = count[x] * scale // 数组、slice或map的元素赋值
@@ -619,12 +628,12 @@ i, j := 0, 1
     } 
     ```             
 
-#### 3.4 变量的生命周期
+#### 4.4 变量的生命周期
 对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，在局部变量的声明周期则是动态的：从每次创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。
 
 因为一个**变量的有效周期只取决于是否可达**，因此一个循环迭代内部的局部变量的生命周期可能超出其局部作用域。同时，局部变量可能在函数返回之后依然存在。
 
-#### 3.5 变量的存储位置
+#### 4.5 变量的存储位置
 编译器会自动选择在栈上还是在堆上分配局部变量的存储空间，但可能令人惊讶的是，这个选择并不是由用var还是new声明变量的方式决定的。圣经中的例子如下,
 ```go
 var global *int
@@ -642,7 +651,7 @@ func g() {
 ```
 分析:f函数里的x变量必须在堆上分配，因为它在函数退出后依然可以通过包一级的global变量找到，虽然它是在函数内部定义的；用Go语言的术语说，这个x局部变量从函数f中逃逸了。相反，当g函数返回时，变量`*y`将是不可达的，也就是说可以马上被回收的。因此，`*y`并没有从函数g中逃逸，编译器可以选择在栈上分配`*y`的存储空间（也可以选择在堆上分配，然后由Go语言的GC回收这个变量的内存空间），虽然这里用的是new方式。不过一般情况下编程不需要想这么多.
 
-### 4 常量
+### 5 常量
 使用`const`声明,只可以是字符串、布尔或数字类型的值,不能用`:=`定义.语法形如`const xxx [type] = xxx`,如
 ```go
 const Pi = 3.14159
@@ -659,7 +668,7 @@ const (
 
 常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。(why)
 
-### 5 指针
+### 6 指针
 指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言里可以对指针进行加或减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
 
 并不是每一个值都会有一个内存地址，但是对于每一个变量必然有对应的内存地址。(?)
@@ -684,7 +693,7 @@ fmt.Println(p == q) // "false"
 1. 在C/C++中,局部变量分配在栈里,函数返回后，局部变量是被系统自动回收的(其他好几种语言也是这样).返回局部变量的指针是不安全的,但返回局部变量的值是安全的,因为返回的是值的副本
 2. 在go中,局部变量可能分配到栈or堆中,而且两者都可以返回.具体参考垃圾回收的堆栈分配笔记
 
-### 6 类型
+### 7 类型
 新声明的类型提供了一个方法(我还不知道什么方法,底层的一些东西?)，用来分隔不同概念的类型，这样即使它们底层类型相同也是不兼容的,例子如下,
 
 ```go
@@ -709,7 +718,7 @@ fmt.Println(c == Celsius(f)) // "true"!
     - 可以提供书写方便,如果是复杂的类型将会简洁很多，比如结构体类型
     - 为该类型的值定义新的行为
 
-### 9 包
+### 8 包
 一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.
 
 1. 目录结构
@@ -785,12 +794,12 @@ A.go 依赖 B.go，而 B.go 又依赖 C.go：
 
     当标识符（包括常量、变量、类型、函数名、结构字段等等）以一个大写字母开头，如：Group1，那么使用这种形式的标识符的对象就可以被外部包的代码所使用（客户端程序需要先导入这个包），这被称为导出（像面向对象语言中的 public）；标识符如果以小写字母开头，则对包外是不可见的，但是他们在整个包的内部是可见并且可用的（像面向对象语言中的 private ）。
 
-### 10 作用域
+### 9 作用域
 go的作用域和生命周期是不同的概念
 1. go的三个流程控制语句紧跟的初始化块声明的变量,其作用域和声明在语句`{}`中变量一样.
 2. 在包级别，声明的顺序并不会影响作用域范围，因此一个先声明的可以引用它自身或者是引用后面的一个声明，这可以让我们定义一些相互嵌套或递归的类型或函数。
 
-### 11 golang数据库连接池源码分析
+### 10 golang数据库连接池源码分析
 1. 连接池的失败重试机制:
     1. 有两个策略：
         1. `cachedOrNewConn`：从连接池中获取或请求新的连接
@@ -804,21 +813,55 @@ go的作用域和生命周期是不同的概念
     1. 关闭连接的时候会清理依赖(`removeDepLocked()`)，只有依赖正确清理了，才会调用`finalClose()`，`finalClose()`中会执行`numOpen--`
 
 ## 1 工具生态
-### 1 go自带的工具链（go tool套件、go Toolchain）
+### 1 go自带的工具链（不包含go tool套件）
 参考赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
 
-Go语言提供的工具都通过`go xxx`或`go tool xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
+通用参数(适用于大多数命令)：
+1. `-a`：强制编译，不管编译结果是不是最新的
+2. `-n`：打印编译过程中所需运行的命令，但不真正执行
+2. `-x`：打印编译过程中所需运行的命令，且真正执行
+3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
+4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它(默认编译结束会删除它)
+5. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
+    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值
 
-查看帮助：`go help xxx`，比如`go help generate`
+        ```bash
+        # 比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量
+        var (
+            VERSION   = "major.minor.patch"
+            BUILD_TIME = "yyyy-mm-dd hh:mm:ss"
+            GO_VERSION = runtime.Version()
+        )
+        # 执行
+        go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
+        # 会给这三个变量设置对应的值
+        ```
 
-写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
+        注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
+
+    2. `-w`去掉调试信息（无法使用gdb调试）
+    3. `-s` 禁用符号表
+6. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
+    1. `-N` 禁用优化
+    2. `-l` disable inlinin，禁用函数内联
+    3. `-u` 禁用unsafe代码
+    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析。比如
+        
+        ```bash
+        go build -gcflags -m concurrent_demo/cmd/main.go
+        
+        # command-line-arguments
+        concurrent_demo/cmd/main.go:5:6: can inline main 
+        concurrent_demo/cmd/main.go:7:21: inlining call to goroutine_demo.Init # 表示内联调用了
+        ```
+    5. `-S` 输出汇编代码
 
 #### 1.1 go run
-`go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
-```golang
+`go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。简单来说`go run`等价于`go build`+执行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
+```bash
 go run main.go a.go
-// 或者
-go run *.go
+# 或者
+go run *.go # not work in windows
 ```
 
 参数：
@@ -826,7 +869,7 @@ go run *.go
 2. `-n`：打印编译过程中所需运行的命令，但不真正执行
 2. `-x`：打印编译过程中所需运行的命令，且真正执行
 3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
-4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它
+4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它(默认编译结束会删除它)
 
 #### 1.2 go build
 主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。针对编译目标的不同，会有如下几种情况：
@@ -902,7 +945,7 @@ go run *.go
 
 #### 1.3 go install
 用于编译并安装代码包或源码文件。
-1. 安装代码包或者库，会在`$GOPATH/pkg`生成目标库文件(`.a`文件)
+1. 安装代码包或者库，会在`$GOPATH/pkg`生成`.a`文件
 2. 安装命令源码文件会在`$GOBIN`目录生成可执行文件。
 
 有如下几种执行情况：
@@ -919,16 +962,16 @@ go run *.go
         ```
         studyGo/go_cloud
         ├── cmd
-        │   └── main.go
+        │   └── main.go
         └── lovego_demo
-            ├── err.go
-            └── init.go
+            ├── err.go
+            └── init.go
         ```
 
     2. 进入studyGo目录
-        1. 执行`go install ./go_cloud/lovego_demo`，会在`$GOROOT/pkg/$GOOS_$GOARCH`目录下生成`studyGo/go_cloud/lovego_demo.a`静态库文件
-        2. 执行`go tool compile -I $GOPATH/pkg/darwin_amd64 go_cloud/cmd/main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
-    3. TODO
+        1. 编译静态库文件：`go install ./go_cloud/lovego_demo`，会在`$GOPATH/pkg/$GOOS_$GOARCH`目录下生成`studyGo/go_cloud/lovego_demo.a`静态库文件
+        2. 使用静态库文件编译main.go：`go tool compile -I $GOPATH/pkg/$GOOS_$GOARCH main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
+        3. 链接main.o: `go tool link -o main.exe -L $GOPATH/pkg/$GOOS_$GOARCH main.o`,链接成功后会生成相应的可执行文件main.exe
 2. 安装可执行文件
 
     ```bash
@@ -1168,6 +1211,8 @@ cloud.google.com/go/bigquery v1.5.0 [v1.10.0]
 ...
 ```
 
+#### 1.13 go compile 
+
 #### 1.3 pprof
 参考：
 1. Go官方
@@ -1332,21 +1377,49 @@ golang代码中引入pprof包的两种方式：
 1. runtime/pprof：采集程序（非 Server）的运行数据进行分析。
     
 2. net/http/pprof：采集 HTTP Server 的运行时数据进行分析。
-    
 
-### 2 其他与go有关的工具
-#### 2.1 Cgo
+### 2 go tool套件(go Toolchain)
+go Toolchain：可以通过`go tool xxx`命令调用，部分命令也可以通过`go xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
+
+查看帮助：`go help xxx`，比如`go help generate`
+
+直接`go tool`会显示go tool套件全部的命令
+
+写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
+
+#### go tool compile 编译
+
+参数：
+1. `-I`：使用额外的导入路径
+
+    ```bash
+    # 假如main.go导入了其他包，就会额外去C:\Users\99212\go\pkg\windows_amd64中找对应的.a文件来导入使用
+    go tool compile -I C:\Users\99212\go\pkg\windows_amd64 main.go
+    ```
+
+#### go tool link 链接
+
+参数：
+1. `-L`：使用额外的库文件路径
+
+    ```bash
+    go tool link -o main.exe -L C:\Users\99212\go\pkg\windows_amd64 main.o
+    # 链接成功后会生成相应的可执行文件main.exe
+    ```
+
+### 3 其他与go有关的工具
+#### 3.1 Cgo
 编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
 
-#### 2.2 gb
+#### 3.2 gb
 社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
 
-#### 2.3 GVM
+#### 3.3 GVM
 go的版本管理工具，项目地址：https://github.com/moovweb/gvm
 
 配置：该工具是用shell写的，默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以应该修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。
 
-### 3 部署
+### 4 部署
 #### docker
 
 #### rpm
@@ -5173,7 +5246,7 @@ fmt.Println(rand.Intn(100))
         1. 一旦被设置，将一直生效（直到再一次调`SetXxxDeadline()`），它并不关心在此期间链接是否存在以及如何使用。因此，你需要在每次进行读/写操作前，使用`SetXxxDeadline()`设定一个超时时长.(待确认)
     3. 读写
         1. `(conn) Write(b []byte) (int, error)`
-            1. 如果broken pipe错误，表示本端感知到对端已经关闭连接（本端已接收到对端发送的RST）
+            1. 如果**broken pipe**错误，表示本端感知到对端已经关闭连接（本端已接收到对端发送的RST）
         2. `(*conn) Read(b []byte) (int, error)`
             1. 对端是不知道什么时候写完的，有两种方式来表示写完了
                 1. 写入之后需要调用`(*TCPConn) CloseWrite() error`
@@ -5202,7 +5275,7 @@ fmt.Println(rand.Intn(100))
                         }	
                     }
                     ```
-            1. 如果`EOF`错误，表示对端已经关闭连接，本端已接收到对端发送的"FIN"。此后如果本端不调用Close方法，只释放本端的连接对象，则连接处于非完全关闭状态（CLOSE_WAIT）。即文件描述符发生泄漏。
+            1. 如果**EOF**错误，表示对端已经关闭连接，本端已接收到对端发送的"FIN"。此后如果本端不调用Close方法，只释放本端的连接对象，则连接处于非完全关闭状态（CLOSE_WAIT）。即文件描述符发生泄漏。
     2. 关闭连接
         1. `(*conn) Close() error`
 
@@ -5321,7 +5394,25 @@ provides HTTP client and server implementations.
 1. 发起http请求:
     1. Get:`http.Get()`
     2. Post:
-        1. `http.Post()`:第二个参数要设置成”application/x-www-form-urlencoded”，否则post参数无法传递
+        1. `http.Post(url, contentType string, body io.Reader)`
+
+            ```go
+            // 发送 application/x-www-form-urlencoded 格式的请求示例
+            url := "https://example.com"
+            resp, err := http.Post(url,
+                "application/x-www-form-urlencoded",
+                strings.NewReader("name=tom"))
+            if err != nil {
+                log.Fatal(err)
+            }
+
+            defer resp.Body.Close()
+            body, err := ioutil.ReadAll(resp.Body)
+            if err != nil {
+                log.Fatal(err)
+            }
+            fmt.Println(string(body))
+            ```
         2. `http.PostForm()`
     3. 复杂的请求:`http.Do()`
 
@@ -5714,6 +5805,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 1. 对整数切片排序`sort.Ints(slice []int)`
 2. Float64
 3. Strings：`sort.Strings`排序默认是按照Unicode码点的顺序的, 如果需要按照拼音排序, 可以通过GBK转换实现, 自定义一个排序接口
+4. SliceStabl():稳定排序，排序完结构体中的元素保持在原来的位置?
 
 go1.8之前，对一个切片排序，需要以切片为基础定义一个新类型，然后实现sort.Interface接口；go1.8开始，可以直接调用`sort.Slice()`来排序，内部通过反射帮我们做了其他工作，方便很多。
 ```go
