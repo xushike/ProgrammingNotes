@@ -690,6 +690,7 @@ https://github.com/golangci/golangci-lint
 安装:
 1. windows
     1. 去[release](https://github.com/golangci/golangci-lint/releases)下载对应版本,mac可以使用`brew install golangci-lint`，官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
+    2. 使用命令安装`curl.exe -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $env:GOPATH/bin latest`
     2. 本人实测，`go get`安装的确实可能有bug。比如
         1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
         2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
@@ -705,8 +706,8 @@ https://github.com/golangci/golangci-lint
         1. 可能原因1：包的引入代码的位置格式化不对
         2. 可能原因2：格式化方式配置得不正确。如果在goland中可能需要把Group勾选上
     2. 指定文件运行和...运行结果不一样，比如`golangci-lint run -c .golangci.yml a/...`和`golangci-lint run -c .golangci.yml a/b.go`,都包含b.go，但是输出结果不一样：前者输出有格式化，后者有时候却没有。(待研究)
-    3. no such linter goerr113
-        1. 可能原因:golangci-lint版本太低
+    3. no such linter xxx
+        1. 可能原因:golangci-lint版本太低。我当时是在go1.17下用的1.20的golangci-lint，把golangci-lint升级到1.43就好了。
     4. level=error msg="Running error: context loading failed: no go files to analyze"
         1. 场景一：更新了win的环境变量后运行lint就报这个错，然后执行下go build又好了
         2. 场景二：更新了go mod的某个包之后出现，同样执行下go build就好了

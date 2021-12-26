@@ -440,7 +440,7 @@ go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 ### .msi文件安装
 .msi的好处是安装后可以方便的修复和卸载
 
-3. 配置GOROOT(C:\Go)并将%GOROOT%\bin)加入PATH中，不过现在go语言安装工具会自动帮我们加入进去.这样就可以在任意地方运行go开头的命令了
+3. 配置GOROOT(实测go1.15是`C:\Go`目录，go1.17是`C:\Program Files\Go`目录)并将%GOROOT%\bin)加入PATH中，如果go语言安装工具帮我们加了就不用手动加了。这样就可以在任意地方运行go开头的命令了
 4. 配置GOPATH.默认是`~/go`,想修改的话在系统变量新增一个GOPATH就行.
 5. 配置gobin(需不需要看情况)
 
@@ -5583,6 +5583,17 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
         os.OpenFile("notes.txt", os.O_RDWR|os.O_CREATE, 0755)
         ```
     3. `Stat(name string) (fi FileInfo, err error)`返回了`Fileinfo`这个结构。注意它只代表文件当时的状态--假如后面文件变化了，它不会同步更新，所以需要在每次用的时候再获取。它可以结合`os.IsNotExist`来判断文件是否存在
+
+        ```go
+        _, err := os.Stat(path)
+        if err == nil {
+            return true, nil
+        }
+        if os.IsNotExist(err) {
+            return false, nil
+        }
+        return false, err
+        ```
 5. 删除文件和删除文件夹（同一个函数）：`Remove(path string) Error`，调用该函数就可以删除路径为path的文件或文件夹。
     1. 实测在win系统下，如果文件处于打开状态，需要先关闭文件再删除。其他系统没这个问题。
 

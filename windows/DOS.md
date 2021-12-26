@@ -27,9 +27,6 @@ cmd：
             1. 我的电脑 -> 右键属性 -> 高级 -> 环境变量
             2. 修改注册表
             3. 函数调用
-    3. 编辑完后如何生效：有两个方法
-        1. 不重启系统的话，在命令行打印刚才的环境变量，比如新增完环境变量`NODE_PATH`，在命令行执行`echo %NODE_PATH%`就生效了
-        2. 重启系统
     2. 使用环境变量`%env_name%`
 
         ```bash
@@ -65,7 +62,7 @@ powershell:
             # 比如
             docker build . -t bridge;if($?) {docker run -p 8081:8081 --env-file .env.local bridge}
             ```
-5. 环境变量
+5. 环境变量：实测发现`env:env_name`是环境变量本身，`$env:env_name`是对环境变量值的引用，比如`ls env:USERPROFILE`只是列出环境变量的值，而`ls $env:USERPROFILE`是列出所在目录下的文件。
     1. 查看环境变量
         1. 查看全部环境变量
             1. `Get-ChildItem env:`(冒号不能省略)
@@ -87,9 +84,6 @@ powershell:
         2. 持久化设置
             1. 我的电脑 -> 右键属性 -> 高级 -> 环境变量
             2. 函数调用
-    3. 编辑完后如何生效：有两个方法
-        1. 不重启系统的话，在命令行打印刚才的环境变量，比如新增完环境变量`NODE_PATH`，在命令行执行`echo $env:NODE_PATH`就生效了
-        2. 重启系统
     2. 使用环境变量`$env:env_name`
 
         ```bash
