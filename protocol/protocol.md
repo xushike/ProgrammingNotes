@@ -205,6 +205,11 @@ FTP, the File Transfer Protocol, is probably the oldest network protocol that cu
 是FTP标准的扩展，添加了安全套接层（SSL）以及其继任者传输层安全性协议（TLS）的支持
 
 ### DNS
+DNS走的是UDP协议？
+
+DNS协议帧如图：其中question是域名，answer是IP
+![](../picture/protocol/dns-frame.webp "dns frame")
+
 ### SMTP
 ## SSH
 Secure Shell（安全外壳协议，简称SSH）是一种加密的网络传输协议，可在不安全的网络中为网络服务提供安全的传输环境。SSH通过在网络中创建安全隧道来实现SSH客户端与服务器之间的连接。SSH最常见的用途是远程登录系统，人们通常利用SSH来传输命令行界面和远程执行命令。SSH使用频率最高的场合是类Unix系统，但是Windows操作系统也能有限度地使用SSH。2015年，微软宣布将在未来的操作系统中提供原生SSH协议支持，Windows 10 1803版本已提供OpenSSH工具。
