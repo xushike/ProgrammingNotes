@@ -1272,10 +1272,14 @@ https://github.com/facebookarchive/inject
 ### jinzhu/now
 https://github.com/jinzhu/now
 
-## 监控 prometheus
+## 监控 prometheus 
 参考：
-1. github.com/labstack/echo-contrib/prometheus
-2. github.com/prometheus/client_golang
+1. 官方
+    1. github.com/labstack/echo-contrib/prometheus
+    2. 客户端库：github.com/prometheus/client_golang
+2. 优秀文章
+    1. https://studygolang.com/articles/17959
+    2. https://blog.csdn.net/u012223939/article/details/88568477
 
 Prometheus使用Go语言开发，是Google BorgMon监控系统的开源版本，它是开源监控报警系统和时序列数据库(TSDB)。最初由前谷歌SRE Matt T. Proud开发，并转为一个研究项目。在Proud加入SoundCloud之后，他与另一位工程师Julius Volz合作开发了Prometheus。后来其他开发人员陆续加入了这个项目，并在SoundCloud(SoundCloud是Prometheus的早期采用者)内部继续开发，最终于2015年1月公开发布。与Borgmon一样，Prometheus主要用于提供近实时的，针对动态云环境下的和基于容器的微服务、服务和应用程序的检测监控。
 
@@ -1287,10 +1291,18 @@ Prometheus专注于现在正在发生的事情，而不是追踪数周或数月�
 
 ![prometheus_redundancy](../picture/golang/prometheus_redundancy.jpg)
 
+架构及组件说明：
+1. Prometheus Server ：主程序，负责抓取和存储时序数据；
+2. Client Libraries：客户端库，负责检测应用程序代码；
+3. Push Gateway：Push 网关，接收短生命周期的 Job 主动推送的时序数据；
+4. Exporters：为不同服务定制的Exporter(如：HAProxy、StatsD、Graphite等) ，从而抓取它们的Metris指标数据；
+5. Alert Manage：告警管理器，处理不同的告警；
 
-使用：
+概述：
 1. 指标收集：Prometheus称其可以抓取的指标来源为端点（endpoint）。端点通常对应于单个进程、主机、服务或应用程序。为了抓取端点数据，Prometheus定义了名为目标（target）的配置。这是执行抓取所需的信息 - 例如，如何进行连接，要应用哪些元数据，连接需要哪些身份验证，或定义抓取将如何执行的其他信息。一组目标被称为作业（job）。作业通常是具有相同角色的目标组 - 例如，负载均衡器后面的Apache服务器集群，它们实际上是一组相似的进程。生成的时间序列数据将被收集并存储在Prometheus服务器本地，也可以设置从服务器发送数据到外部存储器或其他时间序列数据库。
-    1. 使用 Prometheus 生成服务级别的指标时，有两个典型的方法：内嵌地运行在一个服务里并在 HTTP 服务器上暴露一个 /metrics 端点，或者创建一个独立运行的进程，建立一个所谓的导出器。
+    1. 使用 Prometheus 生成服务级别的指标时，有两个典型的方法
+        1. 拉:内嵌地运行在一个服务里并在 HTTP 服务器上暴露一个`/metrics`端点,允许通过HTTP来暴露注册的metric
+        2. 推:或者创建一个独立运行的进程，建立一个所谓的导出器。将注册的metric推送到Pushgateway?
 2. 服务发现：可以通过多种方式处理要监控的资源的发现，包括：
     1. 用户提供的静态资源列表
     2. 基于文件的发现。例如，使用配置管理工具生成在Prometheus中可以自动更新的资源列表
@@ -1304,11 +1316,57 @@ Prometheus专注于现在正在发生的事情，而不是追踪数周或数月�
 5. 自治：每个Prometheus服务器都设计为尽可能自治，旨在支持扩展到数千台主机的数百万个时间序列的规模。数据存储格式被设计尽可能降低磁盘的使用率，并在查询和聚合期间快速检索时间序列。
 6. 冗余和高可用性：冗余和高可用性侧重弹性而不是数据持久性。Prometheus团队建议将Prometheus服务器部署到特定环境和团队，而不是仅部署一个单体Prometheus服务器。如果你确实要部署高可用模式，则可以使用两个或多个配置相同的Prometheus服务器收集时间序列数据，并且所有生成的警报都由可消除重复警报的高可用Alertmanager集群处理。
 
+Prometheus有五种指标(metric)类型(时序数据)：前四种类型都有对应的Vector版本，GaugeVec, CounterVec, SummaryVec, HistogramVec，vector版本细化了prometheus数据模型，增加了label维度。
+1. Counter(计数器)：表示单调递增的指标数据。它的值只会增加或在重启时重置为零。比如可以用来代表请求次数，错误数量，完成任务数等。
+2. Gauge(计量器)：代表一个可以任意变化的指标数据，可增可减。比如协程数量，内存，队列数量，温度等。
+3. Histogram(累积直方图/分布图/柱状图)：主要是样本观测数据，一段时间范围内对数据进行采样。比如请求持续时间，响应大小等。比如一个API里调用另外一个API，常可用于配合链路追踪系统。
+    1. 字段
+        1. `Buckets`表示duration的分布区间
+4. Summary(摘要统计)：和Histogram类似，也是样本观测。但是它提供样本值的分位数，所有样本值的大小总和，样本总量。
+5. 第5种metric为Untyped，它的运作方式类似Gauge，区别在于它只向prometheus服务器发送类型信号
 
+客户端使用：
+1. 创建指标
+2. 实现指标
+    1. 基于
+3. 注册指标
+    1. 基于Collector来注册：Collector用于采集prometheus metric，如果运行多个相同的实例，则需要使用ConstLabels来注册这些实例。实现collector接口需要实现Describe和Collect方法，并注册collector
+    1. 默认注册
+    3. 自定义注册
+4. 收集指标
 
+    ```go
+    totalCounterVec.WithLabelValues(workerID, job.Type).Inc()
+    ```
+5. 暴露指标
 
-Prometheus 客户端公开了在暴露服务指标时能够运用的四种指标类型：
-1. 
+```go
+// 简单使用示例
+// 创建指标模型
+var counter = prometheus.NewCounterVec(
+    prometheus.CounterOpts{
+        Name: "test total", // 名称
+    },
+    []string{"method", "path"}, // 带上两个label
+)
+
+// 注册指标
+prometheus.MustRegister(counter) // 可以注册多个
+
+// 中间件使用，以gin为例
+r := gin.New()
+r.Use(func(ctx *gin.Context) {
+    // 收集指标
+    counter.With(prometheus.Labels{
+        // 这里使用之前带上的label，可以只带其中部分
+        "method": ctx.Request.Method,
+        "path":   ctx.Request.RequestURI,
+    }).Inc() // 加1 也可以用Add(1)
+    ctx.Next()
+})
+
+// 自定义Collector todo
+```
 
 ## 哈希
 哈希和加密的区别(HASHING VS ENCRYPTION):哈希是摘要而不是加密，哈希也是一种单向函数。加密将明文数据转换为密文，然后在提供正确密钥后将其转换回明文，这是一种双向函数。与哈希不同，哈希不能逆转。 这是一个重要的区别。

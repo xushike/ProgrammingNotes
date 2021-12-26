@@ -20,7 +20,18 @@ ER模型，全称为实体联系模型、实体关系模型或实体联系模式
 IOE指的(I:IBM,O:Oracle,E:EMC)，比如淘宝就从Oracle转成了MySQL就是去IOE
 
 # 三 基础
-## 1 事务
+## 0 架构
+数据库的分类和对比：
+
+1. 传统关系型数据库
+    1. 缺点
+        1. 关系模式难以应付复杂的数据：比如人，书，狗等，可能需要很多表来维护他们的关系
+2. 非关系型数据库(NoSQL)
+    2. 时序数据库
+        1. 什么场景适合时序数据库
+            1. 可能不需要ACID
+
+## 8 事务
 什么是事务：在数据库的使用中，我们常常把一系列操作的集合看作是一个独立的单元，这种构成单一逻辑工作单元的集合被称为事务。
 
 为什么需要事务:Transactions are not a law of nature; they were created with a purpose, namely to simplify the programming model for applications accessing a database. By using transactions, the application is free to ignore certain potential error scenarios and concurrency issues, because the database takes care of them instead (we call these safety guarantees).(事务的产生,是为了当应用程序访问数据库的时候,事务能够简化我们的编程模型,不需要我们去考虑各种各样的潜在错误和并发问题.当我们使用事务时,要么提交,要么回滚,我们不会去考虑网络异常了,服务器宕机了,同时更改一个数据怎么办?因此事务本质上是为了应用层服务的.而不是伴随着数据库系统天生就有的.)
