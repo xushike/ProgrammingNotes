@@ -110,7 +110,6 @@
 1. DOM编程：DOM的渲染顺序
 1. rpc
 1. golang远程方法调用
-1. utf-8等的区别，go是用的哪一种
 1. network
     1. book：计算机网络
 1. vscode debug

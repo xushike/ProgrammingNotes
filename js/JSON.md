@@ -3,7 +3,7 @@
 # 一 概述
 
 ## 1 简介
-JSON的全名JavaScript Object Notation（从名字上就能看出和JavaScript的关系非常紧密），发明人是Douglas Crockford。
+JSON的全名JavaScript Object Notation（从名字上就能看出和JavaScript的关系非常紧密），发明人是Douglas Crockford。JSON使用UTF-8编码
 
 作者参考：https://cloud.tencent.com/developer/article/1080320
 

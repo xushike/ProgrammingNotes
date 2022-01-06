@@ -593,24 +593,32 @@ github.com/go-redis/redis
 ## JWT
 1. https://github.com/dgrijalva/jwt-go
 
-```go
-// parse without validation and secret
-var (
-tokenString = ""
-)
+使用
+1. 生成签名
 
-token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
-if err != nil {
-    fmt.Println(err)
-    return
-}
+    ```go
 
-if claims, ok := token.Claims.(jwt.MapClaims); ok {
-    fmt.Println(claims)
-} else {
-    fmt.Println(err)
-}
-```
+    ```
+1. 解析
+
+    ```go
+    // parse without validation and secret
+    var (
+    tokenString = ""
+    )
+
+    token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    if claims, ok := token.Claims.(jwt.MapClaims); ok {
+        fmt.Println(claims)
+    } else {
+        fmt.Println(err)
+    }
+    ```
 
 问题：
 1. key is of invalid type
@@ -716,6 +724,7 @@ https://github.com/golangci/golangci-lint
     5. Can't run linter goanalysis_metalinter: failed prerequisites: buildssa ...
         1. 我是go1.14下出现的这个问题，除非切换回go1.13，否则目前无解，参考：https://github.com/golangci/golangci-lint/issues/827
     6. ERRO Running error: context loading failed: failed to load program with go/packages: could not determine GOARCH and Go compiler
+    7. 2021-01-04:只是更新了go.mod的包，代码未改动，结果执行`golangci-lint`结果就不一样了
 
 ## sonyflake
 参考
@@ -1424,6 +1433,60 @@ golang.org/x/crypto/bcrypt
 ## 数据类型
 ### 精确的浮点数
 github.com/shopspring/decimal
+
+方法：
+1. `(d Decimal) Exponent() int32`: 首先判断是不是小数，如果是小数，返回小数的位数；其次判断原始数据是不是指数，如果是指数，返回末尾0的个数；其他返回0
+
+使用：
+1. 生成decimal
+    1. 从字符串生成decimal:`.0`, `0.`, `.1`, `1.`, `001`可以正确生成，`.`不能正确生成
+
+        ```go
+        decimal.NewFromString("1e3") // 1000
+        ```
+2. 小数操作
+    1. 保留小数位数
+
+        ```go
+        decimal.DivisionPrecision = 2 // 保留两位小数，如有更多位，则进行四舍五入保留两位小数
+        ```
+    1. 获取小数位数`decimal.Exponent()`
+
+        ```go
+        a := "-1.1e-3"
+        float, err := decimal.NewFromString(a)
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(float) // -0.0022
+        fmt.Println(float.Exponent()) // -4
+
+        float, _ := decimal.NewFromString("11011.00")
+        fmt.Println(float) // 11011
+        fmt.Println(float.Exponent()) // -2 
+        ```
+3. 指数：可使用`decimal.Exponent()`，但该函数不一定是获取指数
+
+    ```go
+    // 原始数据是指数表示，返回末尾0的个数
+    float, _ := decimal.NewFromString("11011e3")
+	fmt.Println(float.Exponent()) // 3
+
+    // 虽然值一样，但原始数据不是指数表示，所以返回0
+    float, _ := decimal.NewFromString("11011000") 
+	fmt.Println(float.Exponent()) // 0
+
+    float, _ := decimal.NewFromString("-6.55e50")
+	fmt.Println(float.Exponent()) // 48
+    ```
+4. 系数：
+
+    ```go
+    // 正数
+    -6.55e50 的系数是 -655
+    -6.55 的系数也是 -655
+    ```
+3. 类型转换：从decimal转换为常见的数据类型`.String()`,`.Float64()`
 
 ## zip
 github.com/alexmullins/zip
