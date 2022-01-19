@@ -3470,6 +3470,8 @@ type _panic struct {
 ```
 
 #### defer
+延迟返回关键字 defer 作用是在程序结束或异常之前执行
+
 `defer func(){...}()`，只有一句可以写成`defer xxx`，比如`defer fmt.Println("hello")`
 
 deger的定义：Defer is used to ensure that a function call is performed later in a program’s execution, usually for purposes of cleanup. defer is often used where e.g. ensure and finally would be used in other languages.
@@ -5319,7 +5321,7 @@ log相比fmt的优点：
         rand.Seed(time.Now().UnixNano()) // 指定种子
         fmt.Println(rand.Intn(100))
         ```
-    2. `r := rand.NewSource()`:该方法**不是并发安全的**
+    2. `r := rand.NewSource()`:该方法**不是并发安全的**所以，性能比上面的更好
 2. `Int() int`:返回一个非负的伪随机int值
 3. `Int31() int32`:返回一个int32类型的非负的31位(31-bit)伪随机数。`Int63() int64`同理
 
@@ -6192,6 +6194,33 @@ func main() {
 // 在遍历的同时做增加或删除操作，是会立即生效的
 ```
 
+`Pool`：并发安全的对象池(A Pool is safe for use by multiple goroutines simultaneously)
+1. 概述
+    1. `Pool`里的元素个数无法得知
+    2. Get 获取到的元素对象可能是刚创建的，也可能是之前创建好 cache 住的。使用者无法区分
+    2. 池子里元素的释放外界无法控制，随时都可能被runtime释放
+    3. sync.Pool 本质用途是增加**临时对象**的重用率，减少 GC 负担，不适合用作socket长连接或数据库连接池
+2. 使用:非常简单，但是有一些细节需要清楚
+    1. 声明:声明的时候必须指定`New()`方法，且要保证该方法的并发安全--因为官方保证了`sync.Pool`数据结构是并发安全的，`Get`和`Put`的调用是并发安全的，但是没保证`Pool.New()`的并发安全。
+
+        ```go
+        bufferpool := &sync.Pool {
+            New: func() interface {} {
+                println("Create new instance")
+                return struct{}{}
+            }
+        }
+        ```
+    2. 获取对象`Pool.Get()`：Get 方法会返回 Pool 已经存在的对象，如果没有，那么就调用初始化的时候定义的 New 方法来初始化一个对象。
+
+        ```go
+        buffer := bufferPool.Get()
+        ```
+    3. 释放对象`Pool.Put()`:使用对象之后，调用 Put 方法声明把对象放回池子。注意了，这个调用之后仅仅是把这个对象放回池子，池子里面的对象啥时候真正释放外界是不清楚的，不受外部控制的，而是由runtime管理。
+        ```go
+        defer bufferPool.Put(buffer)
+        ```
+
 #### sync/atomic
 提供了一个Value类型用于更底层的(相对于go的sync包和channel)原子操作
 1. `Value`:可以操作任意类型
@@ -6203,6 +6232,11 @@ func main() {
 
 提供一些原子操作，比如：
 1. 增或减：`AddUint32(x,x)`
+
+    ```go
+    var numCalcsCreated int32
+    atomic.AddInt32(&numCalcsCreated, 1)
+    ```
 2. 以`CompareAndSwap`为前缀的CAS操作
     1. 比如`CompareAndSwapInt32()`，趋于乐观
 

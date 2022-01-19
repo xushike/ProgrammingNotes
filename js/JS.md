@@ -787,7 +787,7 @@ for (var i = 0, item; item = a[i]; i++) {
 注意:
 1. 该方法遍历时最好不要动态修改属性,因为不能保证后面的遍历是否能访问到.
 
-#### 3.4.3 forEach((ele,index,array)=>{...})
+#### 3.4.3 array.forEach((ele,index,array)=>{...})
 对于array的遍历,一般情况下`forEach()`比`for ... of`更好用.
 
 ### 3.5 三目（三元）运算符
@@ -1491,7 +1491,7 @@ Float64Array();
 属性：
 1. 长度`length`
 
-方法：
+使用：
 1. 读取：
     1. 下标，JS数组的下标是字符串类型的，所以以下几种方法都可以获得对应的数据，是因为Javascript自动将数字转化为字符串。
         ```js
@@ -1505,6 +1505,8 @@ Float64Array();
 1. 数组和字符串的转换
     1. `string1.split(string2)`
     2. `array.join(string)`
+3. 遍历:`for`,`for in`,`array.forEach`都可以
+    1. 对于超长数组，一般来说`for in`和`forEach`的效率比`for`高，而且`for in`和`forEach`会跳过空元素
 2. `splice()`：从原数组中添加/删除项目，然后返回被删除的项目
     1. 在头部添加元素可以用:`arr.splice(0,0,xxx)`；删除头部的元素可以使用`arr.splice(0,1)`等等
 3. 在数组头/末尾添加或删除项目

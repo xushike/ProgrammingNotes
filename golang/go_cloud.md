@@ -562,6 +562,10 @@ github.com/go-redis/redis
 	}
     ```
 
+
+#### redis分布式锁
+github.com/bsm/redislock
+
 ### mongodb
 参考：
 1. driver:
@@ -1566,6 +1570,10 @@ https://github.com/schollz/croc
 
 ### gengine
 https://github.com/bilibili/gengine
+
+
+## WebSocket
+https://github.com/gorilla/websocket
 
 # 五 经验
 ## 1 为什么需要框架

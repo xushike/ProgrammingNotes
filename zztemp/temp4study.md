@@ -59,7 +59,7 @@
 1. golang里有相同底层数据类型的算是同一个数据类型吗
 1. 各数据类型在各种情况下的初始值
 1. url.Query()
-1. 信号量，多线程，锁，自旋锁
+1. 多线程，锁，自旋锁
 1. golang *string
     1. *(*xxx)和xxx的区别
     1. 	defaultMaxMemory = 32 << 20 // 32 MB

@@ -114,7 +114,7 @@ linux中的概念（待补充）
 ## 3 sync.WaitGroup
 作用：它能够一直等到所有的goroutine执行完成，并且阻塞主线程的执行，直到所有的goroutine执行完成
 
-## 4 信号量
+## 4 信号量(semaphore)
 对信号量有4种操作
 1. 初始化（initialize），也叫做建立（create）
 2. 等信号（wait），也可叫做挂起（suspend）
