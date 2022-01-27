@@ -23,13 +23,6 @@ EMQX消息服务器特点：
 5. 单节点支持 2000K 并发连接
 6. 支持规则引擎和编解码
 
-相关软件：
-1. 客户端
-    1. MQTTX(https://mqttx.app):MQTT X 的 UI 采用了聊天界面形式，简化了页面操作逻辑，用户可以快速创建连接，允许保存多个客户端，方便用户快速测试 MQTT/MQTTS 连接，及 MQTT 消息的订阅和发布。
-    2. MQTT 在线测试工具（http://tools.emqx.io/）
-2. 服务器
-    1. EMQX
-
 ## 4 文档网址等
 1. 官网
     1. https://www.emqx.io/
@@ -76,7 +69,7 @@ https://docs.emqx.cn/broker/v4.3/getting-started/cluster.html#emq-x-%E5%88%86%E5
 
 
 ## 1 工具生态
-### EMQ X Broker
+### 服务器 EMQ X Broker
 1. `emqx`：服务的基本命令
     1. 启动broker`emqx start`
 2. `emqx_ctl`：用于对 EMQ X 进行管理、配置、查询
@@ -93,16 +86,23 @@ https://docs.emqx.cn/broker/v4.3/getting-started/cluster.html#emq-x-%E5%88%86%E5
     ./bin/emqx_ctl trace start topic '$system//VPCJN2YC/52R3B6IL/world' trace_topic_world.log
     ```
 
-### 回调链
-回调链 需要允许其上面的函数**提前终止链**和**忽略本次操作**。
+回调链：回调链 需要允许其上面的函数**提前终止链**和**忽略本次操作**。
 
-### 挂载点
-message.publish	MQTT 消息发布
-message.deliver	MQTT 消息投递前
-message.acked	MQTT 消息回执
+挂载点：
+1. message.publish	MQTT 消息发布
+2. message.deliver	MQTT 消息投递前
+3. message.acked	MQTT 消息回执
 
-### session
-消息保存在哪儿
+session：消息保存在哪儿
+
+### 客户端 MQTTX
+https://mqttx.app
+
+MQTT X 的 UI 采用了聊天界面形式，简化了页面操作逻辑，用户可以快速创建连接，允许保存多个客户端，方便用户快速测试 MQTT/MQTTS 连接，及 MQTT 消息的订阅和发布。
+
+### MQTT 在线测试工
+http://tools.emqx.io/
+
 
 ## 2 插件和内置模块
 ### 插件

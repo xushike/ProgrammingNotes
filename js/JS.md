@@ -618,6 +618,12 @@ js的类型转换包含Type conversion和Type coercion(类型强制转换)，两
 1. number to string
     1. `toString()`
     2. 加上空字符串
+    3. `toFixed(n)`：保留指定位数的小数
+
+        ```js
+        var a = 5
+        console.log(a.toFixed(2)); // 5.00
+        ```
 
 ### 1.4 局部变量
 ### 1.5 全局变量
@@ -1689,10 +1695,18 @@ var arr = Array.from(typedArray);
 ### 4.7 Number
 JavaScript的Number类型为双精度IEEE 754 64位浮点类型。
 
-#### 4.7.1 属性
+属性:
 1. `Number.POSITIVE_INFINITY`:正无穷大
 2. `Number.NEGATIVE_INFINITY`:负无穷大
 3. `Number.NaN`:
+
+方法：
+1. `toFixed(n)`：把数字转换为字符串，保留指定位数的小数
+
+    ```js
+    var a = 5
+    console.log(a.toFixed(2)); // 5.00
+    ```
 
 ### 4.8 JSON
 包含两个方法: 除了这两个方法, JSON这个对象本身并没有其他作用，也不能被调用或者作为构造函数调用。

@@ -1625,6 +1625,8 @@ fmt.Println(a + 0.7) //output: 1.2999999999999998
     ```
 
 #### 2.1.3 字符串
+https://go.dev/blog/strings
+
 与C++,Java,Python等(他们是**等宽字符序列**)不同，golang中字符串是以 UTF-8 为格式进行存储，占用1~4个字节(为 ASCII 码时占用 1 个字节,为中文时占用3或4个字节)，即**变宽字符序列**,好处是不仅减少了内存和硬盘空间占用，同时也不用像其它语言那样需要对使用 UTF-8 字符集的文本进行编码和解码。语法分为普通字符串和raw字符串:raw字符串和js6中的模板字符串有点像，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。golang的字符串是不可变的，源码定义在src/runtime/string.go
 
 ```go
@@ -1710,9 +1712,9 @@ var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
 5. 字符串的比较
     ```go
     // 有三种方法：==、strings.Compare()、strings.EqualFold
-    // 1. ==
+    // 1. ==比较，区分大小写
     // 2. Compare()比较,区分大小写,返回int 0时相同，1时不同，效率高于==
-    // 3. EqualFold ()比较，比较utf-8编码小写的条件下是否相等，不区分大小写
+    // 3. EqualFold ()比较，比较utf-8编码在小写的情况下是否相等，不区分大小写。因为它内部实现是一个个字符的比较，前面的字符如果不同就直接return了，所以比strings.ToLowerCase()转化后再比较的方式效率高
     ```
     
 go有字符串常量池吗：没有。
@@ -4001,7 +4003,29 @@ for _, v := range res.Data {
         ```
     6. `\b`匹配单词的开始或结束的位置,`\B`匹配不是单词开头或结束的位置
     7. 空格就表示空格
-3. 转义`\`:
+3. 转义`\`
+    1. 匹配括号在模板字符串中需要转义，但括号作为分组使用的时候不管普通字符串还是模板字符串中都不需要转义
+
+        ```go
+        // 例子1 匹配的是分组
+        var str = `* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/1.AssemblyLLanguage.md)`
+        var exp = regexp.MustCompile(`(.+)`)
+        // or
+        var exp = regexp.MustCompile("(.+)")
+        for _, v := range reg.FindAllStringSubmatch(str, -1) {
+            fmt.Printf("%#v\n", v)
+        }
+        // []string{"* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/1.AssemblyLLanguage.md)", "* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/1.AssemblyLLanguage.md)"}
+
+        // 例子2 匹配的是括号及其中的内容
+        var str = `* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/1.AssemblyLLanguage.md)`
+        var exp = regexp.MustCompile(`\(.+\)`)
+        for _, v := range reg.FindAllStringSubmatch(str, -1) {
+            fmt.Printf("%#v\n", v) 
+        }
+        // []string{"(AssemblyLLanguage/AssemblyLLanguage/1.AssemblyLLanguage.md)"}
+
+        ```
 4. 重复：默认是针对单个字符的重复，如果想对多个字符重复，需要分组后再重复
     1. `*`:重复零次或更多次
     2. `+`：重复一次或更多次
@@ -4038,8 +4062,56 @@ for _, v := range res.Data {
         // aabbbbgbddesddfiidtom, tom你好啊
         // 「」tom} ${} tom
 
-        // 例子2 FindAllString
-        // 例子3 
+        // 例子2 FindAllStringSubmatch
+        // 例子2.1
+        var str = `* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/AssemblyLLanguage.md)`
+        var reg = regexp.MustCompile(`(\([A-Z]+)[^/]+(/[A-Z]+)`) // 这里有两个捕获分组，一个以左括号开头，一个以斜杠开头
+        for _, v := range reg.FindAllStringSubmatch(str, -1) {
+            fmt.Printf("%#v\n", v) // []string{"(AssemblyLLanguage/A", "(A", "/A"}
+        }
+        // 例子2.2
+        var str = `* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/AssemblyLLanguage.md)`
+        var reg = regexp.MustCompile(`(\([A-Z]+)|(/[A-Z]+)`) // 这里看起来像两个捕获分组，因为中间是用元字符|连接的，其实是一个捕获分组
+        for _, v := range reg.FindAllStringSubmatch(str, -1) {
+            fmt.Printf("%#v\n", v) 
+        }
+        // []string{"(A", "(A", ""}
+        // []string{"/A", "", "/A"}
+        // []string{"/A", "", "/A"}
+        // 例子2.3
+        var str = `* [AssemblyLanguage汇编语言](AssemblyLLanguage/AssemblyLLanguage/1.AssemblyLLanguage.md)`
+        var reg = regexp.MustCompile(`(\([A-Z]+)|(/[A-Z]+)|(\.[A-Z]+)`) // 同样的，这里看起来像三个捕获分组，因为中间是用元字符|连接的，其实是一个捕获分组
+        for _, v := range reg.FindAllStringSubmatch(str, -1) {
+            fmt.Printf("%#v\n", v) 
+        }
+        // []string{"(A", "(A", "", ""}
+        // []string{"/A", "", "/A", ""}
+        // []string{".A", "", "", ".A"}
+
+
+        // 例子3 命名分组
+        str := `tom 28 tom@example.com`
+        re := regexp.MustCompile(`(?P<name>[a-zA-Z]+)\s+(?P<age>\d+)\s+(?P<email>\w+@\w+(?:\.\w+)+)`)
+        match := re.FindStringSubmatch(str)
+        groupNames := re.SubexpNames()
+
+        fmt.Printf("%v, %v, %d, %d\n", match, groupNames, len(match), len(groupNames))
+
+        result := make(map[string]string)
+        for i, name := range groupNames {
+            if i != 0 && name != "" { // 第一个分组为空（也就是整个匹配）
+                result[name] = match[i]
+            }
+        }
+        prettyRes, _ := json.MarshalIndent(result, "", "  ")
+        fmt.Printf("%s\n", prettyRes)
+        // [tom 28 tom@example.com tom 28 tom@example.com], [ name age email], 4, 4
+        // {
+        //     "age": "28",
+        //     "email": "tom@example.com",
+        //     "name": "tom"
+        // }
+
         ```
     2. `(?:xxx)`是非捕获分组，不会保存起来。
 6. 环视：写法和分组有点像，但是用法不一样。环视匹配的是特定位置，不匹配任何字符，也就是并不会“占用”字符。这一点与单词分界符`\b`，锚点`^`和`$`相似，所以环视更加通用。不过google的re2不支持环视，所以golang没有，想了解的话可以参考js正则里的前瞻后顾。
@@ -4072,7 +4144,7 @@ for _, v := range res.Data {
         
         // 匹配范围内的连续字符
         text := `Hello 世界！123 Go.-`
-        reg := regexp.MustCompile(`[a-l]`) 
+        reg := regexp.MustCompile(`[a-l]+`) 
         fmt.Printf("%q\n", reg.FindAllString(text, -1)) // ["ell"]
         
         text := `Hello 世界！123 Go.-`
@@ -4177,7 +4249,7 @@ for _, v := range res.Data {
     // "Say: Hello Golang, Hello World"
     ```
 11. `(*Regexp)Longest()`:切换到贪婪模式
-12. Replace相关方法:在 src 中搜索匹配项，并替换为 repl 指定的内容
+12. Replace相关方法:在 src 中搜索匹配项，并替换为 repl 指定的内容，每次操作针对的是完整匹配项
     1. `*Regexp.ReplaceAllString(src, repl string) string`:这里的repl就可以使用正则捕获的分组(`$1`等)
         
         ```go
@@ -4186,7 +4258,7 @@ for _, v := range res.Data {
         reg := regexp.MustCompile(`\$\{([^}]+)\}`)
         bar = reg.ReplaceAllString(text, "$1")
         ```
-    2. `*Regexp.ReplaceAllStringFunc(src string, repl func(string) string) string`:搜索所有匹配项,替换后返回。这里repl里不能使用捕获分组了
+    2. `*Regexp.ReplaceAllStringFunc(src string, repl func(string) string) string`:搜索所有匹配项,替换后返回,，每次替换针对的是完整匹配项。这里repl里不能使用捕获分组
     
 
 ### 6.3 例子
@@ -4526,48 +4598,69 @@ writer.Write(buf)
 ```
 
 ### bufio
-封装了带缓存的io操作以及Scanner，通过包裹 io.Reader 或 io.Writer 对象创建新的 Reader 或 Writer 实例，提供了缓冲的能力，能够一定程度减少大块数据读写带来的开销。使用方法非常简单，达到指定缓冲大小，触发写或读操作，如未达到要求，可用 Flush 方法刷新。
+封装了带缓存的io操作以及缓冲Scanner，通过包裹 io.Reader 或 io.Writer 对象创建新的 Reader 或 Writer 实例，提供了缓冲的能力，能够一定程度减少大块数据读写带来的开销。使用方法非常简单，达到指定缓冲大小，触发写或读操作，如未达到要求，可用 Flush 方法刷新。
+
+该包更适合处理流式数据，对于非流式数据，比如字符串或字节片段这样的内存数据，一般情况下使用`bytes.Split`，`strings.Split` 等字节或字符串包中的方法可能更简单。
 
 结构体：
 1. `Reader`
-    1. `(*Reader).Peek(n int) ([]byte, error)`:返回缓存的一个切片，该切片引用缓存中前 n 字节数据,该操作不会将数据读出，只是引用；引用的数据在下一次读取操作之前是有效的；及其他一些细节
-        
-        ```go
-        s := strings.NewReader("ABCDEFG")
-        br := bufio.NewReader(s)
+    1. 使用
+        1. `NewReader(rd io.Reader) *Reader`：将 rd 封装成一个默认大小缓存的 bufio.Reader 对象
+        1. `NewReaderSize(rd io.Reader, size int) *Reader`：将rd封装成一个拥有 size 大小缓存的 bufio.Reader 对象
+        1. `(*Reader).Peek(n int) ([]byte, error)`:返回缓存的一个切片，该切片引用缓存中前 n 字节数据,该操作不会将数据读出，只是引用；引用的数据在下一次读取操作之前是有效的；及其他一些细节
+            
+            ```go
+            s := strings.NewReader("ABCDEFG")
+            br := bufio.NewReader(s)
 
-        foo, _ := br.Peek(5)
-        fmt.Printf("%s\n", foo)
-        // ABCDE
+            foo, _ := br.Peek(5)
+            fmt.Printf("%s\n", foo)
+            // ABCDE
 
-        foo[0] = 'a'
-        bar, _ := br.Peek(5)
-        fmt.Printf("%s\n", bar)
-        // aBCDE
-        ```
-    2. `(*Reader).Read(p []byte) (n int, err error)`:读出数据到 p 中，返回读出的字节数；及其他一些细节
-        
-        ```go
-        s := strings.NewReader("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-        br := bufio.NewReader(s)
-        b := make([]byte, 20)
+            foo[0] = 'a'
+            bar, _ := br.Peek(5)
+            fmt.Printf("%s\n", bar)
+            // aBCDE
+            ```
+        2. `(*Reader).Read(p []byte) (n int, err error)`:读出数据到 p 中，返回读出的字节数；及其他一些细节
+            
+            ```go
+            s := strings.NewReader("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+            br := bufio.NewReader(s)
+            b := make([]byte, 20)
 
-        n, err := br.Read(b)
-        fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
-        // ABCDEFGHIJKLMNOPQRST 20 <nil>
+            n, err := br.Read(b)
+            fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
+            // ABCDEFGHIJKLMNOPQRST 20 <nil>
 
-        n, err = br.Read(b)
-        fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
-        // UVWXYZ1234567890 16 <nil>
+            n, err = br.Read(b)
+            fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
+            // UVWXYZ1234567890 16 <nil>
 
-        n, err = br.Read(b)
-        fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
-        // 0 EOF
-        ```
-    3. `(*Reader).ReadString(delim byte) (string, error)`、`(*Reader).ReadBytes(delim byte) ([]byte, error)`、`(*Reader) ReadSlice(delim byte) (line []byte, err error)`：这几个方法都是基于`ReadSlice()`实现的，大同小异。
-使用：
-1. `NewReader(rd io.Reader) *Reader`：将 rd 封装成一个默认大小缓存的 bufio.Reader 对象
-1. `NewReaderSize(rd io.Reader, size int) *Reader`：将rd封装成一个拥有 size 大小缓存的 bufio.Reader 对象
+            n, err = br.Read(b)
+            fmt.Printf("%-20s %-2v %v\n", b[:n], n, err)
+            // 0 EOF
+            ```
+        3. `(*Reader).ReadString(delim byte) (string, error)`、`(*Reader).ReadBytes(delim byte) ([]byte, error)`、`(*Reader) ReadSlice(delim byte) (line []byte, err error)`：这几个方法都是基于`ReadSlice()`实现的，大同小异。
+2. `Scanner`:带缓冲的Scanner，比`bufio.Reader`后出来，使用起来更加方便合理。它的缓冲区默认size是4096
+    1. 设置缓冲区大小`(*Scanner) Buffer(buf []byte, max int)`:设置初始buffer和buffer最大size
+    2. 设置分割函数:分割函数大概有三种方式被调用，具体由函数内容决定
+        1. Request more data：传递的数据不足以获得 token时，它返回`0，nil，nil`，然后扫描器会尝试读取更多数据。 如果缓冲区已满，则在读取之前将其加倍。
+        2. found token：匹配具体的模式才读取
+        3. error：返回错误会让scanner停止。特别的，`io.EOF` 和 `ErrFinalToken`会让scanner停止但scanner.Err()不会获取到错误，也就是说这两个err会被认为正常的结束。
+
+    ```go
+    // 例子1 读取字符串
+    input := "foo   bar      baz"
+    scanner := bufio.NewScanner(strings.NewReader(input))
+    scanner.Split(bufio.ScanWords) // (可选)设定分割函数
+    for scanner.Scan() {
+        fmt.Println(scanner.Text())
+    }
+    if scanner.Err() != nil { // 获取读取中的错误
+        fmt.Printf("error: %s\n", scanner.Err())
+    }
+    ```
 
 ### bytes
 主要是关于 byte slice 操作的一些函数。由于 []byte 也可用于表示 string，故其中的函数、方法与 strings 很类似，比如 `Join()`、`Split()`、`Trim()`、 `Contains()`、`Count()`、`Repeat()`、`Runes()`等。
@@ -4648,14 +4741,19 @@ fmt.Println(md5str2) // e99a18c428cb38d5f260853678922e03
 ```
 #### crypto/sha256
 ```go
-str = "abc123"
+// 例子1 
+str := "abc123"
 h := sha256.New()
 h.Write([]byte(str))
 sum := h.Sum(nil)
-
 //由于是十六进制表示，因此需要转换
 s := hex.EncodeToString(sum)
-fmt.Println(string(s)) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
+fmt.Println(s) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
+
+// 例子2
+str := "abc123"
+byteArr := sha256.Sum256([]byte(str))
+fmt.Println(hex.EncodeToString(byteArr[:])) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
 ```
 
 #### crypto/rand

@@ -1306,7 +1306,8 @@ https://github.com/facebookarchive/inject
 ### jinzhu/now
 https://github.com/jinzhu/now
 
-## 监控 prometheus 
+## 监控 
+### prometheus 
 参考：
 1. 官方
     1. github.com/labstack/echo-contrib/prometheus
@@ -1401,6 +1402,13 @@ r.Use(func(ctx *gin.Context) {
 
 // 自定义Collector todo
 ```
+
+### grafana
+https://github.com/grafana/grafana
+
+两种使用方式：
+1. 登录官方提供云
+2. 本地部署
 
 ## 哈希
 哈希和加密的区别(HASHING VS ENCRYPTION):哈希是摘要而不是加密，哈希也是一种单向函数。加密将明文数据转换为密文，然后在提供正确密钥后将其转换回明文，这是一种双向函数。与哈希不同，哈希不能逆转。 这是一个重要的区别。
