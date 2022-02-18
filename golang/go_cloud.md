@@ -246,6 +246,10 @@ broker代理：go-micro支持http/nats/memory三种broker,其中http是默认的
 
 ### beego
 
+## 网络框架
+### gnet
+https://github.com/panjf2000/gnet
+
 ## groupcache
 
 ## 验证工具 validator
@@ -428,7 +432,30 @@ https://github.com/go-gorm/gorm
     db = db.Where(fmt.Sprintf("merchant_id = %s", merchantId))
     ```
     
-2. 查询
+2. 查询:默认情况下，软删除的记录将在查询时被忽略
+    1. 查询一条记录：记录不存在时会返回`ErrRecordNotFound`错误
+
+        ```go
+        // Get the first record ordered by primary key
+        db.First(&user)
+        // Get one record, no specified order
+        db.Take(&user)
+        // Get last record, ordered by primary key desc
+        db.Last(&user)
+        ```
+    2. FirstOrInit:获取第一个匹配的记录，或者使用给定的条件初始化一个新的记录（仅适用于struct，map条件）
+    3. 查询多条记录:记录不存在时不会返回`ErrRecordNotFound`
+
+        ```go
+        // Get all records
+        result := db.Find(&users) // SELECT * FROM users;
+        ```
+    2. 使用扩展查询
+
+        ```go
+        // 为Select语句添加扩展SQL选项
+        db.Set("gorm:query_option", "FOR UPDATE").First(&user, 10) // SELECT * FROM users WHERE id = 10 FOR UPDATE;
+        ```
     1. 使用`join()`
     
         ```go
@@ -451,16 +478,39 @@ https://github.com/go-gorm/gorm
             DB.Model(&user).Preload("Profile").First(&user) -- 单条
             DB.Model(&user).Preload("Profile").Find(&users) -- 列表
             ```
+
+
+    ```go
+    // 使用Unscoped查找软删除的记录
+    db.Unscoped().Where("age = 20").Find(&users)
+    ```
 3. 创建：版本v2开始才支持批量创建
-1. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
-    1. `FirstOrCreate()`:
-    2. 使用`gorm:insert_option`
-    
+4. 更新
+    1. 普通更新：如果有updatedAt字段，会自动更新模型的`updatedAt`字段
+    2. 多字段更新
+        1. `Save()`:会更新所有字段，包括零值字段
+            1. 如果字段是结构体类型
+        2. 
+    3. upsert的实现：有两种，区别在于`FirstOrCreate()`会执行两次SQL，而第二种方式只会执行一次
+        1. `FirstOrCreate()`:
+        2. 使用`gorm:insert_option`
+        
+            ```go
+            db.Set(
+                "gorm:insert_option",
+                "ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = Values(updated_at)",
+            ).Create(&model).Error
+            ```
+5. 删除
+    1. 软删除：如果模型有`DeletedAt`字段，则自动软删除
+
         ```go
-        db.Set(
-            "gorm:insert_option",
-            "ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = Values(updated_at)",
-        ).Create(&model).Error
+        
+        ```
+    2. 手动硬删除：带上`Unscoped()`
+
+        ```go
+        db.Unscoped().Delete(&order) // DELETE FROM orders WHERE id=10;
         ```
 2. 常用配置
     1. 全局禁用表名复数:`SingularTable(true)`，不设置的话`User`的默认表名为`users`,设置后变成`user`。使用`TableName`设置的表名不受影响
@@ -700,12 +750,15 @@ https://github.com/golangci/golangci-lint
 2. https://go-critic.github.io/overview
 
 安装:
-1. windows
-    1. 去[release](https://github.com/golangci/golangci-lint/releases)下载对应版本,mac可以使用`brew install golangci-lint`，官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
-    2. 使用命令安装`curl.exe -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $env:GOPATH/bin latest`
-    2. 本人实测，`go get`安装的确实可能有bug。比如
-        1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
-        2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
+1. 几种安装方式
+    1. (推荐)在git的bash中使用命令安装`curl.exe -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $env:GOPATH/bin latest`
+        1. 如果提示"Could not resolve host: raw.githubusercontent.com"则添加对应的ip到host
+        2. 如果提示" crit unable to find 'latest'"，则多试几次
+    2. 文件安装：去[release](https://github.com/golangci/golangci-lint/releases)下载对应版本,mac可以使用`brew install golangci-lint`
+    3. (不建议)`go get`安装：官方不建议使用`go get`安装(https://golangci-lint.run/usage/install/#local-installation)。
+2. 本人实测，`go get`安装的确实可能有bug。比如
+    1. 用release安装1.20.1，输入`golangci-lint version`显示`golangci-lint has version 1.20.1 built from 849044b on 2019-10-15T19:11:27Z`,然后检测a.go得到`ifElseChain`语法提示
+    2. go1.14，使用`go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.20.1`安装后，输入`golangci-lint version`显示的是`golangci-lint has version v1.20.1 built from (unknown, mod sum: "h1:4aSxf2HvuoMNnaT4QMDpSLjoUBxgTn9q98ZKtEdtUW0=") on (unknown)`，然后检测相同的a.go文件却什么问题都没有(实际应该是有语法提示的才对)，并且对`.golangci-lint.yml`文件的支持也有问题。
 
 使用
 1. 指定配置文件运行，比如`golangci-lint run -c .golangci.yml ./...`
@@ -781,7 +834,7 @@ https://github.com/golang/mock
 
 使用：
 1. gomock库
-    1. 调用`EXPECT()`为你的模拟设置他们的期望值和返回值
+    1. 调用`EXPECT()`为你的模拟设置他们的期望值和返回值：默认情况下它只关心函数调用次数，不关心函数调用顺序
     2. `Return(...)`模拟期望的返回值
     3. `Times(number)`预计调用次数
     4. `Do()`类似于钩子的作用
@@ -802,9 +855,13 @@ https://github.com/golang/mock
 
 问题：
 1. has already been called the max number of times
-    1. `Call.Times(int)`:expected execute timers
+    1. 可能函数调用次数写少了：使用`Call.Times(int)`
 2. Loading input failed: loading package failed certificate.go:1: running "mockgen": exit status 1
     1. 可能原因：我的文件名称是certificate.go，但是要generate的文件名称是cert.go。最后把我的文件改成cert.go就好了
+3. ... was not expected, next expectation is: ExpectedCommit => expecting transaction Commit
+    1. 缺少expect或者顺序错了
+4. Unexpected call to ... because: there are no expected calls of the method "xxx" for that receiver
+    1. 缺少expect
 3. `mockgen`生成的空xxx.mock.go引用了`gomock "github.com/golang/mock/gomock"`但是并没有使用
     1. 当时的版本是v1.4.3,升级到v1.6.0就好了
     
@@ -1581,7 +1638,9 @@ https://github.com/bilibili/gengine
 
 
 ## WebSocket
-https://github.com/gorilla/websocket
+1. https://github.com/gorilla/websocket
+
+也可以借助其他网络框架自己封装，比如借助gnet
 
 # 五 经验
 ## 1 为什么需要框架

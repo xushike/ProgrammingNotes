@@ -74,6 +74,9 @@ Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始
 
 Go语言的每次版本更新，都会在标准库环节增加强大的功能、提升性能或是提高使用上的便利性。每次版本更新，标准库也是改动最大的部分。
 
+### 2.9 Go1.9
+Go1.9版本后默认利用Go语言的并发特性进行函数粒度的并发编译
+
 ### 2.17 go1.17
 https://tip.golang.org/doc/go1.17
 
@@ -573,6 +576,7 @@ i, j := 0, 1
 
     注意:检查slice,map或者channel的空值用`len(s) > 0`而不是`s != nil && len(s) > 0`，不过还要注意并发的问题，比如channel，在执行到`len(s) > 0`的时候可能里面是空的，但是执行到下一行代码的时候有可能又有值了。
 5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
+    1. time的零值
 6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
 
 #### 4.3 赋值
@@ -872,13 +876,13 @@ go run *.go # not work in windows
 4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它(默认编译结束会删除它)
 
 #### 1.2 go build
-主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。针对编译目标的不同，会有如下几种情况：
+主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。go build 会忽略以`_`或`.`开头的 go 文件。针对编译目标的不同，会有如下几种情况：
 1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译：
     1. 如果当前目录是main包所在的目录(`package main`)
         1. 如果当前目录有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是go.mod的module名
         1. 如果当前目录没有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是main方法所在的目录名
     2. 如果当前目录不是main包所在的目录，`build`会编译里面的非命令源码文件，但是会丢掉结果对象。该操作仅用来检查这些非命令源码文件是否可以被编译
-2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。
+2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。默认选择文件列表中第一个源码文件作为可执行文件名输出
 3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。跟module名称也是一样。
 
 结果文件的路径
@@ -939,6 +943,7 @@ go run *.go # not work in windows
     2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
     3. `mod`
 5. `-buildmode`
+6. `-tags`
 
 问题：
 1. 执行`go build`时报错"package xxx is not in GOROOT"
@@ -1579,6 +1584,7 @@ Integer literals(整数字面值)
         // 十六进制整数
         var a = 0x23
         fmt.Println(a) // 35
+        fmt.Println(0x00006969) // 26985
         // 十六进制字符
         fmt.Println("\x23") // #
         ```
@@ -2242,6 +2248,70 @@ go的for循环主要有两种：
     for index,ele := range xxx {
         //...
     }
+    ```
+
+for循环中的`break`和`continue`关键字用法：
+1. `break`：两种用法
+    1. 直接使用，后面不带label：结束其所在的循环
+    2. 后面带label:结束标签所在的外层循环
+
+        ```go
+        OUTER:
+        for i := 0; i < 3; i++ {
+            fmt.Println("i:", i)
+            for j := 0; j < 3; j++ {
+                fmt.Println("j:", j)
+                if j == 1 {
+                    break OUTER
+                }
+            }
+
+            for k := 0; k < 3; k++ {
+                fmt.Println("k:", k)
+                if k == 1 {
+                    break OUTER
+                }
+            }
+        }
+        fmt.Println("hello")
+        // 输出
+        // i: 0
+        // j: 0
+        // j: 1
+        // hello
+        ```
+2. `continue`:两种用法和`break`类似
+
+    ```go
+    OUTER:
+	for i := 0; i < 3; i++ {
+		fmt.Println("i:", i)
+		for j := 0; j < 3; j++ {
+			fmt.Println("j:", j)
+			if j == 1 {
+				continue OUTER
+			}
+		}
+
+		fmt.Println("hello")
+		for k := 0; k < 3; k++ {
+			fmt.Println("k:", k)
+			if k == 1 {
+				continue OUTER
+			}
+		}
+	}
+
+    // 输出
+    // i: 0
+    // j: 0
+    // j: 1
+    // i: 1
+    // j: 0
+    // j: 1
+    // i: 2
+    // j: 0
+    // j: 1
     ```
 
 注意：
@@ -3960,6 +4030,20 @@ for _, v := range res.Data {
 `MarshalIndent`和`Decode`的选择：
 1. 如果数据来自io.Reader流，或者需要从数据流中解码多个值，请使用json.Decoder。
 2. 如果已经在内存中有JSON数据，请使用json.Unmarshal
+
+### 4.3 自定义序列化和反序列化
+实现这两个接口就行：
+
+```go
+type Marshaler interface {
+    MarshalJSON() ([]byte, error)
+}
+
+type Unmarshaler interface {
+    UnmarshalJSON([]byte) error
+}
+```
+
 
 ## 5 go runtime运行时
 尽管 Go 编译器产生的是本地可执行代码，这些代码仍旧运行在 Go 的 runtime（这部分的代码可以在 runtime 包中找到）当中。这个 runtime 类似 Java 和 .NET 语言所用到的虚拟机，它负责管理包括内存分配、垃圾回收、栈处理、goroutine、channel、切片（slice）、map 和反射（reflection）等等。
@@ -7099,6 +7183,23 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 ### 1.34 下载包的时候出现 "A connection attempt failed because the connected party did not properly respond after a period of time..."
 可能是未设置goproxy，使用`go env -w GOPROXY=https://goproxy.cn,direct`
 
+### 1.35 cgo: C compiler "gcc" not found: exec: "gcc": executable file not found in %PATH%
+1. 方法一：安装[MinGW-w64](https://sourceforge.net/projects/mingw-w64)
+    1. 找到x86_64-posix-seh下载
+    2. 解压到`C:\Program Files`，这样bin路径就在`C:\Program Files\mingw64\bin`
+    3. 添加bin路径到系统环境变量Path
+    4. 重启terminal，测试`gcc --version`
+2. 方法二：安装[TMD-GCC](https://jmeubank.github.io/tdm-gcc)，实测不生效
+
+
+### 1.36 在新电脑上生成ssh key然后拉取go mod报错
+1. Host key verification failed.
+    1. host没有被信任，需要将host添加到known_hosts里。首次`ssh -T`的时候就会提示将其加入信任列表
+2. could not read Username for 'https://example.com': terminal prompts disabled
+    1. 原因一：要拉取的仓库是私有的，但是没有配置https转git
+    2. 原因二：没有把私有仓库的host添加到GOPRIVATE环境变量
+3. git@example.cn: Permission denied (publickey).
+    1. 可能是把公钥复制到服务器上时末位多了换行符，也可能是本地生成的时候给私钥设置了密码。但是用`ssh -T`测试又是ok的。因为没有成功复现，所以待研究
 
 ## 2 未解决
 ### note: module requires Go 1.14

@@ -93,7 +93,7 @@ OSI七层模型和TCP/IP四层模型区别：
 ## 1 Failed to connect to 127.0.0.1 port 10010
 
 ## 2  Could not resolve host: raw.githubusercontent.com
-通过网站https://www.ipaddress.com/查找raw.githubusercontent.com的ip地址，然后放到hosts里面
+通过网站[https://www.ipaddress.com]()查找raw.githubusercontent.com的ip地址，然后放到hosts里面
 
 # 七 待整理
 1. 交换机只认识mac不认识ip？那局域网的ip有什么意义？局域网的ip需要去固定吗，怎么感觉是自动固定的？手动固定有用吗？

@@ -31,7 +31,7 @@
         * [3.2.hdfs](db/3.file_system/3.2.hdfs.md)
     * [4.postgreSQL](db/4.postgresql.md)
     * [5.sqlserver](db/5.sqlserver.md)
-    * [6.mySQL](db/6.mysql.md)
+    * [6.MySQL](db/6.mysql.md)
     * [7.oracle](db/7.oracle.md)
     * [8.oceanBase](db/8.oceanbase.md)
     * [9.influxDB](db/9.influxdb.md)

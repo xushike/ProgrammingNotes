@@ -40,7 +40,7 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 2. `cd Program" "Files`
 
 关于带根目录的目录：
-1. 用`which`命令查看tool的路径的时候，得到的是`c/xxx/xxx`，而不是`c:/xxx/xxx`。而windows带根目录的跳转只能用`c:/xxx/xxx`的方式，所以不能直接使用`which`的结果来跳转
+1. 用`which`命令查看tool的路径的时候，得到的可能是`c/xxx/xxx`，而不是`c:/xxx/xxx`。而windows带根目录的跳转只能用`c:/xxx/xxx`的方式，所以可能不能直接使用`which`的结果来跳转
 
 # 二 安装配置
 # 三 基础
@@ -123,13 +123,11 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
         2. `scoop install wixtoolset`
     1. 应用推荐
         1. (不推荐)`aria2`：安装后scoop会默认使用它来加速，它提供多线程下载和断点续传。虽然网上都是建议安装aria2，但是本人实测发现对于新手并不好用，所以暂时不推荐安装。
-        2. 开发相关`sudo scoop install make git 7zip nginx curl less go vim mysql`
-        4. 桌面应用相关,先安装extras bucket`scoop bucket add extras`，然后再安装`scoop install vscode potpalyer googlechrome`
-            1. `vscode`：成功安装后根据提示可以添加它到上下文，安装后启动的命令是`code`，not `vscode`；然后执行它的reg文件添加到右键上下文
+        2. 开发相关`sudo scoop install make 7zip nginx curl less vim`
+        4. 桌面应用相关,先安装extras bucket`scoop bucket add extras`，然后再安装`scoop install potpalyer googlechrome`
             2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文，需要自己进入应用设置里面关联视频文件格式。
             3. `googlechrome`:安装后启动命令是`chrome`
             4. `ventoy`
-            5. `Fluent Terminal`:好用的终端
     2. 安装后快捷方式目录`~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Scoop Apps`
 
 使用：
