@@ -115,6 +115,24 @@ powershell的Verb-Noun
 2. 查找
     1. `find`:not work in powershell
     2. `findstr`
+5. 查找可执行文件的位置
+    1. 在cmd中：可以用`which`和`where`，但是`which`的结果不能直接拿来使用，所以更推荐用`where`
+
+        ```bash
+        which go
+        /c/Program Files/Go/bin/go # 直接用这个路径去调用系统会找不到
+
+        where go
+        C:\Program Files\Go\bin\go.exe
+        ```
+    2. 在powershell中:可以用`which`，`where.exe`,`get-command`和`gcm`(是`get-command`的别名)，但是`which`的结果不能直接拿来使用，所以不推荐用`which`。直接输入`where`的话优先匹配的是`Where-Object`命令而不是`where.exe`
+
+        ```bash
+        gcm go
+        CommandType     Name                                               Version    Source
+        -----------     ----                                               -------    ------
+        Application     go.exe                                             0.0.0.0    C:\Program Files\Go\bin\go.exe
+        ```
 3. 用资源管理器打开当前路径
     1. cmd和powershell公用
         1. `explorer .`

@@ -407,16 +407,39 @@ primitive values(原始值):除 Object 以外的所有类型都是不可变的�
         // expected output: "05"
         ```
 
-模板字符串(es6):使用反引号包裹,里面的字符默认不会被转义(意味着**会原样输出**),想转义需要在前面加反斜杠`\`.可以包含特定语法`${expression}`的占位符.
-1. 优点:更加优雅,不再需要考虑反斜杠来处理单引号和双引号。例子如
+模板字符串(es6):使用反引号包裹,可以包含特定语法`${expression}`的占位符.里面的非转义内容会原样输出。如果想在字符串中使用反引号，我们就需要对其进行转义--前面加反斜杠`\`
+1. 特点
+    1. 更加优雅,不再需要考虑反斜杠来处理单引号和双引号
 
-    ```JavaScript
-    console.log("Fifteen is " + (a + b) + " and\nnot " + (2 * a + b) + ".");
-    ```
-    可以写成
-    ```JavaScript
-    console.log(`Fifteen is ${a + b} and\nnot ${2 * a + b}.`);
-    ```
+        ```js
+        var d = `a"nb`
+        console.log(d); // a"nb
+        ```
+    2. 可以引用变量
+
+        ```JavaScript
+        // 例子1
+        console.log("Fifteen is " + (a + b) + " and\nnot " + (2 * a + b) + ".");
+        ```
+        可以写成
+        ```JavaScript
+        console.log(`Fifteen is ${a + b} and\nnot ${2 * a + b}.`);
+
+        // 例子2
+        var c = "a\nb"
+        var d = `a\nb`
+        console.log(c);
+        console.log(d);
+        // 两个的输出是一样的
+        ```
+    3. 可以调用函数
+
+        ```js
+        function say() {
+            return "hello, world!";
+        }
+        console.log(`我说，${say()}`); // 我说，hello, world!
+        ```
 
 标签函数(tag function,es6):标签函数的语法是函数名后面直接带一个模板字符串，并从模板字符串中的插值表达式中获取参数.标签函数的第一个参数是被嵌入表达式分隔的文本的数组。第二个参数开始是嵌入表达式的内容。（感觉没有广泛的使用场景，仅了解就行了）
 

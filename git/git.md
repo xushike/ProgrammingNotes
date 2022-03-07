@@ -273,7 +273,7 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 ### 1 detached HEAD状态
 什么是`detached HEAD`:也称为游离状态/游离指针状态，detached HEAD 状态是指 HEAD 指针不指在任何分支的索引.进入 detached HEAD 状态后 git 会创建一个临时分支，会看到提示信息"You are in 'detached HEAD' state...",一般是用于草稿。
 
-草稿想转正怎么操作：git add、git commit 然后 git checkout -b 新的分支，不然临时分支会被 git 删除。
+草稿想转正怎么操作：`git add`、`git commit` 然后 `git checkout -b` 新的分支，不然临时分支会被 git 删除。
 
 草稿不想要了怎么操作(退出该状态最优雅的处理方法):切换回原来的分支`git checkout -`
 
@@ -376,6 +376,8 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 2. 进入游离状态`git checkout commit_id`:因为分支其实是指向某个commitid的指针，所以checkout也可以切换到一个commmitid，它会根据这个commit生成一个暂时的branch(此时处于游离状态，还不是真正的branch)，具体参考架构部分的detached HEAD状态笔记
 
 `git switch`:因为git checkout有点复杂了，所以git又新增了一个命令`git switch`用于切换分支。除了不能切换到commitid，其他和`git branch`用法一样。
+1. 参数
+    1. `-c`
 
 ### 3.3 删除分支
 不能删除当前分支,所以要删除的时候需要先切换到其他分支.

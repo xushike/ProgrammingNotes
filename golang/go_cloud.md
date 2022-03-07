@@ -15,10 +15,12 @@ Go Cloud 是一个可在开放云平台上进行开发的库和工具集
 ## 4 文档网址等
 
 # 三 基础
+## aws
+参考：
+1. 官方：
+    1. https://github.com/aws/aws-sdk-go-v2
 
-# 四 高级
 ## 常见web框架
-
 ### goa
 参考：
 1. https://github.com/goadesign/goa
@@ -63,6 +65,10 @@ Raphael Simon 是来自于 RightScale 的一位高级系统架构师，他创建
 1. goa的设计语言是内置DSL，用于描述微服务的设计
 2. goa代码生成器，用于根据DSL描述生成代码模块(框架代码，胶水代码，测试代码)，辅助工具，和文档等
 3. goa利用生成代码和用户代码来实现一个服务，并提供一个完全可插拨的框架
+
+goa类型和go类型对应关系：
+1. `dsl.Any` => `interface{}`
+2. `dsl.Bytes` => `[]byte`
 
 两个命令：
 1. `goa gen moduleNameA [--out DIRECTORY] [--debug]`: Generate service interfaces, endpoints, transport code and OpenAPI spec.
@@ -248,7 +254,10 @@ broker代理：go-micro支持http/nats/memory三种broker,其中http是默认的
 
 ## 网络框架
 ### gnet
-https://github.com/panjf2000/gnet
+参考
+1. 官方
+    1. https://github.com/panjf2000/gnet
+    2. 全部官方示例：https://github.com/gnet-io/gnet-examples
 
 ## groupcache
 
@@ -410,13 +419,8 @@ https://github.com/go-gorm/gorm
         3. `loc=Local` 使用系统本地时区
         1. `timeout`：建立连接超时时间，比如"30s", "0.5m" or "1m30s",比如`timeout=10s`
         2. `readTimeout`、`writeTimeout`:I/O读写超时时间
-        6. `interpolateParams`默认为false
-            1. 为true的时候，表示：
-                1. 不会隐式地使用Prepared Statement，即在`db.Query()`和`db.Exec()`中不会使用Prepared Statement，但会自动转义来防止SQL注入，不能和多字节编码一起使用。
-                2. 但可以显式地使用Prepared Statement，即`DB.Prepare`and `Stmt.Exec`
-            2. 什么时候需要这个
-                1. 在读写分离的架构下，如果prepare的时候sql发给了从库1，但是execute的时候因为从库1压力较大，sql命令发给了从库2，就会报错，这个时候就不能用Prepared Statement
-        7. `maxAllowedPacket`：最大数据包大小，默认4Mb，如果设置为0，则会自动获取服务器的`max_allowed_packet`设置
+        6. `interpolateParams`：见`github.com/go-sql-driver/mysql`驱动库
+        7. `maxAllowedPacket`：见`github.com/go-sql-driver/mysql`驱动库
             
         ```bash
         mysql://root:123456@tcp(127.0.0.1:3306)/yourdbname
@@ -486,7 +490,7 @@ https://github.com/go-gorm/gorm
     ```
 3. 创建：版本v2开始才支持批量创建
 4. 更新
-    1. 普通更新：如果有updatedAt字段，会自动更新模型的`updatedAt`字段
+    1. 普通更新：使用`Update()`，如果有updatedAt字段，会自动更新模型的`updatedAt`字段
     2. 多字段更新
         1. `Save()`:会更新所有字段，包括零值字段
             1. 如果字段是结构体类型
@@ -577,6 +581,14 @@ github.com/go-sql-driver/mysql
 
 ![连接池架构图](../picture/golang/mysql_driver_architecture.jpg)
 
+参数：
+1. `interpolateParams`：默认为false，看源码可知为false时执行`Exec`和`Query`方法会用`Prepare`，为true的话就不会用到`Prepare`
+    1. 为true的时候，表示：不会使用Prepared Statement，即在`db.Query()`和`db.Exec()`中不会使用Prepared Statement，但会自动转义来防止SQL注入，官方文档还标注了为true时不能和多字节编码一起使用。
+        1. 但还是可以显式地使用Prepared Statement，即`DB.Prepare`and `Stmt.Exec`
+    2. 什么时候需要设置为true
+        1. 在读写分离(主从)的架构下，如果prepare的时候sql发给了从库1，但是execute的时候因为从库1压力较大，sql命令发给了从库2，就会报错，这个时候就不能用Prepared Statement
+2. `maxAllowedPacket`：最大数据包大小，单位字节，默认是 4194304字节 = 4Mb，如果设置为0，则会自动获取服务器或连接的`max_allowed_packet`设置。最大值是1G，超过了也只能给这么多
+
 问题：
 1. packets.go: busy buffer
     1. 解决办法
@@ -586,6 +598,36 @@ github.com/go-sql-driver/mysql
 1. github.com/lib/pq
 2. github.com/jackc/pgx
     1. It supports the PostgreSQL logical replication protocol.
+3. https://github.com/jackc/pgtype
+    1. 实现了超过70种go语言的类型对应pg的类型
+
+
+        ```go
+        // pgtype.JSONB
+        type Animal struct {
+            Name pgtype.JSONB `json:"name"`
+            Age  int          `json:"age"`
+        }
+        var a Animal
+	    err := json.Unmarshal([]byte(`{"name":9223372036854775808,"age":10}`), &a)
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(string(a.Name.Bytes)) // 9223372036854775808
+        var b string
+        var c float64
+        err = a.Name.AssignTo(&b)
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(b) // 9223372036854775808
+
+        err = a.Name.AssignTo(&c)
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(c) // 9.223372036854776e+18
+        ```
 
 ### redis
 github.com/go-redis/redis
@@ -762,6 +804,8 @@ https://github.com/golangci/golangci-lint
 
 使用
 1. 指定配置文件运行，比如`golangci-lint run -c .golangci.yml ./...`
+2. 参数
+    1. `--build-tags strings`：build tags，见go的编译标签笔记
 
 问题:
 1. 安装问题
@@ -835,6 +879,11 @@ https://github.com/golang/mock
 使用：
 1. gomock库
     1. 调用`EXPECT()`为你的模拟设置他们的期望值和返回值：默认情况下它只关心函数调用次数，不关心函数调用顺序
+    2. 指定入参的类型`gomock.AssignableToTypeOf()`:一般用于入参值不好模拟的情况，比如入参是当前时间。不能用于返回参数
+
+        ```go
+        mockService.EXPECT().Submit(ctx, gomock.AssignableToTypeOf(ulid.ULID{}), name).Return(nil)
+        ```
     2. `Return(...)`模拟期望的返回值
     3. `Times(number)`预计调用次数
     4. `Do()`类似于钩子的作用
@@ -862,6 +911,8 @@ https://github.com/golang/mock
     1. 缺少expect或者顺序错了
 4. Unexpected call to ... because: there are no expected calls of the method "xxx" for that receiver
     1. 缺少expect
+5. gomock.anyMatcher is not assignable to xxx
+    1. gomock.Any用在了出参上
 3. `mockgen`生成的空xxx.mock.go引用了`gomock "github.com/golang/mock/gomock"`但是并没有使用
     1. 当时的版本是v1.4.3,升级到v1.6.0就好了
     
@@ -1513,6 +1564,17 @@ github.com/shopspring/decimal
         ```go
         decimal.NewFromString("1e3") // 1000
         ```
+    2. json反序列化
+
+        ```go
+        var c decimal.Decimal
+        // decimal.Decimal的Unmarshal实现了unquoteIfQuoted方法，所以可以从双引号包裹的字符串直接反序列化
+		err := json.Unmarshal([]byte("111.11"), &c)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(c.String())
+        ```
 2. 小数操作
     1. 保留小数位数
 
@@ -1641,6 +1703,9 @@ https://github.com/bilibili/gengine
 1. https://github.com/gorilla/websocket
 
 也可以借助其他网络框架自己封装，比如借助gnet
+
+## IM
+1. https://github.com/openIMsdk
 
 # 五 经验
 ## 1 为什么需要框架

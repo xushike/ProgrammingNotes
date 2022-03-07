@@ -202,6 +202,16 @@ rune能操作任何字符，包括中文，而byte不支持中文的操作。
 
 注意他们之间的比较用`bytes.Equal(s1, s2) == 0`而不是`bytes.Compare(s1, s2) == 0`
 
+类型转换
+1. `string`和`[]rune`
+    
+    ```go
+    []rune(stringA)
+
+    string(runes)
+    ```
+2. uint8和string:`string(uint8A)`
+
 ### 3.10 字符串、数组和切片
 底层原始数据有相同的内存结构（？），在上层，因为语言的限制而有着不同的行为表现
 
@@ -818,7 +828,8 @@ go的作用域和生命周期是不同的概念
 
 ## 1 工具生态
 ### 1 go自带的工具链（不包含go tool套件）
-参考赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
+参考
+1. 赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
 
 通用参数(适用于大多数命令)：
 1. `-a`：强制编译，不管编译结果是不是最新的
@@ -860,6 +871,14 @@ go的作用域和生命周期是不同的概念
         ```
     5. `-S` 输出汇编代码
 
+`go build`和`go install`的对比：
+- 相同点
+    1. 都能生成可执行文件
+- 不同点
+    1. go build 不能生成包文件, go install 可以生成`.a`文件
+    2. go build 生成可执行文件在当前目录下， go install 生成可执行文件在bin目录下（$GOPATH/bin）
+    3. go build 经常用于编译测试.go install主要用于生产库和工具.
+
 #### 1.1 go run
 `go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。简单来说`go run`等价于`go build`+执行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
 ```bash
@@ -881,9 +900,14 @@ go run *.go # not work in windows
     1. 如果当前目录是main包所在的目录(`package main`)
         1. 如果当前目录有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是go.mod的module名
         1. 如果当前目录没有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是main方法所在的目录名
-    2. 如果当前目录不是main包所在的目录，`build`会编译里面的非命令源码文件，但是会丢掉结果对象。该操作仅用来检查这些非命令源码文件是否可以被编译
+    2. 如果当前目录不是main包所在的目录，`build`会编译里面的非命令源码文件，但是会丢掉结果对象，不会产生任何文件。该操作仅用来检查这些非命令源码文件是否可以被编译
 2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。默认选择文件列表中第一个源码文件作为可执行文件名输出
 3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。跟module名称也是一样。
+
+
+条件编译：
+1. 源码文件名后缀：如果你的源代码针对不同的操作系统需要不同的处理，那么你可以根据不同的操作系统后缀来命名文件。例如有一个读取数组的程序，它对于不同的操作系统可能有如下几个源文件：`array_linux.go`,`array_darwin.go`,`array_windows.go`,`array_freebsd.go`。`go build`的时候会选择性地编译以系统名结尾的文件（Linux、Darwin、Windows、Freebsd）。例如 Linux 系统下面编译只会选择`array_linux.go` 文件，其它系统命名后缀文件全部忽略。
+2. 使用编译标签：见编译标签部分
 
 结果文件的路径
 1. 未指定的话默认是当前路径
@@ -943,7 +967,11 @@ go run *.go # not work in windows
     2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
     3. `mod`
 5. `-buildmode`
-6. `-tags`
+6. `-tags 'tag list'`:用于指定在实际编译期间需要受理的编译标签（也可被称为编译约束）的列表.这些编译标签一般会作为源码文件开始处的注释的一部分。它是go语言提供的条件编译方式之一。具体见编译标签部分
+
+    ```bash
+    go build -tags tagA ...
+    ```
 
 问题：
 1. 执行`go build`时报错"package xxx is not in GOROOT"
@@ -1044,10 +1072,12 @@ GO111MODULE=off go get xxx -v
 ```
 
 #### 1.5 go clean
-清理go编译生成的文件，如`.go`、`.out`、`.a`等
+可以清理go编译生成的文件，如`.go`、`.out`、`.a`等
 
 参数:
-1. 
+1. `-cache`
+2. `-testcache`
+3. `-modcache`
 
 #### 1.6 go generate
 参考：
@@ -1609,11 +1639,12 @@ fmt.Println(a + 0.7) //output: 1.2999999999999998
 ```
 
 表示：
-1. 指数：带上`e`来表示
+1. 指数：带上`e`来表示，后面跟指数，底数固定是10
 
     ```go
     fmt.Println(1e3) // 1000
     fmt.Println(1e6) // 1e+06
+    fmt.Println(3.2e2) // 320
     fmt.Println(5.6e20) // 5.6e+20
     fmt.Println(1e-3) // 0.001
 
@@ -1719,7 +1750,7 @@ var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
     ```go
     // 有三种方法：==、strings.Compare()、strings.EqualFold
     // 1. ==比较，区分大小写
-    // 2. Compare()比较,区分大小写,返回int 0时相同，1时不同，效率高于==
+    // 2. Compare()比较,区分大小写,返回int 0时相同，非0时不同，效率高于== (why?)
     // 3. EqualFold ()比较，比较utf-8编码在小写的情况下是否相等，不区分大小写。因为它内部实现是一个个字符的比较，前面的字符如果不同就直接return了，所以比strings.ToLowerCase()转化后再比较的方式效率高
     ```
     
@@ -2570,6 +2601,7 @@ func main() {
     fmt.Println(f()) // "9"
     fmt.Println(f()) // "16"
 }
+
 ```
 
 和js闭包的对比:个人觉得,两者在功能上是差不多的,只是写法上有一点儿不同.可能因为go要声明返回值,所以被返回的函数只能以匿名函数的方式声明,但是js用js的函数声明(function declaration)来定义被返回的函数.
@@ -3806,9 +3838,37 @@ func enterOrbit() error {
 ```
 
 ### 15.3 编译标签( build tag)
-条件编译
+参考：
+1. https://pkg.go.dev/cmd/go#hdr-Build_constraints
 
-1. 标识不被编译：`// +build generate`
+编译标签：
+1. 语法:旧版本的写法是`// +build tagA`，新版本(go1.17开始)的写法是`//go:build tagA`，也可以两种写法都写上，同时兼容新老版本。最后要空一行再跟go的代码，否则编译标签会被当做包声明的注释而不是编译标签
+
+    ```go
+    //go:build go1.16
+    // +build go1.16
+
+    package main
+    ```
+2. 一个源文件可以有多个编译标签，多个编译标签之间是逻辑“与”的关系，一个编译标签可以包括由空格分割的多个标签，这些标签是逻辑“或”的关系。
+
+    ```go
+    // +build linux darwin  
+    // +build 386  
+
+    package ...
+    这个将限制此源文件只能在 linux/386或者darwin/386平台下编译
+    ```
+3. 使用场景
+    1. 条件编译：同一个包下两个go文件都实现了`MarshalIndent`方法，一个是使用的go内置json包，另外一个使用的"github.com/json-iterator/go"包，编译标签分别如下。不带tag运行的时候调用的是内置的json包，带上`-tags=jsoniter`的时候使用的是第三方json包
+        
+        ```go
+        // +build !jsoniter
+        表示，tags不是jsoniter的时候编译这个Go文件。
+
+        // +build jsoniter
+        表示，tags带jsoniter的时候编译这个Go文件，否则不编译
+        ```
 
 ## 16 和其他语言的交互
 了解就行
@@ -3845,11 +3905,32 @@ p.VehBrand = "大众"
 
 Go类型和JSON类型的对应关系如下：
 - bool 代表 JSON booleans,
-- float64 代表 JSON numbers（如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64，没写的话go不会去区分，而是默认用float64）
+- float64 代表 JSON numbers
+    1. 如果json的number转go类型的话，以go类型为准，比如写的int就是int，写的int64就是int64，没写的话go不会去区分，而是默认用float64
+    2. `json.Number`类型：不确定是数值还是字符串类型，或者担心数值类型超出精度，可以使用`json.Number`，在用的时候再转换成想要的类型，它有三个方法`String()`,`Float64()`,`Int64()`
+
+        ```go
+        var a int
+        err := json.Unmarshal([]byte(`9223372036854775808`), &a)
+        if err != nil {
+            log.Fatal(err)
+        }
+        // json: cannot unmarshal number 9223372036854775808 into Go value of type int
+
+        var a json.Number
+        err := json.Unmarshal([]byte(`9223372036854775808`), &a)
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(a)
+        // 9223372036854775808
+        ```
 - string 代表 JSON strings,
 - nil 代表 JSON null.
 - 日期会序列化为ISO 8601标准的格式。
 - interface{} 按照内部的实际类型进行转换
+    1. 比如数字变成float64
+- 不想转换类型，等使用的时候再转换类型：可以把结构体字段的类型定义为`json.RawMessage`，解析后会以`[]byte`存在，用的时候再解析成对应的类型
 
 标签tag（也称为字段的元数据）：就是上面的结构体每个字段后面反引号包裹的内容，可以是任意的字符串，但是通常是用空格分割的key:value键值对序列，因为Tag中包含了双引号字符串，因此一般用原生字符串形式书写。key是json的会在json的转换时用到，key是xml会在xml转换时用到，以此类推，还可以自定义，比如第三方包用到的validate。注意这里有个坑：有多个tags时，golang解析`json:"xxx"`是按照空白符分隔的（参考`lookup()`方法），如果把`json:"xxx"`在第二行，因为前面是换行符，就识别不到。
 
@@ -4084,6 +4165,8 @@ type Unmarshaler interface {
         
         ```golang
         \d{1,3} // 匹配1到3位的数字
+        var matchMobilePhone = regexp.MustCompile(`^\d{11}$`)         // 判断是否为11位数字
+        var matchFixedPhone = regexp.MustCompile(`^\d{3,4}-\d{7,8}$`) // 判断是否固话格式
         ```
     6. `\b`匹配单词的开始或结束的位置,`\B`匹配不是单词开头或结束的位置
     7. 空格就表示空格
@@ -5314,7 +5397,7 @@ func main() {
 3. `Printf()`:支持格式化输出
 5. `Sprintf()`:格式化并返回一个字符串而不带任何输出
 2. `Errorf`函数使用`fmt.Sprintf`处理错误信息
-    1. 动词`%w`：go1.13中新增的，用来生成一个wrapping error。
+    1. 动词`%w`：go1.13中新增的，用来生成一个wrapping error。
 3. `Fprintf()`：重定向打印。第一参数必须实现了 io.Writer 接口。`Fprintf()` 能够写入任何类型，只要其实现了 Write 方法，包括标准输出、标准错误输出(os.Stdout、os.Stderr),文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入（适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 `Flush()`，否则最后的输出不会被写入）。
 
 ### http
@@ -5489,7 +5572,8 @@ log相比fmt的优点：
         // 直接打印会报错，因为它是无符号类型的，会默认按int处理
         fmt.Println(uint64(math.MaxUint64)) // constant 18446744073709551615 overflows int
         ```
-
+5. `Sqrt()`：求平方根
+6. `Pow(x, y float64) float64`:次方
 
 #### math/rand
 该包实现了**伪随机数**的生成。它使用种子来生成伪随机数，种子有默认值(`Seed(1)`)，每次使用应该指定新的种子，**否则每次随机出来的数列是一样的**。
@@ -5567,9 +5651,9 @@ log相比fmt的优点：
 
 使用：
 1. 查询
-    1. 查询
-        1. 根据host和port获取TCP地址和端口`ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`:通过输入net和addr来创建一个`TCPAddr`，它表示TCP的地址信息，包含IP地址和端口号。入参`net`为"tcp"、"tcp4"、"tcp6"的一种，如果是""则默认为"tcp"。入参`addr`是类似"g.cn:80"或者"127.0.0.1:80"这样的字符串
-            
+    1. 根据host和port获取IP地址和端口:`ResolveXxxAddr()`系列接口
+        1. `ResolveTCPAddr(net, addr string)(*TCPAddr, os.Error)`:获取TCP的IP地址和端口，通过输入net和addr来创建一个`TCPAddr`，它表示TCP的地址信息，包含IP地址和端口号。入参`net`为"tcp"、"tcp4"、"tcp6"的一种，如果是""则默认为"tcp"。入参`addr`是类似"g.cn:80"或者"127.0.0.1:80"这样的字符串
+        
             ```go
             addr, err := net.ResolveTCPAddr("", "baidu.com:80")
             if err != nil {
@@ -5577,31 +5661,31 @@ log相比fmt的优点：
             }
             fmt.Println(addr) // 39.156.69.79:80
             ```
-        2. 根据host获取ip地址列表`LookupHost(host string) (addrs []string, err error)`：通常主机服务器有多块网卡，`LookupHost()`通过利用本地解析器对给定的host进行查找，返回主机地址的数组
-        3. 类似查询
-            1. 查询A记录`LookupIP(host string) ([]IP, error)`
-            3. 查询CNAME`LookupCNAME(host string) (cname string, err error)`
-            2. 查询NS记录
-            2. 查询MX记录
-            2. 查询TXT记录
-        4. 返回该系统的网络接口的地址列表`func InterfaceAddrs() ([]Addr, error)`
-        5. 返回该系统的网络接口列表`func Interfaces() ([]Interface, error)`
-        6. 返回指定network和service的端口`func LookupPort(network, service string) (port int, err error)`
-        7. 查询服务对应的端口`LookupPort(network, service string) (port int, err error)`:在Unix系统中, `/etc/services`文件列出了常用的端口,该方法可以从该文件获取常用端口号。入参`network`可以为"tcp"或者"udp"
-            
-            ```go
-            port, _ := net.LookupPort("tcp", "http")
-            fmt.Println(port) // 80
-            ```
-        4. 反向查询`LookupAddr(addr string) (names []string, err error)`:给定DSN地址，通过DNS PRT反向解析出域名。反向解析只对部分固定域名生效
-            
-            ```go
-            names, err := net.LookupAddr("114.114.114.114")
-            if err != nil {
-                log.Fatal(err)
-            }
-            log.Println("names:", names) // names: [public1.114dns.com.]
-            ```
+    2. 根据host获取ip地址列表`LookupHost(host string) (addrs []string, err error)`：通常主机服务器有多块网卡，`LookupHost()`通过利用本地解析器对给定的host进行查找，返回主机地址的数组
+    3. 类似查询
+        1. 查询A记录`LookupIP(host string) ([]IP, error)`
+        3. 查询CNAME`LookupCNAME(host string) (cname string, err error)`
+        2. 查询NS记录
+        2. 查询MX记录
+        2. 查询TXT记录
+    4. 返回该系统的网络接口的地址列表`func InterfaceAddrs() ([]Addr, error)`
+    5. 返回该系统的网络接口列表`func Interfaces() ([]Interface, error)`
+    6. 返回指定network和service的端口`func LookupPort(network, service string) (port int, err error)`
+    7. 查询服务对应的端口`LookupPort(network, service string) (port int, err error)`:在Unix系统中, `/etc/services`文件列出了常用的端口,该方法可以从该文件获取常用端口号。入参`network`可以为"tcp"或者"udp"
+        
+        ```go
+        port, _ := net.LookupPort("tcp", "http")
+        fmt.Println(port) // 80
+        ```
+    4. 反向查询`LookupAddr(addr string) (names []string, err error)`:给定DSN地址，通过DNS PRT反向解析出域名。反向解析只对部分固定域名生效
+        
+        ```go
+        names, err := net.LookupAddr("114.114.114.114")
+        if err != nil {
+            log.Fatal(err)
+        }
+        log.Println("names:", names) // names: [public1.114dns.com.]
+        ```
         
     
 2. 建立连接：go提供的几种连接方法返回不同的`Conn`和错误，返回的`Conn`都实现了`Conn`接口，其中`Dial()`是对其他几个`DialXxx()`方法的封装。`laddr`是指本地地址,`raddr`是远程地址。底层实现基本相同，后续的使用也是类似的。
@@ -5660,8 +5744,10 @@ log相比fmt的优点：
     1. 获取address(ip和端口)
         1. `LocalAddr() Addr`连接对应的本地address
         1. `RemoteAddr() Addr`连接对应的远程address
+    2. `SetTimeout`
     1. 设置写入/读取一个连接的超时时间`SetReadDeadline(t time.Time) error`、`SetWriteDeadline(t time.Time) error`:当超过设置时间时，连接自动关闭。它是比`net/http`包更低层的超时设置。
         1. 一旦被设置，将一直生效（直到再一次调`SetXxxDeadline()`），它并不关心在此期间链接是否存在以及如何使用。因此，你需要在每次进行读/写操作前，使用`SetXxxDeadline()`设定一个超时时长.(待确认)
+    4. `SetKeepAlive(keepalive bool) error`：设置连接空闲时是否需要向对方发送探测包
     3. 读写
         1. `(conn) Write(b []byte) (int, error)`
             1. 如果**broken pipe**错误，表示本端感知到对端已经关闭连接（本端已接收到对端发送的RST）
@@ -5955,7 +6041,7 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
         fmt.Println(stat2.Size()) // 3
         ```
 
-操作目录：
+操作目录和文件：
 1. `Chdir(dir string) error`:chdir将当前工作目录更改为dir目录．
 2. `Getwd() (dir string, err error)`获取当前目录，类似linux中的pwd
 3. `Chmod(name string, mode FileMode) error`:更改文件的权限（读写执行，分为三类：all-group-owner)
@@ -6082,13 +6168,36 @@ for {
 1. `Exit(code int)`：系统退出，并返回code，其中０表示执行成功并退出（正常退出），非０表示错误并退出，其中执行Exit后程序会直接退出，defer函数不会执行．
 
 替换字符串中的`$xxx`:
-1. `Expand(s string, mapping func(string) string) string`:Expand用mapping 函数指定的规则替换字符串中的`${var}`或者`$var`（注：变量之前必须有$符号）。比如，
+1. `Expand(s string, mapping func(string) string) string`:Expand用mapping 函数指定的规则替换字符串中的`${var}`或者`$var`（注：变量之前必须有`$`符号）
+
+    ```go
+    mapping := func(key string) string {
+        m := make(map[string]string)
+        m = map[string]string{
+            "hello": "hi",
+            "world": "earth",
+        }
+        if m[key] != "" {
+            return m[key]
+        }
+        return key
+    }
+    s := "hello,world"            
+    s1 := "$hello,$world $finish" 
+    fmt.Println(os.Expand(s, mapping)) //  hello,world，由于hello world之前没有$符号，则无法利用map规则进行转换
+    fmt.Println(os.Expand(s1, mapping)) //  hi,earth finish，finish没有在map规则中，所以还是返回原来的值
+    ```
 2. `ExpandEnv(s string) string`:ExpandEnv根据当前环境变量的值来替换字符串中的`${var}`或者`$var`。如果引用变量没有定义，则用空字符串替换。
 
     ```go
-    // 下面两个方法等效
+    // 例子1 下面两个方法等效
 	fmt.Println(os.Expand("$HOME", os.Getenv)) 
 	fmt.Println(os.ExpandEnv("$HOME"))
+
+    // 例子2
+    s := "$hello,$world $gopath"
+    fmt.Println(os.ExpandEnv(s)) // , C:\Users\Xxx\go
+
     ```
 操作用户/组等信息：
 1. `Geteuid() int`:获取调用者用户id
@@ -7199,7 +7308,22 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
     1. 原因一：要拉取的仓库是私有的，但是没有配置https转git
     2. 原因二：没有把私有仓库的host添加到GOPRIVATE环境变量
 3. git@example.cn: Permission denied (publickey).
-    1. 可能是把公钥复制到服务器上时末位多了换行符，也可能是本地生成的时候给私钥设置了密码。但是用`ssh -T`测试又是ok的。因为没有成功复现，所以待研究
+    1. 可能是把公钥复制到服务器上时末位多了换行符，也可能是本地生成的时候给私钥设置了密码或其他原因。但是用`ssh -T`测试又是ok的。因为没有成功复现，所以待研究
+
+### 1.37 go: cannot find GOROOT directory: C:\Program Files\Git\usr\local\go
+背景：在windows的gitbash中执行`go env`报错
+解决：在gitbash中设置环境变量`GOROOT`
+
+    ```bash
+    # 在gitbash中查看环境变量$path
+    declare -x GOBIN="/c/Users/99212/go/bin"
+    declare -x GOPATH="/c/Users/99212/go"
+    declare -x GOROOT="/usr/local/go"
+    ...
+
+    # 在gitbash中编辑环境变量GOROOT
+    export GOROOT="C:\\Program Files\\Go"
+    ```
 
 ## 2 未解决
 ### note: module requires Go 1.14
