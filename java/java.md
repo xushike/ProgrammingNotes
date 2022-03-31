@@ -18,6 +18,12 @@
 
 新增了分支/合并（fork/join）框架，使得并行 变得更实用，但仍然很困难。
 
+从JDK版本7u71以后，JAVA将会在同一时间发布两个版本的JDK：
+1. 奇数版本为BUG修正并全部通过检验的版本，官方强烈推荐使用这个版本。
+2. 偶数版本包含了奇数版本所有的内容，以及未被验证的BUG修复(不推荐)
+
+所以"数字越大，版本越新"的说法是错误的
+
 ### 2.8 java8
 2014年3月27日——甲骨文公司日前举办Java 8网络直播发布会，发布甲骨文迄今为止最重要的Java技术Java 8。甲骨文宣布推出了Java平台标准版8（Java SE 8）、Java平台微型版8（Java ME 8）以及Oracle Java Embedded产品（为中到高端嵌入式系统进行了优化）的有关版本。JDK 8是Java SE 8平台规范的生产就绪版本，不久前获得Java社区进程（Java Community Process,JCP）批准。JDK 8包括自该平台1996年推出以来最重大的Java编程模型升级。JDK 8经甲骨文与OpenJDK社区合作开发而成。
 
@@ -36,6 +42,9 @@ JDK 8的重要特性包括:
             2. 链式调用
             3. 有效避免程序代码中的空指针
 
+jdk8的关键子版本：
+1. 8u201和8u202：是最后的免费商业版
+
 ### 2.9 java9
 特性：
 1. lombak的val/var(待整理)
@@ -45,8 +54,11 @@ JDK 8的重要特性包括:
 ### 2.10 java10
 var
 
+### 2.11 java11
+zgc
+
 ### 2.13 java13
-switch
+switch开关表达式
 
 ### 2.14 java14
 instanceof 模式匹配
@@ -99,24 +111,25 @@ OpenJDK源代码不完整：这个很容易想到，在采用GPL协议的OpenJDK
 
 ## 4 文档网址等
 1. 官方
+    1. java8文档：https://docs.oracle.com/javase/8/docs/
     1. javase tutorial：https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html
 
 # 二 安装配置
 ## 1 windows
-1. 下载jdk并安装.路径中不能有中文，最好不要有空格
-
-2. 配置JAVA_HOME、PATH和CLASSPATH（ClASSPATH在1.5之后可以不用配置）
-    - JAVA_HOME一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
+1. 下载jdk并安装
+2. 配置`JAVA_HOME`、`PATH`和`CLASSPATH`（`ClASSPATH`在1.5之后可以不用配置）
+    - JAVA_HOME默认一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
     - PATH的目的是将`%JAVA_HOME%/bin`目录添加到执行路径中，
-    - CLASSPATH的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置CLASSPATH环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
+    - `CLASSPATH`的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置`CLASSPATH`环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
 
 3. 安装库源文件和文档:库源文件在是jdk目录中src.zip;文档去官网下载，一般是jdk-version-docs-all.zip
-
 4. 命令行下的简单运行
-```
-javac xxx.java  //编译
-java xxx        //运行
-```
+
+    ```
+    java -version // 查看是否安装成功
+    javac xxx.java  // 编译
+    java xxx        // 运行
+    ```
 
 ## 2 mac
 mac上可以同时安装多个版本的jdk，但是现在的mac都没有自带jdk，有以下方式安装
@@ -162,7 +175,7 @@ mac上可以同时安装多个版本的jdk，但是现在的mac都没有自带jd
         这样我们就可以通过输入一条命令进行版本切换了：`setjdk 1.8`
     3. jenv(https://www.jenv.be):通过当前目录下的`.java-version`来决定使用哪个JDK,jenv可以用brew安装，但是jenv有几个问题(待整理)：
         1. 需要手动把`eval "$(jenv init -)"`加入 profile，没有 Oh My Zsh 插件.
-        2. 可以把`eval "$(jenv init -)"`加入~/.zlogin，这样可以避免修改~/.zshrc。
+        2. 可以把`eval "$(jenv init -)"`加入`~/.zlogin`，这样可以避免修改`~/.zshrc`。
         3. 需要手动添加 JDK，不会自动采集系统 JDK。跟 Ruby 不同，OS X 已经提供`/usr/libexec/java_home`工具来管理安装的 JDK。
         4. 需要 jenv rehash。
 
@@ -422,6 +435,10 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 #### 2.2.3 关键字（keyword）
 1. java所有关键字都是小写的
 
+### 文件类型
+1. 用户类文件
+2. 注释处理程序
+
 ## 1 工具生态
 1. version manager
     1. sdkman:is a tool for managing parallel versions of multiple Software Development Kits on most Unix-based systems.它是一个可以方便管理jdk,spring等软件(主要是java系)的主流版本(注意不是全部版本)的第三方工具。前身是GVM。这个工具对linux和mac支持得比较好，在windows上的安装有些麻烦(需要windwos上有一个简单的linux环境)
@@ -475,20 +492,28 @@ jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此�
     ```java
     javac -d math Temp.java // 放置在当前目录下的math文件夹内
     ```
-2. `-cp`：zip/jar 文件的类搜索路径
+2. `-cp/--classpath <directory>`：指定查找用户类文件(引用的.class文件)和注释处理程序的位置
     
     ```java
+    // 多个路径,在linux中用:分隔，windows用;分隔，当前路径用.表示
+    // 可以使用相对路径也可以使用绝对路径
+    // 对于.class文件来说，只需要指明包的路径即可；但是对于jar文件来说，必须要指定全路径即路径(相对或绝对都可)+文件名的格式
+    javac -cp dir1;. Temp.java
     ```
+3. `-encoding`:指明编码方式,如`javac -encoding UTF-8 xxx.java`
 
 ### java
-执行`.class`文件
+执行`.class`文件,到最外层包的上一级目录下运行，而且类前面需要带包名，以`.`隔开
+```java
+// 假设Temp.java的package是com.temp，在原目录生成了.class文件后，想运行.class文件需要去com文件夹所在的目录执行
+java com.temp.Temp
+```
 
 参数
-1. `-cp <directory>`指定classpath
+1. `-cp/--classpath <directory>`: zip/jar 文件的类搜索路径
     
     ```java
-    // 假设在当前目录下的math文件夹内生成了Temp.class文件，想要运行可以
-    java -cp math Temp
+
     ```
 
 ### javap
@@ -1285,16 +1310,40 @@ java将异常分为两种:
 
 1. The Boolean class wraps a value of the primitive type boolean in an object. An object of type Boolean contains a single field whose type is boolean.(布尔类将原始类型boolean的值包装在对象中。 布尔类型的对象包含一个布尔类型的字段。)
 
-#### java.lang.Calendar
-#### java.lang.Date
+#### lang.Calendar
+#### lang.Class
+类的实例相关方法
+
+使用
+1. 获取
+    1. 获取类名`getName():String`
+    2. `getSuperClass():Class`：获得该类型的直接父类，如果该类型没有直接父类，那么返回null。
+    3. `getInterfaces():Class[]`：获得该类型实现的所有接口
+    4. 获取路径
+        1. `getResource("")`:获取File协议路径
+
+            ```java
+            // 假如.class文件在C:/Users/99212/study/src/temp，它的package是temp，那么
+            this.getClass().getResource("") // 得到的是.class文件所在目录的File路径，即file:/C:/Users/99212/study/src/temp/
+            this.getClass().getResource("/") // 得到的是.class文件最外层包所在目录的File路径，即file:/C:/Users/99212/study/src/
+            ```
+2. 判断
+    1. isArray():boolean：判断该类型是否是数组。
+    2. isEnum():boolean：判断该类型是否是枚举类型。
+    3. isInterface():boolean：判断该类型是否是接口。
+    3. isPrimitive():boolean：判断该类型是否是基本类型，即是否是int，boolean，double等等。
+    5. isAssignableFrom(Class cls):boolean：判断这个类型是否是类型cls的父（祖先）类或父（祖先）接口。
+    6. getComponentType():Class：如果该类型是一个数组，那么返回该数组的组件类型
+
+#### lang.Date
 Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
-#### java.lang.Math
+#### lang.Math
 
 常用方法:
 1. `random()`
 2. `pow(a,b)`:a的b次方
 
-#### java.lang.Object
+#### lang.Object
 jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
 
 常用方法：
@@ -1307,7 +1356,7 @@ jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
     ```
 2. `equals()`:判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
 
-#### java.lang.time
+#### lang.time
 java8新增的日期、时间包。在JDK1.8之前，Java处理日期、日历和时间的方式一直为社区所诟病，将 java.util.Date设定为可变类型，以及SimpleDateFormat的非线程安全使其应用非常受限。因此推出了java.time包，该包下的所有类都是不可变类型而且线程安全。
 
 不要使用`new`关键字来创建，而是使用静态工厂方法，比如
@@ -1405,15 +1454,8 @@ String str = stream.collect(Collectors.joining()).toString();
 
 # 六 问题
 ## 1 已解决
-### 1.1 运行的时候发现java或者javac其中某个不能正确运行（错误提示如：找不到或无法加载主类）
-如果java的配置都正确,那么可能是
-1. java能运行但javac不行（似乎跟C:\Windows\System32里的三个java执行程序有关，待补充）
-2. javac能运行但java不行：
-我当时出现这个情况是因为我的java文件是在eclipse下写的，文件头声明了自己建的包，此时有两种解决办法，一种是去掉声明的包运行，第二种是不去掉包的声明直接去包所在的目录运行java文件，比如我的包名是study，那么我应该去study所在的目录执行
-```java
-javac study/XXX.java    //注：此处study后的斜杠可以用反斜杠或斜杠；javac命令在study目录下可以运行：javac XXX.java
-java study/XXX          //注：此处study后的斜杠必须用斜杠
-```
+### 1.1 运行java报错：找不到或无法加载主类
+参考工具生态-java部分笔记
 
 ### 1.2 main写成Main
 把main方法写成Main时，编译不会出现问题，但是运行会报错
@@ -1436,7 +1478,7 @@ overwrite:是C++中的概念,在java中可以不讨论.
 不然谁去new它.(待补充)
 
 ### 1.6 编码GBK的不可映射字符
-因为javac.exe会用操作系统默认的编码格式(比如中文版windows为GBK)将.java文件以JAVA内部默认的UNICODE格式读到内存中,然后编译为UNICODE格式的.class文件.
+因为`javac`会用操作系统默认的编码格式(比如中文版windows为GBK)将`.java`文件以JAVA内部默认的UNICODE格式读到内存中,然后编译为UNICODE格式的`.class`文件.
 
 解决方法是:使用`-encoding`参数指明编码方式,如`javac -encoding UTF-8 xxx.java`
 

@@ -6871,8 +6871,9 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
             // replace使用例子2：使用固定版本，写法和例子1类似，这个固定版本会覆盖掉require中设置的版本
             google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
-            // replace使用例子3：自定义路径，比如你想使用本地私有模块时
-            github.com/astaxie/beego => /home/mod/astaxie/beego           
+            // replace使用例子3：自定义路径，比如你想使用本地目录，本地目录必须是绝对路径或相对路径
+            github.com/astaxie/beego => /home/mod/astaxie/beego
+            github.com/astaxie/beego => ./pkg/beego
         )
         ```
     2. `indirect`：的意思是指这个package被子module/package依赖了，但是main module并没有直接import使用，也就是所谓的间接引用
@@ -7307,6 +7308,17 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 2. could not read Username for 'https://example.com': terminal prompts disabled
     1. 原因一：要拉取的仓库是私有的，但是没有配置https转git
     2. 原因二：没有把私有仓库的host添加到GOPRIVATE环境变量
+    3. 原因三：git读写credential文件时出了问题
+        1. 本人windows凭证助手的配置是
+
+            ```bash
+            credential.helper=manager-core
+            credential.helperselector.selected=manager-core
+            credential.https://git.example.cn.provider=generic
+
+            ```
+        1. 删除`credential.https://git.example.cn.provider=generic`(这一步似乎是可选的),然后我重新切了个分支执行`git pull`，它提示我输入用户名密码，输入完成之后就可以正确拉取了
+    4. 原因四：Go get 命令默认禁用terminal prompt，可通过设置环境变量`GIT_TERMINAL_PROMPT=1`来打开
 3. git@example.cn: Permission denied (publickey).
     1. 可能是把公钥复制到服务器上时末位多了换行符，也可能是本地生成的时候给私钥设置了密码或其他原因。但是用`ssh -T`测试又是ok的。因为没有成功复现，所以待研究
 

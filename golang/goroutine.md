@@ -115,11 +115,16 @@ linux中的概念（待补充）
 作用：它能够一直等到所有的goroutine执行完成，并且阻塞主线程的执行，直到所有的goroutine执行完成
 
 ## 4 信号量(semaphore)
+golang官方信号量代码`https://github.com/golang/sync/blob/master/semaphore/semaphore.go`。信号量一般基于AQS实现，我们也可以自己通过goroutine和channel实现一个简单的Semaphore
+
 对信号量有4种操作
 1. 初始化（initialize），也叫做建立（create）
 2. 等信号（wait），也可叫做挂起（suspend）
 3. 给信号（signal）或发信号（post）
 4. 清理（destroy）
+
+适用场景：
+1. 通过信号量控制并发数量
 
 ## 5 死锁
 死锁的规范定义：集合中的每一个进程都在等待只能由本集合中的其他进程才能引发的事件，那么该组进程是死锁的。操作系统中的定义：所有的线程或进程都在等待资源的释放。如果只有一个线程也是可以发生死锁的。例子如:
