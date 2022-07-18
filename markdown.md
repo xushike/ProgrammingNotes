@@ -83,6 +83,8 @@ First Header | Second Header
 Content from cell 1 | Content from cell 2
 Content in the first column | Content in the second column
 
+默认没有合并单元格的语法，只能通过HTML来实现
+
 ### 图表
 需要插件支持，比如mermaid，github和gitlab已经集成了该插件：https://mermaidjs.github.io
 

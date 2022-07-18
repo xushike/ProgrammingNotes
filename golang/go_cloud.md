@@ -133,21 +133,23 @@ goa基于服务提供功能，每个API定义一个服务(Service)，每个服�
                 1. 字段定义
                     1. `Field`:定义的字段是有序的，如果接口会用于rpc，则需要使用该方法定义
                     2. `Attribute`:定义的字段是无序的  
-                2. 复用已有`Type`的字段来定义:使用`Reference`，需要结合`Field`或`Attribute`一起使用
+                2. 复用已有`Type`的字段来定义:
+                    1. `Extend`
+                    2. 使用`Reference`，需要结合`Field`或`Attribute`一起使用
 
-                    ```golang
-                    Payload(func() {
-                        Reference(AppIdToken)
-                        Attribute("app_id")
-                        Attribute("app_token")
-                    
-                        Required("app_id", "app_token")
-                    })
-                    ```
+                        ```golang
+                        Payload(func() {
+                            Reference(AppIdToken)
+                            Attribute("app_id")
+                            Attribute("app_token")
+                        
+                            Required("app_id", "app_token")
+                        })
+                        ```
 
                 2. 字段必填`Required`
             3. `Result`:定义出参
-                1. 和入参类似，它也可以使用`Reference`方法来复用已有的字段，不过只能复用`ResultType`?
+                1. 和入参类似，它也可以使用`Extend`和`Reference`方法来复用已有的字段
 3. `Pattern`:todo
 4. `View()`：设置不同的可见字段
     
@@ -1244,6 +1246,8 @@ https://github.com/golang/protobuf/tree/master/protoc-gen-go
     1. 指定grpc版本`replace google.golang.org/grpc => google.golang.org/grpc v1.26.0`，然后重新生成.pb文件，不行的话再降级protoc-gen-go的版本`go get github.com/golang/protobuf/protoc-gen-go@v1.3.2`
 2. rpc error: code = DeadlineExceeded desc = context deadline exceeded
     1. 可能原因：超时时间设置得太短
+3. rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing dial tcp 172.23.0.6:8082: connect: connection refused
+    1. todo
 
 ## 日志 
 日志设计：
