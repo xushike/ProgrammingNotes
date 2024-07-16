@@ -2,9 +2,7 @@
 [TOC]
 
 # 一 概述
-用于放各种协议的目录，比如RPC
-
-## 1 简介
+用于放各种协议的目录，比如RPC等。该笔记和network笔记是互补关系。
 
 ## 3 常识
 ### 3.1 RFC(Request for Comments,意见征求、意见请求、请求评论)
@@ -24,14 +22,35 @@
 - 5432:Postgres数据库
 
 # 三 基础
-## NCP(Network control protocol,网络控制协议)
+## 0 架构和常见名词
+## 1 工具生态
+## 2 常见协议
+### NP(Network Protocol,网络协议)
+网络协议是网络上所有设备（网络服务器、计算机及交换机、路由器、防火墙等）之间通信规则的集合，它规定了通信时信息必须采用的格式和这些格式的意义。
 
-## IPS(Internet Protocol Suite,互联网协议套件)
+#### SMB（Server Message Block，服务器信息块协议）
+在2017年，WannaCry和Petya这两个勒索软件，兼蠕虫病毒利用SMB v1协议的数个漏洞，攻击Windows客户端，大范围的影响了全球的window用户。微软很快修复了这些漏洞，并在2017年Windows10的更新中禁用了SMBv1，把文件共享服务端的默认协议改成了SMBv2。最老的SMB v1，可以允许匿名访问，并支持网络浏览。而SMB v2之后的版本，需要使用用户名访问，不再支持网络浏览。
+
+使用
+1. 在Windows10 系统里，开启SMBv1共享(SMB v1会出现严重的安全漏洞，最好不要使用)的方法是
+    1. 搜索高级共享设置
+    2. 点开所有网络，并勾选无密码保护的共享
+    3. 然后打开控制面板，打开程序与功能
+    4. 打开启用或关闭windows功能
+    5. 找到SMB 1.0/CIFS 文件共享，勾选所有选项，然后确定
+    6. 重启电脑
+
+问题
+1. network dropped connection because of reset
+
+### NCP(Network control protocol,网络控制协议)
+
+### IPS(Internet Protocol Suite,互联网协议套件)
 互联网协议套件是网络通信模型，为互联网的基础通信架构/基石。它常通称为TCP/IP协议族或TCP/IP协议簇（TCP/IP Protocol Suite，或TCP/IP Protocols），简称TCP/IP。因为该协议家族的两个核心协议：TCP（传输控制协议）和IP（网际协议），为该家族中最早通过的标准。由于在网络通讯协议普遍采用分层的结构，当多个层次的协议共同工作时，类似计算机科学中的堆栈，因此又称为TCP/IP协议栈（英语：TCP/IP Protocol Stack） 。这些协议最早发源于美国国防部（缩写为DoD）的ARPA网项目，因此也称作DoD模型（DoD Model），前身是NCP
 
 其中比较重要的有SLIP协议、PPP协议、IP协议、ICMP协议、ARP协议、TCP协议、UDP协议、FTP协议、DNS协议、SMTP协议等
 
-### IP(Internet Protocol,互联网协议)
+#### IP(Internet Protocol,互联网协议)
 互联网协议,又称互联网通信协议、网际协议。它将多个网络连成一个互联网，可以把高层的数据以多个数据包的形式通过互联网分发出去。IP的基本任务是**通过互联网传送数据包，主要解决网络路由和寻址问题**，各个IP数据包之间是相互独立的。
 
 互联网协议提供了“不可靠的”数据包传输机制（也称“尽力而为”或“尽最大努力交付”）；也就是说，它不保证数据能准确的传输。数据包在到达的时候可能已经损坏，顺序错乱（与其它一起传送的报文相比），产生冗余包，或者全部丢失。如果应用需要保证可靠性，一般需要采取其他的方法，例如利用IP的上层协议控制(比如TCP)。
@@ -43,25 +62,25 @@
 4. IPv6采用邻居发现协议（NDP）。
 5. 其他的版本也已经分配了，通常是用于实验的协议，而没有广泛应用。
 
-#### IPv4
+##### IPv4
 最致命的两个缺陷：
 1. 地址只有32位，IP地址空间有限
 2. 不支持服务质量（Quality of Service，QoS）的想法，无法管理带宽和优先级，故而不能很好的支持现今越来越多实时的语音和视频应用。因此IPv6（网际协议版本六）浮出水面，用以取代IPv4
 
-#### IPv6
+##### IPv6
 1. 拥有128位的地址空间，可以提供比前者多很多的地址。
 
-### ICMP
+#### ICMP
 
-### ARP(Address Resolution Protocol,地址解析协议)
+#### ARP(Address Resolution Protocol,地址解析协议)
 是一个通过解析网络层地址来找寻数据链路层地址的网络传输协议，它在IPv4中极其重要。
 
 ARP Proxy(委托ARP、ARP代理)：当发送主机和目的主机不在同一个局域网中时，即便知道对方的MAC地址，两者也不能直接通信，必须经过路由转发才可以。所以此时，发送主机通过ARP协议获得的将不是目的主机的真实MAC地址，而是一台可以通往局域网外的路由器的MAC地址。于是此后发送主机发往目的主机的所有帧，都将发往该路由器，通过它向外发送。
 
-### NDP/ND(Neighbor Discovery Protocol,邻居发现协议)
+#### NDP/ND(Neighbor Discovery Protocol,邻居发现协议)
 工作在数据链路层,负责在链路上发现其他节点和相应的IP地址，并确定可用路由和维护关于可用路径和其他活动节点的信息可达性
 
-### TCP(Transmission Control Protocol,传输控制协议)
+#### TCP(Transmission Control Protocol,传输控制协议)
 是为了在不可靠的互联网络上提供可靠的端到端字节流而专门设计的一个传输协议。主要解决如何在IP层之上可靠的传递数据包，使在网络上的另一端收到发端发出的所有包，并且顺序与发出顺序一致。TCP有可靠，面向连接的特点。
 
 TCP连接：需要通过三次连接，包括：请求，确认，建立连接。即通常说的"三次握手"
@@ -161,8 +180,8 @@ TCP如何保证可靠：乱序重排、应答确认、报文重传和流量控�
 3. 如果已经建立了连接，但是客户端突然出现故障了怎么办？TCP设有保活机制，有一个保活计时器，客户端如果出现故障，服务器不能一直等下去，白白浪费资源。服务器每收到一次客户端的请求后都会重新复位这个计时器，时间通常是设置为2小时，若两小时还没有收到客户端的任何数据，服务器就会发送一个探测报文段，以后每隔75秒钟发送一次。若一连发送10个探测报文仍然没反应，服务器就认为客户端出了故障，接着就关闭连接。
 4. open too many files：开启的连接太多了
 
-### UDP
-### FTP(File Transfer Protocol，文件传输协议)
+#### UDP
+#### FTP(File Transfer Protocol，文件传输协议)
 参考：
 1. https://datatracker.ietf.org/doc/html/rfc959
 1. http://www.nsftools.com/tips/RawFTP.htm#
@@ -209,10 +228,10 @@ FTP, the File Transfer Protocol, is probably the oldest network protocol that cu
 7. `STOR remote-filename`：传输文件到远程主机
 
 
-### FTPS
+#### FTPS
 是FTP标准的扩展，添加了安全套接层（SSL）以及其继任者传输层安全性协议（TLS）的支持
 
-### DNS
+#### DNS
 参考：
 1. https://www.rfc-editor.org/pdfrfc/rfc1035.txt.pdf
 
@@ -221,32 +240,32 @@ DNS基于UDP协议
 DNS协议帧如图：其中question是域名，answer是IP
 ![](../picture/protocol/dns-frame.webp "dns frame")
 
-### SMTP
-## SSH
+#### SMTP
+### SSH
 Secure Shell（安全外壳协议，简称SSH）是一种加密的网络传输协议，可在不安全的网络中为网络服务提供安全的传输环境。SSH通过在网络中创建安全隧道来实现SSH客户端与服务器之间的连接。SSH最常见的用途是远程登录系统，人们通常利用SSH来传输命令行界面和远程执行命令。SSH使用频率最高的场合是类Unix系统，但是Windows操作系统也能有限度地使用SSH。2015年，微软宣布将在未来的操作系统中提供原生SSH协议支持，Windows 10 1803版本已提供OpenSSH工具。
 
 SSH不使用任何类型的证书，而是使用公钥和私钥。如果正确使用，SSH和TLS都提供了强大的加密和安全传输。
 
-### SFTP、Secure FTP(SSH File Transfer Protocol、Secret File Transfer Protocol，SSH文件传输协议)
+#### SFTP、Secure FTP(SSH File Transfer Protocol、Secret File Transfer Protocol，SSH文件传输协议)
 
-### SCP
+#### SCP
 它不可移植，只能在Unix systems上工作
 
-## TLS
+### TLS
 
-## PPP(Point-to-Point Protocol,点对点协议)
+### PPP(Point-to-Point Protocol,点对点协议)
 
-## 邮件相关
-### SMTP
-### POP
+### 邮件相关
+#### SMTP
+#### POP
 POP算是一个“只读”权限的邮件协议
 
-#### POP3
+##### POP3
 
-### IMAP(Internet Message Access Protocol,互联网邮件访问协议)
+#### IMAP(Internet Message Access Protocol,互联网邮件访问协议)
 比POP更新一点，是“读写”权限的邮件协议
 
-### WebSocket
+#### WebSocket
 为什么需要 WebSocket：已经有了 HTTP 协议，为什么还需要另一个协议？因为 HTTP 协议有一个缺陷：通信只能由客户端发起。如果服务器有连续的状态变化，客户端想要获知就非常麻烦，只能使用"轮询"的方式，轮询的效率低，非常浪费资源（因为必须不停连接，或者 HTTP 连接始终打开）
 
 特点：它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于服务器推送技术的一种。
@@ -259,8 +278,8 @@ POP算是一个“只读”权限的邮件协议
 
 具体使用见html目录websocket笔记
 
-## IoT相关
-### lora
-### modbus
+### IoT相关
+#### lora
+#### modbus
 
 # 七 待整理

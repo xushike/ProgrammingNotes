@@ -160,7 +160,6 @@
     1. how to and when use?
     1. https://studygolang.com/articles/3373
 1. golang json：https://colobu.com/2017/06/21/json-tricks-in-Go/
-1. https://github.com/avelino/awesome-go
 1. golang 的性能测试例子
 2. pg触发器，存储过程
 1. https://gobyexample.com/
@@ -863,8 +862,6 @@ angualr 表单中:#,name等的区别
 2. 路由策略
 2. linux 文件名带反斜杠的bug
 2. 防止重复点击
-3. 复制粘贴会触发onkeyup等吗
-
 1. css
     1. 小型布局的灵活切换,比如让div变行内,让div中的元素右对齐...
     2. 哪些属性对块级元素生效,哪些对行内元素生效
@@ -1189,8 +1186,6 @@ END;
 
     [https://zhuanlan.zhihu.com/p/26118022](https://zhuanlan.zhihu.com/p/26118022)
 179. 悲观锁和乐观锁
-180. angular中,如果使用了双向绑定,组件ngif消失了再出现,此时的绑定是?如何让他消失的时候绑定也清除?
-181. ie的适配,angular的例子
 182. google Development tools
 183. js lambda从es6开始的?
 184. angular2的单双绑定的写法总结

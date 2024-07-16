@@ -27,11 +27,6 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 ### 3.6 自带的远程控制
 似乎只对两种情况生效：使用公网的 IP 地址或者两者在同一个内网内。
 
-### 3.7 Hyper-V
-网友：最早支持Hyper-V的Windows是Windows Server 2008。说起Hyper-V的历史，也是有一定渊源的。最早有一家公司，名叫Connectix，它有一款产品就是大家熟悉的Connectix Virtual PC，一款硬件虚拟化产品，后来Connectix把Virtual PC产品卖给了微软，成为了Microsoft Virtual PC，之后Connectix于2003年宣布解体，微软把Virtual PC精神发扬光大，成就了现在的Hyper-V。从Windows 10开始，Professional/Enterprise版本的Windows 10都能够支持Hyper-V了。大家可以直接在Windows 10中创建虚拟机，而不需要额外安装vmware player、Oracle VirtualBox等这些第三方的虚拟机服务。
-
-在开始菜单中输入Hyper-V作为关键字，Hyper-V Manager菜单项就会显示出来，点击Hyper-V Manager的菜单项，即可打开Hyper-V的管理界面。在Hyper-V Manager中，可以非常方便地创建并管理虚拟机，虚拟机的操作系统可以是Windows的，也可以是Linux的，用户只需要下载所需操作系统的ISO镜像即可完成安装，非常方便。可参考微软官网Hyper-V的教程。
-
 ### 3.8 有空格的目录
 在终端进入带空格的目录有三种方式(和mac不太一样)，比如目录`Program Files`：
 1. `cd 'Program Files'`
@@ -44,45 +39,17 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 
 # 二 安装配置
 # 三 基础
-## 1 DOS、命令行和运行程序
-见DOS.md
+## 0 架构和常见词语
+### Hyper-V
+网友：最早支持Hyper-V的Windows是Windows Server 2008。说起Hyper-V的历史，也是有一定渊源的。最早有一家公司，名叫Connectix，它有一款产品就是大家熟悉的Connectix Virtual PC，一款硬件虚拟化产品，后来Connectix把Virtual PC产品卖给了微软，成为了Microsoft Virtual PC，之后Connectix于2003年宣布解体，微软把Virtual PC精神发扬光大，成就了现在的Hyper-V。从Windows 10开始，Professional/Enterprise版本的Windows 10都能够支持Hyper-V了。大家可以直接在Windows 10中创建虚拟机，而不需要额外安装vmware player、Oracle VirtualBox等这些第三方的虚拟机服务。
 
-## 2 windows消息模型
-它是事件驱动的编程模型，应用程序通过处理操作系统发送来的消息来响应事件。事件可能是用户的一次鼠标移动，键盘敲击，或者是系统要求窗口重绘的消息，程序员所需要做的事就是处理应用程序感兴趣的消息。
+在开始菜单中输入Hyper-V作为关键字，Hyper-V Manager菜单项就会显示出来，点击Hyper-V Manager的菜单项，即可打开Hyper-V的管理界面。在Hyper-V Manager中，可以非常方便地创建并管理虚拟机，虚拟机的操作系统可以是Windows的，也可以是Linux的，用户只需要下载所需操作系统的ISO镜像即可完成安装，非常方便。可参考微软官网Hyper-V的教程。
 
-Windows的消息系统是由3个部分组成的：
-1. 消息队列。Windows能够为所有的应用程序维护一个消息队列。应用程序必须从消息队列中获取消息，然后分派给某个窗口。
-2. 消息循环。通过这个循环机制应用程序从消息队列中检索消息，再把它分派给适当的窗口，然后继续从消息队列中检索下一条消息，再分派给适当的窗口，一次进行。
-3. 窗口过程。每个窗口都有一个窗口过程来接收传递给窗口的消息，它的任务就是获取消息然后响应它。窗口过程是一个回调函数，处理了一个消息后，它通常要返回一个值给Windows。
-
-一个消息从产生到被一个窗口响应，其中有5个步骤：
-1. 系统中发生了某个事件。
-2. Windows把这个事件翻译为消息，然后把它放到消息队列中。
-3. 应用程序从消息队列中接收到这个消息，把它存放在TMsg记录中。
-4. 应用程序把消息传递给一个适当的窗口的窗口过程。
-5. 窗口过程响应这个消息并进行处理。
-
-其中步骤3和4构成了应用程序的消息循环。消息循环往往是Windows应用程序的核心，因为消息循环使一个应用程序能够响应外部的事件。消息循环的任务就是从消息队列中检索消息，然后把消息传递给适当的窗口。如果消息队列中没有消息，Windows就允许其他应用程序处理它们的消息。
-
-windows是一个消息驱动的系统，它使用两种方式把各种事件通知给应用程序：
-1. 把消息放在应用程序的消息队列中 
-2. 向适当的窗口过程直接发消息
-
-
-## 3 远程桌面协议RDP
-脆弱的
-
-# 四 高级
-## 1 快捷键
-1. 调出程序最小化、最大化、移动(m，非全屏时可用)、关闭(c)等命令面板：`alt+空格`，而且可以在程序没有边框的时候使用
-
-## 2 iocp(待整理)
-
-# 五 经验
-## 1 包管理
+## 1 工具生态
+### 1.1 包管理
 最热门的软件包管理工具就属Scoop和Chocolatey，不过两者的定位稍有不同
 
-### scoop 
+#### scoop 
 参考：
 1. 官方
     1. https://github.com/lukesampson/scoop
@@ -125,12 +92,15 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
         1. `scoop install innounp`
         2. `scoop install wixtoolset`
     1. 应用推荐
-        1. (不推荐)`aria2`：安装后scoop会默认使用它来加速，它提供多线程下载和断点续传。虽然网上都是建议安装aria2，但是本人实测发现对于新手并不好用，所以暂时不推荐安装。
-        2. 开发相关`sudo scoop install make 7zip nginx curl less vim`
+        2. 开发相关`sudo scoop install  7zip nginx curl less vim`
         4. 桌面应用相关,先安装extras bucket`scoop bucket add extras`，然后再安装`scoop install potpalyer googlechrome`
             2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文，需要自己进入应用设置里面关联视频文件格式。
             3. `googlechrome`:安装后启动命令是`chrome`
             4. `ventoy`
+            5. `which`((注意和windows自带的`which`不一样))
+        1. 不推荐
+            1. `aria2`：安装后scoop会默认使用它来加速，它提供多线程下载和断点续传。虽然网上都是建议安装aria2，但是本人实测发现对于新手并不好用，所以暂时不推荐安装。
+            2. `make`
     2. 安装后快捷方式目录`~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Scoop Apps`
 
 使用：
@@ -181,7 +151,7 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
     ```
 8. 查看状态和更新`scoop status`
 
-### Chocolatey
+#### Chocolatey
 参考：
 1. https://chocolatey.org/
 2. https://github.com/chocolatey/choco
@@ -189,11 +159,63 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 也是优秀的软件，比scoop更臃肿，相比之下有一些缺点：
 1. 很多软件安装位置不固定, 会污染Path
 
-### winget-cli
+#### winget-cli
 https://github.com/microsoft/winget-cli
 
-## 2 Windows Terminal
-主要功能包括多选项卡、窗格、Unicode/UTF-8字符支持、GPU加速文本渲染引擎，运行速度更快，Unicode、UTF-8字符的支持则方便在多种语言环境中使用，并显示表情符号，以及自定义主题、样式和配置等。
+使用：
+1. 安装软件`winget install [software]`,因为下载的软件包基本上都是 .exe 后缀，加上大多需要通过 UAC 提权，因此安装软件过程中大概率会弹出调用 GUI 安装交互界面，并不能实现真正意义上的完全静默安装。
+
+    ```bash
+    winget install microsoft.openjdk.11
+    ```
+2. 搜索`winget search [software]`
+2. 查看
+    1. 查看已安装软件
+
+        ```bash
+        #  查看已安装软件，包括win32软件以及Microsoft Store 安装的软件
+        winget list 
+        ```
+    2. 查看某款软件的信息`winget show [software]`
+
+### 1.2 Windows Terminal
+见terminal&dos部分笔记
+
+## 2 DOS、命令行和运行程序
+见terminal&dos部分笔记
+
+## 3 windows消息模型
+它是事件驱动的编程模型，应用程序通过处理操作系统发送来的消息来响应事件。事件可能是用户的一次鼠标移动，键盘敲击，或者是系统要求窗口重绘的消息，程序员所需要做的事就是处理应用程序感兴趣的消息。
+
+Windows的消息系统是由3个部分组成的：
+1. 消息队列。Windows能够为所有的应用程序维护一个消息队列。应用程序必须从消息队列中获取消息，然后分派给某个窗口。
+2. 消息循环。通过这个循环机制应用程序从消息队列中检索消息，再把它分派给适当的窗口，然后继续从消息队列中检索下一条消息，再分派给适当的窗口，一次进行。
+3. 窗口过程。每个窗口都有一个窗口过程来接收传递给窗口的消息，它的任务就是获取消息然后响应它。窗口过程是一个回调函数，处理了一个消息后，它通常要返回一个值给Windows。
+
+一个消息从产生到被一个窗口响应，其中有5个步骤：
+1. 系统中发生了某个事件。
+2. Windows把这个事件翻译为消息，然后把它放到消息队列中。
+3. 应用程序从消息队列中接收到这个消息，把它存放在TMsg记录中。
+4. 应用程序把消息传递给一个适当的窗口的窗口过程。
+5. 窗口过程响应这个消息并进行处理。
+
+其中步骤3和4构成了应用程序的消息循环。消息循环往往是Windows应用程序的核心，因为消息循环使一个应用程序能够响应外部的事件。消息循环的任务就是从消息队列中检索消息，然后把消息传递给适当的窗口。如果消息队列中没有消息，Windows就允许其他应用程序处理它们的消息。
+
+windows是一个消息驱动的系统，它使用两种方式把各种事件通知给应用程序：
+1. 把消息放在应用程序的消息队列中 
+2. 向适当的窗口过程直接发消息
+
+
+## 4 远程桌面协议RDP
+脆弱的
+
+# 四 高级
+## 1 快捷键
+1. 调出程序最小化、最大化、移动(m，非全屏时可用)、关闭(c)等命令面板：`alt+空格`，而且可以在程序没有边框的时候使用
+
+## 2 iocp(待整理)
+
+# 五 经验
 
 # 六 问题
 ## 1 已解决

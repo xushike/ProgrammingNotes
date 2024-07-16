@@ -1,7 +1,8 @@
-# DOS
+# terminal&DOS
+
 
 # 一 概述
-DOS和命令行相关
+不仅仅是DOS，还包括所有和命令行相关的
 
 ## 3 常识
 ### 3.1 如果是以管理员身份运行的
@@ -94,8 +95,8 @@ powershell:
         ```
 6. 清屏:`cls`,`clear`or`ctrl+l`
 
-windows terminal:
-1. 安装：从应用商店安装
+windows terminal: 主要功能包括多选项卡、窗格、Unicode/UTF-8字符支持、GPU加速文本渲染引擎，运行速度更快，自定义主题、样式和配置等。
+1. 参考：https://learn.microsoft.com/zh-cn/windows/terminal/install
 
 # 三 基础
 ## 0 架构
@@ -106,23 +107,31 @@ powershell的Verb-Noun
 2. `cmd_name /?`
 
 ## 1 文件和目录操作
-1. `cd`，路径分隔使用正反斜杠都行
-
-    ```
-    # 例子1
-    cd C:\Users\xxx\scoop\persist\mysql
-    ```
-2. 查找
+### 1.1 查看和查找
+1. 目录和文件
+    1. `dir`
+    2. `tree`:快速梳理目录结构、掌握文件信息。
+        1. 不带参数直接使用：以树状结构显示当前文件夹及所有后续文件夹
+        2. 常见参数
+            1. `/f`：同时显示每个文件夹里文件的名称
+            2. `/a`：使用ASCII码字符，而不是用扩展字符
+        3. 常见用法
+            
+            ```bash
+            tree a: /f /a | findstr "WinNTSetup.exe" # 指定目录查找指定文件
+            ```
+2. 文本
     1. `find`:not work in powershell
     2. `findstr`
+    3. `less`和`more`:参考linux的`less`和`more`?
 5. 查找可执行文件的位置
-    1. 在cmd中：可以用`which`和`where`，但是`which`的结果不能直接拿来使用，所以更推荐用`where`
+    1. 在cmd中：可以用`which`(注意和scoop安装的`which`不一样)和`where`，但是`which`的结果不能直接拿来使用，所以更推荐用`where`
 
         ```bash
         which go
         /c/Program Files/Go/bin/go # 直接用这个路径去调用系统会找不到
 
-        where go
+        where.exe go
         C:\Program Files\Go\bin\go.exe
         ```
     2. 在powershell中:可以用`which`，`where.exe`,`get-command`和`gcm`(是`get-command`的别名)，但是`which`的结果不能直接拿来使用，所以不推荐用`which`。直接输入`where`的话优先匹配的是`Where-Object`命令而不是`where.exe`
@@ -139,9 +148,18 @@ powershell的Verb-Noun
         1. `start .`
     2. powershell
         1. `ii .`
+
+### 1.2 其他
+1. `cd`，路径分隔使用正反斜杠都行
+
+    ```
+    # 例子1
+    cd C:\Users\xxx\scoop\persist\mysql
+    ```
 4. 删除文件夹或文件
     1. cmd
         1. `rd`
+
 
 ## 2 网络相关
 ### 2.1 tracert
@@ -207,3 +225,16 @@ UDP    [fe80::2de0:2709:cb2f:d7a8%3]:1900  *:*
 # 四 运行程序
 1. `osk`虚拟键盘
 2. `msconfig`打开system configuration，里面可以配置启动项，服务等。
+
+# 五 脚本
+运行一个自定义脚本的步骤 todo
+1. xxx
+2. 修改执行策略
+
+    ```bash
+    # 查看当前执行策略
+    Get-ExecutionPolicy # RemoteSigned
+    # 修改当前执行策略
+    Set-ExecutionPolicy Unrestricted
+    ```
+3. 终端中通过键入脚本的路径（相对or绝对路径皆可）来执行脚本

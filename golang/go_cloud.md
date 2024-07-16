@@ -1150,19 +1150,25 @@ https://github.com/kubernetes/kubernetes
 ### Paho
 Paho是 Eclipse 的一个开源 MQTT 项目，包含多种语言实现，比如JAVA、golang
 
-## cron
+## 定时任务
+### cron
 https://github.com/robfig/cron
 
 ```go
-// 1. 最简单的使用
+// 最简单的例子
 c := cron.New()
+
+// 创建任务内容
 fn := func() {
     fmt.Println("hello")
 }
+
+// 添加定时任务
 if _, err := c.AddFunc("*/1 * * * *", fn); err != nil {
     log.Fatal(err)
 }
 
+// 启动定时任务
 c.Start()
 defer c.Stop()
 select {}
@@ -1174,6 +1180,8 @@ select {}
 
 问题：
 1. expected exactly 5 fields, found 6
+
+### goCron
 
 ## HTTP&REST
 ### Resty

@@ -11,6 +11,9 @@
 ### 3.2 usr目录的全称
 Unix System Resource,一般放程序软件,注意不是user
 
+# 三 基础
+## 0 架构和常见词语
+
 # 六 问题
 ## 1 已解决
 ### 1.1 Linux下/usr/bin与/usr/local/bin/区别

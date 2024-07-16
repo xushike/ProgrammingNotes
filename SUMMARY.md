@@ -246,7 +246,7 @@
     * [mac](unix/mac.md)
 * [vr](vr/vr.md)
 * [windows](windows/windows.md)
-    * [DOS](windows/dos.md)
+    * [terminal&DOS](windows/terminal&dos.md)
     * [windows10](windows/windows10.md)
     * [Wine](windows/wine.md)
 * [word一些术语](word.md)

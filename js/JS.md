@@ -45,16 +45,18 @@ js作者的采访:[https://www.youtube.com/watch?v=IPxQ9kEaF8c](https://www.yout
 js所有函数的参数都是按值传递的，不过不同数据类型具体有所不同：如果参数是值类型则复制值,如果是引用类型则复制引用(也叫共享传递).本人实测java似乎也是这样。例子如下:
 
 ```javascript
+// 例子1 修改引用数据类型里面的值
 var obj = {x : 1};
 function foo(o) {
-o.x = 3;
+    o.x = 3;
 }
 foo(obj);
 console.log(obj.x); // 3, 被修改了! 
 
+// 例子2 修改引用数据类型变量指针指向
 var obj = {x : 1};
 function foo(o) {
-o = 100;
+    o = 100; // 这里o被指向了一个新的地址，但是obj还是指向原来的地址
 }
 foo(obj);
 console.log(obj.x); // 仍然是1, obj并未被修改为100.
@@ -144,6 +146,12 @@ alert(n); // 999
 let和const是es5为了弥补var的不足而设计出来的。
 - 使用var声明的变量，其作用域为该语句所在的函数内(没在函数则是全局的)，且存在变量提升；
 - 使用let声明的变量，其作用域为该语句所在的代码块内，不存在变量提升；
+
+    ```js
+    for(let i =0;i<10;i++){
+    }
+    console.log(i) // ReferenceError: i is not defined
+    ```
 - 使用const声明的是常量，必须在声明时赋值,块级作用域,常量不能重新声明,也不能重新赋值。
     1. 如果变量是引用类型的话,引用地址(指针)不能改变,但是引用对象是可以改变的.意味着const声明对象的话,对象的属性是可以改变的,这个时候需要用到`Object.freeze()`方法(或者ts里面的`readonly`).
 
@@ -158,15 +166,6 @@ let和const是es5为了弥补var的不足而设计出来的。
 
 ### 3.5 关于`{ [native code] }`
 网上看到的解释是:打印自定义的对象，会显示出源码，但是打印全局对象，因为这些全局对象是程序自带的，是二进制编译的（c\c++），所以无法显示出来源代码，只能显示的native code
-
-### 3.6 a标签中的`href="javascript:;"`和`href="javascript:void(0)"`
-这两者在非IE环境下可以认为效果是一样的.
-
-`void(<表达式>)`是js中的关键字,表示计算里面的表达式然后返回固定返回undefined,习惯上用`void(0)`来表示上面都不干,当然也可以写成`void(666)`,`void(2333)`甚至`void("fuc...")`.那么为什么不用`void(undef)`呢,因为undefined在不同环境可能被重新赋值.
-
-那么为什么要写成`href="xxx"`这种形式呢?因为a标签里的href需要指向一个URL,但是我们不想它跳转,就给它一个伪协议(`javascript:xxx;`),表示url的内容通过javascript执行.
-
-既然href里可以写javascript,为什么还要onclick事件呢?暂时我没搞太懂,似乎是因为写在href中有一些兼容性问题.推荐写到`onclick()`中.
 
 ### 3.7 部分最佳实践or技巧
 十进制指数:比如1000可以写成`1e3`,10000可以写成`1e4`,以此类推.(`1e0`为1)
@@ -824,13 +823,15 @@ for (var i = 0, item; item = a[i]; i++) {
 ## 5 函数
 函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块(感觉形容得很精炼).实际上,JS的所有函数都是Function对象,只不过它比较特殊,能够被调用.
 
+默认情况下，函数是返回 undefined 的。想要返回一个其他的值，函数必须通过一个 return 语句指定返回值。
+
 个人感觉js的函数可以分为普通函数和生成器函数,一般讨论的都是普通函数.
 
-注意:函数体`{}`内不使用var定义的变量是全局变量(待测试)
+注意:函数体`{}`内不使用var定义的变量是全局变量
 
 
 ### 5.1 定义普通函数(三种方法)
-1. 函数声明(function declaration),函数声明有提升.语法是以`function`开头,如
+1. 函数声明(function declaration),语法是以`function`开头,函数声明有提升。如
 
     ```JavaScript
     hoisted(); // "foo"
@@ -839,21 +840,28 @@ for (var i = 0, item; item = a[i]; i++) {
         console.log("foo"); 
     }
     ```
-    1. 函数生成器声明 (function* 语句)和函数生成器表达式 (function*表达式):返回Generator对象(该对象主要用于迭代?),没遇到过,待补充
-2. 函数表达式(function expression),语法是不以`function`开头
-    1. 函数表达式没有提升,所以不能在定义之前调用,如
+2. 函数表达式(function expression)
+    1. 有几种定义方式
+        1. 包含函数名称，称为命名函数表达式
+        2. 不包含函数名称，称为匿名函数
+        3. 箭头函数(ES2015)
+    2. 命名函数表达式(Named function expression):定义的时候包含函数名称，此时函数名称是函数体内部的本地变量。一般是你想在函数体内部引用当前函数(比如递归，虽然可以用`arguments.callee`代替函数名，但它是非标准的，在严格模式下无法使用，此时用函数名是最好的)时使用。
 
-        ```JavaScript
-        notHoisted(); // TypeError: notHoisted is not a function
+        ```js
+        // 例子1
+        const foo = function funcName(width, height) {
+            console.log(foo.name); // funcName
+            // 此时funcName就是函数名称，可以在在函数体内部使用
+            console.log(funcName.name); // funcName
+            return width * height;
+        }
+        console.log(foo.name); // funcName
+        // 函数名称是函数体内部的本地变量，所以不能在函数体外部使用
+        // 所以对于命名函数表达式，在函数体外面只能使用函数赋值给的变量来调用，比如这里的foo
+        console.log(funcName.name); // ReferenceError: funcName is not defined
+        console.log(foo(3, 4)); // 12
 
-        var notHoisted = function() {
-        console.log("bar");
-        };
-        ```
-
-    2. 命名函数表达式:包含函数名称的，函数名称可以在函数内部使用.使用场景一般是你想在函数体内部引用当前函数(可以用来递归).而且也推荐使用函数名的方法在函数体内部调用当前函数.如
-
-        ```JavaScript
+        // 例子2
         var math = {
             'factorial': function factorial(n) {
                 if (n <= 1)
@@ -863,28 +871,35 @@ for (var i = 0, item; item = a[i]; i++) {
         };
         ```
 
-    3. 匿名函数（anonymous）:函数表达式省略函数名后就变成了匿名函数,匿名函数的的`this`指向调用它的对象(?).
-        1. 即时调用的函数表达式(IIFE,Immediately Invokable Function Expressions):当函数只使用一次时可以使用该语法.如
+    3. 匿名函数（anonymous functions）:函数表达式省略函数名后就变成了匿名函数。匿名函数的的`this`指向调用它的对象(?).
 
-            ```JavaScript
-            (function() {
-                statements
-            })();
+        ```js
+        var notHoisted = function() {
+            console.log("bar");
+        };
+        ```
+    4. 即时调用的函数表达式(IIFE,Immediately Invokable Function Expressions):当函数只使用一次时推荐使用。它有两个好处:
+        1. 避免了外界访问此 IIFE 中的变量，同时又不会污染全局作用域
+        2. IIFE中定义的任何变量和函数，都会在执行结束时被销毁。这种做法可以减少闭包占用的内存问题
 
-            (function foo() {
-                statements
-            })()
-            ```
+        ```JavaScript
+        // 语法
+        (function [funcName]() {
+            statements
+        })();
 
-            它有两个好处:
-            1. 不仅避免了外界访问此 IIFE 中的变量，而且又不会污染全局作用域
-            2. IIFE中定义的任何变量和函数，都会在执行结束时被销毁。这种做法可以减少闭包占用的内存问题
-    4. 箭头函数(arrow functions)(重点):更适用于那些本来需要匿名函数的地方.引入箭头函数有两个方面的作用：更简短的函数并且不绑定this.
-        1. 需要返回对象字面量时,要写成这样:
+        // 例子1 写法类似函数声明直接调用
+        (function foo(){
+            console.log("hello world");
+        })()
+        // 例子2 写法类似匿名函数直接调用
+        (function (){
+            console.log("hello world");
+        })()
+        ```
 
-            ```JavaScript
-            参数=> ({foo: bar})
-            ```
+    5. 箭头函数(arrow functions)(ES2015开始):适用于那些本来需要匿名函数的地方.引入箭头函数有两个方面的作用：更简短并且没有自己的this。有些人称它为JS的lambda表达式，不过我没看到官方这样说过。
+        1. 参考：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
         2. 支持剩余参数和默认参数:如,
 
             ```JavaScript
@@ -892,8 +907,38 @@ for (var i = 0, item; item = a[i]; i++) {
             (参数1 = 默认值1,参数2, …, 参数N = 默认值N) => {函数声明}
             ```
         3. 支持参数列表解构
+
+            ```js
+            var elements = [
+                'Hydrogen',
+                'Helium',
+                'Lithium',
+                'Beryllium'
+            ];
+            // length 是我们想要获得的属性的名称，而 lengthFooBArX 则只是个变量名
+            elements.map(({ "length": lengthFooBArX }) => console.log(lengthFooBArX)); // 8, 6, 7, 9
+            ```
         4. 参数括号内定义的变量是局部变量;函数体{}内不使用var定义的变量是全局变量,用var定义的变量是局部变量
         5. 不绑定this:在箭头函数出现之前，每个新定义的函数都有它自己的 this值（在构造函数的情况下是一个新对象，在严格模式的函数调用中为 undefined，如果该函数被称为“对象方法”则为基础对象等）.而箭头函数不会创建自己的this,它只会从自己的作用域链的上一层继承this.
+
+            ```js
+            // 例子1 
+            function Person(){
+                // Person() 是构造函数，this指向它自己的实例
+                this.age = 0;
+
+                setInterval(() => {
+                    this.age++; // this 正确地指向 p 实例
+                }, 1000);
+            }
+
+            var p = new Person();
+
+            // 例子2 严格模式：this 是词法层面上的，严格模式中与 this 相关的规则都将被忽略
+            var f = () => { 'use strict'; return this; };
+            // 在浏览器中运行，输出true
+            f() === window; // 或者 global
+            ```
         6. 不绑定Arguments 对象:在大多数情况下，使用剩余参数是相较使用arguments对象的更好选择,如
 
             ```JavaScript
@@ -905,7 +950,31 @@ for (var i = 0, item; item = a[i]; i++) {
             foo(1); 
             // 2
             ```
-    
+        7. 箭头函数不能用作构造器，和`new`一起用会抛出错误
+
+            ```js
+            var Foo = () => {};
+            var foo = new Foo(); // TypeError: Foo is not a constructor
+            ```
+
+        ```js
+        // 例子1 
+        const foo = () => {return {age:30}}
+        console.log(foo().age); // 30
+        // 返回对象字面量时，更简洁的写法是 参数=> ({foo: bar})
+        const foo = () => ({age:30})
+        console.log(foo().age); // 30
+        ```
+    6. 函数表达式没有提升,所以不能在定义之前调用,如
+
+        ```JavaScript
+        notHoisted(); // TypeError: notHoisted is not a function
+
+        var notHoisted = function() {
+        console.log("bar");
+        };
+        ```
+
 3. `new Function()`构造函数.使用Function构造器生成的Function对象是在函数创建时解析的,而上面几种方法是跟其他代码一起解析的,所以`new Function()`是调用效率最低的.
 
     ```JavaScript
@@ -1042,6 +1111,39 @@ console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 tru
 参考:
 1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
 2. 1分钟理解js闭包:[http://www.jb51.net/article/83524.htm](http://www.jb51.net/article/83524.htm)
+
+## 双向绑定
+实现双向绑定的几种方法
+1. setter和getter
+
+    ```html
+    <!-- 例子1 简单例子 -->
+    <html>
+    <input type="text" id="input1">
+    <h1 id="h1"></h1>
+    <script type="text/javascript">
+        function getById(id) {
+            return document.getElementById(id);
+        }
+
+        const obj = {
+            name: "",
+            set current(word) {
+                if (typeof (word) !== "undefined") { // 过渡掉初始化后未输入的时候的undefined值
+                    getById("input1").value = word;
+                    getById("h1").innerHTML = word;
+                }
+            }
+        }
+        document.addEventListener("keyup", (e) => {
+            obj.current = e.target.value;
+        })
+    </script>
+
+    </html>
+    ```
+2. Object.defineProperty
+3. Proxy
 
 ## 2 web worker
 参考：
@@ -1408,7 +1510,7 @@ console.log(eval(new String('2 + 2'))); // 输出：2 + 2，eval()返回了包�
     }
     ```
 
-4. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。该方法是数据双向绑定实现的基石.
+4. `Object.defineProperty(obj, prop, descriptor)`:方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回这个对象。该方法是数据双向绑定实现的基石(比如Vue2.0).
 
     ```JavaScript
     // 1.
@@ -1757,6 +1859,39 @@ console.log(c); // { code: '200', message: '接口掉用成功', success: true }
 ### 4.10 Proxy
 参考：
 2. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+
+Vue3.0抛弃了Vue2.0的Object.definePorperty等方法，改用Proxy来实现
+
+```js
+// 例子1 简单使用
+// 定义数据
+let item = {
+  name: "tom",
+  age: 30
+}
+
+// 定义proxy 拦截行为
+let handler = {
+  // 2个入参依次是目标对象，Proxy实例本身
+  get: function (target, _p) {
+    if (target.name === 'tom') {
+      return 'welcome, tom!'
+    }
+  },
+  // 4个入参依次是目标对象，属性名，属性值，Proxy实例本身
+  set: function (target, prop, val) {
+    if (prop === 'age' && val === 31) {
+      target[prop] = 18
+    }
+  }
+}
+
+// 创建proxy对象
+let proxyOjb = new Proxy(item, handler)
+console.log(proxyOjb.name); // welcome, tom!
+proxyOjb.age = 31
+console.log(proxyOjb); // { name: 'tom', age: 18 }
+```
 
 ### 4.11 Symbol
 为什么需要Symbol:ES5对象属性名等都是字符串，如果使用了别人提供的对象，想给这个对象加上新的方法(mixin模式)，而新方法名字可能和原方法相同，很容易冲突。所以ES6引入Symbol来解决这个问题。

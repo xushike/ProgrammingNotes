@@ -1,5 +1,5 @@
 # markdown
-[TOC]
+[TOC](niah)
 # 一 概述
 ## 1 简介
 Markdown一种轻量级的「标记语言」，开发者是约翰·格鲁伯（John Gruber），他创建了Daring Fireball([https://daringfireball.net/](https://daringfireball.net/ "daring fireball官网"))——一个每年可以赚取 50 万美元的博客。
@@ -26,9 +26,6 @@ Daring Fireball是一个由苹果公司的狂热粉丝 John Gruber 创立的博�
 # 二 安装配置
 # 三 基础
 ## 1 常用标记符号
-### [TOC]
-Table Of Contents (index file)，内容列表、索引，vscode自带的预览目前还不支持
-
 ### 标题
 一个#表示一级标题，一直到六级标题，个人经验是#后面最好跟上空格
 
@@ -43,14 +40,31 @@ __This will also be bold__
 
 _You **can** combine ~~them~~_
 
-### 链接
-前面是显示的链接，后面是实际链接，引号里是鼠标移上去的tips
-[https://github.com](https://github.com "github官网")
+### 链接和锚定
+链接：两种用法
+1. 前面是显示的链接，后面是实际链接，引号里是鼠标移上去的tips
 
-高级链接：通过变量来设置一个链接，比如
-[https://github.com][变量a]
+    [https://github.com](https://github.com "github官网")
 
-[变量a]:https://github.com "github官网"
+2. 高级链接：通过变量来设置一个链接，比如
+
+    [https://github.com][变量a]
+
+    [变量a]:https://github.com "github官网"
+
+锚定：两种实现方法
+1. 自动的锚定
+    
+    [TOC] Table Of Contents (index file)，内容列表、索引，一般放在文首。vscode自带的预览目前还不支持
+2. html的锚点语法
+
+    跳转到[第三个段落](#para3)
+    
+    跳转到[第四个段落](#para4)
+
+    <p id="para3">段落三</p>
+
+    <a id="para4">段落四</a>
 
 ### 图片
 三种使用方式：
@@ -82,6 +96,13 @@ First Header | Second Header
 ------------ | -------------
 Content from cell 1 | Content from cell 2
 Content in the first column | Content in the second column
+
+对齐：对齐对表头和表格同时生效
+
+| 左对齐（默认） | 居中对齐 | 右对齐 |
+|:------|:-------:|------:|
+| 文本1 | 文本2 | 文本3 |
+| 文本4 | 文本5 | 文本6 |
 
 默认没有合并单元格的语法，只能通过HTML来实现
 
@@ -164,6 +185,15 @@ markdown原生不支持,但支持html的table标签.gfm支持该表格写法,注
         * `全方大的空白&emsp;或&#8195;`
         * `不断行的空白格&nbsp;或&#160;`
 
+
+## 2 数学公式
+行内公式和独行公式：
+1. 行内公式：将公式插入到本行内，语法`$公式内容$`，如：$xyz$
+2. 行间公式/独行公式：将公式插入到新的一行内，并且居中，语法`$$公式内容$$`，如：$$xyz$$
+
+### 对数(logarithm)
+1. 语法`log_a{N}`来表示$log_a{N}$，a叫做对数的底数，N叫做真数。
+    1. `log_2{18}`和表示$log_2{18}$
 # 四 高级
 ## 1 markdown解析器
 1. github高星,代码量少,适合个人开发研究:https://github.com/markedjs/marked

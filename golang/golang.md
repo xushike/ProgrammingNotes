@@ -4,7 +4,7 @@
 
 # 一 概述
 ## 1 简介
-### 1.1 特点(按优秀程序从大到小排序)
+### 1.1 特点(按优秀程度从大到小排序)
 1. 编译成无依赖二进制: 意味着
     1. 易于部署/分发: copy部署很方便,拷贝就能跑了.(这也是很多人选go的最大理由)
     2. 方便交叉编译：比如说你可以在运行 Linux 系统的计算机上开发运行下 Windows 下运行的应用程序。
@@ -370,7 +370,7 @@ Golang不保证任何单独的操作是原子性的，除非：
 网址:
 1. golang官方
     1. `golang.org`和`go.dev`:`go.dev`是`golang.org`的一个配套网站。
-        1. Go 团队核心成员 RSC（Russ）的解释是：Golang.org是开源项目和发行版的所在地，是官方权威的，不想和其他第三方内容混在一起；而Go .dev是Go用户的中心，提供来自整个Go生态系统的集中和管理资源，包含更多社区内容
+        1. Go 团队核心成员 RSC（Russ）的解释是：Golang.org是开源项目和发行版的所在地，是官方权威的，不想和其他第三方内容混在一起；而Go.dev是Go用户的中心，提供来自整个Go生态系统的集中和管理资源，包含更多社区内容
     1. 各种项目的文档
         1. [https://godoc.org](https://godoc.org)
         2. `pkg.go.dev`用于取代`godoc.org`
@@ -409,7 +409,6 @@ Golang不保证任何单独的操作是原子性的，除非：
 11. GO入门指南：https://www.kancloud.cn/kancloud/the-way-to-go/72675
 12. go设计模式：https://books.studygolang.com/go-patterns/
 13. 大牛翻译的标准库中文文档：http://cngolib.com/
-14. awesome-go：需要什么第三方库就从这里找
 15. Go 语言实战: 编写可维护 Go 语言代码建议：https://mp.weixin.qq.com/s?__biz=MjM5OTcxMzE0MQ==&mid=2653371497&idx=1&sn=1dfc90bb65d61d710d7d1cf6783d4464&chksm=bce4dc738b9355651daeadd812e9a0d877d34e5fe6a1bf16235f58f4cd02833a81ffe5e8a6d0&mpshare=1&scene=23&srcid=0427tyKn9Fu1LyGyTXUonCZf#rd
     1.  个人对于其中关于命名的部分很赞同
 
@@ -423,6 +422,7 @@ Golang不保证任何单独的操作是原子性的，除非：
 6. etcd
 7. 高性能json库：https://github.com/json-iterator/go
 8. gitea（https://gitea.io/zh-cn/）：开源社区驱动的轻量级代码托管解决方案，后端采用 Go 编写，采用 MIT 许可证
+9. [awesome-go](https://github.com/avelino/awesome-go):golang项目的搬运工项目，需要什么第三方库就从这里找，懂的都懂
 
 # 二 安装配置
 go的环境变量说明:
@@ -854,8 +854,8 @@ go的作用域和生命周期是不同的概念
 
         注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
 
-    2. `-w`去掉调试信息（无法使用gdb调试）
-    3. `-s` 禁用符号表
+    2. `-w`:删除DWARF信息，能减少编译出来地程序的大小，但编译出来的程序无法用gdb进行调试，不利于进行调试和日志追踪
+    3. `-s` 禁用符号表，panic的stack trace没有文件名/行号信息，等价于C/C++程序被strip。能减少编译出来地程序的大小
 6. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
     1. `-N` 禁用优化
     2. `-l` disable inlinin，禁用函数内联
@@ -906,7 +906,18 @@ go run *.go # not work in windows
 
 
 条件编译：
-1. 源码文件名后缀：如果你的源代码针对不同的操作系统需要不同的处理，那么你可以根据不同的操作系统后缀来命名文件。例如有一个读取数组的程序，它对于不同的操作系统可能有如下几个源文件：`array_linux.go`,`array_darwin.go`,`array_windows.go`,`array_freebsd.go`。`go build`的时候会选择性地编译以系统名结尾的文件（Linux、Darwin、Windows、Freebsd）。例如 Linux 系统下面编译只会选择`array_linux.go` 文件，其它系统命名后缀文件全部忽略。
+1. 源码文件名后缀：如果你的源代码针对不同的操作系统需要不同的处理，那么你可以根据不同的操作系统后缀来命名文件。格式如下, 
+    1. `$filename`: 源文件名称。
+    2. `$GOOS`: 表示操作系统，从环境变量中获取。
+    3. `$GOARCH`: 表示系统架构，从环境变量中获取。
+
+    ```bash
+    $filename_$GOOS.go
+    $filename_$GOARCH.go
+    $filename_$GOOS_$GOARCH.go
+    ```
+
+    例如有一个读取数组的程序，它对于不同的操作系统可能有如下几个源文件：`array_linux.go`,`array_darwin.go`,`array_windows.go`,`array_freebsd.go`。`go build`的时候会选择性地编译以系统名结尾的文件（Linux、Darwin、Windows、Freebsd）。例如 Linux 系统下面编译只会选择`array_linux.go` 文件，其它系统命名后缀文件全部忽略。
 2. 使用编译标签：见编译标签部分
 
 结果文件的路径
@@ -946,8 +957,8 @@ go run *.go # not work in windows
 
         注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
 
-    2. `-w`去掉调试信息（无法使用gdb调试）
-    3. `-s` 禁用符号表
+    2. `-w`
+    3. `-s`
 3. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
     1. `-N` 禁用优化
     2. `-l` disable inlinin，禁用函数内联
@@ -3840,9 +3851,10 @@ func enterOrbit() error {
 ### 15.3 编译标签( build tag)
 参考：
 1. https://pkg.go.dev/cmd/go#hdr-Build_constraints
+2. 那么支持的平台到底有哪些呢？参考链接 https://github.com/golang/go/blob/master/src/go/build/syslist.go
 
 编译标签：
-1. 语法:旧版本的写法是`// +build tagA`，新版本(go1.17开始)的写法是`//go:build tagA`，也可以两种写法都写上，同时兼容新老版本。最后要空一行再跟go的代码，否则编译标签会被当做包声明的注释而不是编译标签
+1. 新旧写法:旧版本的写法是`// +build tagA`，新版本(go1.17开始)的写法是`//go:build tagA`，也可以两种写法都写上，同时兼容新老版本。最后要空一行再跟go的代码，否则编译标签会被当做包声明的注释而不是编译标签
 
     ```go
     //go:build go1.16
@@ -3850,17 +3862,66 @@ func enterOrbit() error {
 
     package main
     ```
-2. 一个源文件可以有多个编译标签，多个编译标签之间是逻辑“与”的关系，一个编译标签可以包括由空格分割的多个标签，这些标签是逻辑“或”的关系。
+2. 语法：支持空格，逗号，叹号。一个源文件可以有多个编译标签，多个编译标签之间是逻辑“与”的关系，逗号也是逻辑“与”的关系，一个编译标签可以包括由空格分割的多个标签，这些标签是逻辑“或”的关系。
+    - 以空格分开表示AND
+    - 以逗号分开表示OR
+    - !表示NOT
 
     ```go
+    // 例子1
     // +build linux darwin  
     // +build 386  
 
     package ...
-    这个将限制此源文件只能在 linux/386或者darwin/386平台下编译
+    // 这个将限制此源文件只能在 linux 386或者darwin 386平台下编译
+    ```
+    ```go
+
+    // 例子2
+    // +build linux,386
+    
+    package ...
+    // 这个将限制此源文件只能在 linux 386平台下编译
+    ```
+
+    ```go
+    // 例子3
+    // 在所有类unix平台编译
+    // +build darwin dragonfly freebsd linux netbsd openbsd
+
+    // 在非Windows平台编译
+    // +build !windows
     ```
 3. 使用场景
-    1. 条件编译：同一个包下两个go文件都实现了`MarshalIndent`方法，一个是使用的go内置json包，另外一个使用的"github.com/json-iterator/go"包，编译标签分别如下。不带tag运行的时候调用的是内置的json包，带上`-tags=jsoniter`的时候使用的是第三方json包
+    1. 不同操作系统的兼容性处理。通常用于跨平台，例如 windows，linux，mac 不同兼容处理逻辑。
+    2. go 低版本的兼容处理:比如gin 框架下有个 any.go 文件，由于 any 是 go 1.18 引入的别名， 所以其对低版本的兼容处理就是通过 build tag实现
+
+        ```go
+        //go:build !go1.18
+        // +build !go1.18
+
+        package gin
+
+        type any = interface{}
+        ```
+    3. 测试环境使用 mock 服务；而正式环境使用真实数据
+    4. 免费版、专业版和企业版提供不同的功能:比如pro.go 在 main.go 的基础上新增了两个收费版功能：
+
+        ```go
+        //go:build pro
+
+        package main
+
+        func init() {
+        features = append(features,
+            "Pro 功能 #1",
+            "Pro 功能 #2",
+        )
+        }
+        // 编译时，加参数
+        go build -tags pro
+        ```
+    5. 条件编译/约束编译：比如gin在同一个包下两个go文件都实现了`MarshalIndent`方法，一个是使用的go内置json包，另外一个使用的"github.com/json-iterator/go"包，编译标签分别如下。不带tag运行的时候调用的是内置的json包，带上`-tags=jsoniter`的时候使用的是第三方json包。(一般情况下，同一个package下出现两个相同的方法是会报错的，但是`jsoniter`和`!jsoniter`只有一个会被编译器识别，始终只有一个生效的，所以不会报错。同样的，如果把`jsoniter`和`!jsoniter`改成`windows`和`linux`，也不会报错)
         
         ```go
         // +build !jsoniter
@@ -3868,6 +3929,10 @@ func enterOrbit() error {
 
         // +build jsoniter
         表示，tags带jsoniter的时候编译这个Go文件，否则不编译
+
+        // 编译
+        go build main.go // 使用系统自带的encoding/json
+        go build -tags jsoniter main.go // 使用第三方库
         ```
 
 ## 16 和其他语言的交互
@@ -6086,7 +6151,10 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
         // 打开或创建文件(使用flag os.O_CREATE)
         os.OpenFile("notes.txt", os.O_RDWR|os.O_CREATE, 0755)
         ```
-    3. `Stat(name string) (fi FileInfo, err error)`返回了`Fileinfo`这个结构。注意它只代表文件当时的状态--假如后面文件变化了，它不会同步更新，所以需要在每次用的时候再获取。它可以结合`os.IsNotExist`来判断文件是否存在
+    3. `Stat(name string) (fi FileInfo, err error)`,获取文件的metadata，返回了`Fileinfo`这个结构，这个结构包含了一些简单的metadata。`Fileinfo`只代表文件当时的状态，假如后面文件变化了，它不会同步更新，所以需要在每次用的时候重新获取。它可以结合`os.IsNotExist`来判断文件是否存在。
+        1. go的`os.Stat()`方法是对linux系统`stat`方法的跨平台抽象。对于它和`os.Open()`的异同，官方文档没有细说，但是其他语言的文档一般都提及了(?)，对比`os.Open()`，它有两个优点
+            1. 无需打开文件：你可能没有打开文件的权限，但是依然可以读取文件的metadata
+            2. 只读取元数据可能会更有效(不需要读取数据流，在内核的打开文件表中创建一个条目，等等)
 
         ```go
         _, err := os.Stat(path)
@@ -6118,6 +6186,7 @@ os包可以操作目录、操作文件（文件操作的大多数函数都是在
 7. `Rename(oldname, newname string)`:重命名文件
 8. `Symlink(oldname, newname string)`:创建软连接,不支持windows平台
 9. `Truncate(name string, size int64)`改变文件的`Size()`，改变文件内容的长度
+
 
 ```go
 // 获取文件行数
@@ -6154,6 +6223,18 @@ for {
     case err != nil:
         return count, err
     }
+}
+```
+
+文件信息的结构体`os.FileInfo`:可以看到go提供的这个结构体包好的信息是比较少的，如果想要获取文件的更多信息，比如文件的创建时间，就要用到`FileInfo.Sys()`，它返回文件的源信息
+```go
+type FileInfo interface {
+	Name() string       // base name of the file
+	Size() int64        // length in bytes for regular files; system-dependent for others
+	Mode() FileMode     // file mode bits
+	ModTime() time.Time // modification time
+	IsDir() bool        // abbreviation for Mode().IsDir()
+	Sys() interface{}   // underlying data source (can return nil)
 }
 ```
 
@@ -6536,6 +6617,8 @@ func main() {
 
 看源码发现比较晦涩，很正常，再简洁的语言，遇到环境相关，仍然会有很多 tricks，甚至用到 Cgo...
 
+和os包的对比可以参考这句话"Package syscall is the interface that the kernel provides. Package os is the [OS portable] interface we want Go to provide." Russ Cox.
+
 使用：
 1. 信号：实现了`os.Signal`接口
     1. `SIGTERM`：kill命令缺省带的参数
@@ -6549,10 +6632,26 @@ func main() {
 更多笔记见模板部分
 
 ### time
-go的时间基本都使用系统的时区。而采用系统时区，基本是各语言的默认行为。
+采用系统时区，基本是各语言的默认行为。go的时间基本也都是使用系统的时区。
 
 常见概念：
-1. 时区：有GMT、UTC、CST，可以简单认为`CST=UTC/GMT + 8 小时`，中国常用的是CST
+1. 时区：有GMT、UTC、CST、PST、PDT等，中国常用的是CST。go中用`Location{}`表示时区信息
+    1. 常见时区
+        1. GMT(Greenwich Mean Time)：格林威治平均时间，又称世界时、格林威治时间、格林尼治时间、格林威治平均时间...
+            1. GMT基于地球的自转，具体是基于一个名为“真太阳时”的概念。真太阳时是基于太阳在英国格林威治天文台上空达到其最高点的时间来定义的。然而，由于地球自转的不规则性，这种方式存在一定的问题。
+            2. GMT 曾经是国际时间标准，但由于它基于地球的自转，这导致了一些测量上的不规则性和不精确性。
+            3. 在日常生活中，GMT 通常与 UTC 是等价的，尽管技术上它们是基于不同的测量系统。
+        1. UTC(Universal Time Coordinated)：协调世界时，也称世界协调时间、世界统一时间、世界标准时间、国际协调时间、国际标准时间...
+            1. UTC 是目前的国际时间标准，采用的是更为现代和精确的时间测量方法。
+            2. UTC 不是基于地球的自转，而是基于原子时钟，这使得其非常精确。但为了保持与地球的自转接近同步，偶尔会插入一个闰秒。
+            3. 国际地球自转与参考系统服务（IERS）是负责确定何时添加闰秒的机构。
+            4. UTC 被全球的无线电信号、计算机网络和其他通信系统用作官方的时间标准。
+        2. CST：可视为中国、古巴的标准时间或美国、澳大利亚中部的时间，因为这四个时间的缩写是一样的。
+            1. `CST(China Standard Time, 中国标准时间) = UTC/GMT + 8 小时`，也就是中国标准时间比UTC快8个小时
+            1. `CST(Cuba Standard Time, 古巴标准时间) = UTC/GMT - 4 小时`
+            1. `CST(Central Standard Time (Australia)，澳大利亚中部时间) = UTC/GMT + 9:30 小时`
+            1. `CST(Central Standard Time (USA)，美国中部时间) = UTC/GMT - 6 小时`
+        4. CDT(Central Daylight Time): 中部夏令时间,比世界协调时间(UTC)晚05:00小时。该时区为夏令时时区，主要用于 北美
 2. 时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
     1. 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 3. 时区
@@ -6576,20 +6675,30 @@ go的时间基本都使用系统的时区。而采用系统时区，基本是各
         ```
 3. 从字符串生成时间
     1. `ParseInLocation`:可以根据时间字符串和指定时区转换Time。
-4. 设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置，如`LoadLocation`:可以根据时区名创建时区Location，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
+4. 时区
+    1. 设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置。go内置两种方式设置时区
+        1. 使用`time.LoadLocation()`设置时区，可以根据时区名创建`Location{}`，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
+        2. 使用`time.FixedZone(zoneName, offset)`创建一个指定偏移量的固定时区
+    2. 将时间转换为指定时区的时间：`dstTime := srcTime.In(location)`
+        1. 将时间转为UTC时间`srcTime.UTC()`
     ```go
-    // 设置时区1：使用time.LoadLocation
+    // 设置时区1：使用time.LoadLocation()
     // 在windows系统上，没有安装go语言环境的情况下，time.LoadLocation会加载失败。
     var cstSh, err = time.LoadLocation("Asia/Shanghai") //上海
     fmt.Println("SH : ", time.Now().In(cstSh).Format("2006-01-02 15:04:05"))
 
-    // 设置时区2:使用time.FixedZone
-    var cstZone = time.FixedZone("CST", 8*3600)       // 东八
+    // 设置时区2:使用time.FixedZone()
+    var cstZone = time.FixedZone("CST", 8*60*60)       // 创建一个偏移量为+8小时CST时区，即东八区
     fmt.Println("SH : ", time.Now().In(cstZone).Format("2006-01-02 15:04:05"))
     ```
-5. 时间的加减`Add()`,`Sub()`
+5. 时间的加、减、比较、前后等
+    1. 加:`srcTime.Add(duration) Time`，返回的是`Time{}`
+    2. 减:`tTime.Sub(uTime) Duration`，返回的是`Duration{}`
+    3. 比较时间是否相同`tTime.Equal(uTime) bool`
+    4. 比较时间是否早于
+    4. 比较时间是否晚于
 
-golang 提供了下面几种类型：
+golang 提供了下面几种时间相关结构体：
 - 时间点(Time)
     1. 使用
         1. `Format(layout string) string`:时间格式化，不支持c、java、python等的strftime方式(形如`%Y-%m-%d %H:%M:%S`)写法，而是用采用了更为直观的参考时间(reference time)替代strftime的各种标准占位符
@@ -6738,25 +6847,32 @@ golang 提供了下面几种类型：
 使用：
 1. `utf8.RuneCountInString(s string) (n int)`:统计 Uncode 字符数量, 即获取字符串的字符个数(number of character,任何字符,包括中文的长度看成1)
 
-## 3 go的编译器
+## 3 go的编译
 1. 变量的静态类型在编译的时候就确定了
+2. 为何这么快(from圣经)，Go语言的闪电般的编译速度主要得益于三个语言特性:
+    1. 所有导入的包必须在每个文件的开头显式声明，这样的话编译器就没有必要读取和分析整个源文件来判断包的依赖关系。
+    2. 禁止包的环状依赖，因为没有循环依赖，包的依赖关系形成一个有向无环图，每个包可以被独立编译，而且很可能是被并发编译。
+    3. 编译后包的目标文件不仅仅记录包本身的导出信息，目标文件同时还记录了包的依赖关系。因此，在编译一个包的时候，编译器只需要读取每个直接导入包的目标文件，而不需要遍历所有依赖的的文件（译注：很多都是重复的间接依赖）
 
-### 3.1 为何这么快(from圣经)
-Go语言的闪电般的编译速度主要得益于三个语言特性:
-1. 所有导入的包必须在每个文件的开头显式声明，这样的话编译器就没有必要读取和分析整个源文件来判断包的依赖关系。
-2. 禁止包的环状依赖，因为没有循环依赖，包的依赖关系形成一个有向无环图，每个包可以被独立编译，而且很可能是被并发编译。
-3. 编译后包的目标文件不仅仅记录包本身的导出信息，目标文件同时还记录了包的依赖关系。因此，在编译一个包的时候，编译器只需要读取每个直接导入包的目标文件，而不需要遍历所有依赖的的文件（译注：很多都是重复的间接依赖）
+### 3.1 条件编译/约束编译
+通常对程序进行编译的时候，可能带一些条件（如不同平台、架构有不同的代码实现），让编译器只对满足条件的代码进行编译，将不满足条件的代码舍弃，这就是条件编译。golang进行编译约束的方式有以下2种，具体见`go build`部分笔记
+1. 编译标签（build tag）
+2. 文件后缀
 
-## 4 交叉编译
+### 3.2 交叉编译
 交叉编译——Golang 支持在一个平台下生成另一个平台可执行程序。
 
 交叉编译依赖下面几个环境变量：
-1. `$GOARCH`:目标平台（编译后的目标平台）的处理器架构（386、amd64、arm），其中amd64是64位，386是32位
+1. `$GOARCH`:目标平台（编译后的目标平台）的处理器架构（386、amd64、arm）
+    1. 386也称 x86 对应 32位操作系统
+    2. amd64是64位，现在主流个人电脑都是amd64的
+    3. arm 这种架构一般用于嵌入式开发。比如 Android ， IOS ， Win mobile , TIZEN 等
 2. `$GOOS`:目标平台（编译后的目标平台）的操作系统（darwin、freebsd、linux、windows）
 
 比如编译windows平台下的exe文件：`CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build test.go`，交叉编译不支持CGO所以要禁用它
 
-交叉编译不是任何情况下都有效
+交叉编译不是任何情况下都有效：
+1. golang的API并非完全跨平台，比如`syscall.Stat_t`在windows下就没有
 
 ## 6 依赖管理解决方案
 Go 的包管理方式是逐渐演进的， 最初是 monorepo 模式，所有的包都放在 GOPATH 里面，使用类似命名 空间的包路径区分包，不过这种包管理显然是有问题，由于包依赖可能会引入破坏性更新，生产环境和测试环 境会出现运行不一致的问题。
@@ -7180,7 +7296,7 @@ l5 := len(str)
 method 和它所属的类型必需定义在同一个包下
 
 ### 1.16 sql: Register called twice for driver postgres/mySQl
-可能原因：代码的的包用的vendor中的pq，而vendor中的某些包用的src中pg，导致初始化了两次。参考：https://github.com/lib/pq/issues/238
+可能原因：代码的的包用的vendor中的pq，而vendor中的某些包用的src中pg，导致初始化了两次。参考：https://github.com/lib/pq/issues/238
 
 ### 1.17 cannot call pointer method on xxx
 引用StackOverflow的例子：
@@ -7336,6 +7452,9 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
     # 在gitbash中编辑环境变量GOROOT
     export GOROOT="C:\\Program Files\\Go"
     ```
+
+### 1.38 import "studyGo/file_demo" is a program, not an importable package
+有多个不同的目录都设置了`package main`，只能有一个`package main`
 
 ## 2 未解决
 ### note: module requires Go 1.14

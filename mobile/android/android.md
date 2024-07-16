@@ -2,10 +2,13 @@
 [TOC]
 # 一 概述
 ## 1 简介
-Android系统是由Andy Rubin创建的，后来被Google收购了.有趣的是Android系统的命名都是以点心来命名的.
+Android系统是由Andy Rubin创建的，基于linux，后来被Google收购了.有趣的是Android系统的命名都是以点心来命名的.
 
 ## 3 常识
-### 3.1 app bundle
+### 安装包命名
+foss:Free and open source software (FOSS，自由开源软件)
+premium:产品本身免费下载，一般情况下也不会被标示为“免费软件”，因为想要体验完整的产品仍然是需要付费购买的（俗称内购）
+### app bundle
 ### xml文件开头的声明
 形如`xmlns:xxx="..."`:因为XML文件不仅仅用于Android,还可以用于很多地方,所以这句声明表示该XML文件用于Android的开发和布局(这也就是所有属性前都加了`android:`的原因),也可以理解为命名空间(?)
 1. 而且,所有的布局文件中都需要加入xmlns开头的两个声明,否则不能正确运行.

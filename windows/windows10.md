@@ -18,7 +18,7 @@
 ### shell
 1. cmd
 2. powershell
-3. windows terminal
+3. (推荐)windows terminal
 4. (推荐)fluent terminal
     1. 安装：win10 store直接可以安装
 
@@ -56,6 +56,7 @@ PowerToys的FancyZones分屏：
 1. FancyZones窗口增强管理器：分屏神器，见分屏部分笔记
 2. Windows Key Shortcut Guide (Win热键快捷键指南)：可以让用户在长按 Windows 键超过 1 秒时，显示出当前桌面状态下可用的快捷键列表。
 3. PowerToys Run：类似于anywhere，默认快捷键`alt+空格`
+4. 键盘管理器：可以对按键重新映射：也可以把按键映射到`undefined`从而使得按键无效
 4. 图片处理：支持一键修改图片尺寸
 5. 文件批量重命名
 
@@ -64,13 +65,37 @@ PowerToys的FancyZones分屏：
 能将win8和win10装在U盘里跑,根据网友的评价来看,效果还可以
 
 ## 2 WSL和WSL2
+Windows WSL2和常规虚拟机方式在Windows上运行Linux系统方案的对比：都是使用虚拟化技术，但WSL性能更强、占用资源更少、和Windows共享文件。
+
 相比第一代，新的 WSL2 重新设计了架构，使用真正的 Linux 内核，几乎具有 Linux 的所有完整功能。启用WSL2的 Linux 系统启动时间非常快，内存占用很少，并且，WSL 2 还可以直接原生运行 Docker，VS Code 编辑器还有 Remote-WSL 插件，相对于完整的linux虚拟机只是不支持systemctl、systemd。
+1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/compare-versions
 
-子系统所在的目录是`C:\Users\my_username\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu16.04onWindows_79rhkp1fndgsc\LocalState\rootfs`
-
-查看已经安装的子系统:``
-
-换源，然后`sudo apt update`。如果不换源，安装软件的时候可能出现`The following packages have unmet dependencies: ... but it is not going to be installed`
+安装使用：
+1. 先决条件precondition
+    1. 检查Windows版本是否符合要求（略），win+r运行`winver`
+    2. 启用必要的功能：控制面板-程序和功能-启用或关闭Windows功能
+        1. Hyper-V
+        2. 适用于Linux的Windows子系统
+        3. 虚拟机平台
+3. 安装WSL2
+    1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/install#install-wsl-command
+    1. 部分重要步骤
+        1. 查看 Linux 发行版是设置为 WSL 1 还是 WSL 2，请使用命令`wsl -l -v`
+        2. 安装适用于Linux的子系统有两种方式，一种是应用商店，另外一种是命令行。
+4. 打开Linux子系统
+    1. 点击开始菜单的快捷方式打开
+    2. 在终端输入`wsl`打开默认的Linux子系统
+    3. 在终端输入已安装的发行版子系统的名称，如`ubuntu`
+5. 在windows的终端里，不进入子系统但以默认的linux发行版子系统运行命令`wsl [command]`
+    
+    ```bash
+    # 在windows的终端中
+    # pwd 查看当前windows系统的路径，而 wsl pwd 查看当前目录路径在 WSL 中的装载位置
+    # 又比如git --version查看windows系统中git的版本，而wsl git --version查看默认子系统中git的版本
+    git --version # git version 2.35.1.windows.2
+    wsl git --version # git version 2.25.1
+    # 在PowerShell 中，命令 get-date 将提供 Windows 文件系统中的日期，而 wsl date 将提供 Linux 文件系统中的日期。
+    ```
 
 安装桌面软件吗？看需求，一般来说没必要，因为子系统和windows的资源是共享的。不过为了方便copy文件，可以建立软链接当做共享文件夹，比如:
 1. ` ln -s /mnt/c/Users/my_username/LinuxShare ~/LinuxShare`

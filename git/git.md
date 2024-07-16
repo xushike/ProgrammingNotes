@@ -69,7 +69,7 @@ Git有以下几种helper:
 5. `osxkeychain`:mac特有的，附加到系统的keychain，和`store`相似，不过`osxkeychain`是加密保存在硬盘上。这种加密方式与存放 HTTPS 凭证以及 Safari 的自动填写是相同的。
 
 使用：
-1. 查看拼争助手设置`git config --list | grep credential`
+1. 查看凭证助手设置`git config --list | grep credential`
 
     ```bash
 
@@ -334,7 +334,7 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 
 参数：
 1. `--recursive`:对于含有submodules的仓库，其作用等同于`git clone`+`git submodule init`+`git submodule udpate`，参考git submodule部分的笔记
-2. `-o`:克隆时所使用的远程主机自动被Git命名为origin。如果想用其他的主机名，需要带上该参数，如
+2. `-o`:默认情况下，克隆时所使用的远程主机自动被Git命名为origin。如果想用其他的主机名，需要带上该参数，如
     
     ```bash
     git clone -o bar https://github.com/foo.git
@@ -349,7 +349,7 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 - `git remote show`:查看有那些远程仓库，一般单远程库的显示可能是`origin`，多远程库可能`origin upstream ...`等。
 - `git remote show <远程仓库名>`:查看远程仓库详细信息,如`git remote show origin`。可查看的信息包括:
     * 远程仓库地址
-    * 远程分支的绑定和同步情况
+    * 远程分支、分支的绑定和同步情况
     * 最新的commit在哪个分支:`HEAD branch: master`表示最新的commit在master分支上，`HEAD branch: develop`表示最新的commit在develop分支上，
 
 添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库或核心库.`远程仓库地址`最好以`.git`后缀结尾，比如`https://github.xxx.git`，如果是`https://github.xxx`，虽然也能重定向过去，但是会有warn提示。
@@ -431,7 +431,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 合并远程的其他分支到当前分支：
 
 #### cherry-pick
-非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
+非常优雅的命令，只merge部分commit到当前分支上，`git cherry-pick commit_id...`。适用场景：比如两个并行开发的分支上有相同的bug，修改了其中一个之后可以合并到另一个分支上。比如分支2上有个commit的id是23d9422，想将该次提交合并到当前分支（分支1）上可以使用`git cherry-pick 23d9422`。没有冲突的话默认会自动提交。合并时的顺序和参数的顺序有关，和参数对应的commit_id的提交时间无关，比如`git cherry-pick A B C`，就算B的提交时间在A的前面，也是先合并A。如果A有冲突，会提示出来，需要`git cherry-pick --continue`来解决冲突，否则无法合并B，也可以`git cherry-pick --abort`来取消合并。
 
 用法：
 1. 合并多个commit：用空格分隔。如`git cherry-pick A B C D E F`、`git cherry-pick aaa..bbb A E`等
@@ -1310,6 +1310,11 @@ unset ALL_PROXY
 
 ### 1.29 ... SSL_ERROR_SYSCALL ...
 多试几次
+
+### 1.30 OpenSSL SSL_read: Connection was reset, errno 10054
+错误原因可能是网络不稳定，连接超时。如果试了多次还是报这个错误，建议执行这个命令``
+
+同样的错误还有"Failed to connect to github.com port 443 after 21105 ms: Timed out"
 
 ## 2 未解决
 ### 2.N 其他
