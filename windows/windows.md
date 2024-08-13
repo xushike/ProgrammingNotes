@@ -34,9 +34,6 @@ administrator是NT系列操作系统内置的管理员帐户，是Windows安装�
 1. `cd Program' 'Files`
 2. `cd Program" "Files`
 
-关于带根目录的目录：
-1. 用`which`命令查看tool的路径的时候，得到的可能是`c/xxx/xxx`，而不是`c:/xxx/xxx`。而windows带根目录的跳转只能用`c:/xxx/xxx`的方式，所以可能不能直接使用`which`的结果来跳转
-
 # 二 安装配置
 # 三 基础
 ## 0 架构和常见词语
@@ -97,7 +94,6 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
             2. `potpalyer`:很强的视频播放器，但是安装后没有自动添加到上下文，需要自己进入应用设置里面关联视频文件格式。
             3. `googlechrome`:安装后启动命令是`chrome`
             4. `ventoy`
-            5. `which`((注意和windows自带的`which`不一样))
         1. 不推荐
             1. `aria2`：安装后scoop会默认使用它来加速，它提供多线程下载和断点续传。虽然网上都是建议安装aria2，但是本人实测发现对于新手并不好用，所以暂时不推荐安装。
             2. `make`
@@ -160,15 +156,35 @@ windows命令行包管理工具，简单执行`scoop install xxx`，它就会把
 1. 很多软件安装位置不固定, 会污染Path
 
 #### winget-cli
-https://github.com/microsoft/winget-cli
+参考
+1. https://learn.microsoft.com/zh-cn/windows/package-manager/winget/
+1. https://github.com/microsoft/winget-cli
 
 使用：
-1. 安装软件`winget install [software]`,因为下载的软件包基本上都是 .exe 后缀，加上大多需要通过 UAC 提权，因此安装软件过程中大概率会弹出调用 GUI 安装交互界面，并不能实现真正意义上的完全静默安装。
+1. 安装软件`winget install [software]`,~~因为下载的软件包基本上都是 `.exe` 后缀，加上大多需要通过 UAC 提权，因此安装软件过程中大概率会弹出调用 GUI 安装交互界面，并不能实现真正意义上的完全静默安装。~~`install` 命令要求你指定要安装内容的具体字符串,如果存在任何不明确性，系统会提示你进一步筛选到具体应用程序。
+    1. 参数
+        1. `--id`：根据id来安装
+        2. `-s`(`--source`)：根据源来安装。如果源是winget，那么一般是去软件的官网下载。
+        1. `-l`（`--location`）：指定安装路径（需要被安装的软件本身支持），未指定的话默认安装在`C:\Program Files`路径下。
+        4. `-i`：交互式安装，类似手动点击`.exe`文件安装，**推荐加上**，因为你也不知道软件厂商会不会整一些捆绑操作
+        2. `--rainbow`: 使用彩虹进度条，看起来比较酷炫
 
     ```bash
     winget install microsoft.openjdk.11
+    # 安装git fow windows
+    winget install --id Git.Git -e --source winget
+    # 查看git fow windows安装路径
+    where.exe git # C:\Program Files\Git\cmd\git.exe
+
+    # 安装WeChat
+    winget install wechat -l 'D:/Program Files' -s winget -i --rainbow
     ```
+
 2. 搜索`winget search [software]`
+
+    ```bash
+    winget search tencent
+    ```
 2. 查看
     1. 查看已安装软件
 
@@ -178,6 +194,10 @@ https://github.com/microsoft/winget-cli
         ```
     2. 查看某款软件的信息`winget show [software]`
 
+问题：
+
+1. 是否支持ssh远程使用：不支持
+2. 是否支持查看已安装软件的路径：不支持，只能通过其他方式查看（比如`where`命令等）
 ### 1.2 Windows Terminal
 见terminal&dos部分笔记
 

@@ -113,30 +113,34 @@ powershell的Verb-Noun
     2. `tree`:快速梳理目录结构、掌握文件信息。
         1. 不带参数直接使用：以树状结构显示当前文件夹及所有后续文件夹
         2. 常见参数
-            1. `/f`：同时显示每个文件夹里文件的名称
+            1. `/f`：同时显示每个文件夹里文件的名称(带扩展名)
             2. `/a`：使用ASCII码字符，而不是用扩展字符
         3. 常见用法
             
             ```bash
-            tree a: /f /a | findstr "WinNTSetup.exe" # 指定目录查找指定文件
+            # 指定目录查找指定文件（能用但显示结果不友好，不推荐这么使用）
+            tree a: /f /a | findstr "WinNTSetup.exe" 
+            # 导出当前目录的文件夹/文件的目录树到tree.txt文件中
+            tree /f >tree.txt
             ```
+2. 查看文件内容
+    1. 在powershell中：`Get-Content`（alias `gc`, `cat` and `type`）
 2. 文本
     1. `find`:not work in powershell
     2. `findstr`
-    3. `less`和`more`:参考linux的`less`和`more`?
 5. 查找可执行文件的位置
-    1. 在cmd中：可以用`which`(注意和scoop安装的`which`不一样)和`where`，但是`which`的结果不能直接拿来使用，所以更推荐用`where`
+    1. 在cmd中：`where.exe`(也可以直接`where`)
 
         ```bash
-        which go
-        /c/Program Files/Go/bin/go # 直接用这个路径去调用系统会找不到
-
         where.exe go
         C:\Program Files\Go\bin\go.exe
         ```
-    2. 在powershell中:可以用`which`，`where.exe`,`get-command`和`gcm`(是`get-command`的别名)，但是`which`的结果不能直接拿来使用，所以不推荐用`which`。直接输入`where`的话优先匹配的是`Where-Object`命令而不是`where.exe`
+    2. 在powershell中:`where.exe`,`get-command`和`gcm`(是`get-command`的别名)，直接输入`where`的话优先匹配的是`Where-Object`命令而不是`where.exe`，默认不区分大小写和扩展名
 
         ```bash
+        # 使用where.exe在c盘查找"git"
+        where.exe /R c:\ "git"
+        # gcm
         gcm go
         CommandType     Name                                               Version    Source
         -----------     ----                                               -------    ------

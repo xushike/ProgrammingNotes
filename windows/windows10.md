@@ -19,8 +19,7 @@
 1. cmd
 2. powershell
 3. (推荐)windows terminal
-4. (推荐)fluent terminal
-    1. 安装：win10 store直接可以安装
+4. fluent terminal: win store直接可以安装
 
 ### 分屏
 自带的分屏：可以分二分之一或者四分之一，快捷键win+方向。想恢复原窗口大小，从屏幕一角拖离即可。
@@ -75,13 +74,15 @@ Windows WSL2和常规虚拟机方式在Windows上运行Linux系统方案的对�
     1. 检查Windows版本是否符合要求（略），win+r运行`winver`
     2. 启用必要的功能：控制面板-程序和功能-启用或关闭Windows功能
         1. Hyper-V
-        2. 适用于Linux的Windows子系统
+        2. 适用于Linux的Windows子系统：如果没打开这个功能就运行发行版，会提示"WslRegisterDistribution failed with error: 0x8004032d"
         3. 虚拟机平台
 3. 安装WSL2
     1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/install#install-wsl-command
     1. 部分重要步骤
+        1. `wsl --install`，如果提示无法解析服务器的名称或地址，多半是运营商DNS问题，需要手动修改DNS。正常情况下重启后就会自动安装了。
         1. 查看 Linux 发行版是设置为 WSL 1 还是 WSL 2，请使用命令`wsl -l -v`
         2. 安装适用于Linux的子系统有两种方式，一种是应用商店，另外一种是命令行。
+    3. 子系统默认安装位置：貌似是`C:\Users\<UserName>\AppData\Local\Packages\...`
 4. 打开Linux子系统
     1. 点击开始菜单的快捷方式打开
     2. 在终端输入`wsl`打开默认的Linux子系统
@@ -96,6 +97,13 @@ Windows WSL2和常规虚拟机方式在Windows上运行Linux系统方案的对�
     wsl git --version # git version 2.25.1
     # 在PowerShell 中，命令 get-date 将提供 Windows 文件系统中的日期，而 wsl date 将提供 Linux 文件系统中的日期。
     ```
+6. WSL配合VS Code使用
+    1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/tutorials/wsl-vscode
+
+发行版文件系统
+1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/filesystems#file-storage-and-performance-across-file-systems
+    1. 在存储WSL项目文件时：推荐使用 Linux 文件系统根目录：`\\wsl$\<DistroName>\home\<UserName>\Project`，而不使用 Windows 文件系统根目录：`C:\Users\<UserName>\Project 或 /mnt/c/Users/<UserName>/Project`
+1. 在 Windows 文件资源管理器中查看所有可用的 Linux 发行版及其根文件系统，请在地址栏中输入：`\\wsl.localhost`或(`\\wsl$`)
 
 安装桌面软件吗？看需求，一般来说没必要，因为子系统和windows的资源是共享的。不过为了方便copy文件，可以建立软链接当做共享文件夹，比如:
 1. ` ln -s /mnt/c/Users/my_username/LinuxShare ~/LinuxShare`

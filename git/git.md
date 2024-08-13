@@ -152,7 +152,7 @@ parent、child的意思？
     # 配置用户级的git user.name和email
     git config --global user.name "<用户名>"
     git config --global user.email "<邮箱>"
-    # 为每个项目单独配置name和email: 使用 --local
+    # 为每个项目单独配置name和email: 使用 --local（默认参数，不加该参数也是一样的效果）
     git config --local user.name "<用户名>"
     git config --local user.email "<邮箱>"
     ```
@@ -260,12 +260,12 @@ editor = vim
 
 使用
 1. 查看设置
-    1. 查看所有配置(包括git自带的和用户自定义的):`git config --list`
+    1. 查看所有配置(包括git自带的和用户自定义的):`git config -l`
 
     1. 查看配置文件的内容(似乎只能显示自己额外设置的配置,对于git本身的一些配置不会显示)
-        - 查看项目的配置文件`git config --local --list`
-        - 查看用户的配置文件`git config --global --list`
-        - 查看系统的配置文件`git config --system --list`
+        - 查看项目的配置文件`git config --local -l`
+        - 查看用户的配置文件`git config --global -l`
+        - 查看系统的配置文件`git config --system -l`
     1. 查看具体某个项的设置:`git config --get itemA`,比如查看大小写敏感`git config --get core.ignorecase`
 2. 设置
 3. 取消设置
@@ -1092,7 +1092,8 @@ hotfix分支：用于修复线上代码的bug。基于master分支建立，完�
 ### 4.3 git mergetool
 主要用于解决冲突,似乎只有存在冲突文件时才会出现(待测试)
 
-## 5 .gitignore文件
+## 5 相关文件
+### .gitignore
 参考：
 1. 各种语言的gitignore示例：https://github.com/toptal/gitignore
 
@@ -1122,6 +1123,47 @@ conf*/
 规范顺序和范围：git 对于`.gitignore`配置文件是按行从上到下进行规则匹配的，意味着如果前面的规则匹配的范围更大，则后面的规则将不会生效；
 
 里面可以写注释，使用`#`
+### .gitattributes
+参考：https://git-scm.com/docs/gitattributes
+
+格式为
+```txt
+pattern        attr1 attr2 ...
+```
+
+属性和值
+1. `text`：该属性控制index区中文本文件的行结尾标准化。当一个文本文件被标准化时，它的行尾标准化为LF。如果未启用该属性,Git 使用`core.autocrlf`配置变量来确定文件是否应该转换
+    1. 启用该属性但未设置值：标记pattern为文本文件，并启用行结尾标准化。不管index区的文件是什么行结尾，签入签出的时候都会标准化为LF
+    1. `text=auto`：由git自行判断是否为文本文件，对于文本文件，如果是CRLF且未添加到git，则在文件签入时，行结尾标准化为LF；如果是CRLF但已添加到git，则在文件签入时，不执行操作，保持CRLF不变。（待验证）
+1. `eol`: 该属性控制工作目录中使用的行结尾风格。（另外，还可以使用git的`core.eol`配置和`core.autocrlf`配置来控制）
+    1. `eol=crlf`:签出文件时行结尾标准化为CRLF
+    2. `eol=lf`:签出文件时行结尾保持与index区中一致（如果index区中的文件是CRLF，签出时是CRLF；如果index区中的文件是LF，签出时是LF）
+3. `diff`
+
+优先级
+
+1. 同一个`.gitattributes`文件中，遵循覆盖原则，即后面的行会覆盖前面的设置
+2. 多个`.gitattributes`文件优先级: todo
+
+`.gitattributes`文件的`eol`属性、git的`core.eol`配置和`core.autocrlf`配置的区别：`eol`属性只对符合pattern的文件生效，`core.eol`对所有文本文件生效。优先级`.gitattributes` > `core.autocrlf` > `core.eol`
+
+常用操作：
+1. 向已有项目加入`.gitattributes`文件
+    1. 把工作区未完成的内容放到stash
+    1. 新增`.gitattributes`文件并推送，比如我的是
+
+        ```txt
+        * text=auto eol=lf
+        *.{cmd,[cC][mM][dD]} text eol=crlf
+        *.{bat,[bB][aA][tT]} text eol=crlf
+        ```
+    2. 执行以下命令来更新本地文件
+        
+        ```bash
+        git rm --cached -r .
+        git reset --hard 
+        # 实测，index是LF的文本文件在工作区变成LF了，index是CRLF的文本文件在工作区变成了CRLF，符合预期
+        ```
 
 ## 6 github pages
 用来做网站的 
@@ -1242,35 +1284,55 @@ and its host key have changed at the same time.
 方法二:也可以设置` git config core.ignorecase false`使其对大小写敏感，但是提交上去会被认为是重写，多人协作可能就差生了冲突。所以在大小写敏感的情况下，可以先备份文件，然后删除文件在重新提交。
 
 ### 1.20 换行符
-参考：http://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
-
 #### 文件中换行的地方出现大量`^M`
 出现原因:三大系统的换行符不一样
-- 在windows下的文本文件的每一行结尾，都有一个回车(’\n’)和换行(’\r’),就是`CRLF`
-- 在linux下的文本文件的每一行结尾，只有一个回车(’\n’),是`LF`
-- 在Mac下的文本文件的每一行结尾，只有一个换行(’\r’)，也是`LF`
+- 在windows下的文本文件的每一行结尾，都有一个回车(`\n`)和换行(`\r`),就是`CRLF`
+- 在linux下的文本文件的每一行结尾，只有一个回车(`\n`),是`LF`
+- 在Mac下的文本文件的每一行结尾，只有一个换行(`\r`)，也是`LF`
 
-所以在windows下编辑linux打开过的文件就会在结尾的地方出现"^M"
+所以在windows下编辑linux（或者在Linux下编辑Windows）打开过的文件可能会在结尾的地方出现"^M"
 
-解决方法：GitHub suggests that you should make sure to only use \n as a newline character in git-handled repos. 推荐设置`git config --global core.autocrlf xxx`（xxx的值设置哪一个参考sof的回答）
+几个解决方案：推荐几个方案混合使用
+方案一：使用`core.autocrlf`配置。GitHub suggests that you should make sure to only use \n as a newline character in git-handled repos. 推荐设置`git config --global core.autocrlf xxx`（xxx的值取决于你的开发环境系统）
 
-`git config core.autocrlf`可能有三个值:
-- true:git add是会将CRLF转换成LF，checkout时git会将LF转换为CRLF
-- false不做任何转换，文本保持本来的样子
-- input:git add是会将CRLF转换成LF，checkout时任然是LF
+`git config core.autocrlf`有三个值:
+- `true`（默认值）:  文件在本地检出为 CRLF，但是每当你提交文件时，CRLF 的所有实例都将替换为 LF。此设置确保你的代码库在所有文件的最终版本中始终使用 LF，但在获取时在本地使用 CRLF。windows开发人员推荐使用该设置。
+- `false`：不做任何转换，文本保持本来的样子。通常不建议使用这个值(除非是团队中的每个人都使用相同的操作系统)
+- `input`: 如果一个文件最初被 Windows 开发人员提交的，你会在本地看到它是 CRLF（后续你再编辑这个文件，会强制让它变成LF）。如果文件已经是LF了，后续操作依然还是LF。Mac/Linux 开发人员推荐使用该设置
+
+`input` 和 `​​true`值唯一区别是git会不会在本地获取文件时处理行尾。
 
 具体应该设置哪个值呢？看场景：
-1. 在windows下新建了文件，提交时出现"CRLF will be replaced by LF in Dockerfile. The file will have its original line endings in your working directory"
-    
-    ```bash
-    git rm -r --cached .
-    git config core.autocrlf false
-    git add .
-    ```
+1. 在windows下新建了文件，提交时出现"warning: CRLF will be replaced by LF in fileA. The file will have its original line endings in your working directory"。这并不是说出现问题， Git 只是警告你，你的 CRLF 行结尾将在提交时规范化为 LF，如果不想看到这个警告，把`core.autocrlf`设置为`input`(因为主流的跨平台文本编辑器都支持 LF，所以可以这么修改)，然后删除fileA重新clone就好了。
 
-#### warning: LF will be replaced by CRLF in fileA. The file will have its original line endings in your working directory
-因为在修改git的core.autocrlf之前我就已经将fileA clone下来了，所以怎么修改都不对，始终会出这个提示。因为我现在是在windows环境下，所以我把core.autocrlf设置为input，然后删除fileA重新clone，然后就好了。
+方案二：使用`.gitattributes`文件，文件内容如下
+```txt
+* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+```
+git使用一种简单的算法来检测你的 repo 中的特定文件是文本文件还是二进制文件（例如，可执行文件、图像或字体文件）。默认情况下，此算法用于比较已更改的文件，但它也可以用于强制行尾约定。第一行的含义参考``部分笔记，后面两行则是让win的批处理文件CRLF行结尾
 
+提交此文件后，使用`git add --renormalize .`命令来重新格式化所有之前添加的文件。但是这个方案也不够完美，因为win本地的文件依然是CRLF行结尾，如果用了linting工具（比如ESLint等），可能会提示烦人的行结尾警告，这个时候也可以考虑方案三。
+
+方案三：使用`.editorconfig` 文件，该文件旨在创建用于自定义任何给定文本编辑器行为的标准化格式。许多文本编辑器（包括 VS Code，IDEA，GitHub）支持并自动读取此文件（如果存在）。格式如
+```txt
+root = true
+
+[*]
+end_of_line = lf
+```
+这样，我们用支持的编辑器创建一个新文件，它将始终LF行结尾。
+
+最后，可以使用`git ls-files --eol`来显示git跟踪的所有文件的行尾信息，格式如下：
+```bash
+i/lf    w/crlf  attr/text=auto eol=lf   fileA.txt
+```
+从左到右分别是：
+- i：索引中的行尾（被推送到你的仓库的行）
+- w：工作树中的行尾
+- attr：适用于此文件的 .gitattributes 规则
+- 文件名
 ### 1.21 windows下git log中文乱码
 方法1：在系统环境变量里增加`LESSCHARSET=utf-8`，然后重启相关的IDE就行了。
 方法2：更新git版本
