@@ -83,6 +83,18 @@ Windows WSL2和常规虚拟机方式在Windows上运行Linux系统方案的对�
         1. 查看 Linux 发行版是设置为 WSL 1 还是 WSL 2，请使用命令`wsl -l -v`
         2. 安装适用于Linux的子系统有两种方式，一种是应用商店，另外一种是命令行。
     3. 子系统默认安装位置：貌似是`C:\Users\<UserName>\AppData\Local\Packages\...`
+4. ~~WSL2设置~~
+    1. 参考：https://learn.microsoft.com/en-us/windows/wsl/wsl-config#per-distribution-configuration-options-with-wslconf
+    1. 设置文件权限
+    2. 设置完之后需要等子系统完全退出才会生效
+
+        ```bash
+        # 退出指定子系统或退出所有子系统
+        wsl --terminate <distroName>
+        wsl --shutdown
+        # 查看仍在运行的子系统。
+        wsl --list --running
+        ```
 4. 打开Linux子系统
     1. 点击开始菜单的快捷方式打开
     2. 在终端输入`wsl`打开默认的Linux子系统

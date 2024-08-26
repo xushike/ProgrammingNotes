@@ -89,7 +89,7 @@ powershell:
 
         ```bash
         # 打印环境变量
-        echo $env:USERPROFILE
+        echo $env:USERPROFILE # 通常显示 C:\Users\<UserName>
         #在路径中使用环境变量 
         cd $env:USERPROFILE
         ```

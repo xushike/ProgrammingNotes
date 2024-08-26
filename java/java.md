@@ -441,7 +441,7 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 
 ## 1 工具生态
 1. version manager
-    1. sdkman:is a tool for managing parallel versions of multiple Software Development Kits on most Unix-based systems.它是一个可以方便管理jdk,spring等软件(主要是java系)的主流版本(注意不是全部版本)的第三方工具。前身是GVM。这个工具对linux和mac支持得比较好，在windows上的安装有些麻烦(需要windwos上有一个简单的linux环境)
+    1. sdkman:is a tool for managing parallel versions of multiple Software Development Kits on most Unix-based systems.它是一个可以方便管理jdk,spring等软件(主要是java系)的主流版本(注意不是全部版本)的第三方工具。前身是GVM(Groovy enVironment Manager)。这个工具对linux和mac支持得比较好，在windows上的安装有些麻烦(需要windwos上有一个简单的linux环境)
         2. 自身的安装：参考官网https://sdkman.io/
             1. 在windows上安装：官网提供三种在Windows下安装的方式，三种方式都需要在Windows下安装一个简单Linux的环境，以及一些常用的工具(zip,unzip等)
                 1. 安装Windows Linux Subsystem (WLS)和其他一些工具
@@ -1323,9 +1323,9 @@ java将异常分为两种:
         1. `getResource("")`:获取File协议路径
 
             ```java
-            // 假如.class文件在C:/Users/99212/study/src/temp，它的package是temp，那么
-            this.getClass().getResource("") // 得到的是.class文件所在目录的File路径，即file:/C:/Users/99212/study/src/temp/
-            this.getClass().getResource("/") // 得到的是.class文件最外层包所在目录的File路径，即file:/C:/Users/99212/study/src/
+            // 假如.class文件在C:/Users/<UserName>/study/src/temp，它的package是temp，那么
+            this.getClass().getResource("") // 得到的是.class文件所在目录的File路径，即file:/C:/Users/<UserName>/study/src/temp/
+            this.getClass().getResource("/") // 得到的是.class文件最外层包所在目录的File路径，即file:/C:/Users/<UserName>/study/src/
             ```
 2. 判断
     1. isArray():boolean：判断该类型是否是数组。

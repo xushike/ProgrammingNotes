@@ -16,33 +16,6 @@ git是linus用c写的，是他为了帮助管理Linux内核开发而开发的一
 ### 3.1 commit id（版本号）
 就是commit信息里的那一长串数字,SHA1计算出来的一个非常大的数字，用十六进制表示。所以经常看到的sha1 hash、sha1 id和commit id是一个东西。
 
-### 3.2 三棵树(The Three Trees)，“三板斧”，四个状态
-官方参考资料:[https://git-scm.com/book/zh/v2/Git-工具-重置揭密#_git_reset](https://git-scm.com/book/zh/v2/Git-工具-重置揭密#_git_reset)
-
-从git的官方book来看,三棵树是:
-
-
-| Tree | Role |
-| ---- | ---- |
-| HEAD | Last commit snapshot, next parent(上一次提交的快照，下一次提交的父结点。可以简单理解为该分支上的最后一次提交的快照) |
-| Index/Stage(?) | Proposed next commit snapshot(预期的下一次提交的快照) |
-| Working Directory/work space(工作目录/工作区) | Sandbox|
-
-从git的官方中文book来看,三棵树是:
-- 工作目录/工作区(Working Directory或work space)
-- 暂存区(Index文件或Stage)
-- HEAD(当前分支所在的commit).
-
-个人：储藏区算不算第四棵树？
-
-“三板斧”：通常指的git add、git commit和git push三个命令，也就是最常用最简单的三个命令。
-
-四个状态：在git看来，文件有四个状态
-1. 未记录(untracked)
-2. 已提交(committed)
-3. 已修改(modified)
-4. 已暂存(staged)
-
 ### 3.3 git支持多种协议:https,git和ssh
 git允许我们用ssh url或者https url来管理代码,两种不同的协议.如果是https,则默认每次都要输入密码,但可以使用git提供的credential helper来存储密码
 
@@ -130,7 +103,7 @@ git ref的前缀有：`refs/heads/`，`refs/tags/`，`refs/remotes/`
 
 parent、child的意思？
 
-## 4 文档视频资料
+## 4 文档资料等
 1. 官方
     1. https://git-scm.com/
     2. git的官方中文book,应该大部分问题都能在上面找到答案,推荐阅读,但是有些内容并不生效(?):[https://git-scm.com/book/zh/v2](https://git-scm.com/book/zh/v2)
@@ -295,8 +268,43 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
 
 # 三 基础
 ## 0 架构和名称
+### 三棵树(The Three Trees)、三板斧、四个状态、四个对象
+官方参考资料:[https://git-scm.com/book/zh/v2/Git-工具-重置揭密#_git_reset](https://git-scm.com/book/zh/v2/Git-工具-重置揭密#_git_reset)
+
+从git的官方book来看,三棵树是:
+
+
+| Tree | description | Role |
+| ---- | ---- | ---- |
+| HEAD/Repo | 指向最后一次提交 | Last commit snapshot, next parent(上一次提交的快照，下一次提交的父结点。可以简单理解为该分支上的最后一次提交的快照) |
+| Index/Stage | 用于暂存更改 | Proposed next commit snapshot(预期的下一次提交的快照) |
+| Working Directory/work space(工作目录/工作区) | 用于编写更改 | Sandbox|
+
+从git的官方中文book来看,三棵树是:
+- 工作目录/工作区(Working Directory或work space)
+- 暂存区(Index文件或Stage)
+- HEAD(当前分支所在的commit).
+
+个人：储藏区(stash)算不算第四棵树？
+
+“三板斧”：通常指的git add、git commit和git push三个命令，也就是最常用最简单的三个命令。
+
+四个状态：在git看来，文件有四个状态
+1. 未记录(untracked)
+2. 已提交(committed)
+3. 已修改(modified)
+4. 已暂存(staged)
+
+四个对象：git 主要有四个对象，分别是 Blob，Tree， Commit， Tag 他们都用 SHA-1 进行命名
+1. Blob：用于存储单个文件内容，一般都是二进制的数据文件
+2. Tree：对应文件系统的目录结构，里面主要有：子目录 (tree)，文件列表 (blob)，文件类型以及一些数据文件权限模型等
+3. Commit：是一次修改的集合，当前所有修改的文件的一个集合，可以类比一批操作的“事务”。是修改过的文件集的一个快照，随着一次 commit 操作，修改过的文件将会被提交到 local repository 中。通过 commit 对象，在版本化中可以检索出每次修改内容，是版本化的基石
+4. Tag：tag 是一个"固化的分支"，一旦打上 tag 之后，这个 tag 代表的内容将永远不可变，因为 tag 只会关联当时版本库中最后一个 commit 对象。一般应用或者软件版本的发布一般用 tag。
 ### git的hash
 查看使用的hash算法`git rev-parse --show-object-format`，默认采用sha1
+
+### Plumbing和Porcelain
+Plumbing则是Git的底层部分，它处理Git对象和Git仓库的内部结构细节。Plumbing包括了一些原始且较低级别的Git命令，如`git init`和`git hash-object`等。而Porcelain提供了一种更高级别的Git使用体验，以命令行工具和图形用户界面的形式向用户暴露Git功能。它包含了一些常用且易于使用的Git命令，如`git add`，`git commit`和`git push`等。
 
 ### detached HEAD状态
 什么是`detached HEAD`:也称为游离状态/游离指针状态，detached HEAD 状态是指 HEAD 指针不指在任何分支的索引.进入 detached HEAD 状态后 git 会创建一个临时分支，会看到提示信息"You are in 'detached HEAD' state...",一般是用于草稿。
@@ -321,6 +329,41 @@ mac终端使用git时，输入账号密码会自动记忆到钥匙串。所以�
     export LESSCHARSET=utf-8
     ```
 
+### git gui
+#### gitk
+参考：https://git-scm.com/docs/gitk
+
+安装：
+1. mac：参考git的安装部分
+
+实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
+
+如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
+
+以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
+
+显示其它分支的修改记录：查阅文档后以为`gitk --branches`可以，结果试了下似乎不行，最后换成`gitk <branch_name>`来解决的，似乎会列出所有和该分支有关联的分支的记录。（待整理）
+
+参数：
+- `--simplify-by-decoration`
+- `--all`
+- 搜索
+    - 按提交时间过滤`gitk --since='2020-08-25' --until='2020-09-21'`
+
+图形界面说明：
+1. `Parent`：父commit，如果在commit1的基础上做了修改（也可以不做修改）然后提交生成了commit2，那么commit1就是commit2的parent，commit1的hash值会被记录在commit2里面，但commit1里面不会记录commit2的hash值。如果commit是多个分支合并的（称为octopus merge），则有多个父commit。
+2. `Child`：子commit，可以理解为下一个commit，如果被合并到了多个分支，则有多个
+3. `branches`:所有包含这个commit的分支
+4. `Follows`:前一个tag名称
+
+注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
+
+问题：
+1. mac打开gitk一片空白，报错如下：Error in startup script: window "." was deleted before its visibility changed while executing "tkwait visibility ." (file "/usr/local/bin/gitk" line 12629)
+    1. 更新gitk版本`git upgrade git-gui`：实测从2.27.0 -> 2.33.0就好了
+
+### git mergetool
+主要用于解决冲突,似乎只有存在冲突文件时才会出现(待测试)
 ## 2 仓库操作
 ### 2.1 git init 初始化仓库
 官网说的初始化命令默认会创建master分支,但实践发现,在第一次commit之前很多命令都报错(比如`git branch`,`git checkout`,远程仓库的命令等),所以最佳实践是第一次commit之后再去操作分支和远程仓库。
@@ -578,7 +621,7 @@ Git鼓励大量使用分支,分支可以说是git最核心的内容了.因为创
 参数说明:
 1. `--amend`:与上次commit合并提交,可修改commit信息,最终只会有一个提交.(很好用,但多人合作时慎用)
    1. 撤销`amend`的方法：参考：https://blog.csdn.net/qq_17034717/article/details/79536873。大概是使用`git reflog`找到前面操作的commit id，然后使用`git reset --hard <commit_id>`恢复过去
-2. `-a`：将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
+2. `-a`：约等于`git add`和`git commit`一起使用，将所有unstaged的文件变成staged（这里不包括untracked（新建的）文件），一般更推荐使用`git add`
 3. `-m`：commit message，用双引号的话默认输入的所有内容会变成一行
     1. 实现commit message多行的方法
         1. 在一个commit命令内多次调用`-m`，比如`git commit -m "commit title" -m "commit description"`
@@ -819,11 +862,11 @@ git restore --source dev aaa # 从指定commit中恢复aaa到worktree
 
 ## 9 git版本和标签
 ### git标签/git tag/锚点
-指向某个commit的指针，跟分支很像，不过分支可以移动，标签不能移动。标签是版本库的一个快照，它跟某个commit绑在一起。
-
 既然有commitid为什么还要git tag：tag可以取有意义的的名字，比commitid更易记住。
 
-使用两种主要类型的标签：轻量标签（lightweight）与附注标签（annotated）
+git有两种类型的标签：轻量标签（lightweight）与含附注标签（annotated），annotated标签用于发布，而lightweight标签用于私有或临时对象的labels。
+1. lightweight：对于lightweight标签，git底层不会创建一个真正意义上的tag对象，只是对某个commit的引用，可以理解为某个commmit的别名
+2. annotated：创建时带有`-a`(`--annotate`),`-s`或`-u`参数的标签称为annotated标签。对于annotated标签，git底层会创建一个 tag对象，包含创建日期、标记者名称和电子邮件、标记消息和可选的 GnuPG 签名
 
 使用：
 1. 查看
@@ -836,28 +879,36 @@ git restore --source dev aaa # 从指定commit中恢复aaa到worktree
         v1.0.2
         v2.0.0
         ```
-    2. 按模式筛选标签`git tag -l 'xxx'`，比如`git tag -l 'v1.7*'`
-    2. 根据tag_name查看commit信息:`git show tag_name_A`，比如`git show v2.0.0`
-2. 创建标签:不加参数的时候默认是打的lightweight标签
-    1. 在本地创建标签
-        1. 在最新commit上打tag`git tag v1.0`
-        2. 在指定commitid上打标签：`git tag tag_name commit_id`
-    2. 推送本地标签到远程
-        1. 简写`git push origin 标签名`，相当于`git push origin refs/tags/源标签名:refs/tags/目的标签名`(删除也是用的这个命令)
-        2. 推送所有本地标签到远程`git push origin --tags`
+    2. 按pattern筛选标签`git tag -l 'xxx'`，比如`git tag -l 'v1.7*'`
+    2. 根据tag_name查看commit信息:`git show <tag_name>`，比如`git show v2.0.0`
+2. 创建标签:不带`-a`(`--annotate`),`-s`和`-u`参数时默认创建的是lightweight标签
+    1. 创建lightweight标签
+        1. 在最新commit上创建tag`git tag <tag_name>`，比如`git tag v1.0`
+        2. 在指定commitid上创建标签：`git tag <tag_name> <commit_id>`
+    2. 创建annotated标签：`git tag -a <tag_name> <commit_id> -m <tag_message>`
+
+        ```bash
+        git tag -a v1.0_release # 附注标签名用有意义的结尾也是最佳实践之一，比如这儿的_release
+        git tag -a v1.0_release 49c4566918 -m "v1.0正式发布"
+        ```
+    2. 推送标签到远程：默认情况下`git push`命令不会把标签推送到远程Repo，所以需要手动推送
+        1. 推送指定标签到远程Repo
+            1. 命令一：`git push origin <tag_name>`
+            2. 命令二：`git push origin refs/tags/<tag_name>:refs/tags/<tag_name>`
+        2. 推送所有标签到远程Repo`git push origin --tags`
     3. 同步远程标签到本地`git fetch 上游`
 3. 删除标签
-    1. 删除本地标签`git tag -d 标签名`，删除本地所有标签`git tag -d`
-    2. 删除远程标签`git push origin :refs/tags/目的标签名`，比如`git push origin :refs/tags/v2.0.0`
-
-参数：   
-1. `-a`、`-m`：指定标签的附注(annotated，即说明文字)。
+    1. 删除标签`git tag -d 标签名`，删除本地所有标签`git tag -d`
+    2. 删除远程标签
+        1. 命令一:`git push origin :refs/tags/<tag_name>`，比如`git push origin :refs/tags/v2.0.0`
+        2. 命令二：`git push origin --delete <tag_name>`
+4. 检出标签：以标签的所在，新建一个分支。`git checkout -b <branch_name> <tag_name>`
 
 ### git describe
-显示离当前提交最近的(历史向后最近，而不是历史向前最近)标签的一些信息。用来描述离你最近的标签。一般是在历史commit里移动后找到自己的方向
+显示离当前提交最近的(历史向后最近，而不是历史向前最近)标签的一些信息。用来描述离你最近的标签。一般是在历史commit里移动后找到自己的方向。
 
 使用：
-1. 直接使用`git describe`，等同于`git describe HEAD`:只会列出带有注释的tag
+1. 直接使用`git describe`：默认忽略lightweight标签，只会列出annotated标签。等同于`git describe HEAD`
 2. 一般使用`git describe refA`:refA可以是任何能被 Git 识别成提交记录的引用，如果你没有指定的话，Git会使用你目前所检出的位置(HEAD)，它输出的结果可能是这样的：`<tag>_<numCommits>_g<hash>`，tag 表示的是离 ref 最近的标签， numCommits 是表示这个 ref 与 tag 相差有多少个提交记录， hash 表示的是你所给定的 ref 所表示的提交记录哈希值的前几位。
 
 ```bash
@@ -1052,45 +1103,6 @@ hotfix分支：用于修复线上代码的bug。基于master分支建立，完�
         1. merge master到resolve_conflict
         2. merge resolve_conflict到dev
     5. 然后dev可以直接merge到master了
-    
-
-## 4 git自带的图形界面工具
-### 4.1 gitk(常用)
-主要用于查看查看历史。
-安装：
-1. mac：参考git的安装部分
-
-实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
-
-如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
-
-以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
-
-显示其它分支的修改记录：查阅文档后以为`gitk --branches`可以，结果试了下似乎不行，最后换成`gitk <branch_name>`来解决的，似乎会列出所有和该分支有关联的分支的记录。（待整理）
-
-参数：
-- `--simplify-by-decoration`
-- `--all`
-- 搜索
-    - 按提交时间过滤`gitk --since='2020-08-25' --until='2020-09-21'`
-
-图形界面说明：
-1. `Parent`：父commit，如果在commit1的基础上做了修改（也可以不做修改）然后提交生成了commit2，那么commit1就是commit2的parent，commit1的hash值会被记录在commit2里面，但commit1里面不会记录commit2的hash值。如果commit是多个分支合并的（称为octopus merge），则有多个父commit。
-2. `Child`：子commit，可以理解为下一个commit，如果被合并到了多个分支，则有多个
-3. `branches`:所有包含这个commit的分支
-4. `Follows`:前一个tag名称
-
-注意:mac上和liunx需要自己安装,mac可用brew:`brew install gitk`
-
-问题：
-1. mac打开gitk一片空白，报错如下：Error in startup script: window "." was deleted before its visibility changed while executing "tkwait visibility ." (file "/usr/local/bin/gitk" line 12629)
-    1. 更新gitk版本`git upgrade git-gui`：实测从2.27.0 -> 2.33.0就好了
-
-### 4.1 git gui
-主要用于制作提交
-
-### 4.3 git mergetool
-主要用于解决冲突,似乎只有存在冲突文件时才会出现(待测试)
 
 ## 5 相关文件
 ### .gitignore
@@ -1260,12 +1272,6 @@ and its host key have changed at the same time.
     1. zlib压缩对变化显著的二进制文件似乎效果不好。
 2. 不用https的方式，而直接使用ssh的方式。（实测可行）
 3. shallow clone：`git clone --depth depth remote-url`
-4. 网友提供的邪道方法（实测依然有问题）：
-    1. 建立repo的本地存储目录 
-    1. 用`git init`生成`.git`
-    2. `git fetch remote-url`
-    3. `git checkout FETCH_HEAD`
-    4. 此时处于游离状态，需要设置`git remote add <远程分支名> <远程分支地址>`，然后`git fetch`
     
 ### 1.15 Unable to create 'XXXXXX/.git/index.lock': File exists.
 解决方法：找到index.lock 删除即可

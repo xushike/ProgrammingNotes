@@ -447,8 +447,6 @@ go的环境变量说明:
 
 go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 
-多版本管理使用[gvm]:(https://github.com/moovweb/gvm)(似乎没有win版本，待整理)
-
 ## 1 windows
 ### .msi文件安装
 .msi的好处是安装后可以方便的修复和卸载

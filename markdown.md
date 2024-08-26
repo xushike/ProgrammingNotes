@@ -18,8 +18,8 @@ Markdown一种轻量级的「标记语言」，开发者是约翰·格鲁伯（J
 ### 3.1 Daring Fireball 
 Daring Fireball是一个由苹果公司的狂热粉丝 John Gruber 创立的博客，内容主要是对苹果的产品和策略等任何细节作出评论，并且不设读者评论功能。博客上还提供下载一些由 Gruber 自己开发的软件。最初 Gruber 只是利用空闲时间打理，但从 2006 年 4 月开始，运作这个博客成了 Gruber 的全职工作，并通过收取会费、投放广告、售卖 T 恤等方式获得收入。(from百度知道)
 
-## 4 文档
-## 5 网址
+## 4 文档网址等
+1. vscode中的markdown：https://code.visualstudio.com/Docs/languages/markdown
 1. 不过我看daringfireball上面的markdown文档似乎一直没有更新。比较推荐的是segmentfault上的文档:[https://segmentfault.com/markdown](https://segmentfault.com/markdown)
 2. 图灵社区的markdown简易指南:[怎样使用Markdown](http://www.ituring.com.cn/article/23)
 
@@ -52,11 +52,12 @@ _You **can** combine ~~them~~_
 
     [变量a]:https://github.com "github官网"
 
-锚定：两种实现方法
-1. 自动的锚定
-    
-    [TOC] Table Of Contents (index file)，内容列表、索引，一般放在文首。vscode自带的预览目前还不支持
-2. html的锚点语法
+锚定：几种使用方法
+1. headers自带的锚定
+    1. vscode快捷键`Ctrl+Shift+O`支持浏览所有headers，还支持outline
+    2. 支持当前文件和其他文件的headers跳转: 比如`[link text](#pre...)`、`[link text](../example_file/#prev)`
+2. [TOC] Table Of Contents (index file)，内容列表、索引，一般放在文首
+3. html的锚点语法
 
     跳转到[第三个段落](#para3)
     
@@ -186,14 +187,28 @@ markdown原生不支持,但支持html的table标签.gfm支持该表格写法,注
         * `不断行的空白格&nbsp;或&#160;`
 
 
-## 2 数学公式
+## 2 数学方程式
+vscode的内置markdown使用KaTeX渲染数学方程式
+
 行内公式和独行公式：
 1. 行内公式：将公式插入到本行内，语法`$公式内容$`，如：$xyz$
 2. 行间公式/独行公式：将公式插入到新的一行内，并且居中，语法`$$公式内容$$`，如：$$xyz$$
 
-### 对数(logarithm)
-1. 语法`log_a{N}`来表示$log_a{N}$，a叫做对数的底数，N叫做真数。
-    1. `log_2{18}`和表示$log_2{18}$
+上标、下标和组合：`^`表示上标，`_`表示下标，`{}`(大括号)表示组合符号。默认情况下，上、下标符号仅仅对下一个组起作用，一个组即单个字符或者使用`{}` 包裹起来的内容。
+
+常见数学方程式
+1. 括号
+    1. 固定大小的括号：使用原始的`()`
+    2. 自适应大小的括号`$\left( math_equation \right)&`
+        1. 比如$$\left( \sum_{k=1}^{100} a_k b_k \right)$$
+1. 乘方和开方
+    1. 乘方：比如`$x^2$`表示$x^2$，当指数超过一个字符时，就要用到大括号来形成组。比如x的12次方，不能写成`$x^12$`，它表示的是$x^12$，而应该写成`$x^{12}$`,它表示的才是$x^{12}$
+    2. 开方: 平方根`$\sqrt{radicand}$`，n次方根`$\sqrt$[n]{radicand}`，比如27的3次方根$\sqrt[3]{27}$
+2. 对数(logarithm): `$log_a{N}$`表示$log_a{N}$，a是对数的底数，N是真数。比如`$log_2{18}$`表示$log_2{18}$
+3. 分数:
+    1. 使用`$\frac{numerator}{denominator}$`，比如$\frac{11}{40}$
+    2. 使用`\over`来分隔一个组的前后两部分`${a+1\over b+1}$`, 比如${a+1\over b+1}$
+4. 求和：`$$\sum_{k=1}^{n} a_k b_k$$`，需要结合行间公式使用。比如$$\sum_{k=1}^{100} a_k b_k$$
 # 四 高级
 ## 1 markdown解析器
 1. github高星,代码量少,适合个人开发研究:https://github.com/markedjs/marked

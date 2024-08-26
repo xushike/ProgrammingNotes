@@ -453,7 +453,6 @@ package github.com/cweill/gotests/...: exit status 1
 8. cssText
 9. HTML templates（HTML模板）：<template> 和 <slot> 元素使您可以编写不在呈现页面中显示的标记模板。然后它们可以作为自定义元素结构的基础被多次重用
 10. 基于回流的页面渲染,页面渲染的w3c规范和那个女人的博客
-11. 事件设计模式
 13. nodeValue:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeValue
 14. innerHTML,innertext,textcontent的区别:https://developer.mozilla.org/zh-CN/docs/Web/API/Node/textContent
 15. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/proto
