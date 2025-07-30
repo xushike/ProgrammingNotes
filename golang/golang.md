@@ -74,10 +74,20 @@ Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始
 
 Go语言的每次版本更新，都会在标准库环节增加强大的功能、提升性能或是提高使用上的便利性。每次版本更新，标准库也是改动最大的部分。
 
-### 2.9 Go1.9
+### go1.9
 Go1.9版本后默认利用Go语言的并发特性进行函数粒度的并发编译
 
-### 2.17 go1.17
+### go1.11
+引入go module
+
+### go1.12
+引入go directive
+### go1.16 todo
+go module构建模式正式成为默认构建模式，替代了原先的GOPATH构建模式
+
+如果go.mod中没有显式的用go指示go版本，那么默认go版本为1.16？
+
+### go1.17
 https://tip.golang.org/doc/go1.17
 
 部分变化：
@@ -99,6 +109,28 @@ https://tip.golang.org/doc/go1.17
     // go1.17 
     time.Date(2021, time.October, 14, 16, 34, 32, 333240500, time.Local):
     ```
+
+### go1.21
+1. toolchain：
+    1. 提高了向前兼容性: `go.mod`文件中的go directive和toolchain directive不再是一个建议，而是强制执行的规则。即将go版本和go toolchain版本用类似module的“依赖”的方式来管理。
+    2. 引入了工具链管理功能：使得不同的模块可以使用不同的 Go 工具链版本。这一功能大大简化了工具链的下载和安装过程，减少了手动管理工具链的麻烦。
+
+        ```go
+        // go.mod 文件
+        module example
+
+        require (
+            go 1.20.5
+            toolchain go1.21.1 
+        )
+        ```
+### go1.23 todo
+主要有四个方面的更新：language, toolchain, runtime, and libraries.
+1. language：将range-over-function纳入语言规范
+    1. 参考
+        2. https://pkg.go.dev/iter
+        3. https://go.dev/ref/spec#For_range
+        1. https://go.dev/wiki/RangefuncExperiment
 
 ## 3 常识
 
@@ -368,21 +400,17 @@ Golang不保证任何单独的操作是原子性的，除非：
 
 ## 4 文档网址视频等
 网址:
-1. golang官方
-    1. `golang.org`和`go.dev`:`go.dev`是`golang.org`的一个配套网站。
-        1. Go 团队核心成员 RSC（Russ）的解释是：Golang.org是开源项目和发行版的所在地，是官方权威的，不想和其他第三方内容混在一起；而Go.dev是Go用户的中心，提供来自整个Go生态系统的集中和管理资源，包含更多社区内容
-    1. 各种项目的文档
-        1. [https://godoc.org](https://godoc.org)
-        2. `pkg.go.dev`用于取代`godoc.org`
-    1. 博客：https://blog.golang.org/
-    2. playground：https://play.golang.org/
-        1. studygoalng也做了一个国内版的:https://play.studygolang.com/
-    3. https://golang.org/doc/effective_go.html
-    4. go官方的FAQ，感觉这才是每个gopher必需阅读的，很多疑问都能在里面找到答案：https://golang.org/doc/faq
-    5. github的wiki：https://github.com/golang/go/wiki
-       1. 代码评审注释：https://github.com/golang/go/wiki/CodeReviewComments#receiver-names
-    6. 专为中国开发者建立的（原因你懂的）
-        1. https://golang.google.cn/
+1. 官方
+    1. [go.dev](https://go.dev): `go.dev`是`golang.org`的一个配套网站。Go 团队核心成员 RSC（Russ）的解释是, `golang.org`是开源项目和发行版的所在地，是官方权威的，不想和其他第三方内容混在一起；而`go.dev`是Go用户的中心，提供来自整个Go生态系统的集中和管理资源，包含更多社区内容
+        1. 包文档:[pkg.go.dev](https://pkg.go.dev)
+        2. 博客：[go.dev/blog](https://go.dev/blog)
+        3. playground: [go.dev/play](https://go.dev/play)
+        4. 各种文档: [go.dev/doc](https://go.dev/doc)
+            1. effective_go: [go.dev/doc/effective_go](https://go.dev/doc/effective_go)
+            2. FAQ: [go.dev/doc/faq](https://go.dev/doc/faq)
+            3. go mod: [https://go.dev/ref/mod](https://go.dev/ref/mod)
+    2. [golang.google.cn](https://golang.google.cn)：专为中国开发者建立（原因你懂的）
+    3. [golang.org](https://golang.org)
 2. GOPROXY代理
     1. goproxy.cn:支持GOPROXY代理，且支持GOSUMDB的sum.golang.org的校验
         1. goproxy.cn/stats：统计数据，里面有一些开放接口
@@ -464,7 +492,7 @@ go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
 2. 在~/.bash_profile中设置GOPATH等,然后`source ~/.bash_profile`.
 
     这里我遇到一个问题,就是上面的设置在新开shell中没有生效.因为zsh加载的是 ~/.zshrc文件，而 ‘.zshrc’ 文件中并没有定义任务环境变量,所以需要在~/.zshrc文件最后，增加一行:source ~/.bash_profile
-3. 如果是vscode中开发go,可能还需要设置go.gopath,形如`"go.gopath": "/Users/xushike/work"`
+3. 如果是vscode中开发go,可能还需要设置go.gopath,形如`"go.gopath": "/Users/<UserName>/work"`
 
 ### 2.2 homebrew（最推荐）
 
@@ -510,202 +538,28 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 
 # 三 基础
 ## 0 架构
-### 1 文件类型
-go里的文件大概分为以下几种：
+### 文件类型
+go里的文件大致分为以下几类：
 1. 源码文件：以`.go`结尾的文件
+    1. 命令源码文件
+    2. 库源码文件
+    3. 测试源码文件:以`_test.go`为后缀的
 2. 目标库文件/静态库文件/静态文件/代码包归档文件:以`.a`结尾的文件,`.a`文件是编译过程中生成的，每个package都会生成对应的`.a`文件，Go在编译的时候先判断package的源码是否有改动，如果没有的话，就不再重新编译`.a`文件，这样可以加快速度。同时，有静态库文件的时候，不需要
     1. 如何生成`.a`文件：参考`go install`
 2. todo:以`.out`结尾的文件
 2. todo:以`.h`结尾的文件
 2. 目标文件:以`.o`结尾的文件
 
-Go源码文件包括三种：
-1. 命令源码文件：
-    1. 独立程序的入口
-    2. 属于main包，包含无参数和无结果的main函数
-    3. main函数执行的结果意味着当前程序运行的结束
-    4. 同一个代码包中不要放多个命令源码文件，同时命令源码文件和库源码文件也不要放在同一个代码包下。b站的的项目似乎就是这么做的。如果违反此条，`go run`和`go build`分别运行这些文件的时候不会报错，但是`go build`和`go install`运行整个包的时候会报错。
-    5. 可以通过`go run`命令来执行，可接受命令参数
-2. 库源码文件
-3. 测试源码文件:以`_test.go`为后缀的
+命令源码文件说明：
+1. 它是独立程序的入口，属于`main`包
+2. 包含无参数和无结果的`main`函数, `main`函数执行的结果意味着当前程序运行的结束
+3. 同一个代码包中不要放多个命令源码文件，同时命令源码文件和库源码文件也不要放在同一个代码包下。如果违反此条，`go run`和`go build`分别运行这些文件的时候不会报错，但是`go build`和`go install`运行整个包的时候会报错。
+4. 可以通过`go run`命令来执行，可接受命令参数
 
-### 2 Go程序的执行（程序启动）顺序
+### Go程序的执行（程序启动）顺序
 编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，然后对最后的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。但是每个包只会被导入一次。
 
-### 3 声明
-Go主要有四种类型的声明语句：var、const、type和func，分别对应变量、常量、类型和函数实体对象的声明。
-
-### 4 变量
-#### 4.1 变量声明
-其中“类型”或“= 表达式”两个部分可以省略其中的一个。如果省略的是类型信息，那么将根据初始化表达式来推导变量的类型信息。如果初始化表达式被省略，那么将用零值初始化该变量。
-```go
-//声明变量的方式1:一般是变量类型和初值类型不同时才使用
-var 变量名字 类型 = 表达式
-```
-
-```go
-//声明变量的方式2：零值初始化,也可用于多个变量是同一类型的情况，此时只写最后一个类型
-var i int
-var i, j, k int                 // int, int, int
-//声明变量的方式3:一般用于同时声明多个变量，可省略类型，会自动判断
-var b, f, s = true, 2.3, "four" // bool, float64, string
-```
-
-初始化表达式可以是字面量或任意的表达式。在包级别声明的变量会在main入口函数执行前完成初始化，局部变量将在声明语句被执行到的时候完成初始化。例子如下：
-
-```go
-var f, err = os.Open(name) // os.Open returns a file and an error
-```
-
-在**函数内部**，有一种称为**简短变量声明**语句的形式可用于声明和初始化局部变量,可以简单理解为`:=`是声明且赋值,例子如下：
-
-```go
-//声明变量的方式4:简短变量声明(只能在函数内使用)
-anim := gif.GIF{LoopCount: nframes}
-freq := rand.Float64() * 3.0
-t := 0.0
-//这种同时声明多个变量的方式应该限制只在可以提高代码可读性的地方使用比如for语句的循环的初始化语句部分
-i, j := 0, 1
-```
-
-注意：
-1. 简短变量声明语句中必须至少要声明一个新的变量,对于其他已经声明过的变量，则只有赋值操作
-2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
-
-#### 4.2 变量的初始值
-零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以简化很多代码，而且可以在没有增加额外工作的前提下确保边界条件下的合理行为。
-1. 数值类型变量对应的零值是0，
-2. 布尔类型变量对应的零值是false，
-3. 字符串类型对应的零值是空字符串
-
-    注意:检查空字符串用`s == ""`而不是`len(s) == 0`
-    
-4. 指针,接口和引用类型（包括slice、map、chan和函数）变量对应的零值是nil。
-
-    注意:检查slice,map或者channel的空值用`len(s) > 0`而不是`s != nil && len(s) > 0`，不过还要注意并发的问题，比如channel，在执行到`len(s) > 0`的时候可能里面是空的，但是执行到下一行代码的时候有可能又有值了。
-5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
-    1. time的零值
-6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
-
-#### 4.3 赋值
-1. 更有效的赋值写法,比如
-    ```go
-    count[x] = count[x] * scale // 数组、slice或map的元素赋值
-    //下面的写法更有效，可以省去对变量表达式的重复计算
-    count[x] *= scale
-    ```
-2. 指针的赋值
-    
-    ```go
-    x, y := 1, 2
-	m := &x
-	fmt.Println(m, &x) // 0xc0001206a0 0xc0001206a0 是相同的
-	m = &y
-	fmt.Println(m, *m, x) // 0xc0001206a8 2 1 指针的地址变了，指向了另外一个地址
-
-    ```
-2. 元祖赋值：指同时更新多个变量的值,先计算右边再统一更新左边。好处是:
-    - 对同时出现在两边的变量很有帮助
-    - 可以使一系列琐碎赋值更加紧凑(特别是在for循环的初始化部分)
-
-    但如果表达式太复杂的话，应该尽量避免过度使用元组赋值
-    
-    ```go
-    // 例子1 
-    x, y := 1, 2
-	x, y = y,x
-	fmt.Println(x, y) // 2 1
-    
-    // 例子2
-    func swap(a, b *int) {
-        b, a = a, b
-    }
-    func main() {
-        x, y := 1, 2
-        swap(&x, &y)
-        fmt.Println(x, y) // 1 2 因为a和b交换的是指针的地址，但是值并没有变
-    }
-    ```
-
-3. 可赋值性：
-    1. nil可以赋值给任何指针或引用类型的变量。常量则有更灵活的赋值规则，因为这样可以避免不必要的显式的类型转换
-    2. 对于两个值是否可以用==或!=进行相等比较的能力也和可赋值能力有关系：对于任何类型的值的相等比较，第二个值必须是对第一个值类型对应的变量是可赋值的，反之亦然。
-    3. 隐式的赋值行为：函数调用会隐式地将调用参数的值赋值给函数的参数变量，一个返回语句将隐式地将返回操作的值赋值给结果变量.
-    
-4. 匿名变量(没有名称的变量、类型或方法).可以避免定义一堆没用的变量,使代码看起来更加优雅清晰,写法形式如下,
-        
-    ```go
-    func GetName() (firstName, lastName, nickName string) { 
-        return "May", "Chan", "Chibi Maruko" 
-    } 
-    ```             
-
-#### 4.4 变量的生命周期
-对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，在局部变量的声明周期则是动态的：从每次创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。
-
-因为一个**变量的有效周期只取决于是否可达**，因此一个循环迭代内部的局部变量的生命周期可能超出其局部作用域。同时，局部变量可能在函数返回之后依然存在。
-
-#### 4.5 变量的存储位置
-编译器会自动选择在栈上还是在堆上分配局部变量的存储空间，但可能令人惊讶的是，这个选择并不是由用var还是new声明变量的方式决定的。圣经中的例子如下,
-```go
-var global *int
-
-func f() {
-    var x int
-    x = 1
-    global = &x
-}
-
-func g() {
-    y := new(int)
-    *y = 1
-}
-```
-分析:f函数里的x变量必须在堆上分配，因为它在函数退出后依然可以通过包一级的global变量找到，虽然它是在函数内部定义的；用Go语言的术语说，这个x局部变量从函数f中逃逸了。相反，当g函数返回时，变量`*y`将是不可达的，也就是说可以马上被回收的。因此，`*y`并没有从函数g中逃逸，编译器可以选择在栈上分配`*y`的存储空间（也可以选择在堆上分配，然后由Go语言的GC回收这个变量的内存空间），虽然这里用的是new方式。不过一般情况下编程不需要想这么多.
-
-### 5 常量
-使用`const`声明,只可以是字符串、布尔或数字类型的值,不能用`:=`定义.语法形如`const xxx [type] = xxx`,如
-```go
-const Pi = 3.14159
-const beef, two, c = "eat", 2, "veg"
-// 常量还可以用作枚举
-const (
-	Unknown = 0
-	Female = 1
-	Male = 2
-)
-```
-
-优雅的常量iota：iota是无类型的int(untyped int)，不是int也不是uint；iota只能在常量表达式中使用，所以`fmt.Println(iota)`会报错。一般情况下，iota可以看成const块中的行索引，记录行数。
-
-常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。(why)
-
-### 6 指针
-指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言里可以对指针进行加或减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
-
-并不是每一个值都会有一个内存地址，但是对于每一个变量必然有对应的内存地址。(?)
-
-指针是实现标准库中flag包的关键技术.
-
-指针最重要的应用在于:在于我们可以不用名字而访问一个变量，但是这是一把双刃剑：要找到一个变量的所有访问者并不容易，我们必须知道变量全部的别名（译注：这是Go语言的垃圾回收器所做的工作）
-
-使用方法:如果用“var x int”声明语句声明一个x变量，那么`&x`表达式（取x变量的内存地址）将产生一个指向该整数变量的指针，指针对应的数据类型是`*int`，指针被称之为“指向int类型的指针”,同时`*p`表达式对应p指针指向的变量的值.操作`*p`只是增加p指向的变量的值，并不改变p指针.
-
-还可以使用`new`(注意`new`在go中目前只是预定义函数,而不是关键字)来声明变量,作用和普通声明一样,如`p := new(int)`.但是new用得比较少,因为字面量的方式创建指针更方便.每次调用new函数都是返回一个新的变量的地址，因此下面两个地址是不同的：
-
-```go
-p := new(int)
-q := new(int)
-fmt.Println(p == q) // "false"
-```
-
-指针的比较:指针之间也是可以进行相等测试的，只有当它们指向同一个变量或全部是nil时才相等。
-
-关于go和C/C++语言返回函数中局部变量的指针:
-1. 在C/C++中,局部变量分配在栈里,函数返回后，局部变量是被系统自动回收的(其他好几种语言也是这样).返回局部变量的指针是不安全的,但返回局部变量的值是安全的,因为返回的是值的副本
-2. 在go中,局部变量可能分配到栈or堆中,而且两者都可以返回.具体参考垃圾回收的堆栈分配笔记
-
-### 7 类型
+### 类型
 新声明的类型提供了一个方法(我还不知道什么方法,底层的一些东西?)，用来分隔不同概念的类型，这样即使它们底层类型相同也是不兼容的,例子如下,
 
 ```go
@@ -730,7 +584,7 @@ fmt.Println(c == Celsius(f)) // "true"!
     - 可以提供书写方便,如果是复杂的类型将会简洁很多，比如结构体类型
     - 为该类型的值定义新的行为
 
-### 8 包
+### 包
 一个包即是编译时的一个单元，因此根据惯例，每个目录都只包含一个包.
 
 1. 目录结构
@@ -806,12 +660,12 @@ A.go 依赖 B.go，而 B.go 又依赖 C.go：
 
     当标识符（包括常量、变量、类型、函数名、结构字段等等）以一个大写字母开头，如：Group1，那么使用这种形式的标识符的对象就可以被外部包的代码所使用（客户端程序需要先导入这个包），这被称为导出（像面向对象语言中的 public）；标识符如果以小写字母开头，则对包外是不可见的，但是他们在整个包的内部是可见并且可用的（像面向对象语言中的 private ）。
 
-### 9 作用域
+### 作用域
 go的作用域和生命周期是不同的概念
 1. go的三个流程控制语句紧跟的初始化块声明的变量,其作用域和声明在语句`{}`中变量一样.
 2. 在包级别，声明的顺序并不会影响作用域范围，因此一个先声明的可以引用它自身或者是引用后面的一个声明，这可以让我们定义一些相互嵌套或递归的类型或函数。
 
-### 10 golang数据库连接池源码分析
+### golang数据库连接池源码分析
 1. 连接池的失败重试机制:
     1. 有两个策略：
         1. `cachedOrNewConn`：从连接池中获取或请求新的连接
@@ -825,9 +679,67 @@ go的作用域和生命周期是不同的概念
     1. 关闭连接的时候会清理依赖(`removeDepLocked()`)，只有依赖正确清理了，才会调用`finalClose()`，`finalClose()`中会执行`numOpen--`
 
 ## 1 工具生态
-### 1 go自带的工具链（不包含go tool套件）
+### 版本管理
+实现版本管理的几种方式
+1. G：todo
+1. GVM：不支持Windous系统
+    1. 项目地址：https://github.com/moovweb/gvm
+    2. 安装配置
+        1. 修改源：默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以需要修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。另外一种方法是执行命令的时候直接带上参数`--source=https://github.com/golang/go`
+    3. 使用
+
+        ```bash
+        # 修改源，
+        # 查看所有可用的go版本
+        gvm listall
+        # 安装go
+        gvm install go1.18 --source=https://github.com/golang/go # 如果卡住了，试试 gvm install go1.18 -B
+        # 使用刚刚安装的go
+        gvm use go1.18
+        go version
+        ```
+3. 手动版本管理：安装多个版本，手动创建软链接 todo
+4. go官方的版本管理 todo
+
+### go toolchain
+toolchain是什么：在软件开发中，工具链（toolchain）指的是一组用于构建、测试和维护代码的工具集合。通常，这些工具包括编译器、构建工具、调试器和其他辅助工具。go语言的工具链主要由编译器、构建工具（如`go build`）、测试工具（如`go test`）等组成。
+
+go toolchain本身的版本管理：go1.21开始新增的特性
+1. 配置工具链版本: 有两种方式，一种是`go.mod`，一种是环境变量`GOTOOLCHAIN`
+    1. 配置在`go.mod`中: 使用类似toolchain directive的语法
+
+        ```go
+        // go.mod 文件
+        module example
+
+        require (
+            go 1.20.5
+            toolchain go1.21.1 // 和go directive不一样，不是写作toolchain 1.21.1
+        )
+        ```
+        比如这里的`toolchain go1.21.4`指定了在当前模块中需要使用 Go 1.21.4 工具链。Go 命令会自动下载并使用指定的工具链版本，而无需手动干预
+    2. 环境变量`GOTOOLCHAIN`、工具链版本切换逻辑和优先级
+        1. `GOTOOLCHAIN=local`:如果 `go.mod`的工具链版本比go命令捆绑的工具链版本高，则停止编译，否则使用go命令捆绑的工具链版本。
+        2. `GOTOOLCHAIN=auto`(`auto`是环境变量`GOTOOLCHAIN`的默认值，同时`auto`=`local+auto`): `go.mod`的工具链版本和go命令捆绑的工具链版本，哪个高就用哪个。如果决策后的版本不存在则下载缓存再使用。
+        3. `GOTOOLCHAIN=path`(`path`=`local+path`): 如果 `go.mod`的工具链版本比go命令捆绑的工具链版本高，则去path中找`go.mod`的版本，找到就用，没找到就停止编译；反之，使用go命令捆绑的工具链版本。
+        4. `GOTOOLCHAIN=<name>`：如果`go.mod`的工具链版本>name，则停止编译，反之则去本地找对应版本，找到就用，找不到就下载缓存(缓存到go module cache中, 不会覆盖本地安装的go工具链)起来再使用。
+
+            ```
+            go env -w GOTOOLCHAIN=go1.21.1
+            ```
+        5. `GOTOOLCHAIN=<name>+auto`: 如果`go.mod`的工具链版本>name，则使用`go.mod`的工具链版本，否则使用name版本。如果决策后的版本不存在则下载缓存再使用。
+        6. `GOTOOLCHAIN=<name>+path`: 如果`go.mod`的工具链版本>name，则使用`go.mod`的工具链版本，否则使用name版本。如果决策后的版本在path下存在就使用，否则停止编译。
+2. 更新工具链版本
+    1. 自动更新
+        1. 自动更新`go env -w GOTOOLCHAIN=auto`
+        2. 自动更新且指定默认版本`go env -w GOTOOLCHAIN=go1.21.1+auto`
+    2. 手动更新：
+        1. `go get toolchain@go1.21.0`：只更新工具链不更新go，同时也会更新go.mod里toolchain directive
+        2. `go get go@1.21.0`：go和工具链一起更新，同时也会更新go.mod里的go directive和toolchain directive
+
 参考
-1. 赫林的go命令教程：https://github.com/hyper0x/go_command_tutorial
+1. https://go.dev/doc/toolchain
+2. https://pkg.go.dev/cmd/go
 
 通用参数(适用于大多数命令)：
 1. `-a`：强制编译，不管编译结果是不是最新的
@@ -835,7 +747,7 @@ go的作用域和生命周期是不同的概念
 2. `-x`：打印编译过程中所需运行的命令，且真正执行
 3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
 4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它(默认编译结束会删除它)
-5. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
+5. `-ldflags`：传递给链接器（`link`）的参数。更多参数`go tool link -h`
     1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值
 
         ```bash
@@ -877,23 +789,8 @@ go的作用域和生命周期是不同的概念
     2. go build 生成可执行文件在当前目录下， go install 生成可执行文件在bin目录下（$GOPATH/bin）
     3. go build 经常用于编译测试.go install主要用于生产库和工具.
 
-#### 1.1 go run
-`go run ...`：创建临时目录，然后编译源码将可以执行文件放进去，再运行可执行文件。简单来说`go run`等价于`go build`+执行。后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）作为文件参数。比如main.go中引用了a.go，那么运行时应该写成（待补充）：
-```bash
-go run main.go a.go
-# 或者
-go run *.go # not work in windows
-```
-
-参数：
-1. `-a`：强制编译，不管编译结果是不是最新的
-2. `-n`：打印编译过程中所需运行的命令，但不真正执行
-2. `-x`：打印编译过程中所需运行的命令，且真正执行
-3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
-4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它(默认编译结束会删除它)
-
-#### 1.2 go build
-主要用于编译源码文件或代码包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。在包的编译过程中，若有必要，会同时编译与之相关联的包。go build 会忽略以`_`或`.`开头的 go 文件。针对编译目标的不同，会有如下几种情况：
+#### go build
+主要用于编译代码，在包的编译过程中，若有必要，会同时编译与之相关联的包。编译非命令源码文件不会产生任何结果文件，编译命令源码文件会在执行该命令的目录中生成一个可执行文件。`go build`会忽略以`_`或`.`开头的 go 文件。针对编译目标的不同，会有如下几种情况：
 1. 执行`go build`且不加任何参数时，默认会把当前目录作为代码包并编译：
     1. 如果当前目录是main包所在的目录(`package main`)
         1. 如果当前目录有go.mod文件，`build`会将结果写入一个可执行的文件，文件名称默认是go.mod的module名
@@ -902,9 +799,8 @@ go run *.go # not work in windows
 2. 执行`go build`且后面跟若干源码文件时，只有这些源码文件会被编译。默认选择文件列表中第一个源码文件作为可执行文件名输出
 3. 执行`go build`且后面跟代码包路径时，代码包及其依赖会被编译。跟module名称也是一样。
 
-
 条件编译：
-1. 源码文件名后缀：如果你的源代码针对不同的操作系统需要不同的处理，那么你可以根据不同的操作系统后缀来命名文件。格式如下, 
+1. 使用不同的源码文件名后缀：如果你的源代码针对不同的操作系统需要不同的处理，那么你可以根据不同的操作系统后缀来命名文件。格式如下, 
     1. `$filename`: 源文件名称。
     2. `$GOOS`: 表示操作系统，从环境变量中获取。
     3. `$GOARCH`: 表示系统架构，从环境变量中获取。
@@ -923,14 +819,16 @@ go run *.go # not work in windows
 2. 也可以指定结果文件的路径，使用`-o`
 
 参数:
-1. 和`go run`相同的参数
+1. go toolchain通用参数
     1. `-a`
     2. `-n`
     3. `-x`
     4. `-v`
     5. `-work`
+    6. `-ldflags`
+    7. `-gcflags`
 1. `-o`：指定生成的可执行文件的路径或名称
-    1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成cmd可执行文件。(待确认)
+    1. 比如`go build -o $GOBIN/cmd main.go`，最终会在`$GOBIN`下面生成可执行文件cmd
     2. 注意：该参数在win平台的规则不太一样，不加该参数的时候，在win平台会自动给生成的可执行文件加上`.exe`后缀，但是加上了该参数就变成
         1. 如果给定的路径是一个文件，golang 会创建不存在的文件夹并直接写入，并不会增加后缀
         2. 如果给定的路径是一个目录
@@ -938,39 +836,6 @@ go run *.go # not work in windows
             2. 如果路径存在，golang 会在该目录下创建文件并自动附加对应平台的后缀
 
         所以在win平台最好不指定结果文件名称，只指定路径。
-2. `-ldflags`：传递给链接器（tool link）的参数。更多参数`go tool link -h`
-    1. . `-ldflags -X importpath.name=value`，官方解释是：Set the value of the string variable in importpath named name to value. Note that before Go 1.5 this option took two separate arguments. Now it takes one argument split on the first = sign.其实就是可以在编译的时候给程序中的变量赋值
-
-        ```bash
-        # 比如main文件中有`VERSION, BUILD_TIME, GO_VERSION`三个变量
-        var (
-            VERSION   = "major.minor.patch"
-            BUILD_TIME = "yyyy-mm-dd hh:mm:ss"
-            GO_VERSION = runtime.Version()
-        )
-        # 执行
-        go build -ldflags "-X main.VERSION=1.0.0 -X 'main.BUILD_TIME=`date`' -X 'main.GO_VERSION=`go version`'"
-        # 会给这三个变量设置对应的值
-        ```
-
-        注意从go1.5开始，如果要赋值的变量包含空格，需要用引号将 -X 后面的变量和值都扩起来。
-
-    2. `-w`
-    3. `-s`
-3. `-gcflags`: 传递给编译器（tool compile）的参数。更多参数`go tool compile -h`
-    1. `-N` 禁用优化
-    2. `-l` disable inlinin，禁用函数内联
-    3. `-u` 禁用unsafe代码
-    4. `-m` 输出优化信息：查看内联调用、查看堆栈位置/逃逸分析。比如
-        
-        ```bash
-        go build -gcflags -m concurrent_demo/cmd/main.go
-        
-        # command-line-arguments
-        concurrent_demo/cmd/main.go:5:6: can inline main 
-        concurrent_demo/cmd/main.go:7:21: inlining call to goroutine_demo.Init # 表示内联调用了
-        ```
-    5. `-S` 输出汇编代码
 4. `-mod`
     1. `vendor`:忽略mod/cache里的包，只使用vendor目录里的依赖进行编译，在开启模块支持的情况下，用这个可以退回到使用 vendor 的时代
     2. `readonly`:防止隐式修改 go.mod，如果遇到有隐式修改的情况会报错，可以用来测试 go.mod 中的依赖是否整洁
@@ -985,7 +850,26 @@ go run *.go # not work in windows
 问题：
 1. 执行`go build`时报错"package xxx is not in GOROOT"
 
-#### 1.3 go install
+#### go run todo
+用于运行命令源码文件，先编译再执行，等价于`go build`+执行。`go run`后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）
+
+详细过程：
+1. 创建临时目录，然后编译源码文件, 将可执行文件放进去，再运行可执行文件，最后删除临时目录。
+```bash
+go run main.go a.go
+# 或者
+go run *.go # not work in windows
+```
+
+参数：
+1. go toolchain通用参数
+    1. `-a`
+    2. `-n`
+    3. `-x`
+    4. `-v`
+    5. `-work`
+
+#### go install
 用于编译并安装代码包或源码文件。
 1. 安装代码包或者库，会在`$GOPATH/pkg`生成`.a`文件
 2. 安装命令源码文件会在`$GOBIN`目录生成可执行文件。
@@ -995,7 +879,7 @@ go run *.go # not work in windows
 2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
 3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
 
-参数:注意它不支持`-o`参数
+参数: 它不支持`-o`参数
 
 使用：
 1. 静态库的编译和使用例子如下：（待补充）
@@ -1021,7 +905,7 @@ go run *.go # not work in windows
     go install github.com/schollz/croc/v9@latest # 执行完后会在$GOBIN目录下生成可执行文件croc
     ```
 
-#### 1.4 go get(待整理)
+#### go get(待整理)
 通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。`go get`可以下载一个单一的包或者整个子目录里面的每个包
 
 注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
@@ -1080,6 +964,7 @@ go run *.go # not work in windows
 GO111MODULE=off go get xxx -v
 ```
 
+#### go help
 #### 1.5 go clean
 可以清理go编译生成的文件，如`.go`、`.out`、`.a`等
 
@@ -1176,9 +1061,10 @@ In addition to fixing imports, goimports also formats your code in the same styl
 #### 1.10 go fix
 用于将你的 Go 代码从旧的发行版迁移到最新的发行版
 
-#### 1.11 go env
+#### go env和环境变量
 参考：
-1. https://golang.org/pkg/runtime/
+1. https://pkg.go.dev/cmd/go#hdr-Print_Go_environment_information
+2. `go help env`
 
 go env是查看和设置go环境变量。go1.13开始，建议所有go相关的环境变量都交给`go env -w`来管理，修改过的变量会被追加到`os.UserConfigDir`目录下的`go/env`文件里，注意该命令不会覆盖系统环境变量。
 
@@ -1186,16 +1072,24 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 1. mac:默认是`$HOME/Library/Application Support`，所以在`$HOME/Library/Application Support/go/env`中
 2. windows：默认是`C:\Users\user_name\AppData\Roaming\go\env`
 
-操作:
-1. 查看go环境变量，可以带上格式化参数
+使用:
+1. 查看go环境变量，可以带上格式化参数`-json`
     1. `go env`：查看所有go环境变量
-    2. `go env var_name`:查看指定的环境变量，比如`go env -json GOROOT`
+    2. `go env var_name`:查看指定的环境变量
+        
+        ```bash
+        # 比如查看GOOS和GOARCH环境变量
+        go env GOOS GOARCH
+        ```
 1. 设置go环境变量
     1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
-2. `-u`:和`-w`作用相反，会将其变量设置为默认值，如`go env -u GOPROXY`
+    2. `-u`:和`-w`作用相反，会将其变量设置为默认值，如`go env -u GOPROXY`
 
-环境变量说明:
+环境变量:
+1. 参考
+    1. `go help environment`
 
+部分环境变量说明：
 |变量|说明|
 |---|:---|
 | GCCGO	    | 构建时时候所用编译器      |
@@ -1210,7 +1104,36 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 | GOROOT	    |go 语言安装时所在的目录绝对路径      |
 | GOTOOLDIR	|go 语言工具所在的目录绝对路径       |
 
-GOTRACEBACK
+
+#### go tool
+`go tool xxx`命令调用，部分命令也可以通过`go xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
+
+查看帮助：`go help xxx`，比如`go help generate`
+
+直接`go tool`会显示go tool套件全部的命令
+
+写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
+
+#### go tool compile 编译
+
+参数：
+1. `-I`：使用额外的导入路径
+
+    ```bash
+    # 假如main.go导入了其他包，就会额外去C:\Users\99212\go\pkg\windows_amd64中找对应的.a文件来导入使用
+    go tool compile -I C:\Users\99212\go\pkg\windows_amd64 main.go
+    ```
+
+#### go tool link 链接
+
+参数：
+1. `-L`：使用额外的库文件路径
+
+    ```bash
+    go tool link -o main.exe -L C:\Users\99212\go\pkg\windows_amd64 main.o
+    # 链接成功后会生成相应的可执行文件main.exe
+    ```
+
 
 #### 1.12 go list
 List lists the named packages, one per line.列出指定的package，如果未指定任何参数，默认列出的是根module名。
@@ -1421,117 +1344,214 @@ golang代码中引入pprof包的两种方式：
 1. runtime/pprof：采集程序（非 Server）的运行数据进行分析。
     
 2. net/http/pprof：采集 HTTP Server 的运行时数据进行分析。
-
-### 2 go tool套件(go Toolchain)
-go Toolchain：可以通过`go tool xxx`命令调用，部分命令也可以通过`go xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
-
-查看帮助：`go help xxx`，比如`go help generate`
-
-直接`go tool`会显示go tool套件全部的命令
-
-写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
-
-#### go tool compile 编译
-
-参数：
-1. `-I`：使用额外的导入路径
-
-    ```bash
-    # 假如main.go导入了其他包，就会额外去C:\Users\99212\go\pkg\windows_amd64中找对应的.a文件来导入使用
-    go tool compile -I C:\Users\99212\go\pkg\windows_amd64 main.go
-    ```
-
-#### go tool link 链接
-
-参数：
-1. `-L`：使用额外的库文件路径
-
-    ```bash
-    go tool link -o main.exe -L C:\Users\99212\go\pkg\windows_amd64 main.o
-    # 链接成功后会生成相应的可执行文件main.exe
-    ```
-
-### 3 其他与go有关的工具
+### 其他与go有关的工具
 #### 3.1 Cgo
 编译(静态编译?)一个或多个以.go结尾的源文件，链接库文件，并运行最终生成的可执行文件
 
 #### 3.2 gb
 社区开发的依赖管理工具，而且也推荐用依赖管理工具来管理依赖
 
-#### 3.3 GVM
-go的版本管理工具，项目地址：https://github.com/moovweb/gvm
 
-配置：该工具是用shell写的，默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以应该修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。
-
-### 4 部署
-#### docker
-
-#### rpm
-
-## 2 数据类型
+## 2 变量和数据类型
 Go语言将数据类型分为四类：
-1. 基础类型：包括数字、字符串和布尔型。
+1. 基础类型：包括数字类型（整形和浮点型）、字符串和布尔型。
 2. 复合类型(聚合)：通过组合简单类型，来表达更加复杂的数据结构，包括数组和结构体
 3. 引用类型：包括指针、切片、字典、函数、通道，虽然数据种类很多，但它们都是对程序中一个变量或状态的间接引用
 4. 接口类型：就是接口
 
 不过有的地方将其分为三类,还可以有自定义类型,而且函数也可以是一个确定的类型.总之有空再整理吧.
 
-类型转换(难点)(待补充)：**Go作为一个强类型语言，不同类型之前必须要显示的转换（而且必须是基础类型相同）。 这样可以回避很多类似C语言中因为隐式类型转换引入的bug。但是，Go中interface是一个例外：type到interface和interface之间可能是隐式转换的**。**类型转换会申请新的内存**
-1. 显式类型转换
-    1. `var a typeA = typeA(b)`,这种方式适合以下几种情况
+变量本身的大小和变量所指向数据的内存空间大小
+1. 查看变量本身的大小(字节)：也是参数传递时变量的大小
+    1. `reflect.TypeOf(arbitrary).Size()`
+    2. `unsafe.Sizeof(arbitrary)`
+2. 变量所指向数据的内存空间大小：只能自己估算，比如`[]int`，每个元素的大小x容量
 
-        1. 一个取值范围较小的类型转换到一个取值范围较大的类型，一定会成功；一个取值范围较大的类型转换到范围较小的类型，没有溢出的话才会成功。
-            1. int和int64之间的相互转换
-            1. int=>float64:`var f float64 = float64(i)`或者`f := float64(i)`
-            2. string=>[]byte:`data := []byte(str)`
-            3. []byte=>string:`str := string(bytes)`
+### 声明
+Go主要有四种类型的声明语句：`var`、`const`、`type`和`func`，分别对应变量、常量、类型和函数实体对象的声明。
 
-        2. 具有相同字段名称，相同字段类型的结构体（tag可不一样）
+### 变量、常量和指针
+#### 变量声明
+其中“类型”或“= 表达式”两个部分可以省略其中的一个。如果省略的是类型信息，那么将根据初始化表达式来推导变量的类型信息。如果初始化表达式被省略，那么将用零值初始化该变量。
+```go
+//声明变量的方式1:一般是变量类型和初值类型不同时才使用
+var 变量名字 类型 = 表达式
+```
+
+```go
+//声明变量的方式2：零值初始化,也可用于多个变量是同一类型的情况，此时只写最后一个类型
+var i int
+var i, j, k int                 // int, int, int
+//声明变量的方式3:一般用于同时声明多个变量，可省略类型，会自动判断
+var b, f, s = true, 2.3, "four" // bool, float64, string
+```
+
+初始化表达式可以是字面量或任意的表达式。在包级别声明的变量会在main入口函数执行前完成初始化，局部变量将在声明语句被执行到的时候完成初始化。例子如下：
+
+```go
+var f, err = os.Open(name) // os.Open returns a file and an error
+```
+
+在**函数内部**，有一种称为**简短变量声明**语句的形式可用于声明和初始化局部变量,可以简单理解为`:=`是声明且赋值,例子如下：
+
+```go
+//声明变量的方式4:简短变量声明(只能在函数内使用)
+anim := gif.GIF{LoopCount: nframes}
+freq := rand.Float64() * 3.0
+t := 0.0
+//这种同时声明多个变量的方式应该限制只在可以提高代码可读性的地方使用比如for语句的循环的初始化语句部分
+i, j := 0, 1
+```
+
+注意：
+1. 简短变量声明语句中必须至少要声明一个新的变量,对于其他已经声明过的变量，则只有赋值操作
+2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
+
+#### 变量的初始值
+零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以简化很多代码，而且可以在没有增加额外工作的前提下确保边界条件下的合理行为。
+1. 数值类型变量对应的零值是0，
+2. 布尔类型变量对应的零值是false，
+3. 字符串类型对应的零值是空字符串
+
+    注意:检查空字符串用`s == ""`而不是`len(s) == 0`
+    
+4. 指针,接口和引用类型（包括slice、map、chan和函数）变量对应的零值是nil。
+
+    注意:检查slice,map或者channel的空值用`len(s) > 0`而不是`s != nil && len(s) > 0`，不过还要注意并发的问题，比如channel，在执行到`len(s) > 0`的时候可能里面是空的，但是执行到下一行代码的时候有可能又有值了。
+5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
+    1. time的零值
+6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
+
+#### 变量赋值
+1. 更有效的赋值写法,比如
+    ```go
+    count[x] = count[x] * scale // 数组、slice或map的元素赋值
+    //下面的写法更有效，可以省去对变量表达式的重复计算
+    count[x] *= scale
+    ```
+2. 指针的赋值
+    
+    ```go
+    x, y := 1, 2
+	m := &x
+	fmt.Println(m, &x) // 0xc0001206a0 0xc0001206a0 是相同的
+	m = &y
+	fmt.Println(m, *m, x) // 0xc0001206a8 2 1 指针的地址变了，指向了另外一个地址
+
+    ```
+2. 元祖赋值：指同时更新多个变量的值,先计算右边再统一更新左边。好处是:
+    - 对同时出现在两边的变量很有帮助
+    - 可以使一系列琐碎赋值更加紧凑(特别是在for循环的初始化部分)
+
+    但如果表达式太复杂的话，应该尽量避免过度使用元组赋值
+    
+    ```go
+    // 例子1 
+    x, y := 1, 2
+	x, y = y,x
+	fmt.Println(x, y) // 2 1
+    
+    // 例子2
+    func swap(a, b *int) {
+        b, a = a, b
+    }
+    func main() {
+        x, y := 1, 2
+        swap(&x, &y)
+        fmt.Println(x, y) // 1 2 因为a和b交换的是指针的地址，但是值并没有变
+    }
+    ```
+
+3. 可赋值性：
+    1. nil可以赋值给任何指针或引用类型的变量。常量则有更灵活的赋值规则，因为这样可以避免不必要的显式的类型转换
+    2. 对于两个值是否可以用==或!=进行相等比较的能力也和可赋值能力有关系：对于任何类型的值的相等比较，第二个值必须是对第一个值类型对应的变量是可赋值的，反之亦然。
+    3. 隐式的赋值行为：函数调用会隐式地将调用参数的值赋值给函数的参数变量，一个返回语句将隐式地将返回操作的值赋值给结果变量.
+    
+4. 匿名变量(没有名称的变量、类型或方法).可以避免定义一堆没用的变量,使代码看起来更加优雅清晰,写法形式如下,
         
-    2. 具有相同底层类型的变量之间可以相互转换.如,
+    ```go
+    func GetName() (firstName, lastName, nickName string) { 
+        return "May", "Chan", "Chibi Maruko" 
+    } 
+    ```             
 
-        ```go
-        type IZ int
-        var a IZ = 5
-        c := int(a)
-        d := IZ(c)
-        ```
-2. 强制类型转换
-    1. 数值
-            
-        ```go
-        // 1 整形到字符串
-        // 1-1 s = strconv.Itoa(i)
-        // 1-2 指定进制 strconv.FormatInt(i int64, base int) string
-        strconv.FormatInt(n, 2) // 转成二进制数对应的字符串。正数会把左边的所有0忽略掉，负数的话前面再多一个`-`
-        s = strconv.FormatInt(int64(i), 10) // 转成十进制数对应的字符串
-        s = strconv.FormatInt(int64(i), 16) // 转成十六进制数对应的字符串
-        // 1-3 也可以用fmt加动词的方式，不过效率更低
-        ```
-    2. 字符串
-            
-        ```go
-        // 1. 字符串到整形
-        // 1-1 i, err = strconv.Atoi(s) 
-        // 1-2 指定进制
-        i, err = strconv.ParseInt(s, 10, 64) // 将字符串类型的64位的十进制数转成整形
-        i, err = strconv.ParseInt(s, 16, 64) // 将字符串类型的64位的十六进制数转成整形
+#### 变量的生命周期
+对于在包一级声明的变量来说，它们的生命周期和整个程序的运行周期是一致的。而相比之下，在局部变量的声明周期则是动态的：从每次创建一个新变量的声明语句开始，直到该变量不再被引用为止，然后变量的存储空间可能被回收。函数的参数变量和返回值变量都是局部变量。它们在函数每次被调用的时候创建。
 
-        // 2. 字符串到float32/64
-        float32, err = strconv.ParseFloat(string, 32)
-        float64,err = strconv.ParseFloat(string,64)
-        ```
-    2. bool
+因为一个**变量的有效周期只取决于是否可达**，因此一个循环迭代内部的局部变量的生命周期可能超出其局部作用域。同时，局部变量可能在函数返回之后依然存在。
 
-        ```go
-        // 1. bool to string 默认转换出来是小写，比如false和true
-        strconv.FormatBool()
-        // or 
-        fmt.Sprintf(string, bool) // 用"%t"或"%v"格式化
-        ```
+#### 变量的存储位置
+编译器会自动选择在栈上还是在堆上分配局部变量的存储空间，但可能令人惊讶的是，这个选择并不是由用var还是new声明变量的方式决定的。圣经中的例子如下,
+```go
+var global *int
 
-### 2.1 基础数据类型
+func f() {
+    var x int
+    x = 1
+    global = &x
+}
+
+func g() {
+    y := new(int)
+    *y = 1
+}
+```
+分析:f函数里的x变量必须在堆上分配，因为它在函数退出后依然可以通过包一级的global变量找到，虽然它是在函数内部定义的；用Go语言的术语说，这个x局部变量从函数f中逃逸了。相反，当g函数返回时，变量`*y`将是不可达的，也就是说可以马上被回收的。因此，`*y`并没有从函数g中逃逸，编译器可以选择在栈上分配`*y`的存储空间（也可以选择在堆上分配，然后由Go语言的GC回收这个变量的内存空间），虽然这里用的是new方式。不过一般情况下编程不需要想这么多.
+
+#### 常量
+使用`const`声明,只可以是字符串、布尔或数字类型的值,不能用`:=`定义.语法形如`const xxx [type] = xxx`,如
+```go
+const Pi = 3.14159
+const beef, two, c = "eat", 2, "veg"
+// 常量还可以用作枚举
+const (
+	Unknown = 0
+	Female = 1
+	Male = 2
+)
+```
+
+优雅的常量iota：iota是无类型的int(untyped int)，不是int也不是uint；iota只能在常量表达式中使用，所以`fmt.Println(iota)`会报错。一般情况下，iota可以看成const块中的行索引，记录行数。
+
+常量命名的最佳实践:一般声明为MaxLength,而不是以下划线分隔MAX_LENGTH或者MAXLENGTH。(why)
+
+#### 指针
+指针是可见的内存地址.有些语言中(比如C)指针操作是完全不受约束的;而有些语言中(比如java)指针一般被处理为“引用”，除了到处传递这些指针之外,并不能做其他操作.Go平衡了两者,可以操作指针,但不能对指针进行运算，也就是不能像c语言那样可以对指针进行加减操作。`&`操作符可以返回一个变量的内存地址，`*`操作符可以获取指针指向的变量内容,`*type`表示指针的类型.
+
+指针是实现标准库中flag包的关键技术.
+
+指针最重要的应用在于:在于我们可以不用名字而访问一个变量，但是这是一把双刃剑：要找到一个变量的所有访问者并不容易，我们必须知道变量全部的别名（译注：这是Go语言的垃圾回收器所做的工作）
+
+```go
+var b int32 = 8;
+// 打印指针变量的地址，十六进制
+fmt.Println(&b) // 0xc00000a0e8
+// 打印指针变量的类型
+fmt.Println(reflect.ValueOf(&b).Type()) // *int32
+
+// 对空指针操作将会报错
+var p *int
+*p = 1 // panic: runtime error: invalid memory address or nil pointer dereference
+
+```
+
+使用方法:如果用“var x int”声明语句声明一个x变量，那么`&x`表达式（取x变量的内存地址）将产生一个指向该整数变量的指针，指针对应的数据类型是`*int`，指针被称之为“指向int类型的指针”,同时`*p`表达式对应p指针指向的变量的值.操作`*p`只是增加p指向的变量的值，并不改变p指针.
+
+还可以使用`new`(注意`new`在go中目前只是预定义函数,而不是关键字)来声明变量,作用和普通声明一样,如`p := new(int)`.但是new用得比较少,因为字面量的方式创建指针更方便.每次调用new函数都是返回一个新的变量的地址，因此下面两个地址是不同的：
+
+```go
+p := new(int)
+q := new(int)
+fmt.Println(p == q) // "false"
+```
+
+指针的比较:指针之间也是可以进行相等测试的，只有当它们指向同一个变量或全部是nil时才相等。
+
+关于go和C/C++语言返回函数中局部变量的指针:
+1. 在C/C++中,局部变量分配在栈里,函数返回后，局部变量是被系统自动回收的(其他好几种语言也是这样).返回局部变量的指针是不安全的,但返回局部变量的值是安全的,因为返回的是值的副本
+2. 在go中,局部变量可能分配到栈or堆中,而且两者都可以返回.具体参考垃圾回收的堆栈分配笔记
+
+### 基础数据类型
 包含int系列、float系列、bool、string
 
 #### 2.1.1 整数
@@ -1598,7 +1618,7 @@ fmt.Println(10 / float64(4)) // 2.5
 
 Integer literals(整数字面值)
 1. 参考
-    1. https://golang.org/ref/spec#Integer_literals
+    1. https://go.dev/ref/spec#Integer_literals
     2. ASCII码表
 2. 使用
     1. binary(二进制)：`0b`或`0B开头`
@@ -1628,7 +1648,7 @@ Integer literals(整数字面值)
         fmt.Println("\x23") // #
         ```
 
-#### 2.1.2 浮点数和复数
+#### 2.1.2 浮点数
 float系列有`float32`和`float64`，默认使用`float64`，go与其他很多语言（C、C++、Python等）一样使用了IEEE-754标准存储浮点数
 
 你应该尽可能地使用 float64，因为 math 包中所有有关数学运算的函数都会要求接收这个类型。不管用`float32`还是`float64`，都还是会有精度问题，要想精确表示一个浮点数，推荐使用第三方库，比如`github.com/shopspring/decimal`
@@ -1768,7 +1788,7 @@ go有字符串常量池吗：没有。
 #### 2.1.4 布尔bool
 对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
 
-### 2.2 复合(结构化)数据类型
+### 复合(结构化)数据类型
 包含array、slice、map、struct、channel(我们通常把array和struct称为值类型，把slice、map、channel称为引用类型，来帮助我们理解go语言的这几个类型。虽然这个称法并不准确，而且官方也没有这样说过)
 
 #### 2.2.1 数组
@@ -2242,7 +2262,7 @@ f2 := (T).Mv; f2(t, 7)
 
 
 
-### 2.3 用户自定义类型
+### 用户自定义类型
 自定义类型：使用`type`关键字基于已有的类型来声明新的类型，实际上只是定义了一个别名，如`type doration int64`,此时int64是doration的基础类型，但是go并不认为doration和int64是同一个类型。struct是自定义类型的一个特殊类型。
 
 声明：比如
@@ -2253,6 +2273,61 @@ type money float32
 
 type months map[string]int
 ```
+
+### 类型转换
+**Go作为一个强类型语言，不同类型之前必须要显示的转换（而且必须是基础类型相同）。 这样可以回避很多类似C语言中因为隐式类型转换引入的bug。但是，Go中interface是一个例外：type到interface和interface之间可能是隐式转换的。类型转换会申请新的内存**
+1. 显式类型转换
+    1. `var a typeA = typeA(b)`,这种方式适合以下几种情况
+
+        1. 一个取值范围较小的类型转换到一个取值范围较大的类型，一定会成功；一个取值范围较大的类型转换到范围较小的类型，没有溢出的话才会成功。
+            1. int和int64之间的相互转换
+            1. int=>float64:`var f float64 = float64(i)`或者`f := float64(i)`
+            2. string=>[]byte:`data := []byte(str)`
+            3. []byte=>string:`str := string(bytes)`
+
+        2. 具有相同字段名称，相同字段类型的结构体（tag可不一样）
+        
+    2. 具有相同底层类型的变量之间可以相互转换.如,
+
+        ```go
+        type IZ int
+        var a IZ = 5
+        c := int(a)
+        d := IZ(c)
+        ```
+2. 强制类型转换
+    1. 数值
+            
+        ```go
+        // 1 整形到字符串
+        // 1-1 s = strconv.Itoa(i)
+        // 1-2 指定进制 strconv.FormatInt(i int64, base int) string
+        strconv.FormatInt(n, 2) // 转成二进制数对应的字符串。正数会把左边的所有0忽略掉，负数的话前面再多一个`-`
+        s = strconv.FormatInt(int64(i), 10) // 转成十进制数对应的字符串
+        s = strconv.FormatInt(int64(i), 16) // 转成十六进制数对应的字符串
+        // 1-3 也可以用fmt加动词的方式，不过效率更低
+        ```
+    2. 字符串
+            
+        ```go
+        // 1. 字符串到整形
+        // 1-1 i, err = strconv.Atoi(s) 
+        // 1-2 指定进制
+        i, err = strconv.ParseInt(s, 10, 64) // 将字符串类型的64位的十进制数转成整形
+        i, err = strconv.ParseInt(s, 16, 64) // 将字符串类型的64位的十六进制数转成整形
+
+        // 2. 字符串到float32/64
+        float32, err = strconv.ParseFloat(string, 32)
+        float64,err = strconv.ParseFloat(string,64)
+        ```
+    2. bool
+
+        ```go
+        // 1. bool to string 默认转换出来是小写，比如false和true
+        strconv.FormatBool()
+        // or 
+        fmt.Sprintf(string, bool) // 用"%t"或"%v"格式化
+        ```
 
 ## 3 流程控制/控制流程(control flow)
 go的三个流程控制语句后都可以紧跟一个简短的变量声明，一个自增表达式、赋值语句，或者一个函数调用.比如紧跟一个简短变量声明,好处是:
@@ -4145,7 +4220,7 @@ for _, v := range res.Data {
 2. Channel, complex和function是不能被编码成JSON的，会返回UnsupportedTypeError
 3. 嵌套的数据是不能编码的，不然会让JSON编码进入死循环
 4. 指针在编码的时候会输出指针指向的内容，而空指针会输出null(待补充)
-5. 多个相同名字的字段：假设结构体a里嵌套有b、c两个结构体，然后b和c有相同的字段Name，如果两个Name都没有tag或者两个Name的tag所声明的json名称一样，那么生成json的时候两个Name都不会被编码；如果b和c中有Name字段，a里有Name字段（不在b或c中），那么以a中的Name字段会覆盖掉（不是替换）b和c中的。这些特性可实现以下技巧：
+5. 多个相同名字的字段：假设结构体a里嵌套有b、c两个结构体，然后b和c有相同的字段Name，如果两个Name都没有tag或者两个Name的tag所声明的json名称一样，那么生成json的时候两个Name都不会被编码；如果b和c中有Name字段，a里有Name字段（不在b或c中），那么以a中的Name字段会覆盖掉（不是替换）b和c中的。这些特性可实现以下技巧：
     1. 临时忽略某些字段：
 6. golang json反序列化的时候，只会反序列化不存在的字段，存在的不会管。这个特性可以实现默认值的设置：
 
@@ -5316,9 +5391,9 @@ type Flag struct {
 ### fmt
 参考:https://golang.org/pkg/fmt
 
-其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式,这些也被go程序员称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
+其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式, 称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
 
-许多类型都会定义一个`String()`方法，当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回的结果打印.
+许多类型都会定义一个`String()`方法，当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回打印结果.
 
 动词（verb）/占位符说明:
 
@@ -6800,7 +6875,7 @@ golang 提供了下面几种时间相关结构体：
 ### unsafe
 两个type三个方法
 
-1. `type ArbitraryType int`:Go中对ArbitraryType赋予特殊的意义。代表一个任意Go表达式类型（比如指针），虽然看起来它是int的别名。
+1. `type ArbitraryType int`: 只用于文档展示的目的，其本身并非unsafe包的一部分。它表示了任意 Go 表达式的类型（比如指针）
 2. `type Pointer *ArbitraryType`：Go中可以把Pointer类型，理解成任何指针的父类型。
 3. `Sizeof(anyType) uintptr`：官方文档说的返回变量本身占用的空间大小（单位：字节），而不是变量指向的内存的大小。该方法在编译期就进行求值，而不是在运行时，所以`Sizeof()`的返回值可以赋值给常量。数组总是在编译期就指明自己的容量，意味着可以获得数组所占的内存大小。对于结构体类型，不是简单的将各字段的size加起来，因为会有对齐
     1. 对应字符串，string标头值类型内部是由两部分组成，一部分是指向字符串起始地址的指针，另一部分是字符串的长度，两部分各是8字节，所以一共16字节

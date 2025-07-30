@@ -45,21 +45,14 @@ js作者的采访:[https://www.youtube.com/watch?v=IPxQ9kEaF8c](https://www.yout
 js所有函数的参数都是按值传递的，不过不同数据类型具体有所不同：如果参数是值类型则复制值,如果是引用类型则复制引用(也叫共享传递).本人实测java似乎也是这样。例子如下:
 
 ```javascript
-// 例子1 修改引用数据类型里面的值
-var obj = {x : 1};
+var obj = { x: 1, y: 2 };
 function foo(o) {
+    // 修改引用数据类型里面的值
     o.x = 3;
+    // 修改引用数据类型变量指向
+    o = {}; // o被指向了一个新的地址，但是obj还是指向原来的地址
 }
-foo(obj);
-console.log(obj.x); // 3, 被修改了! 
-
-// 例子2 修改引用数据类型变量指针指向
-var obj = {x : 1};
-function foo(o) {
-    o = 100; // 这里o被指向了一个新的地址，但是obj还是指向原来的地址
-}
-foo(obj);
-console.log(obj.x); // 仍然是1, obj并未被修改为100.
+console.log(obj); // { x: 3, y: 2 }
 ```
 
 ### 3.2 深复制和浅复制(shallow copy)

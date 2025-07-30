@@ -789,19 +789,19 @@ pick 0325c7f add b.txt for test git rebase
 #### git checkout 
 后面不带任何参数，相当于检查工作区，暂存区，HEAD间的差别。等于`git status`?
 
-#### git checkout -- file_name(todo)
+#### git checkout -- <file>
 用暂存区的文件覆盖工作区中的文件，即只撤销工作区的文件修改，对没有暂存过（tracked）的文件是不生效的。
 
 用法
-1. `git checkout -- file_name`(注意不是两个下划线)，省略`--`(double hyphen)也可以，`git checkout file_name`，`--`是为了避免路径、分支名和引用（或者提交ID）同名而发生冲突，如果冲突就必须用`-- HEAD`而不是只用`HEAD`。如果写成`git checkout .`，会在当前目录下用暂存区的文件覆盖工作区中的所有文件，即将文件工作区的修改全部丢弃(不包括没暂存过的文件)，慎用! 还有一种情况
+1. `git checkout -- <file>`(注意不是两个下划线)，省略`--`(double hyphen)也可以，`git checkout <file>`，`--`是为了避免路径、分支名和引用（或者提交ID）同名而发生冲突，如果冲突就必须用`-- HEAD`而不是只用`HEAD`。如果写成`git checkout .`，会在当前目录下用暂存区的文件覆盖工作区中的所有文件，即将文件工作区的修改全部丢弃(不包括没暂存过的文件)，慎用! 还有一种情况
 
     ```bash
     # 检出所有.c文件
     git checkout -- '*.c' 
     ```
 2. 恢复删除的文件:但是会丢失该文件上所有未提交的修改
-    1. 文件没有被tracked`git checkout -- <file_path>`
-    2. 文件已经被tracked`git checkout head -- <file_path>`
+    1. 文件没有被tracked`git checkout -- <file>`
+    2. 文件已经被tracked`git checkout head -- <file>`
 
 #### git checkout commit_id file_name
 和`git checkout -- file_name`类似，用指定提交中的文件覆盖暂存区和工作区中的文件
@@ -814,10 +814,10 @@ pick 0325c7f add b.txt for test git rebase
 `git reset`和`git checkout`有点复杂了，所以git又新增了一个`git restore`命令专门用来恢复staged和worktree的文件，它提供更好的语义。
 
 ```bash
-git restore [--worktree] aaa # 从staged中恢复aaa到worktree 
-git restore --staged aaa # 从repo中恢复aaa到staged 
-git restore --staged --worktree aaa # 从repo中恢复aaa到staged和worktree 
-git restore --source dev aaa # 从指定commit中恢复aaa到worktree
+git restore --source <commit> <file> # 从指定commit中恢复<file>到worktree
+git restore [--worktree] <file> # 从staged中恢复<file>到worktree, 等同于git checkout -- <file>
+git restore --staged <file> # 从repo中恢复<file>到staged，等同于git reset HEAD <file>
+git restore --staged --worktree <file> # 从repo中恢复<file>到staged和worktree 
 ```
 
 ## 7 草稿和储藏
@@ -1209,6 +1209,13 @@ pattern        attr1 attr2 ...
 ### 1.1 git pull 时`cannot lock ref ...`
 1. 第一种可能:就是我经常遇到的,网络或者什么不太重要原因,会出现这个,再git pull一下就好了.
 
+### 1.2 Clone succeeded, but checkout failed
+可能原因
+1. 文件名太长，无法签出
+
+解决方法
+1. 修改设置支持长路径`git config core.longpaths true`，然后执行`git restore --source HEAD :/`
+
 ### 1.3 You have not concluded your merge (MERGE_HEAD exists)
 原因可能有多种.我当时大概是先push了一次,然后使用修改了一些文件然后使用`git commit --amend`并且修改了commit信息,然后push,然后pull下来有冲突,然后我合并并且解决了冲突,但这个时候就出问题了,我把解决完的那个文件加入暂存区,结果暂存区里没有那个文件,然后不管执行pull还是push都提示这个错误.重新试了一次还是这样,估计不是冲突的原因,而是`git commit --amend`相关操作出错了.
 
@@ -1266,12 +1273,26 @@ and its host key have changed at the same time.
 `.gitmodules`子模块的路径用的ssh路径，但实际上是https路径，所以需要修改成https路径
 
 
-### 1.14 fatal: early EOFs fatal: index-pack failed
-原因可能是codebase太大，有以下几种解决方法：
+### 1.14 代码库太大拉取失败
+通常情况下，Git会将所有的提交记录都克隆到本地仓库，当代码库非常庞大时，克隆整个历史记录可能会耗费大量的时间和资源，甚至失败。常见错误
+1. fatal: early EOFs fatal: index-pack failed
+
+几种解决方法：
+1. （最推荐）先shallow clone再clone剩余的
+    1. shallow clone: 使用浅克隆来快速获取代码库的最新版本或者指定深度的历史记录，语法`git clone --depth <depth> <remote_repo>`，`<depth>`是clone的深度，值为1的时候表示仅clone最新的提交记录
+
+    ```bash
+    # 先shallo clone
+    git clone --depth 1 https://github.com/example/example.git
+    # 再clone剩余的，剩余的可以分多次fetch
+    git fetch --depth=100
+    ...
+    git fetch --unshallow
+    ```
+2. 增大postBuffer：`git config http.postBuffer <num>`
 1. 设置`core.compression`为默认值，`git config --add core.compression -1`或者`git config --global --add core.compression -1`，具体可以参考`git config --help`
     1. zlib压缩对变化显著的二进制文件似乎效果不好。
 2. 不用https的方式，而直接使用ssh的方式。（实测可行）
-3. shallow clone：`git clone --depth depth remote-url`
     
 ### 1.15 Unable to create 'XXXXXX/.git/index.lock': File exists.
 解决方法：找到index.lock 删除即可
