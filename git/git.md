@@ -145,7 +145,7 @@ parent、child的意思？
     比如上面新建了个人的key,如果我还需要再创建一个公司的key,可以:
     1. 创建ssh key:`ssh-keygen -t rsa -b 4096 -f $home/.ssh/company -C "wdwangtw@gmail.com"`
     2. 开启ssh-agent:`eval  "ssh-agent -s"`
-    3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`,如果报错"could not open a connection to your authentication agent",则输入`ssh-agent bash`,再输入`ssh-add ~/.ssh/conpany/xxx`
+    3. 添加私钥到ssh-agent:`ssh-add ~/.ssh/conpany/xxx`,成功会提示"Identity added: ..."，如果报错"could not open a connection to your authentication agent",则输入`ssh-agent bash`,再输入`ssh-add ~/.ssh/conpany/xxx`
     4. 创建或修改ssh-agent的配置文件(默认是在`~/.ssh`目录下的`config`文件)
 
         ```

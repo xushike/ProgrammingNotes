@@ -16,7 +16,7 @@
 
 如何查看当前用的哪种?
 
-mac的目录名是可以包含空格的，在终端进入带空格的目录有三种方式，比如目录`Application Support`：
+mac的目录名是可以包含空格的，在终端进入带空格的目录有三种方式，比如目录`Application Support`：
 1. `cd Application\ Support`
 2. `cd Application' 'Support`
 3. `cd Application" "Support`
@@ -42,7 +42,7 @@ mac的目录名是可以包含空格的，在终端进入带空格的目录有�
 关于本机 -> 系统报告 -> 应用程序
 
 ### 3.10 环境变量TMPDIR
-`echo $TMPDIR`打印出`/var/folders/_s/h1pf8fk50jqfscpsfh3x7vtw0000gn/T/`，其他操作系统应该也有这个变量
+`echo $TMPDIR`打印出形如`/var/folders/_s/h1pf8fk50jqfscpsfh3x7vtw0000gn/T/`这样的路径
 
 ### 3.11 关于文件的创建时间
 可以通过`stat`命令查看，其中的`Birthtimespec`就是创建时间，实测发现似乎和linux一样会因为文件的改变而更新，并不是真正的创建时间。
