@@ -74,6 +74,9 @@ Go 语言本身是由C语言开发的，而不是 Go 语言.不过go从1.5开始
 
 Go语言的每次版本更新，都会在标准库环节增加强大的功能、提升性能或是提高使用上的便利性。每次版本更新，标准库也是改动最大的部分。
 
+### go1.8
+安装工具会自动管理`$GOPATH`和`$GOROOT`
+
 ### go1.9
 Go1.9版本后默认利用Go语言的并发特性进行函数粒度的并发编译
 
@@ -309,8 +312,8 @@ fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
     1. `GOGC`：设置初始垃圾回收目标百分比，默认值是100，简单来讲就是值越低GC的频率越快。`GOGC=off`将会完全关闭垃圾回收
 2. `GODEBUG`：GODEBUG的值是是以逗号分隔的多个name=value对，每个name都是个运行时调试工具。如`GODEBUG=gctrace=1,schedtrace=1000`
     1. 如果值包含`gocacheverify=1`将会导致 go 命令绕过任何的缓存数据，而真正地执行操作并重新生成所有结果，然后再去检查新的结果与现有的缓存数据是否一致。
-3. GOOS 程序构建环境的目标操作系统
-4. GOARCH 表示程序构建环境的目标计算架构
+3. `GOOS`程序构建环境的目标操作系统
+4. `GOARCH`表示程序构建环境的目标计算架构
 5. `GOCACHE`:`go build`命令现在(go1.10+)总是会把最近的构建结果缓存起来，以便在将来的构建中重用。我们可以通过运行`go env GOCACHE`命令来查看缓存目录的路径。缓存的数据总是能够正确地反映出当时的源码文件、构建环境和编译器选项等的真实情况。一旦有任何变动，缓存数据就会失效，`go build`命令就会再次真正地执行构建。因此，我们并不用担心缓存数据体现的不是实时的结果。实际上，这正是上述改进能够有效的主要原因。`go build`命令会定期地删除最近未使用的缓存数据，但如果你想手动删除所有的缓存数据，运行一下`go clean -cache`命令就好了。而且对于测试成功的结果，go 命令也是会缓存的。运行`go clean -testcache`命令将会删除掉所有的测试结果缓存。
     1. compiler决定是否重新编译包是content based的，而不是依照时间戳比对来决策。也就是说对文件的某一行，如果先删除，再恢复这行，是不会重新编译的。
     2. 缓存目录：Linux上，GOCACHE=`~/.cache/go-build`; 在Mac OS X上，GOCACHE=`~/Library/Caches/go-build`
@@ -454,7 +457,7 @@ Golang不保证任何单独的操作是原子性的，除非：
 
 # 二 安装配置
 go的环境变量说明:
-1. `$GOROOT`:表示Go的安装目录。一般不需要设置GOROOT，默认情况下Go语言安装工具会将其设置为安装的目录路径,并且会自动将`$GOROOT/bin`加入系统PATH?。go自带的工具命令都在`$GOROOT/bin`里面,`fmt`等基础包也在GOROOT中，所以可以直接`import`.自带的标准库包的位于`GOROOT/src`下,比如存放fmt包的源代码对应目录为`$GOROOT/src/fmt`.目录说明如下(仅了解就行):
+1. `$GOROOT`:表示Go的安装路径。如果是通过官方安装程序安装了Go，则不需要再手动设置 `$GOROOT`，且会自动将`$GOROOT/bin`加入系统PATH?。go自带的工具命令都在`$GOROOT/bin`里面,`fmt`等基础包也在GOROOT中，所以可以直接`import`.自带的标准库包的位于`GOROOT/src`下,比如存放fmt包的源代码对应目录为`$GOROOT/src/fmt`.目录说明如下(仅了解就行):
     1. `/bin`：包含可执行文件，如：编译器，Go 工具
     1. `/doc`：包含示例程序，代码工具，本地文档等
     1. `/lib`：包含文档模版
@@ -463,7 +466,7 @@ go的环境变量说明:
     1. `/src`：包含源代码构建脚本和标准库的包的完整源代码（Go 是一门开源语言）
     1. `/src/cmd`：包含 Go 和 C 的编译器和命令行脚本
 
-2. `$GOPATH`:即工作区目录,安装后默认是`~/go`,必须包含三个子目录,bin,src和pkg。只需要有src目录，bin和pkg会自动生成（待测试）。项目一般都是放在src下.注意最好不要将`$GOROOT`和`$GOPATH`设置在同一目录下.当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中,设置了GOPATH之后，`import`时就会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下.
+2. `$GOPATH`:即工作区目录,安装后默认是`~/go`,包含`./bin`,`./src`和`./pkg`三个子目录，对应构建输出、源代码和依赖库。项目一般都是放在src下.注意最好不要将`$GOROOT`和`$GOPATH`设置在同一目录下.当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中,设置了GOPATH之后，`import`时就会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下.
     1. `bin`:可执行文件的存放路径，包含golang编译可执行文件、编译器、Go 工具等
     2. `src`:源码文件。go run，go install等命令后跟的路径默认基于当前工作路径
     3. `pkg`:包文件路径，包含golang将可执行文件所依赖的各种package编译后的.a(or ?)中间文件
@@ -538,6 +541,30 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
 
 # 三 基础
 ## 0 架构
+
+### 编程思想及习惯
+写Go代码就要用Go的哲学和思想,而不是抱着java,js等其他语言的思想.弄清楚Go语言的设计选择和背后的动机,理解的简洁和可组合性哲学.
+
+1. 少用模板,多用组合(也是Unix程序设计提倡的思想).
+2. go中返回的布尔值通常表示操作是否成功,一般可以命名为`ok`
+3. Go语言的习惯是在if中处理错误然后直接返回，这样可以确保正常执行的语句不需要代码缩进。如下,
+
+    ```go
+    if f, err := os.Open(fname); err != nil {
+        return err
+    } else {
+        // f and err are visible here too
+        f.ReadByte()
+        f.Close()
+    }
+    //更推荐的写法：Go语言的习惯是在if中处理错误然后直接返回，这样可以确保正常执行的语句不需要代码缩进。
+    f, err := os.Open(fname)
+    if err != nil {
+        return err
+    }
+    f.ReadByte()
+    f.Close()
+    ```
 ### 文件类型
 go里的文件大致分为以下几类：
 1. 源码文件：以`.go`结尾的文件
@@ -850,8 +877,8 @@ go toolchain本身的版本管理：go1.21开始新增的特性
 问题：
 1. 执行`go build`时报错"package xxx is not in GOROOT"
 
-#### go run todo
-用于运行命令源码文件，先编译再执行，等价于`go build`+执行。`go run`后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）
+#### go run
+构建并运行命令源码文件，等价于`go build`+执行。`go run`后面可跟一个命令源码文件以及若干个库源码文件（必须同属于main包）
 
 详细过程：
 1. 创建临时目录，然后编译源码文件, 将可执行文件放进去，再运行可执行文件，最后删除临时目录。
@@ -1075,12 +1102,13 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 使用:
 1. 查看go环境变量，可以带上格式化参数`-json`
     1. `go env`：查看所有go环境变量
-    2. `go env var_name`:查看指定的环境变量
+    2. `go env env_name`:查看指定的环境变量
         
         ```bash
         # 比如查看GOOS和GOARCH环境变量
         go env GOOS GOARCH
         ```
+    3. 查看和默认值不同的环境变量`go env -changed`
 1. 设置go环境变量
     1. `-w`：go1.13增加了该参数，用于设置全局go环境变量，比如`go env -w GOBIN=$HOME/bin`
     2. `-u`:和`-w`作用相反，会将其变量设置为默认值，如`go env -u GOPROXY`
@@ -1136,22 +1164,22 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 
 
 #### 1.12 go list
-List lists the named packages, one per line.列出指定的package，如果未指定任何参数，默认列出的是根module名。
+List lists the named packages or modules, one per line
 
 参数：
-1. `all`：列出所有依赖的packages
+1. `all`：列出依赖的所有packages
 1. `-m`：list modules instead of packages
 2. `-f`:格式化，比如`-f={{.Dir}}`:查看主模块的根目录
-4. `-versions packageA`:显示包的版本历史
+4. `-versions <package_name>`:显示包的版本历史
 5. `-u`:显示包的可用latest版本
 
 使用：
 ```bash
-# 不带任何参数，显示根module名，比如当前项目的module叫projectA
+# 不带任何参数，显示module名，比如当前项目的module叫projectA
 # go list 
 projectA
 
-# go list all
+# go list all 列出依赖的所有packages
 archive/tar
 archive/zip
 bufio
@@ -1160,7 +1188,7 @@ compress/bzip2
 compress/flate
 ...
 
-# go list -m all
+# go list -m all 列出依赖的所有modules
 cloud.google.com/go v0.57.0
 cloud.google.com/go/bigquery v1.5.0
 cloud.google.com/go/datastore v1.1.0
@@ -3921,7 +3949,7 @@ func enterOrbit() error {
 }
 ```
 
-### 15.3 编译标签( build tag)
+### 15.3 编译标签(build tag)
 参考：
 1. https://pkg.go.dev/cmd/go#hdr-Build_constraints
 2. 那么支持的平台到底有哪些呢？参考链接 https://github.com/golang/go/blob/master/src/go/build/syslist.go
@@ -3935,10 +3963,16 @@ func enterOrbit() error {
 
     package main
     ```
-2. 语法：支持空格，逗号，叹号。一个源文件可以有多个编译标签，多个编译标签之间是逻辑“与”的关系，逗号也是逻辑“与”的关系，一个编译标签可以包括由空格分割的多个标签，这些标签是逻辑“或”的关系。
-    - 以空格分开表示AND
-    - 以逗号分开表示OR
-    - !表示NOT
+2. 语法
+    1. 对于旧版本build tag`// +build tagName`：支持空格，逗号，叹号，一个源文件可以有多个旧版本编译标签，多个编译标签之间是逻辑“与”的关系，逗号也是逻辑“与”的关系，一个编译标签可以包括由空格分割的多个标签，这些标签是逻辑“或”的关系。
+        - 以空格分开表示AND
+        - 以逗号分开表示OR
+        - !表示NOT
+    2. 对于新版本build tag`//go:build tagA`:支持`||`、`&&`、`!`，一个源文件只能有一个新版本编译标签
+
+        - 以`&&`表示AND
+        - 以`||`表示OR
+        - `!`表示NOT
 
     ```go
     // 例子1
@@ -4859,32 +4893,7 @@ func test() {
 
 
 # 五 经验
-## 1 go编程思想和习惯
-写Go代码就要用Go的哲学和思想,而不是抱着java,js等其他语言的思想.弄清楚Go语言的设计选择和背后的动机,理解的简洁和可组合性哲学.
-
-1. 少用模板,多用组合(也是Unix程序设计提倡的思想).
-2. go中返回的布尔值通常表示操作是否成功,一般可以命名为`ok`
-3. Go语言的习惯是在if中处理错误然后直接返回，这样可以确保正常执行的语句不需要代码缩进。如下,
-
-    ```go
-    if f, err := os.Open(fname); err != nil {
-        return err
-    } else {
-        // f and err are visible here too
-        f.ReadByte()
-        f.Close()
-    }
-    //更推荐的写法：Go语言的习惯是在if中处理错误然后直接返回，这样可以确保正常执行的语句不需要代码缩进。
-    f, err := os.Open(fname)
-    if err != nil {
-        return err
-    }
-    f.ReadByte()
-    f.Close()
-    ```
-
-## 2 常用包和方法
-
+## 1 Golang APIs
 ### archive
 #### archive/zip
 
@@ -6315,7 +6324,7 @@ type FileInfo interface {
 1. `Clearenv()`:清除所有环境变量（慎用）
 2. `Environ() []string`:返回所有环境变量
 3. `Getenv(key string) string`:获取系统key的环境变量，如果没有环境变量就返回空
-4. `Setenv(key, value string) error`           //设定环境变量，经常与Getenv连用，用来设定环境变量的值
+4. `Setenv(key, value string) error`：设定环境变量，经常与Getenv连用，用来设定环境变量的值
 
 
 退出程序：
@@ -6990,15 +6999,15 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在`$GOPATH/pkg/mod`和`​$GOPATH/pkg/sum`下，未来或将移至$GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
 
 环境变量:
-1. `GO111MODULE`:控制go modules的开关，有三个参数，默认是未设置(等同于`auto`）
+1. `GO111MODULE`:控制go modules的开关，有三个参数，默认是未设置（等同于`auto`）
     1. `auto`：go会根据当前目录启用或禁用模块支持，仅当当前目录位于`$GOPATH/src`之外并且其本身包含`go.mod`文件或位于包含`go.mod`文件的目录下时，才启用模块支持。
     2. `on`：会忽略$GOPATH和vendor文件夹，只根据go.mod下载依赖
     3. `off`：不会使用go modules。它查找vendor目录和GOPATH
 2. `GOPROXY`和`GONOPROXY`:
-    1. `GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号 “,” 分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
+    1. `GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号`,`分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
         1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
         2. `direct`的作用：**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
-        3. 从go1.15开始，代理URL现在可以用逗号`,`或竖线字符`|`分隔。如果代理URL后面带有逗号，则该go命令将仅在404或410 HTTP响应后尝试列表中的下一个代理。如果代理URL后面带有竖线字符，该go命令将在出现任何错误后尝试列表中的下一个代理。
+        3. 从go1.15开始，多个代理URL间可以用逗号`,`或竖线字符`|`分隔。如果代理URL后面带有逗号，则该go命令将仅在404或410 HTTP响应后尝试列表中的下一个代理。如果代理URL后面带有竖线字符，该go命令将在出现任何错误后尝试列表中的下一个代理。
     2. `GONOPROXY`用于设置不走代理的模块
         
         ```bash

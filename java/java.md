@@ -14,7 +14,7 @@
 ### 2.6 java6
 
 ### 2.7 java7
-从jdk从7开始，出现了自由使用的公共版本（openjdk)，而原来的jdk（分为个人版（研究使用）和企业（商用））是有版权的。
+从jdk从7开始，出现了自由使用的公共版本（openjdk），而原来的jdk（分为个人版（研究使用）和企业（商用））是有版权的。
 
 新增了分支/合并（fork/join）框架，使得并行 变得更实用，但仍然很困难。
 
@@ -28,7 +28,7 @@
 2014年3月27日——甲骨文公司日前举办Java 8网络直播发布会，发布甲骨文迄今为止最重要的Java技术Java 8。甲骨文宣布推出了Java平台标准版8（Java SE 8）、Java平台微型版8（Java ME 8）以及Oracle Java Embedded产品（为中到高端嵌入式系统进行了优化）的有关版本。JDK 8是Java SE 8平台规范的生产就绪版本，不久前获得Java社区进程（Java Community Process,JCP）批准。JDK 8包括自该平台1996年推出以来最重大的Java编程模型升级。JDK 8经甲骨文与OpenJDK社区合作开发而成。
 
 JDK 8的重要特性包括:
-1. Project Lambda（JSR 335）:在Lambda之前，方法只能传一般意义的对象，此时依赖注入(DI)对Java很重要，用来注入对象。Java 8有了Lambda，很多时候方法参数传Lambda(单函数对象)就可以了，方便了很多
+1. Project Lambda（JSR 335）:即我们常说的lambda表达式，在Lambda之前，方法只能传一般意义的对象，此时依赖注入(DI)对Java很重要，用来注入对象。Java 8有了Lambda，很多时候方法参数传Lambda(单函数对象)就可以了，方便了很多
 2. Nashorn JavaScript引擎
 3. 一个新的日期与时间API（JSR 310）
 4. 一套简洁的配置文件以及从HotSpot Jave虚拟机（JVM）中去除了“永久代（permanent generation）”。
@@ -50,13 +50,20 @@ jdk8的关键子版本：
 1. lombak的val/var(待整理)
 2. 增加了实验性的jaotc：jaotc主要用来辅助JIT，在JIT编译器运行前避免直接解释没有预编译过的代码。
 3. flow
+4. 模块化：为了使可配置的封装隔离机制能够兼容传统的类路径查找机制，JDK9提出了与“类路径”（ClassPath）相对应的“模块路径”（ModulePath）的概念。简单来说，就是某个类库到底是模块还是传统的JAR包，只取决于它存放在哪种路径上。只要是放在类路径上的JAR文件，无论其中是否包含模块化信息（是否包含了module-info.class文件），它都会被当作传统的JAR包来对待；相应地，只要放在模块路径上的JAR文件，即使没有使用JMOD后缀，甚至说其中并不包含module-info.class文件，它也仍然会被当作一个模块来对待。
+    1. 引入了jmod的新格式来封装模块
+    2. 匿名模块（Unnamed Module）：所有类路径下的JAR文件及其他资源文件，都被视为自动打包在一个匿名模块（Unnamed Module）里，这个匿名模块几乎是没有任何隔离的，它可以看到和使用类路径上所有的包、JDK系统模块中所有的导出包，以及模块路径上所有模块中导出的包。
+模块在模块路径的访问规则：模块路径下的具名模块（Named Module）只能访问到它依赖定义中列明依赖的模块和包，匿名模块里所有的内容对具名模块来说都是不可见的，即具名模块看不见传统JAR包的内容。
 
 ### 2.10 java10
 var
 
 ### 2.11 java11
-zgc
+主要变化：
+1. 从JDK11开始，JavaFX将以独立模块发布，将不再包含在JDK标准库中
+2. 从Java11开始，`java`命令可以直接运行Java源程序文件，而无需经过编译步骤，只要程序是用单个文件编写的。
 
+zgc
 ### 2.13 java13
 switch开关表达式
 
@@ -75,13 +82,6 @@ OpenJDK源代码不完整：这个很容易想到，在采用GPL协议的OpenJDK
 部分源代码用开源代码替换：由于产权的问题，很多是SUN JDK的源代码被替换成一些功能相同的开源代码，比如说字体栅格化引擎，使用Free Type代替
 
 ## 3 常识
-### 3.1 命令习惯
-1. java为工具类命令的习惯是添加一个字母s
-2. 关于clazz、Klass、JavaClass、ClassMirror等：RednaxelaFX大神的解释说是C++里class是关键字，所以要避开，就用这几个代替成习惯吧
-
-### 3.2 迭代和遍历的异同
-迭代按照某种顺序逐个访问集合或数组的每一项，遍历是按某种规则访问树形结构中的每个节点，两者都不能对执行代码进行迭代或遍历。个人觉得，比如访问数组中的每一项，这个叫迭代；访问数组中长度大于3的项，这个叫遍历。（待确认）
-
 ### 3.3 父类和子类的初始化顺序是什么？(待测试)
 先父类，后子类，不管子类里有没有调用super(args);来初始化父类。
 
@@ -110,16 +110,20 @@ OpenJDK源代码不完整：这个很容易想到，在采用GPL协议的OpenJDK
 执行`java -version`，显示含"64-Bit"的就是64位，否则是32位
 
 ## 4 文档网址等
-1. 官方
+1. Java官方
     1. java8文档：https://docs.oracle.com/javase/8/docs/
     1. javase tutorial：https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html
+    3. [Dev.java](https://dev.java/): The Destination for Java Developers
+        1. 对应的中文版[dev.java-lang.cn](https://dev.java-lang.cn/)
+2. JavaFX官方
+    1. [https://openjfx.cn/](https://openjfx.cn/)
 
 # 二 安装配置
 ## 1 windows
 1. 下载jdk并安装
 2. 配置`JAVA_HOME`、`PATH`和`CLASSPATH`（`ClASSPATH`在1.5之后可以不用配置）
-    - JAVA_HOME默认一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
-    - PATH的目的是将`%JAVA_HOME%/bin`目录添加到执行路径中，
+    - `JAVA_HOME`默认一般是:`C:\Program Files\Java\<jdk版本号>`，不包括bin目录
+    - `PATH`的目的是将`%JAVA_HOME%\bin`目录添加到执行路径中，
     - `CLASSPATH`的作用是当用`java xxx(java类名)`运行java程序的时候告诉JRE，到哪里去搜索java类。jdk1.4前java不知道在当前目录下搜索，而且还需要dt.jar和tools.jar，所以应该设置`CLASSPATH`环境变量：`.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar`。但jdk1.5后，JRE会自动搜索和加载dt.jar和tools.jar，所以不用配置
 
 3. 安装库源文件和文档:库源文件在是jdk目录中src.zip;文档去官网下载，一般是jdk-version-docs-all.zip
@@ -184,6 +188,53 @@ mac上可以同时安装多个版本的jdk，但是现在的mac都没有自带jd
 
 # 三 基础
 ## 0 架构
+### 项目结构
+项目结构建议
+1. 模块化（此模块化非彼模块化）管理：通常将源文件和字节码文件分开存放，便于项目管理和维护。比如
+    1. `./src`存放源代码文件。
+    2. `./bin`或`./target`存放编译后的字节码文件
+
+### 文件类型
+Java文件类型
+1. 源代码文件：以`.java`为扩展名
+2. 字节码文件：以`.class为`扩展名
+3. Java归档文件（Java Archive File,JAR文件）：以`.jar`为扩展名,与zip兼容，与zip不同的是jar文件中默认包含了清单文件(mainfest)
+    1. 概述
+        1. 定义：用于将多个`.class`文件、资源文件（文本、图片等）和元数据打包成一个压缩文件
+        2. 作用：用于程序的分发和部署，提供安全性、压缩和包密封等功能
+    2. 清单文件(mainfest)：清单文件默认位于`META-INF/MANIFEST.MF`中，包含了Jar文件的元数据信息，包括版本信息、主类（Main-Class）、依赖库、运行时指令等信息
+
+        ```java
+        Manifest-Version: 1.0
+        Created-By: who
+        Main-Class: com.example.MyClass // Main-Class属性指定一个包含main方法的完整限定类名，作为程序的入口
+        Class-Path: lib/dependency1.jar lib/dependency2.jar // Class-Path属性用于指定JAR文件运行时依赖的其他类库的路径。这允许JAR文件在运行时动态地加载其他JAR或目录中的类
+        ```
+
+        1. 注意
+            1. 每一个键值条目都必须有换行，包括最后一个条目，否则将不能被正确解析
+
+源代码文件(.java)：源代码文件包含Java APIs，Java APIs组织成方法、类、包，以及最高级别的模块。
+
+todo 
+1. 类的完全限定名（fully qualified name）：即完整限定类名（fully qualified class name），包括包名和类名，用于解决命名冲突，明确类的来源。例如`com.example.MyClass`
+
+
+包（Package）：包是 Java 中的一种机制，用于将相关的类和接口组织在一起。包可以帮助管理命名空间，防止命名冲突，并且提供对访问权限的控制。通过使用包，Java 开发者可以更好地组织代码，并且更容易地管理大型项目。
+
+### 模块化
+模块：通过将您的项目部署为模块，您可以提高可靠性和可维护性，防止意外使用内部 API，并且可以更轻松地创建仅包含您需要的 JDK 代码的运行时映像（可以选择将您自己的应用程序包含在映像中以使其成为独立的）。
+
+模块的访问机制：自从 Java 9 引入模块化（即 Jigsaw 项目）后，为了增强安全性和封装性，模块不再像以前那样允许任意访问所有模块和包中的内容。Java 模块机制通过模块之间的依赖和导出规则来限制访问，具体体现在以下两点：
+1. 模块需要导出（exports）某个包，其他模块才能直接访问其中的公共类和成员。
+2. 反射（如 setAccessible(true)）不能再随意突破模块化边界对内部非公开成员进行访问，除非显式允许该行为。在很多情况下，某些库（如 Spring、Hibernate 等）依赖反射机制访问非公开的类或成员，因此会因为封装限制导致程序运行失败。（此时可以使用`–add-opens`参数来解决）
+
+未命名模块（Unnamed Module）
+
+自动模块（Automatic Module）
+
+模块的应用：将大型系统拆分为多个模块，比如用户管理、订单处理、支付等。
+
 ### 面向对象
 #### 类和对象
 定义类的主要作用就是定义变量、创建实例和作为父类被继承。
@@ -435,9 +486,10 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
 #### 2.2.3 关键字（keyword）
 1. java所有关键字都是小写的
 
-### 文件类型
-1. 用户类文件
-2. 注释处理程序
+### 常见词语
+常见词语
+
+1. JSR：是Java Specification Requests的缩写，意思是Java规范提案，是指向JCP(Java Community Process)提出新增一个标准化技术规范的正式请求。
 
 ## 1 工具生态
 1. version manager
@@ -469,14 +521,22 @@ java允许把子类对象直接赋给父类引用对象，无须任何类型转�
                 2. 指定当前shell环境使用的版本`sdk use candidate`，仅在当前shell环境生效
             5. 脱机模式`sdk offline enable`，反之则是联机模式
 
-
-### jar（Java Archive File）
-意思是java档案文件，与zip兼容，与zip的区别是jar文件中默认包含了`META-INF/MANIFEST.MF`的清单文件，该文件在生成jar文件时自动创建。
-
 ### jusched
 jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此进程就会出现在任务栏管理器的进程列表中，不过好在一般一个月才会检测一次，但问题是这个进程会占用极大的CPU和内存，往往会造成机器很卡。 
 
+### jar(Java Archive Tool)
+jar是一个用于创建、查看和管理`.jar`文件的命令行工具。
+
+参数
+1. 创建档案`-c`
+2. 
+
+使用
+1. 创建jar文件
+
 ### javac
+javac是java语言编程编译器，全称java compiler。语法形如`javac [options] [sourcefiles]`:sourcefiles是编译（例如 MyClass.java）或处理注释（例如 MyPackage.MyClass）的一个或多个源文件。
+
 为什么需要预编译、为什么不把预编译和解释执行合在一起、为什么需要class文件(字节码文件)，这几个问题都可以从class文件的作用中找到答案。class文件是作为jvm的可执行文件，它的作用如下
 1. 对源代码文件进行语法检查、语义分析，这一步骤消耗了大量的时间和资源，所以对jvm来说就要轻松多了。
 2. 解耦
@@ -486,38 +546,89 @@ jusched.exe是与Java有关的一个进程，每当Java检测到更新时，此�
 4. 如果不预编译生成class文件，每次执行都需要重新编译，可能很耗时
 5. java是面向对象语言，涉及到大量的复用(待整理)
 
-参数：
-1. `-d <directory>`指定放置生成的类文件的位置，可以使用绝对路径或相对路径，文件夹不存在时会自动创建。
-    
-    ```java
-    javac -d math Temp.java // 放置在当前目录下的math文件夹内
-    ```
-2. `-cp/--classpath <directory>`：指定查找用户类文件(引用的.class文件)和注释处理程序的位置
-    
-    ```java
-    // 多个路径,在linux中用:分隔，windows用;分隔，当前路径用.表示
-    // 可以使用相对路径也可以使用绝对路径
-    // 对于.class文件来说，只需要指明包的路径即可；但是对于jar文件来说，必须要指定全路径即路径(相对或绝对都可)+文件名的格式
-    javac -cp dir1;. Temp.java
-    ```
-3. `-encoding`:指明编码方式,如`javac -encoding UTF-8 xxx.java`
-
-### java
-执行`.class`文件,到最外层包的上一级目录下运行，而且类前面需要带包名，以`.`隔开
-```java
-// 假设Temp.java的package是com.temp，在原目录生成了.class文件后，想运行.class文件需要去com文件夹所在的目录执行
-java com.temp.Temp
+```bash
+# 编译./src目录下的所有java源文件
+javac ./src/*.java
 ```
 
-参数
-1. `-cp/--classpath <directory>`: zip/jar 文件的类搜索路径
+参数：
+1. `-d <directory>`指定生成的类文件的目标目录，如果类是包的一部分，则`javac`将类文件放在反映包名称的子目录中，并根据需要创建目录。可以使用绝对路径或相对路径.未指定该参数时，默认生成在对应的包结构中。
     
-    ```java
+    ```bash
+    # 类不在包中
+    javac -d out/production/moduleName Temp.java # 放置在当前目录下的out/production/moduleName文件夹内
+    # 类在包中
+    # 如果指定 -d C:\myclasses 并且类名为 com.mypackage.MyClass，则类文件为 C:\myclasses\com\mypackage\MyClass.class
+    ```
+2. `-cp/-classpath/--class-path <directory>`：指定查找用户类文件和批注处理程序的位置。未指定时用户类路径为当前目录。
+3. 模块相关
+    1. 配置模块路径`-p/--module-path <path>`：指定在何处查找应用程序模块。
+    2. 添加模块`--add-modules <module...>`:指定除初始模块之外要解析的根模块，如果模块为`ALL-MODULE-PATH`，则指定模块路径上的所有模块。
+3. 指定源文件使用的字符编码`-encoding <encoding>`：未指定时，javac使用操作系统的默认编码
+    
+    ```bash
+    javac -encoding UTF-8 Example.java
+    ```
+4. `-verbose`: 输出有关编译器正在执行的操作的消息。消息包括有关加载的每个类和编译的每个源文件的信息。
 
+### java
+java命令用于执行主类（mainclass）、执行jar文件、执行模块中的主类和执行源文件程序。
+
+使用
+1. 执行主类：用法形如`java [options] <mainclass> [args...]`，可传递参数给mainclass
+2. 执行源文件程序
+
+    ```bash
+    # 从Java11开始，可以直接运行单个Java源文件程序
+    java MyFirstClass.java
+    ```
+
+参数
+1. `-cp/-classpath/--class-path <directory>`: 目录和zip/jar 文件的类搜索路径。如果类文件不在当前目录，或者依赖其他类文件，需要正确设置类路径,这是最容易犯错的地方。
+    
+    ```bash
+    # 如果类在当前目录
+    java ExampleClassName # 如果类不在当前目录下，则会报错，报错形如"找不到或无法加载主类 ExampleClassName 原因: java.lang.ClassNotFoundException: ExampleClassName"
+
+    # 如果类在out/production/moduleName目录下，当前在out目录的上层执行类文件
+    java ./out/production/moduleName/ExampleClassName # 错误写法，应该用-cp来指定搜索路径，不能在类名前加路径，这样使用会出现ClassNotFoundException错误
+    java -cp ./out/production/moduleName ExampleClassName # 正确
+
+    # 如果类在包中，必须在类名前加上包名，且必须在包的外层执行类文件
+    # 假设类所在的包是com.example, 类文件在out/production/moduleName/com/example下
+    java -cp out/production/moduleName com.example.ExampleClassName # 假如在out目录上层执行类文件
+    java com.example.ExampleClassName # 假如在out目录下执行类文件
+    java example.ExampleClassName # 假如在out/com目录下执行类文件，会报错，因为现在已经在包的内层了。除非写成java -cp .. com.example.ExampleClassName这样
+    ```
+2. JVM堆内存大小设置，使用`-Xms`和`-Xmx`两个参数，`-Xms`设置初始堆内存，`-Xmx`设置最大堆内存。单位可以是字节（b）、千字节（k）、兆字节（m）、吉字节（g），一般情况建议初始和最大设置成一样。
+    1. 设置的意义
+        1. 减少内存分配开销：通过设置合理的初始堆内存大小，可以减少JVM在运行时动态扩展堆内存的次数，从而降低内存分配的开销
+        2. 避免频繁垃圾回收：如果初始堆内存设置过小，可能导致频繁的垃圾回收，影响程序性能
+
+    ```bash
+    java -Xms256M -Xmx512M ExampleClassName # 初始内存为256MB，最大堆内存为512MB
+    ```
+3. 设置系统属性`-D<名称>=<值>`
+
+    ```bash
+    java -Dfile.encoding=UTF-8 ... # 设置解析字节码文件的格式
+    java -DProperty1="foo" # 设置系统属性Property1为foo
     ```
 
 ### javap
 jdk自带工具。它是Java class文件(包括其他语言比如Scala编译出来的class文件)分解器，可以反编译，也可以查看java编译器生成的字节码。
+
+### javaw
+javaw允许在不显示命令行窗口的情况下运行Java应用程序，javaw通常是用来运行GUI程序的。
+
+### jpackage
+jpackage是jdk14正式加入的一个用于独立打包的工具
+
+### jshell
+启动交互式 Java 环境
+
+### Scene Builder
+Scene Builder 是一个独立的应用程序，用于设计 JavaFX 应用程序的用户界面。它可以生成 FXML 文件，这些文件可以直接被 JavaFX 应用程序加载和使用。Scene Builder 提供了一个可视化的界面设计器，使得开发者无需手动编写大量的 XML 代码即可完成复杂的 UI 设计。
 
 ## 2 变量,数据类型和运算符
 ![](../picture/java/0-4-primitiveType.png "java数据类型")
@@ -1300,18 +1411,29 @@ java将异常分为两种:
 # 四 高级
 
 # 五 经验
-## 2 java基础类库
+## Java APIs
+常见的Java APIs有
+1. `java.*`：核心Java包
+    1. `java.lang`：语言基础类。这个包是自动导入的，无需显式导入。
+    2. `java.util`：集合框架和日期时间操作
+        1. `java.util.concurrent`：并发处理。提供线程池、并发集合等工具，简化多线程编程
+    3. `java.io`：输入输出相关功能。支持文件读写、流操作等
+    4. `java.net`：网络编程。提供Socket编程、URL处理等类，可用于创建网络服务端和客户端
+2. `javax.*`:扩展功能包。起初是扩展（extension）API，而不是核心（core）API，随着时间的推移，扩展包中的某些组件变得重要和广泛使用，因此它们被纳入 Java 标准库中，尽管它们保留了 javax 的前缀
+    1. `javax.tools`：
+    2. `javax.swing`：提供用于构建图形用户界面（GUI）的类。Swing 是 AWT 的扩展，它提供了更丰富的 GUI 组件。
+    3. `javax.servlet`：包含用于处理 HTTP 请求和响应的类和接口，是 Java Web 开发的核心。
+    4. `javax.xml`：提供处理 XML 文档的类和接口。
+    5. `javax.mail`：提供电子邮件发送和接收功能的类和接口
 
-### lang
-#### lang.Boolean
-此类提供了许多用于将布尔值转换为String以及将String转换为布尔值的方法，以及其他在处理布尔值时有用的常量和方法
+### java.lang 语言基础类
+#### 基本数据类型的包装类 Boolean、Integer、Double等
+Boolean类提供了许多用于将布尔值转换为String以及将String转换为布尔值的方法，以及其他在处理布尔值时有用的常量和方法
+1. 参考：http://docs.oracle.com/javase/7/docs/api/java/lang/Boolean.html。
+2. The Boolean class wraps a value of the primitive type boolean in an object. An object of type Boolean contains a single field whose type is boolean.(布尔类将原始类型boolean的值包装在对象中。 布尔类型的对象包含一个布尔类型的字段。)
 
-参考：http://docs.oracle.com/javase/7/docs/api/java/lang/Boolean.html。
-
-1. The Boolean class wraps a value of the primitive type boolean in an object. An object of type Boolean contains a single field whose type is boolean.(布尔类将原始类型boolean的值包装在对象中。 布尔类型的对象包含一个布尔类型的字段。)
-
-#### lang.Calendar
-#### lang.Class
+#### Calendar
+#### Class
 类的实例相关方法
 
 使用
@@ -1335,16 +1457,17 @@ java将异常分为两种:
     5. isAssignableFrom(Class cls):boolean：判断这个类型是否是类型cls的父（祖先）类或父（祖先）接口。
     6. getComponentType():Class：如果该类型是一个数组，那么返回该数组的组件类型
 
-#### lang.Date
+#### Date
 Date类从jdk1.0开始就存在，java官方已经不推荐使用了。
-#### lang.Math
+#### Math
+数学运算工具类
 
 常用方法:
 1. `random()`
 2. `pow(a,b)`:a的b次方
 
-#### lang.Object
-jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
+#### Object
+Object类是所有类的超类，提供`equals()`、`hashCode()`、`toString()`等方法。jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
 
 常用方法：
 1. `clone()`:该方法用protected native修饰，属于浅复制(会对对象里的成员变量进行"简单复制"，如果成员变量是基本类型和String则会真的复制，如果成员变量是数组和引用类型则只生成一个新的引用)，会生成完全隔离的新对象。该方法非常高效，比数组的静态copy方法快2倍。如果想实现深克隆，则需要开发者自己去"递归"克隆。
@@ -1356,7 +1479,37 @@ jdk7新增了Objects工具类，里面的方法大多是空指针安全的。
     ```
 2. `equals()`:判断指定对象与该对象是否相等，如果两个对象是同一个对象则相等，因此该方法通常没有太大价值。
 
-#### lang.time
+#### 字符串类 String、StringBuilder和StringBuffer
+`String`是不可变字符串类，`StringBuilder`和`StringBuffer`是可变字符串类，适用于频繁修改字符串的场景
+
+
+#### System
+系统级操作，如标准输入输出、垃圾回收。System类有一个`Map<String,String>`类型的操作系统环境变量集合和一个Properties对象，Properties对象维护着由JVM获取的特定系统属性集合，包含JDK、系统、编码等信息。
+
+Properties对象：通过该对象对系统属性集的更改不是持久的，更改应用程序内的系统属性不会影响此应用程序或其他任何应用程序将来对Java解释器的调用。每次启动时，运行时系统都会重新初始化系统属性。如果要持久保留对系统属性的更改，则应用程序必须在退出之前将值写入某个文件，并在启动时再次读取它们。
+
+```java
+// 根据操作系统执行不同代码
+public class Main {
+    public static void main(String[] args) {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win")) {
+            System.out.println("这是 Windows 操作系统");
+            // 执行 Windows 特定的代码
+        } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
+            System.out.println("这是类 Unix 操作系统");
+            // 执行类 Unix 特定的代码
+        } else {
+            System.out.println("未知操作系统");
+        }
+    }
+}
+```
+
+#### Thread
+多线程支持，Runnable接口用于定义线程任务
+
+#### time
 java8新增的日期、时间包。在JDK1.8之前，Java处理日期、日历和时间的方式一直为社区所诟病，将 java.util.Date设定为可变类型，以及SimpleDateFormat的非线程安全使其应用非常受限。因此推出了java.time包，该包下的所有类都是不可变类型而且线程安全。
 
 不要使用`new`关键字来创建，而是使用静态工厂方法，比如
@@ -1365,11 +1518,14 @@ java8新增的日期、时间包。在JDK1.8之前，Java处理日期、日历�
 1. `ldt.plusDays()`
 2. `ldt.minusDays()`
 
-#### java.lang.util
-##### concurrent
-JUC就是java.util .concurrent工具包的简称，它是处理线程的工具包，JDK 1.5开始出现的。
+### java.util 集合框架
+#### concurrent
+JUC就是java.util.concurrent工具包的简称，它是处理线程的工具包，JDK 1.5开始出现的。
 
-##### stream
+#### List
+#### Queue
+#### Set
+#### stream
 Stream 使用一种类似用 SQL 语句从数据库查询数据的直观方式来提供一种对 Java 集合运算和表达的高阶抽象。Stream API可以极大提高Java程序员的生产力，让程序员写出高效率、干净、简洁的代码。这种风格将要处理的元素集合看作一种流， 流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。
 
 ```java
@@ -1434,7 +1590,7 @@ String str = stream.collect(Collectors.joining()).toString();
     concat = Stream.of("a", "B", "c", "D", "e", "F").filter(x -> x.compareTo("Z") > 0).reduce("", String::concat);
     System.out.println("过滤和字符串连接:" + concat); //过滤和字符串连接:ace
     ```
-##### UUID
+#### UUID
 使用：
 1. 静态方法`randomUUID()`:生成一个版本 4 的 UUID
 2. `nameUUIDFromBytes()`: 会生成一个版本 3 的 UUID，需要传递一个名称的字节数组作为参数。
@@ -1451,6 +1607,14 @@ String str = stream.collect(Collectors.joining()).toString();
     int version = uuid.version();
     System.out.println("UUID:"+ uuid+" 版本 " + version);
     ```
+
+## Java GUI开发
+Java的桌面端GUI主要用到AWT(Abstract Window Toolkit)、Swing和JavaFX这三个库，AWT是Java最早的GUI工具包，现在较少使用；Swing库提供了丰富的组件可供使用；JavaFX相比前两者提供了更现代化的界面设计和丰富的功能。
+
+## 其他
+命名习惯
+1. java为工具类命令的习惯是添加一个字母s
+2. 关于clazz、Klass、JavaClass、ClassMirror等：RednaxelaFX大神的解释说是C++里class是关键字，所以要避开，就用这几个代替成习惯吧
 
 # 六 问题
 ## 1 已解决

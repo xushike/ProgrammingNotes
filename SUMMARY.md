@@ -107,7 +107,6 @@
     * [goroutine](golang/goroutine.md)
     * [hydra](golang/hydra.md)
 * [hardware](hardware/hardware.md)
-* [ios](ios/ios.md)
 * [java](java/java.md)
     * [1.jvm](java/1.jvm.md)
     * [2.java高级特性之多线程](java/2.java_multi_thread.md)

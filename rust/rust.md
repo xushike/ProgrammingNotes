@@ -975,8 +975,7 @@ match t {
 2. 多个发送者和多个接收者：每个发送者或接收者只能被一个线程使用，如果想被多个线程使用，使用`clone()`克隆发送者和接收者，底层的channel还是同一个
 
 # 五 经验
-## 2 常用标准库 std
-
+## Rust APIs
 ### fmt
 ### format!
 参数可以是任意类型，而且可以 position 参数和 key-value 参数混合使用。但要注意一点，key-value 的值只能出现在 position 值之后并且不占用 position。

@@ -27,7 +27,7 @@ cmd：
         2. 持久化设置：有两种方法
             1. 我的电脑 -> 右键属性 -> 高级 -> 环境变量
             2. 修改注册表
-            3. 函数调用
+            3. 函数调用:使用`setx`可以设置，但不推荐，可能有路径截断问题
     2. 使用环境变量`%env_name%`
 
         ```bash
@@ -63,19 +63,16 @@ powershell:
             # 比如
             docker build . -t bridge;if($?) {docker run -p 8081:8081 --env-file .env.local bridge}
             ```
-5. 环境变量：实测发现`env:env_name`是环境变量本身，`$env:env_name`是对环境变量值的引用，比如`ls env:USERPROFILE`只是列出环境变量的值，而`ls $env:USERPROFILE`是列出所在目录下的文件。
+5. 环境变量
     1. 查看环境变量
-        1. 查看全部环境变量
-            1. `Get-ChildItem env:`(冒号不能省略)
-            2. `ls env:`
-        2. 查看环境变量
-            1. 查看指定环境变量`$env:env_name`,比如`$env:USERPROFILE`
-            2. 搜索环境变量`ls env:env_name`
+        1. 查看全部环境变量的名称和值`ls env:`
+        2. 查看指定环境变量的值`$env:USERPROFILE`
+        3. 搜索环境变量`ls env:env_name`
 
-                ```bash
-                # 模糊搜索java开头的环境变量
-                ls env:java*
-                ```
+            ```bash
+            # 模糊搜索java开头的环境变量
+            ls env:java*
+            ```
     1. 编辑环境变量分为临时设置(只对当前powershell窗口有效)和持久化设置
         1. 临时设置(只对当前powershell窗口有效)
             1. 设置为空`$env:env_name=`
