@@ -85,6 +85,9 @@ Go1.9版本后默认利用Go语言的并发特性进行函数粒度的并发编�
 
 ### go1.12
 引入go directive
+
+### go1.13
+开始支持错误链
 ### go1.16 todo
 go module构建模式正式成为默认构建模式，替代了原先的GOPATH构建模式
 
@@ -127,6 +130,7 @@ https://tip.golang.org/doc/go1.17
             toolchain go1.21.1 
         )
         ```
+2. 引入了slog标准库：它是一个结构化日志记录包，提供了高性能、灵活且易于使用的日志记录功能
 ### go1.23 todo
 主要有四个方面的更新：language, toolchain, runtime, and libraries.
 1. language：将range-over-function纳入语言规范
@@ -532,7 +536,7 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
     - 设置GOPATH：这个目录用来存放Go源码(src)，Go的可运行文件(bin)，以及相应的编译之后的包文件(pkg)
         >在go1.1到1.7，该变量必须设置，且不能和go安装目录一样;从1.8开始有默认值，在Unix上默认为`$HOME/go`,在Windows上默认为`%USERPROFILE%/go`
 
-        1. 设置GOPATH(**最好不要和go安装目录相同**)，比如`export GOPATH=$HOME/go`
+        1. 设置GOPATH(**不要和go安装目录相同**)，比如`export GOPATH=$HOME/go`
     - 设置GOBIN，`$GOBIN`是golang编译出来的可执行文件的存放路径。比如`export GOBIN=$GOPATH/bin`
         1. 将`$GOBIN`加入PATH中，比如`export PATH=$PATH:$GOBIN`
 
@@ -1107,6 +1111,8 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
         ```bash
         # 比如查看GOOS和GOARCH环境变量
         go env GOOS GOARCH
+        # 查看CGO是否启用
+        go env CGO_ENABLED
         ```
     3. 查看和默认值不同的环境变量`go env -changed`
 1. 设置go环境变量
@@ -3650,7 +3656,7 @@ func main() {
 `panic(string)`，恐慌，也称宕机。
 
 什么情况会panic：
-1. 数组下标越界或类型断言失败等运行错误，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就继续打印调用栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
+1. 数组下标越界或类型断言失败等运行错误，会触发运行时panic，伴随着程序的崩溃（会停掉当前进程，包括协程）向stderr抛出一个`runtime.Error`接口类型的值。这个错误值有个`RuntimeError()`方法用于区别普通错误。panic的崩溃与`os.Exit(-1)`这种直愣愣的退出不同，panic的撤退比较有秩序，他会先处理完当前goroutine已经defer挂上去的任务，然后如果没被`recover()`捕获就向上传播（unwind）调用堆栈，最终调用`exit(-2)`退出整个进程。panic仅保证当前goroutine下的defer都会被调到，但不保证其他协程的defer也会调到。
     1. 实例包括
         1. 数组下标越界
         2. 类型断言失败
@@ -3665,8 +3671,10 @@ func main() {
             ```
 2. 也可以手动触发panic：`panic("xxx")`
 
-什么场景适合使用panic（除开这些情况，其他错误错误最好都用error）：
+什么场景适合使用panic（除开这些情况，其他错误最好都用error）：
 1. 发生严重错误，必须让进程退出。这种情况使用 panic 让进程直接退出将问题暴露反而是更可取的做法：
+    1. 空指针引用
+    2. 无效的参数
     1. 断言错误：设置断言是一个好的习惯，但这同时会增加一定的维护成本，且在发生时可能造成程序的异常退出，所以还是应该谨慎地考虑
     2. 程序启动时依赖不存在：比如数据库不存在、依赖的配置无法读取
 2. 想快速对顶层的错误进行处理：有时候函数调用栈很深，逐层返回错误可能需要写很多冗余代码，这个时候可以使用 panic 让程序的控制流直接跳到顶层的 recover 处来处理错误。(待研究)
@@ -5335,7 +5343,7 @@ Package pem implements the PEM data encoding, which originated in Privacy Enhanc
 
 ### errors
 go1.13开始提供了Error Warpping，go没有提供专门的函数来生成warpping error，而是使用`fmt.Errorf("%w",err)`。所以生成warpping error有两种方法：
-1. `fmt.Errorf("%w",err)`
+1. `fmt.Errorf("%w",err)`：该方法wrap的多个error在String化后，是在一行输出的。
 2. 声明一个类型，实现`Unwrap() error`方法
 
 使用：
@@ -6328,7 +6336,11 @@ type FileInfo interface {
 
 
 退出程序：
-1. `Exit(code int)`：系统退出，并返回code，其中０表示执行成功并退出（正常退出），非０表示错误并退出，其中执行Exit后程序会直接退出，defer函数不会执行．
+1. `Exit(code int)`：系统退出，用于立即终止当前进程，并返回指定的退出状态码。通常我们将状态码code为0表示程序执行成功（正常退出），非0表示程序出现错误（错误退出）(必须显式调用`os.Exit()`才能设置非零退出状态)
+    1. 非阻塞性：调用后后程序会直接退出，不会执行后续代码，不会触发调用堆栈的unwind，defer函数也不会执行．
+    2. 状态码传递：退出状态码code可被操作系统或父进程捕获（如Shell中通过`$?`获取），用于判断程序执行结果
+    3. 与`main()`函数返回值的区别：两者完全独立，`main()`函数的返回值不影响`os.Exit()`的退出状态码，即使main返回错误也不影响`os.Exit()`的code
+        1. 对比C语言：C语言中main的`return n`等价于`exit(n)`
 
 替换字符串中的`$xxx`:
 1. `Expand(s string, mapping func(string) string) string`:Expand用mapping 函数指定的规则替换字符串中的`${var}`或者`$var`（注：变量之前必须有`$`符号）
@@ -6421,7 +6433,7 @@ fmt.Printf(string(out2))
 1. 转成绝对路径`Abs()`
 2. 返回路径中最后的那个路径（通常是目录名或者文件名）:`Base()`
 3. 返回除最后的目录之外的路径（即最后的目录之前的路径）:`Dir`
-4. 返回带文件名的路径中的文件后缀名（如.txt）:`Ext()`
+4. 返回带文件名的路径中的文件后缀名，即文件扩展名:`Ext()`，比如`example.txt`返回`.txt`
 5. 将路径中的`/`替换为`\`，多个`/`替换为多个`\\`:`FromSlash()`
 6. 连接路径成为一个完整路径:`Join()`
 7. 获取某个目录下的子目录:`ReadDir()`
@@ -6759,7 +6771,7 @@ func main() {
     1. `ParseInLocation`:可以根据时间字符串和指定时区转换Time。
 4. 时区
     1. 设置时区：go语言并没有全局设置时区这么一个东西，每次都要设置。go内置两种方式设置时区
-        1. 使用`time.LoadLocation()`设置时区，可以根据时区名创建`Location{}`，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
+        1. 使用`time.LoadLocation()`设置时区，可以根据时区名创建`Location{}`，所有的时区名字可以在`$GOROOT/lib/time/zoneinfo.zip`文件中找到，解压zoneinfo.zip可以得到一堆目录和文件，我们只需要目录和文件的名字，时区名是目录名+文件名，比如"Asia/Shanghai"、"America/New_York"。中国时区名只有"Asia/Shanghai"和"Asia/Chongqing"，而没有"Asia/Beijing"。
         2. 使用`time.FixedZone(zoneName, offset)`创建一个指定偏移量的固定时区
     2. 将时间转换为指定时区的时间：`dstTime := srcTime.In(location)`
         1. 将时间转为UTC时间`srcTime.UTC()`
@@ -7492,13 +7504,12 @@ go1.13的mod规范要求import后面的path第一部分必须符合域名规范�
 可能是未设置goproxy，使用`go env -w GOPROXY=https://goproxy.cn,direct`
 
 ### 1.35 cgo: C compiler "gcc" not found: exec: "gcc": executable file not found in %PATH%
-1. 方法一：安装[MinGW-w64](https://sourceforge.net/projects/mingw-w64)
-    1. 找到x86_64-posix-seh下载
+1. 方法一：安装[MinGW-w64](https://github.com/niXman/mingw-builds-binaries/releases)
+    1. 参考：[https://zhuanlan.zhihu.com/p/26143367916](https://zhuanlan.zhihu.com/p/26143367916)
+    1. 找到所需要的版本下载
     2. 解压到`C:\Program Files`，这样bin路径就在`C:\Program Files\mingw64\bin`
     3. 添加bin路径到系统环境变量Path
     4. 重启terminal，测试`gcc --version`
-2. 方法二：安装[TMD-GCC](https://jmeubank.github.io/tdm-gcc)，实测不生效
-
 
 ### 1.36 在新电脑上生成ssh key然后拉取go mod报错
 1. Host key verification failed.

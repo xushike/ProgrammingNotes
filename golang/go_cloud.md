@@ -1152,11 +1152,27 @@ Paho是 Eclipse 的一个开源 MQTT 项目，包含多种语言实现，比如J
 
 ## 定时任务
 ### cron
-https://github.com/robfig/cron
+参考
+
+1. https://github.com/robfig/cron
+2. 其他
+    1. https://gitcode.csdn.net/65aa3622b8e5f01e1e44d6fa.html
 
 ```go
 // 最简单的例子
 c := cron.New()
+// 使用装饰器
+// 创建一个新的 Cron 实例
+c := cron.New(
+    cron.WithSeconds(),      // 增加秒的解析
+    cron.WithLogger(logger), // 自定义日志
+    cron.WithChain( // chain 是顺序敏感的
+        // 内置了 3 个用得比较多的JobWrapper
+        cron.DelayIfStillRunning(logger), // 如果上一次任务还未完成，那么延迟此次任务的执行时间，延迟执行直到上一次任务结束。
+        cron.SkipIfStillRunning(logger), // 如果上一次任务还未完成，则跳过此次任务的执行
+        cron.Recover(logger),            // 恢复任务执行过程中产生的 panic，不让 cron 调度器退出
+    ),
+)
 
 // 创建任务内容
 fn := func() {
@@ -1170,13 +1186,31 @@ if _, err := c.AddFunc("*/1 * * * *", fn); err != nil {
 
 // 启动定时任务
 c.Start()
-defer c.Stop()
+defer c.Stop() // 停止调度，但正在运行的作业不会被停止。可以通过监听返回的Context的cancelCtx.Done()得知cron何时真正结束
+
+
+// 可以往正在运行的cron中添加任务
+if _, err := c.AddFunc("30 * * * *", fn); err != nil {
+    log.Fatal(err)
+}
+
+// 删除任务
+c.Remove(id)
+
 select {}
 ```
 
 使用：
-1. cron表达式：它的cron表达式是五个单位(从左到右分别是Minutes Hours DayofMonth Month DayofWeek)(待确认)，和linux的cron表达式不一样，linux的cron表达式是6个或7个单位
-1. 关闭`(*Cron) Stop() context.Context`
+1. cron表达式：支持两种表达式
+    1. 一种是标准的crontab表达式，但默认没有second。默认是五个单位(从左到右分别是Minutes Hours DayofMonth Month DayofWeek)(待确认)，和linux的cron表达式不一样，linux的cron表达式是6个或7个单位
+    2. 第二种是预定义时间和固定时间间隔
+        1. 预定义时间
+            1. `@yearly`：也可以写作`@annually`，表示每年第一天的 0 点。等价于0 0 1 1 *；
+            2. `@monthly`：表示每月第一天的 0 点。等价于0 0 1 * *；
+            3. `@weekly`：表示每周第一天的 0 点，注意第一天为周日，即周六结束，周日开始的那个 0 点。等价于0 0 * * 0；
+            4. `@daily`：也可以写作`@midnight`，表示每天 0 点。等价于0 0 * * *；
+            5. `@hourly`：表示每小时的开始。等价于0 * * * *。
+        2. 固定时间间隔：`@every <duration>`，`<duration> `可以是任意`time.ParseDuration()`可解析的字符串，比如`@every 3s`、`@every 2h30m`等
 
 问题：
 1. expected exactly 5 fields, found 6
@@ -1744,6 +1778,23 @@ https://github.com/bilibili/gengine
 
 ## IM
 1. https://github.com/openIMsdk
+
+## GUI
+robotgo
+
+1. 概述
+    1. 参考
+        1. https://github.com/go-vgo/robotgo
+        2. gitee镜像地址：https://gitcode.com/gh_mirrors/ro/robotgo 
+    2. 优点
+        1. 跨平台
+        2. 底层性能优化：基于 C/C++ 实现，执行速度快
+        3. 简单易用的 API：几行代码就能完成复杂操作
+        4. 功能全面：从基础输入到高级窗口管理
+1. 使用
+2. 问题
+    1. ..\..\..\go\pkg\mod\github.com\go-vgo\robotgo@v0.110.8\img.go:92:40: undefined: Bitmap...
+        1. 没有正确设置GCC
 
 # 五 经验
 ## 1 为什么需要框架

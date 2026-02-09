@@ -373,7 +373,11 @@ Plumbing则是Git的底层部分，它处理Git对象和Git仓库的内部结构
 ### 2.2 git clone 克隆仓库
 克隆仓库的所有内容,克隆后当前在默认分支(一般是master分支).
 
-`git clone <远程仓库地址> [本地仓库名称]`:克隆,并将库放到`[本地仓库名称]`文件夹中.如`git clone https://github.com/xushike/study.git studyNote`
+`git clone <远程仓库地址> [本地目录]`:克隆,并将库放到`[本地目录]`文件夹中.
+```bash
+# 放在当前目录studyNote中
+git clone https://github.com/xushike/study.git studyNote 
+```
 
 参数：
 1. `--recursive`:对于含有submodules的仓库，其作用等同于`git clone`+`git submodule init`+`git submodule udpate`，参考git submodule部分的笔记
@@ -395,7 +399,13 @@ Plumbing则是Git的底层部分，它处理Git对象和Git仓库的内部结构
     * 远程分支、分支的绑定和同步情况
     * 最新的commit在哪个分支:`HEAD branch: master`表示最新的commit在master分支上，`HEAD branch: develop`表示最新的commit在develop分支上，
 
-添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库或核心库.`远程仓库地址`最好以`.git`后缀结尾，比如`https://github.xxx.git`，如果是`https://github.xxx`，虽然也能重定向过去，但是会有warn提示。
+添加到新的远程仓库:`git remote add <远程仓库名> <远程仓库地址>`,多远程库的做法常用于种子库、核心库或多平台同步.(`远程仓库地址`最好以`.git`后缀结尾，比如`https://github.xxx.git`，如果是`https://github.xxx`，虽然也能重定向过去，但是会有warn警告)
+```bash
+# 使用Git远程仓库配置多平台同步
+git remote set-url --add origin https://github.com/username/repo.git 
+git remote set-url --add origin https://gitee.com/username/repo.git # 推送到gitee平台
+git remote set-url --add origin https://gitcode.net/username/repo.git # 推送到gitcode平台
+```
 
 可以设置多个远程仓库,拉取的时候指定仓库和分支名就行了,如`git pull <远程仓库名> <分支名>`
 

@@ -46,8 +46,6 @@ PowerToys的FancyZones分屏：
 1. 优点
     1. 支持第三方集成
     2. 资源占用非常低
-2. 缺点
-    2. only support win10
 
 主要工具：
 3. awake:防止操作系统进入睡眠状态，并提供设置计时器的选项，以便何时可以重新进入睡眠状态
@@ -112,10 +110,13 @@ Windows WSL2和常规虚拟机方式在Windows上运行Linux系统方案的对�
 6. WSL配合VS Code使用
     1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/tutorials/wsl-vscode
 
-发行版文件系统
+发行版文件系统和共享环境变量`WSLENV`
 1. 参考：https://learn.microsoft.com/zh-cn/windows/wsl/filesystems#file-storage-and-performance-across-file-systems
+2. 发行版文件系统
     1. 在存储WSL项目文件时：推荐使用 Linux 文件系统根目录：`\\wsl$\<DistroName>\home\<UserName>\Project`，而不使用 Windows 文件系统根目录：`C:\Users\<UserName>\Project 或 /mnt/c/Users/<UserName>/Project`
-1. 在 Windows 文件资源管理器中查看所有可用的 Linux 发行版及其根文件系统，请在地址栏中输入：`\\wsl.localhost`或(`\\wsl$`)
+    2. 在 Windows 文件资源管理器中查看所有可用的 Linux 发行版及其根文件系统，请在地址栏中输入：`\\wsl.localhost`或(`\\wsl$`)
+3. 共享环境变量
+    1. 实例 todo
 
 安装桌面软件吗？看需求，一般来说没必要，因为子系统和windows的资源是共享的。不过为了方便copy文件，可以建立软链接当做共享文件夹，比如:
 1. ` ln -s /mnt/c/Users/my_username/LinuxShare ~/LinuxShare`
@@ -127,8 +128,6 @@ Windows WSL2和常规虚拟机方式在Windows上运行Linux系统方案的对�
 
 需要手动安装的工具:
 1. 输入`code`安装vscode-server
-
-## 3 edge
 
 # 五 经验
 # 六 问题

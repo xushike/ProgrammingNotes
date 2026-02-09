@@ -38,10 +38,13 @@ cmd：
         ```
 6. 清屏:`cls`or`clear`
 
-powershell:
+powershell和Cmdlet:
+1. 概述
+    1. Cmdlet
+        1. 参考：https://learn.microsoft.com/zh-cn/powershell/scripting/developer/cmdlet/cmdlet-overview
 1. 设置以管理员身份启动
     1. 右键快捷方式 -> 高级 -> 勾选"以管理员身份运行"
-2. 自动补全:比如输入`get-ch`按tab键会自动补全成`Get-ChildItem`,`remove-it`自动补全成`Remove-Item`
+2. 自动补全Cmdlet:比如输入`get-ch`按tab键会自动补全成`Get-ChildItem`,`remove-it`自动补全成`Remove-Item`
 3. 查看版本`$PSVersionTable`
 4. 管道
     1. 几个操作符
@@ -66,6 +69,7 @@ powershell:
 5. 环境变量
     1. 查看环境变量
         1. 查看全部环境变量的名称和值`ls env:`
+            1. 如果想要以json格式输出，可以使用Cmdlet`ConvertTo-Json`，比如`ls env: | ConvertTo-Json`，其他格式同理。
         2. 查看指定环境变量的值`$env:USERPROFILE`
         3. 搜索环境变量`ls env:env_name`
 
@@ -218,6 +222,7 @@ UDP    [fe80::2de0:2709:cb2f:d7a8%3]:1900  *:*
         1. `/PID processid`    指定要终止的进程的 PID
         2. `/F`指定强制终止进程
         3. `/T`终止指定的进程和由它启用的子进程
+        4. `/IM imagename`指定映像名称，支持通配符
 
 
 ## n 其他
