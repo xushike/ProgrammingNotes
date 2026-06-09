@@ -80,6 +80,8 @@ Go语言的每次版本更新，都会在标准库环节增加强大的功能、
 ### go1.9
 Go1.9版本后默认利用Go语言的并发特性进行函数粒度的并发编译
 
+### go1.10
+新增了`strings.Builder`
 ### go1.11
 引入go module
 
@@ -116,6 +118,8 @@ https://tip.golang.org/doc/go1.17
     time.Date(2021, time.October, 14, 16, 34, 32, 333240500, time.Local):
     ```
 
+### go1.19
+1. `//go:packed`
 ### go1.21
 1. toolchain：
     1. 提高了向前兼容性: `go.mod`文件中的go directive和toolchain directive不再是一个建议，而是强制执行的规则。即将go版本和go toolchain版本用类似module的“依赖”的方式来管理。
@@ -131,6 +135,7 @@ https://tip.golang.org/doc/go1.17
         )
         ```
 2. 引入了slog标准库：它是一个结构化日志记录包，提供了高性能、灵活且易于使用的日志记录功能
+3. slice的`append()`现在可以用运算符`+=`来代替了，简化了语法。
 ### go1.23 todo
 主要有四个方面的更新：language, toolchain, runtime, and libraries.
 1. language：将range-over-function纳入语言规范
@@ -587,6 +592,12 @@ go里的文件大致分为以下几类：
 3. 同一个代码包中不要放多个命令源码文件，同时命令源码文件和库源码文件也不要放在同一个代码包下。如果违反此条，`go run`和`go build`分别运行这些文件的时候不会报错，但是`go build`和`go install`运行整个包的时候会报错。
 4. 可以通过`go run`命令来执行，可接受命令参数
 
+### runtime运行时
+尽管 Go 编译器产生的是本地可执行代码，这些代码仍旧运行在 Go 的 runtime（这部分的代码可以在 runtime 包中找到）当中。这个 runtime 类似 Java 和 .NET 语言所用到的虚拟机，它负责管理包括内存分配、垃圾回收、栈处理、goroutine、channel、切片（slice）、map 和反射（reflection）等等。
+
+问题
+1. 每个程序都带一份独立完整的runtime，程序是否会很大：不会。核心runtime大约500KB ~ 1MB，加上标准库总共大概2~3MB
+
 ### Go程序的执行（程序启动）顺序
 编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，然后对最后的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。但是每个包只会被导入一次。
 
@@ -1024,8 +1035,11 @@ GO111MODULE=off go get xxx -v
 （待研究）There are already a number of tools available that are designed to be run by the go:generate directive, such as `stringer`, `jsonenums`, and `schematyper`.
 
 
-#### 1.7 go vet
+#### go vet 静态检查
 作用是检查Go语言源代码并且报告可疑的代码编写问题,可以捕获一些常见的错误，如格式化字符串等。
+
+#### go mod 依赖管理
+见[go modules(go mod)](#6.5go modules(go mod))
 
 #### 1.8 go fmt、gofmt和goimports
 代码格式化.开发工具中一般都集成了保存的时候自动格式化.以法令方式规定标准的代码格式可以避免无尽的无意义的琐碎争执,更重要的是，这样可以做多种自动源码转换，如果放任Go语言代码格式，这些转换就不大可能了。
@@ -1405,56 +1419,64 @@ Go语言将数据类型分为四类：
 Go主要有四种类型的声明语句：`var`、`const`、`type`和`func`，分别对应变量、常量、类型和函数实体对象的声明。
 
 ### 变量、常量和指针
-#### 变量声明
-其中“类型”或“= 表达式”两个部分可以省略其中的一个。如果省略的是类型信息，那么将根据初始化表达式来推导变量的类型信息。如果初始化表达式被省略，那么将用零值初始化该变量。
-```go
-//声明变量的方式1:一般是变量类型和初值类型不同时才使用
-var 变量名字 类型 = 表达式
-```
+#### 变量
+概述
+1. 变量声明的方式：其中“类型”或“= 表达式”两个部分可以省略其中的一个。如果省略的是类型信息，那么将根据初始化表达式来推导变量的类型信息。如果初始化表达式被省略，那么将用零值初始化该变量。
+    1. 零值初始化
+        
+        ```go
+        var i int
+        // 多个变量是同一类型
+        var i, j, k int                 // int, int, int
+        // 同时声明多个变量，可省略类型，会自动判断
+        var b, f, s = true, 2.3, "four" // bool, float64, string
+        ```
+    2. 非简短变量声明：形如`var 变量名 类型 = 字面量/表达式`，只有想要的类型和`字面量`默认类型不同时才会显式指定`类型`，其他时候可省略。
 
-```go
-//声明变量的方式2：零值初始化,也可用于多个变量是同一类型的情况，此时只写最后一个类型
-var i int
-var i, j, k int                 // int, int, int
-//声明变量的方式3:一般用于同时声明多个变量，可省略类型，会自动判断
-var b, f, s = true, 2.3, "four" // bool, float64, string
-```
+        ```go
+        var f, err = os.Open(name) // os.Open returns a file and an error
+        ```
 
-初始化表达式可以是字面量或任意的表达式。在包级别声明的变量会在main入口函数执行前完成初始化，局部变量将在声明语句被执行到的时候完成初始化。例子如下：
+    3. 简短变量声明：形如`var 变量名 := 字面量/表达式`。初始化顺序和作用域与非简短变量声明不同。TODO
+        1. 简短变量声明语句里必须至少要声明一个新的变量，如果有多个变量，对于其他已经声明过的变量则只有赋值操作
+        2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
 
-```go
-var f, err = os.Open(name) // os.Open returns a file and an error
-```
+        ```go
+        anim := gif.GIF{LoopCount: nframes}
+        freq := rand.Float64() * 3.0
+        t := 0.0
+        // 同时声明多个简短变量：只在可以提高代码可读性的地方使用，比如for语句初始化部分
+        i, j := 0, 1
+        ```
+2. 变量的初始化
+    1. 初始化顺序：在包级别声明的变量会在函数执行前完成初始化，局部变量将在声明语句被执行到的时候完成初始化。
+    2. 零值（Zero Value）、零值初始化和空值（Empty Value）：零值指变量声明后没赋值时，Go 自动给的默认值。自动给默认值这个行为称为零值初始化，零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以在没有增加额外工作的前提下确保边界行为的合理。空值指变量的长度为0，但空值不一定是零值。
+        1. 零值
+            1. 数值：`0`，
+            2. 布尔：`false`，
+            3. 字符串: `""`(零值和空值都是空字符串)
+            4. 数组和结构体: 数组每个元素和结构体所有字段变成对应的零值。
 
-在**函数内部**，有一种称为**简短变量声明**语句的形式可用于声明和初始化局部变量,可以简单理解为`:=`是声明且赋值,例子如下：
+                ```go
+                // 数组的零值初始化
+                var a [2]int
+                fmt.Println(a) // [0 0]
+                ```
+            4. 指针、接口和引用类型（包括slice、map、chan和函数）：`nil`
+                
+        2. 空值：除字符串外，检查空值一般用`len(a) == 0`，字符串用`a == ""`可读性更好。有必要的话还要考虑并发的问题，比如channel，在执行到`len(a) == 0`的时候可能里面是空的，但是执行到下一行代码的时候有可能又有值了。
+            1. 字符串: 空值是`""`(零值和空值都是空字符串)
+            2. 引用类型（包括slice、map、chan和函数）
 
-```go
-//声明变量的方式4:简短变量声明(只能在函数内使用)
-anim := gif.GIF{LoopCount: nframes}
-freq := rand.Float64() * 3.0
-t := 0.0
-//这种同时声明多个变量的方式应该限制只在可以提高代码可读性的地方使用比如for语句的循环的初始化语句部分
-i, j := 0, 1
-```
-
-注意：
-1. 简短变量声明语句中必须至少要声明一个新的变量,对于其他已经声明过的变量，则只有赋值操作
-2. 简短变量声明语句只有对已经在同级词法域（同block？）声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么简短变量声明语句将会在当前词法域重新声明一个新的变量。
-
-#### 变量的初始值
-零值初始化机制可以确保每个声明的变量总是有一个良好定义的值，因此在Go语言中不存在未初始化的变量。这个特性可以简化很多代码，而且可以在没有增加额外工作的前提下确保边界条件下的合理行为。
-1. 数值类型变量对应的零值是0，
-2. 布尔类型变量对应的零值是false，
-3. 字符串类型对应的零值是空字符串
-
-    注意:检查空字符串用`s == ""`而不是`len(s) == 0`
-    
-4. 指针,接口和引用类型（包括slice、map、chan和函数）变量对应的零值是nil。
-
-    注意:检查slice,map或者channel的空值用`len(s) > 0`而不是`s != nil && len(s) > 0`，不过还要注意并发的问题，比如channel，在执行到`len(s) > 0`的时候可能里面是空的，但是执行到下一行代码的时候有可能又有值了。
-5. 数组或结构体等聚合类型对应的零值是每个元素或字段都是对应该类型的零值。
-    1. time的零值
-6. 当要声明一个变量或者结构体为零值时,go习惯使用var,这样更明确
+                ```go
+                var a []int     // 零值 = nil
+                b := []int{}    // 空值 = 空切片
+                ```
+3. 特殊的变量
+    1. 零尺寸类型(Zero-Sized Type, ZST)：指不占用任何内存空间的类型。比如空结构体`struct{}`和长度为0的数组`[0]int`
+        1. 特性
+            1. ‌内存占用为0‌：`unsafe.Sizeof(struct{}{}) == 0`
+            2. 
 
 #### 变量赋值
 1. 更有效的赋值写法,比如
@@ -1585,10 +1607,46 @@ fmt.Println(p == q) // "false"
 1. 在C/C++中,局部变量分配在栈里,函数返回后，局部变量是被系统自动回收的(其他好几种语言也是这样).返回局部变量的指针是不安全的,但返回局部变量的值是安全的,因为返回的是值的副本
 2. 在go中,局部变量可能分配到栈or堆中,而且两者都可以返回.具体参考垃圾回收的堆栈分配笔记
 
-### 基础数据类型
-包含int系列、float系列、bool、string
+### 基础数据类型(1布1字2浮5整)
+#### 布尔bool
+概述：底层实现是用`uint8`类型
+1. 空间占用（不考虑内存对齐）：
+    1. 变量名：编译时占用临时空间，编译后消失，运行时不占用空间
+    2. 变量和指针变量
+        1. 变量：变量不占空间，变量值才占空间
+        1. 指针变量：1个指针，32位系统4字节，64位系统8字节
+    3. 变量值：固定1字节
+    4. 传参：传的是变量值，固定1字节
 
-#### 2.1.1 整数
+使用
+1. 命名规范
+    1. 普通方法和字段：推荐用`Is、Has、Can、Should`等作为前缀。
+        1. Is：是否是某种状态。比如isSorted、isFinished、isVisible
+        2. Has：是否拥有某物、权限等。比如HasPermission、HasToken
+        3. Can：是否具备能力、权限等。比如CanEdit、CanDelete、CanLogin
+        4. Should
+
+        ```go
+        // 标准库的例子
+        unicode.IsDigit(ch)
+        // net/http
+        req.IsTLS // 是否 TLS 连接
+        // encoding/json
+        val.IsBool() // 是否布尔类型
+        // go/ast
+        node.IsValid() // 是否有效
+        ```
+    2. 在if判断语句中，更推荐使用OK、Valid、Success
+        
+        ```go
+            if ok := process(); ok {
+            // 成功
+        }
+        ```
+2. 类型转换
+    1. 可以和`uint8`类型互相转换吗：不行，强制类型转换也不行。虽然底层实现是用`uint8`类型，但不支持互相转换，bool是逻辑类型，不是数值类型，go设计原则就不允许他们相互转换，也防止出现`if (1) { ... }`这样的代码。只能用逻辑判断来转换。
+
+#### 整数
 大概可以分为以下几种类型：
 有基于架构的类型，例如：int、uint 和 uintptr.这些类型的长度都是根据运行程序所在的操作系统类型所决定的：int 和 uint 在 32 位操作系统上，它们均使用 32 位（4 个字节），在 64 位操作系统上，它们均使用 64 位（8 个字节）。uintptr 的长度被设定为足够存放一个指针即可。
 
@@ -1724,39 +1782,68 @@ fmt.Println(a + 0.7) //output: 1.2999999999999998
 	fmt.Println(v.Type()) // complex128
     ```
 
-#### 2.1.3 字符串
-https://go.dev/blog/strings
+#### 字符串
+概述
+1. 参考
+    1. [https://go.dev/blog/strings](https://go.dev/blog/strings)
+    2. 源码定义在[src/runtime/string.go](src/runtime/string.go)
 
-与C++,Java,Python等(他们是**等宽字符序列**)不同，golang中字符串是以 UTF-8 为格式进行存储，占用1~4个字节(为 ASCII 码时占用 1 个字节,为中文时占用3或4个字节)，即**变宽字符序列**,好处是不仅减少了内存和硬盘空间占用，同时也不用像其它语言那样需要对使用 UTF-8 字符集的文本进行编码和解码。语法分为普通字符串和raw字符串:raw字符串和js6中的模板字符串有点像，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。golang的字符串是不可变的，源码定义在src/runtime/string.go
+        ```go
+        // src/runtime/string.go
+        // string底层实现是个结构体，这个结构体经常被称为字符串头
+        type stringStruct struct {
+            str unsafe.Pointer // go runtime在内存分配时将其指向字节数组，并标记为只读内存页。不能修改字节数组但能指向新的字节数组，字符串的内容不能修改但能赋值新的字符串。
+            len int
+        }
+
+        // reflect.StringHeader
+        type StringHeader struct {
+            Data uintptr
+            Len  int
+        }
+        ```
+2. 编码格式和变宽字符序列：与C++,Java,Python等(他们是**等宽字符序列**)不同，golang中字符串是以UTF-8为格式进行存储，占用1~4个字节(为 ASCII 码时占用 1 个字节,为中文时占用3或4个字节)，即**变宽字符序列**,好处是不仅减少了内存和硬盘空间占用，同时也不用像其它语言那样需要对使用 UTF-8 字符集的文本进行编码和解码。
+3. 分类：分为普通字符串和raw字符串。
+    1. 普通字符串
+    1. raw字符串：类似js6中的模板字符串，用反引号包裹。**raw字符串中都是原样输出，不能转义。**正则表达式中使用raw字符串更简洁。
+4. 基本数据类型还是复合数据类型: 底层实现虽然是一个结构体，但go将其规定为基本数据类型。在语法层面和使用上字符串也具备基本数据类型特性，所以它是基本数据类型。
+5. 只读和不可变:字符串是只读的，无法修改其中的内容。虽然可以给字符串变量重新赋值，但原来指向的字符串的内存空间是不变的。
+    1. 不可变的好处
+        1. 安全：共享数据不会被意外修改。多个变量可以共用同一个字符串数据，不用担心一个变了所有都要跟着变。
+        2. 可以做常量
+        3. 可以做map的key
+    2. 共享底层空间和重新分配空间
+        1. 共享底层空间：字符串的截取是共享底层空间。因为字符串截取指向的是同一块共享内存
+        2. 重新分配空间：字符串的拼接、修改、显式复制(`strings.Clone()`)等操作，需要重新开辟内存空间。
+6. 并发安全吗：不安全。golang无法保证原子性的给他赋值，比如刚修改完字符串头的指针但是没改len，这时候其他协程读取了该字符串就会得到不正确的结果，所以golang的string不是并发安全的
+7. 空间占用（不考虑内存对齐）
+    1. 变量名：编译时占用临时空间，编译后消失，运行时不占用空间
+    2. 变量和指针变量
+        1. 变量：变量是字符串头，在32位系统里指针str4字节，长度len4字节，字符串头一共8字节；64位系统里指针str8字节，长度len8字节，字符串头一共16字节。可通过`unsafe.Sizeof()`查看字符串头占用的字节
+        2. 指针变量：1个指针，32位系统4字节，64位系统8字节
+    3. 变量值：字符串头里指针str指向的字符串内容。占用空间和编码有关系，可通过`len()`查看字符串内容占用的字节
+        1. 可通过`utf8.RuneCountInString()`查看字符个数，字符个数和编码无关，因为查看的是Unicode字符数。
+    4. 传参：传的不是字符串内容，传的是字符串头的复制。
+
 
 ```go
-// src/runtime/string.go
-// 可以看出string其实是个结构体，golang无法保证原子性的给他赋值(比如刚修改完指针但是没改len，这时候其他协程读取了该字符串就会得到不正确的结果)，所以golang的string不是并发安全的
-type stringStruct struct {
-    str unsafe.Pointer
-    len int
-}
-
-// reflect.StringHeader
-type StringHeader struct {
-	Data uintptr
-	Len  int
-}
-```
-
-```go
-// go字符串内容的三种写法
-// 1. 字面值
+// go字符串内容的几种表示方法
+// 1. 字面量
 var s = "中国人"
-// 2. 码点表示法
-var s1 = "\u4e2d\u56fd\u4eba"
-var s2 = "\U00004e2d\U000056fd\U00004eba"
-// 3. ASCII码
-var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
+// 2. ASCII码转义字符
+var s2 = "a\nb"
+// 3. Unicode码点转义
+// 3.1 4位十六进制Unicode码点，码点范围0x0000 ~ 0xFFFF，BMP平面
+var s3 = "\u4e2d\u56fd\u4eba"
+// 3.2 8位十六进制Unicode码点，码点范围0x00000000 ~ 0x10FFFF，所有Unicode
+var s3 = "\U00004e2d\U000056fd\U00004eba"
+// 4. UTF-8的八进制、十六进制转义
+var s4 = "\344\270\255" // 汉字“中”的UTF-8编码的八进制表示
+var s4 = "\xe4\xb8\xad" // 汉字“中”的UTF-8编码的十六进制表示
 ```
 
-操作：
-1. 字符串的字节数`len()`：变量指向的字符串所占用的字节数，变量本身占用的字节数用`unsafe.Sizeof()`查看
+使用：
+1. 字节数和字符数：变量指向的字符串所占用的字节数用`len()`查看，变量(字符串头)占用的字节数用`unsafe.Sizeof()`查看，字符数通过`utf8.RuneCountInString()`查看
 
     ```go
     // 1字节的单字符 ASCII
@@ -1769,22 +1856,72 @@ var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
     var a = string('𒊝')
 	fmt.Println(len(a))
     ```
-1. 字符串截取:可以用类似切片的方式来截取,形如`str[indexA:indexB]`,取出来左闭右开的子字符串.比如
+2. 截取:截取字符串本质是基于原字符串创建新的字符串切片,新字符串和原字符串共享底层字节数组，无内存拷贝，性能极高。语法形如`str[start:end]`,取出来左闭右开(`[)`)的子字符串，下标是字节数，从0开始，最大不能超过字符串的字节数。下标是字节数，直接通过下标截取字符串在处理非单字节字符（比如UTF-8的中文）时容易出错，可以基于`utf8.DecodeRuneInString()`（最推荐，无内存拷贝，性能最好）或将字符串转换为rune切片`[]rune`来处理。
+
+    1. 简写规则
+        1. `str[:end]`：从开头截取到 end 索引
+        2. `str[start:]`：从 start 索引截取到末尾
+        3. `str[:]`：复制整个字符串
 
     ```golang
+    // 当字符串的每个字符一个字节时
     str := "123456"
     str[0:3] // "123"
     str[3:] // "456"
-    str3 := str[6:] // 特别的，如果indexA是字符串的长度，此时str3 == ""为true
+	str1 := str[0:0]
+	str2 := str[len(str):]
+	fmt.Println(str1 == "") // true
+	fmt.Println(str2 == "") // true
+
+    // 当字符串的每个字符不一定是一个字节时
+    s := "Go语言"
+	fmt.Println(s[0:2]) // 正常：Go
+	fmt.Println(s[2:5]) // 正常：语
+	fmt.Println(s[3:5]) // 乱码：因为只截取了"语"的部分字节
+
+    // 基于utf8.DecodeRuneInString()来处理：略
+
+    // 转换成rune切片再处理
+    s := "Go语言"
+	rs := []rune(s)
+	fmt.Println(string(rs[0:3])) // Go语
     ```
-2. 字符串的修改：字符串默认是只读的，无法直接通过下标来修改。如果想实现修改，可以先转成[]byte，修改后再转成string
-3. 拼接的几种方式及比较
-   1. `+`，量大时效率较低，因为每次都会产生一个新字符串
-   2. `fmt.Sprintf()`:内部使用 []byte 实现
-   3. `strings.Join()`：效率比`+`高
-   4. `buffer.WriteString()`：不需要复制，只需要将添加的字符串放在缓存末尾即可，所以性能理论上最好，不过和java的StringBuilder一样是线程不安全的
-   5. go1.10开始新增了Builder类型，也是并发不安全的
-4. 遍历字符串
+3. 修改：字符串是只读的，无法修改。如果想实现修改，可以转成`[]byte`（适合纯ASCII码这种单字节字符串）或`[]rune`（适合中文这种多字节字符串），修改后再转换回string
+4. 拼接
+    1. `fmt.Sprintf()`:性能一般来说是最差的
+    2. `+`: 每次都会产生一个新字符串，在拼接少量静态字符串时性能是最好的（因为有编译期优化），但拼接大量字符串时效率最差。循环里不要用它。
+
+        ```go
+        url := "https://" + host + "/path"
+        ```
+    3. `bytes.Buffer`、`[]byte`、`strings.Builder`和`strings.Join()`:都是使用缓冲区来存储字符数据，避免了频繁的内存分配和拷贝操作，在拼接大量字符串时效率很高。但都和java的`StringBuilder`一样是并发不安全的。
+        1. `bytes.Buffer`：拼接大量字符串时`bytes.Buffer`性能次于`strings.Builder`。定位上，`bytes.Buffer`是字节流工具，可读可写；`strings.Builder`是字符串拼接工具，只写不读。前者能做的事情更多，后者功能单一。
+            1. `copy(dst []byte, src string)`的runtime优化：`bytes.Buffer.WriteString()`里的`copy(b.buf[m:], s)`会被runtime优化，不会进行`[]byte(s)`转换，没有临时内存拷贝的开销。
+            2. `String()`：`bytes.Buffer`和`strings.Builder`的性能差异就体现在这儿。`bytes.Buffer.String()`里`string(b.buf)`要做一次全量拷贝生成新字符串；而`strings.Builder.String()`里`unsafe.String(unsafe.SliceData(b.buf), len(b.buf))`是零拷贝
+        2. `[]byte`：内部使用`append(buf,s...)`或`copy(buf,s...)`拼接的话，性能和`strings.Builder`接近
+        3. `strings.Builder`
+            1. 扩容规则和`Grow(n)`:`Grow(n)`方法保证`strings.Builder`内部的buf切片一定能够写入n个字节，在调用`Grow(n)`时如果剩空余空间不足以写入n个字节，则会发生扩容，扩容后的容量是`current_capacity * 2 + n`
+            2. `s...`的编译优化：`strings.Builder.WriteString()`里`append(b.buf, s...)`的`s...`会被编译器优化，不会进行`[]byte(s)`转换，没有临时内存拷贝的开销。
+            3. `String()`：零拷贝。
+            4. 不推荐复制`strings.Builder`：在特定情况（略）下复制并使用会panic。
+
+            ```go
+            // 基本使用
+            // 1. 声明
+            var buf strings.Builder
+            // 2. 预定义容量
+            buf.Grow(100)
+            for _, item := range items {
+                // 3. 写入字符串
+                buf.WriteString(item)
+            }
+            // 4. 获取最终结果
+            result := buf.String()
+            // 5. （可选）清空内容以便重新使用
+            buf.Reset()
+            ```
+        4. `strings.Join([]string)`：内部也是用的`strings.Builder`，对于字符串切片直接用`strings.Join()`就行
+4. 遍历
    1. 按字节遍历 
         
         ```golang
@@ -1793,34 +1930,41 @@ var s3 = "\xe4\xb8\xad\xe5\x9b\xbd\xe4\xba\xba"
             fmt.Printf("%x ", s[i]) // e5 98 bb e5 93 88 63 68 69 6e 61
         }
         ```
-    2. 使用`range`会隐式地用unicode来遍历: 每次迭代出两个变量 codepoint 和 runeValue。codepoint 表示字节起始位置，runeValue 表示对应的 unicode 编码（对应的go类型是 rune）。如果字符串中有非法utf8字节序列，那么runeValue将返回0xFFFD这个特殊值(很多其他程序似乎会将这个值显示为特殊的问号)，并且在接下来一轮循环中，runeValue将仅前进一个字节。
+    2. 按字符来遍历: 使用`range`会自动按Unicode字符来遍历(UTF-8格式): 每次迭代出两个变量idx和r。idx是该字符的字节起始位置，r是该字符对应的`rune`值 。如果字符串中有非法UTF-8字节序列，那么r将返回0xFFFD(即Unicode 替换字符（REPLACEMENT CHARACTER）)，并且在接下来一轮循环中，r将仅前进一个字节。
         
         ```golang
+        // 按字符来遍历
         var s = "嘻哈china"
-        for codepoint, runeValue := range s {
-            fmt.Printf("%d %d ", codepoint, runeValue) // 0 22075 3 21704 6 99 7 104 8 105 9 110 10 97 
+        for idx, r := range s {
+            fmt.Printf("索引：%-3[1]d 字符：%-3[2]c Unicode：%8[2]U 数值：%[2]d\n", idx, r)
         }
-        fmt.Println()
-        for codepoint, runeValue := range s {
-            fmt.Printf("%d %s ", codepoint, string(runeValue)) // 0 嘻 3 哈 6 c 7 h 8 i 9 n 10 a
-        }
-        
-        // 非法字节的列子
-        // TODO
-        ```
-    3. 显式地转换成`rune`再遍历：和2类似
-5. 字符串的比较
-    ```go
-    // 有三种方法：==、strings.Compare()、strings.EqualFold
-    // 1. ==比较，区分大小写
-    // 2. Compare()比较,区分大小写,返回int 0时相同，非0时不同，效率高于== (why?)
-    // 3. EqualFold ()比较，比较utf-8编码在小写的情况下是否相等，不区分大小写。因为它内部实现是一个个字符的比较，前面的字符如果不同就直接return了，所以比strings.ToLowerCase()转化后再比较的方式效率高
-    ```
-    
-go有字符串常量池吗：没有。
+        // 输出如下
+        索引：0   字符：嘻   Unicode：  U+563B 数值：22075
+        索引：3   字符：哈   Unicode：  U+54C8 数值：21704
+        索引：6   字符：c   Unicode：  U+0063 数值：99
+        索引：7   字符：h   Unicode：  U+0068 数值：104
+        索引：8   字符：i   Unicode：  U+0069 数值：105
+        索引：9   字符：n   Unicode：  U+006E 数值：110
+        索引：10  字符：a   Unicode：  U+0061 数值：97
 
-#### 2.1.4 布尔bool
-对于布尔值的好的命名能够很好地提升代码的可读性，例如以 is 或者 Is 开头的 isSorted、isFinished、isVisible，使用这样的命名能够在阅读代码的获得阅读正常语句一样的良好体验，例如标准库中的`unicode.IsDigit(ch)`
+        // 非法字节的列子：略
+        ```
+5. 字符串的比较
+    1. 比较大小：比较的是Unicode码点
+
+        ```go
+        s1 := "中"            // U+4E2D
+        s2 := "国"            // U+56FD
+        fmt.Println(s1 < s2) // true
+        ```
+    2. 比较相等
+        1. `strings.EqualFold(s, t string) bool`：忽略大小写比较是否相同。有大小写转换的开销，性能是最差的。
+        2. `strings.Compare(a, b string) int`：区分大小写。返回0时相同，-1时小于，1时大于。性能仅次于`==`，好处是能比较大小。
+        3. `==`：判断字符串内容是否完全相等，区分大小写。性能最好。
+            1. 判断空字符串：`s == ""`和`len(str) == 0`都会被编译器优化成后者，性能是一样的，但是前者可读性更好，推荐用前者。
+
+问题
+1. go有字符串常量池吗，为什么：没有。
 
 ### 复合(结构化)数据类型
 包含array、slice、map、struct、channel(我们通常把array和struct称为值类型，把slice、map、channel称为引用类型，来帮助我们理解go语言的这几个类型。虽然这个称法并不准确，而且官方也没有这样说过)
@@ -2774,7 +2918,7 @@ func add(x, y int) int {
 
 method receiver alias的使用例子参考：https://stackoverflow.com/questions/28251283/golang-function-alias-on-method-receiver
 
-## 6 interface{}和接口
+## 6 interface{}和接口 TODO
 interface{}有两种用法，一种是只作为类型，另一种是作为接口（写法也是）
 
 ### 6.1 interface{}类型
@@ -4305,10 +4449,6 @@ type Unmarshaler interface {
 }
 ```
 
-
-## 5 go runtime运行时
-尽管 Go 编译器产生的是本地可执行代码，这些代码仍旧运行在 Go 的 runtime（这部分的代码可以在 runtime 包中找到）当中。这个 runtime 类似 Java 和 .NET 语言所用到的虚拟机，它负责管理包括内存分配、垃圾回收、栈处理、goroutine、channel、切片（slice）、map 和反射（reflection）等等。
-
 ## 6 正则表达式（regular expression）和regexp包
 参考：
 1. https://github.com/google/re2/wiki/Syntax
@@ -4985,16 +5125,33 @@ writer.Write(buf)
     ```
 
 ### bytes
-主要是关于 byte slice 操作的一些函数。由于 []byte 也可用于表示 string，故其中的函数、方法与 strings 很类似，比如 `Join()`、`Split()`、`Trim()`、 `Contains()`、`Count()`、`Repeat()`、`Runes()`等。
+关于`[]byte`的操作。比如 `Join()`、`Split()`、`Trim()`、 `Contains()`、`Count()`、`Repeat()`、`Runes()`等。
+
+结构体
+1. `Buffer`:适用于中小数据量的缓存操作。它的读取类操作会消费缓冲区数据，增大off，比如`Read()`、`Next()`(`Peek()`除外)
+
+    ```go
+    type Buffer struct {
+        buf      []byte // contents are the bytes buf[off : len(buf)]
+        off      int    // read at &buf[off], write at &buf[len(buf)]
+        lastRead readOp // last read operation, so that Unread* can work correctly.
+    }
+    ```
 
 使用：
-1. `[]byte`的拼接
-    1. 知道大小然后分配固定内存是最快的，在不知道大小的情况下推荐用`bytes.Buffer`来拼接
+1. `[]byte`相关操作
+    1. 拼接
+        1. 知道大小然后分配固定内存是最快的，在不知道大小的情况下推荐用`bytes.Buffer`来拼接
+2. `Buffer`相关操作
+    1. 读写
 
 ### cmd
 
-### compress
+### compress 
 #### compress/gzip
+#### compress/gzip
+#### compress/zlib
+标准 zlib 格式：[zlib头] + [压缩数据] + [校验尾]
 
 ### container
 #### container/heap
@@ -5042,18 +5199,20 @@ fmt.Println(hex.EncodeToString(h.Sum(nil))) // 4e551e31d3d4df77e8d5cc6e44dc7359
 #### crypto/md5
 md5已被证实无法防止碰撞，已经不算是很安全的算法了，因此不适用于安全性认证，如SSL公开密钥认证或是数字签名等用途。对于需要高度安全性的数据，一般建议改用其他算法，比如 sha256。
 
-使用md5加密的两种方法：
+使用
+1. `Write()`: 增量写入数据，中间状态计算
+2. `Sum()`: 输出哈希摘要，输出后还可以继续写入数据。
+
 ```golang
 str := "abc123"
 
-// 方法一
+// 对字符串哈希
 data := []byte(str)
-fmt.Println("data:", data)
-has := md5.Sum(data)
-md5str1 := fmt.Sprintf("%x", has) // 将[]byte转成16进制
+sum := md5.Sum(data)
+md5str1 := fmt.Sprintf("%x", sum) // 将[]byte转成16进制
 fmt.Println(md5str1) // e99a18c428cb38d5f260853678922e03
 
-// 方法二
+// 对字符串增量哈希
 w := md5.New()
 io.WriteString(w, str)                   //将str写入到w中
 md5str2 := fmt.Sprintf("%x", w.Sum(nil)) //w.Sum(nil)将w的hash转成[]byte格式
@@ -5063,7 +5222,12 @@ fmt.Println(md5str2) // e99a18c428cb38d5f260853678922e03
 ```
 #### crypto/sha256
 ```go
-// 例子1 
+// 例子1 字符串哈希
+str := "abc123"
+byteArr := sha256.Sum256([]byte(str))
+fmt.Println(hex.EncodeToString(byteArr[:])) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
+
+// 例子2 字符串增量哈希
 str := "abc123"
 h := sha256.New()
 h.Write([]byte(str))
@@ -5072,10 +5236,8 @@ sum := h.Sum(nil)
 s := hex.EncodeToString(sum)
 fmt.Println(s) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
 
-// 例子2
-str := "abc123"
-byteArr := sha256.Sum256([]byte(str))
-fmt.Println(hex.EncodeToString(byteArr[:])) // 6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090
+// 例子3 文件增量哈希
+
 ```
 
 #### crypto/rand
@@ -5219,7 +5381,7 @@ base64和base32的区别：
 Base64就是一种基于64个可打印字符来表示二进制数据的方法，它是网络上最常见的用于传输8Bit字节码的编码方式之一，采用Base64编码具有不可读性，需要解码后才能阅读。为统一和规范化Base64的输出，Base62x被视为无符号化的改进版本。
 
 实现过程：
-1. 把每3个字节变成4个字节。三个字节一组，那不够3的倍数咋办？就用`=`来填充，这也是为什么经常看到base64编码的结尾有一个或两个`=`
+1. 把每3个字节变成4个字节（体积变大1/3）。三个字节一组，那不够3的倍数咋办？就用`=`来填充，这也是为什么经常看到base64编码的结尾有一个或两个`=`
 2. 每76个字符加一个换行符
 
 结构体：
@@ -5406,13 +5568,20 @@ type Flag struct {
 ```
 
 ### fmt
-参考:https://golang.org/pkg/fmt
+参考
+1. https://pkg.go.dev/fmt#hdr-Printing
 
-其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式, 称为动词（verb）.以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
+分类：根据输出目标的不同，打印函数分为四类。
+1. `Print()-like`向 `os.Stdout` 写入
+2. `Sprint()-like`返回一个字符串
+3. `Fprint()-like`向`io.Writer`写入
+4. `Append()-like`则将输出追加到字节切片中
+
+其中以f(表示fomart)结尾的方法(比如`Printf()`,`Errorf`等)可以使用格式化输出,即使用`%d`,`%c`等转换输出格式，这里百分号`%`后面的字符被称为动词（verb），百分号`%`和后面的字符一起被称为占位符；百分号`%`和verb中间还可以插入格式标识(flags)，比如前导填充`0`、左对齐`-`、扩展格式(alternate format)`#`等。以ln(表示line)结尾的方法是以`%v`格式化参数，并在最后添加一个换行符。`fmt`不是安全的，没有保证write的时候不会混合。
 
 许多类型都会定义一个`String()`方法，当使用fmt包的打印方法时，将会优先使用该类型对应的`String()`方法返回打印结果.
 
-动词（verb）/占位符说明:
+动词（verb）说明:
 
 ```go
 package main
@@ -5438,14 +5607,17 @@ func main() {
     ```
 5. `%t`:格式化布尔值
 6. 进制格式化：对最终结果支持补空格和0
-    - `%b`:二进制，并非真正的二进制，正数会把左边的所有0忽略掉；负数的话前面再多一个`-`
+    - `%b`:二进制-like，并非真正的二进制，正数会把左边的所有0忽略掉；负数的话是负号`-`加上正数的结果
         ```go
         // int8(3) 的二进制是 0000 0011,会输出 11
         // int8(-3) 的二进制是 1111 1101 会输出 -11 (跟负数的二进制可以说没直接关系...)
+
+        // 如果想在golang里看到负数真正的补码：把有符号类型的负数强制转换成无符号类型，再格式化输出
+        var num = -8
+	    fmt.Printf("%b\n", uint8(num)) // 11111000
         ```
     - `%o`:输出八进制数
     - `%d`:标准十进制格式化，输出十进制整数
-    - `%u`:输出无符号十进制数
     - `%x`:十六进制(小写)，`hex.EncodeToString([]byte) string`方法也是做类似的事。
     - `%X`:十六进制(大写)
         
@@ -5468,10 +5640,10 @@ func main() {
 	fmt.Printf("%c",0x4E2D) // 中
     ```
 8. 浮点数格式化
-    - `%f`:标准十进制格式化，使用银行家四舍五入，比如
+    - `%f`:标准十进制格式化，使用银行家四舍五入， 默认保留6位小数，不删后面的0
 
         ```go
-        // 默认保留6位小数？
+        // 默认保留6位小数
         fmt.Printf("%f\n", -6.55e3) // -6550.000000 
 
         // 保留2位小数
@@ -5518,15 +5690,57 @@ func main() {
     // 对于切片指针，不同引用打印出来的地址是不一样的，因为打印的是变量本身的地址，而不是切片的地址
     // 具体例子见studyGo项目的切片传递部分
     ```
-12. 指定输出宽度,使用`[num]`:如`fmt.Printf("|%6s|%6s|\n", "foo", "b")`,会输出`|   foo|     b|`
 
-    在有宽度的时候,默认是右对齐
-13. 输出左对齐,使用`-`:如`fmt.Printf("|%-6s|%-6s|\n", "foo", "b")`,会输出`|foo   |b     |`
+显式参数索引：索引从1开始
+1. 适用场景
+    1. 国际化：不同语言句子中参数顺序不同，用索引固定参数位置
+    2. 重复格式化：同一个参数用不同格式打印
+
+字符宽度、精度、填充和对齐
+1. 指定宽度[width]：在verb前面可以用数字指定字符宽度，也可以用`*`表示从参数中读取宽度。ANSI标准里英文字符在终端占1显示宽度，中文占2显示宽度，而[width]的宽度计算的是字符数量，就会导致相同字符数量英文比中文看起来窄一些，想显示宽度完美对齐的话就要手动修改或者借助第三方库。
+    ```go
+    // 指定宽度6，默认是右对齐
+    fmt.Printf("|%6s|%6s|\n", "foo", "b") // |   foo|     b|
+    // 用'*'指定宽度
+    fmt.Printf("|%*s|%*s|\n", 6, "foo", 6, "b") // 输出结果同上
+    // 用'*'指定宽度，同时使用显式参数索引
+    fmt.Printf("|%[1]*[2]s|%[3]*[4]s|\n", 6, "foo", 6, "b") // 输出结果同上
+    // 指定填充和宽度
+    fmt.Printf("%08b\n", 5) // 00000101 
+    ```
+2. 指定精度[precision]
+
+    ```go
+    // 指定精度和宽度：宽度8，精度2
+    var (
+		num       = 5.257
+		width     = 8
+		precision = 2
+	)
+	fmt.Printf("%08.2f\n", num)//     5.26
+    // 用'*'从参数中获取精度和宽度
+	fmt.Printf("%*.*f\n", width, precision, num) // 结果同上
+    ```
+2. 指定填充[padding]：宽度不够时，用字符来填充。填充到左边是前导填充，填充到右边是后置填充。golang的填充可以分以下三种情况
+    1. 第一种：默认的空格填充。需要填充且不是第二种和第三种时，都默认用空格填充。
+    2. 第二种：使用前导填充标志`0`来填充0，语法`%0[width]verb`，但只能用于前导填充，不能用于后置填充。
+
+        ```go
+        // 使用数字0做前导填充
+        fmt.Printf("|%06s|\n", "foo")                           // |000foo|
+        // 使用数字0做后置填充：不生效
+	    fmt.Printf("|%-06s|\n", "foo")                          // |foo   |
+        ```
+    3. 第三种：任意rune填充，没有官方内置语法，自己实现可以借助`strings.Repeat()`等。
+13. 指定对齐方向：默认是右对齐，使用标志`-`左对齐
 14. 编码
-    1. `%U`:输出为Unicode格式
+    1. `%U`输出为Unicode码点格式，形如`U+XXXX`；`%#U`则是后面带上原字符
         
         ```go
+        // %U
         fmt.Printf("%U", 0x4E2D) // U+4E2D
+        // %#U
+        fmt.Printf("%#U", 0x4E2D) // U+4E2D '中'
         ```
 
 转义：
@@ -5554,6 +5768,9 @@ func main() {
 2. `Errorf`函数使用`fmt.Sprintf`处理错误信息
     1. 动词`%w`：go1.13中新增的，用来生成一个wrapping error。
 3. `Fprintf()`：重定向打印。第一参数必须实现了 io.Writer 接口。`Fprintf()` 能够写入任何类型，只要其实现了 Write 方法，包括标准输出、标准错误输出(os.Stdout、os.Stderr),文件（例如 os.File），管道，网络连接，通道等等，同样的也可以使用 bufio 包中缓冲写入（适合任何形式的缓冲写入(?),在缓冲写入的最后千万不要忘了使用 `Flush()`，否则最后的输出不会被写入）。
+
+问题
+1. builtin包里有`print()`和`println()`，和`fmt.Print()`和`fmt.Println()`：内置的`print()`和`println()`无需导包，运行在runtime，直接把字节写入到stderr，格式化能力非常弱。是runtime用的打印工具，不是给业务用的，所以只有在编译器、底层调试时才使用，正常开发不推荐使用。
 
 ### http
 1. `ListenAndServe()`:负责监听并处理连接。内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
@@ -5611,54 +5828,63 @@ func main() {
 1. `DumpRequestOut()`
 
 ### io
-学习包也是学习它的设计思想。比如io包，定义了4各基本操作原语(接口)，分别对应二进制流读、写、关闭、寻址操作：
-1. `Reader`：
-    1. 即使我们在读取的时候遇到错误，但是也应该处理已经读到的数据，因为这些已经读到的数据是正确的，如果不进行处理丢失的话，读到的数据就不完整了
-2. `Writer`
-    
-    ```go
-    // Convert String to io.Writer
-    var str string
-    bytes.NewBufferString(str)
-    ```
-3. `Closer`
-4. `Seeker`
+接口
+1. 基本接口：定义了4个基本操作原语，分别对应二进制流读、写、关闭、寻址操作：
+    1. `Reader`：
+        1. 即使我们在读取的时候遇到错误，但是也应该处理已经读到的数据，因为这些已经读到的数据是正确的，如果不进行处理丢失的话，读到的数据就不完整了
+    2. `Writer`
+        
+        ```go
+        // Convert String to io.Writer
+        var str string
+        bytes.NewBufferString(str)
+        ```
+    3. `Closer`
+    4. `Seeker`
+2. 组合接口：基于`Reader`和`Writer`接口的抽象，我们就可以格式化读写文件、内存块、字符串、网络文件等。
+    1. `ReadWriter`（包含`Reader`和`Writer`）、
+    2. `ReadWriteCloser`（包含`Reader`、`Writer`和`Closer`）。
+    3. `ReadCloser`
 
-有了 Reader 和 Writer 抽象，我们就可以格式化读写文件、内存块、字符串、网络文件等。（其实 java 1.5就有了）
+        ```go
+        // string to ReadCloser
+        rc := ioutil.NopCloser(strings.NewReader("xxx"))
+        // ReadCloser to string
+        // way 1:
+        rc.Read(buf)
+        string(buf)
+        
+        // way 2:
+        buf := new(bytes.Buffer)
+        buf.ReadFrom(rc)
+        s := buf.String()
+        ```
+3. 常见接口：
+    1. `ReaderAt`、`WriterAt`
+    2. `ByteReader`、`ByteWriter`
+    3. `RuneReader`、`StringWriter`
+4. Pipe管道接口
+    1. `PipeReader`
+        1. `Read()`
+        2. `Close()`
+    2. `PipeWriter`
 
-然后定义了原语组合接口，表示常用的文件流处理，比如
-1. `ReadWriter`（包含`Reader`和`Writer`）、
-2. `ReadWriteCloser`（包含`Reader`、`Writer`和`Closer`）。
-3. `ReadCloser`
-
-    ```go
-    // string to ReadCloser
-    rc := ioutil.NopCloser(strings.NewReader("xxx"))
-    // ReadCloser to string
-    // way 1:
-    rc.Read(buf)
-    string(buf)
-    
-    // way 2:
-    buf := new(bytes.Buffer)
-    buf.ReadFrom(rc)
-    s := buf.String()
-    ```
-
-为了兼容以往编程习惯，还定义了常见操作接口：
-1. `ReaderAt`、`WriterAt`
-2. `ByteReader`、`ByteWriter`
-3. `RuneReader`、`stringWriter`
-
-基于上面的接口，实现了常见（实用）的IO处理函数：
-1. `Copy(dst Writer, src Reader) (written int64, err error)`:阻塞式的从src输入流读数据到dst输出流。看源码可知，它是按默认的缓冲区32k循环操作的，不会将内容一次性全写入内存中,这样就能解决大文件的问题，防止内存溢出。
+函数：
+1. `Copy(dst Writer, src Reader) (written int64, err error)`:带缓冲区的数据拷贝函数，阻塞式的从src读数据到dst。缓冲区32KB循环操作，不会将内容一次性全写入内存中,这样就能解决大文件的问题，防止内存溢出。
     
     ```go
     io.Copy(ioutil.Discard,resp.Body) 
     ```
-
-以及不常用的接口：
-1. `io.Pipe()`提供了 线程安全 的管道服务，“Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”，适合于产生了一条数据，紧接着就要处理掉这条数据的场景。因为其内部是一把大锁，因此是线程安全的
+2. `CopyBuffer(dst Writer, src Reader, buf []byte)`：自定义缓冲区的数据拷贝函数。可以自定义复用的缓冲区，如果设置为nil则会自动创建一个 32KB 的临时缓冲区，此时行为和`io.Copy()`完全一致
+    1. 缓冲区大小建议
+        1. 小数据 / 网络流：4KB ~ 32KB
+        2. 大文件拷贝：1MB ~ 4MB（太大反而会增加内存占用）
+3. `io.Pipe()(*PipeReader, *PipeWriter)`：提供线程安全的一次性的管道服务，用于在 goroutine 之间同步传递数据流，无需创建临时文件、缓冲区或共享内存，是轻量级的协程通信方案。它返回管道的读端和写端，成对使用，缺一不可。
+    > “Reads and Writes on the pipe are matched one to one except when multiple Reads are needed to consume a single Write”
+    1. 线程安全：内部是一把大锁。
+    2. 同步阻塞：写端写入数据时会阻塞，直到读端把数据全部读完；读端读取时会阻塞，直到写端写入或关闭
+    3. 无内部缓冲区：数据直接从写端流向读端，不占用额外内存
+    4. 适用场景：适合于产生了一条数据，紧接着就要处理掉这条数据的场景。
 
 ```go
 // 读取文件的例子
@@ -5672,9 +5898,7 @@ if err != nil {
     panic(err)
 }
 fmt.Println(string(fd))
-```
 
-```go
 // 写文件的例子
 func writeFile(path string, b []byte) {
     file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
@@ -6665,7 +6889,7 @@ func main() {
     1. `Pool`里的元素个数无法得知
     2. Get 获取到的元素对象可能是刚创建的，也可能是之前创建好 cache 住的。使用者无法区分
     2. 池子里元素的释放外界无法控制，随时都可能被runtime释放
-    3. sync.Pool 本质用途是增加**临时对象**的重用率，减少 GC 负担，不适合用作socket长连接或数据库连接池
+    3. `sync.Pool`是为 “临时对象复用” 设计，减少 GC 负担，而非 “长期资源管理”，不适合用作socket长连接或数据库连接池
 2. 使用:非常简单，但是有一些细节需要清楚
     1. 声明:声明的时候必须指定`New()`方法，且要保证该方法的并发安全--因为官方保证了`sync.Pool`数据结构是并发安全的，`Get`和`Put`的调用是并发安全的，但是没保证`Pool.New()`的并发安全。
 
@@ -6746,7 +6970,7 @@ func main() {
             1. `CST(Central Standard Time (Australia)，澳大利亚中部时间) = UTC/GMT + 9:30 小时`
             1. `CST(Central Standard Time (USA)，美国中部时间) = UTC/GMT - 6 小时`
         4. CDT(Central Daylight Time): 中部夏令时间,比世界协调时间(UTC)晚05:00小时。该时区为夏令时时区，主要用于 北美
-2. 时间格式：ISO和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
+2. 时间格式：分为两个大类——ISO（及类ISO）和时间戳。ISO格式的日期字符串可读性更好，但序列化和反序列化时的性能应该比整数更低。
     1. 时间戳：为什么时间戳基于1970年1月1日0时？综合网上的资料可知，最早unix的是32位的，按照秒来计时，最多只能表示大概68年的时间，于是在第一版unix程序员手册（20世纪70年代早期）里将GMT定为1971年1月1日0时，后来64位系统出现了，根本不用担心这个问题，就将1971改为1970更方便。
 3. 时区
     1. 跨时区处理：跨时区处理时，只要正确区分naive日期对象和带时区的日期对象，基本就保证了时间处理的正确性，而Epoch值（时间戳）表示相对于基准时间的差值，有效的回避了该问题（不同时区基准naive不一样）。
@@ -6898,8 +7122,11 @@ golang 提供了下面几种时间相关结构体：
 
 1. `type ArbitraryType int`: 只用于文档展示的目的，其本身并非unsafe包的一部分。它表示了任意 Go 表达式的类型（比如指针）
 2. `type Pointer *ArbitraryType`：Go中可以把Pointer类型，理解成任何指针的父类型。
-3. `Sizeof(anyType) uintptr`：官方文档说的返回变量本身占用的空间大小（单位：字节），而不是变量指向的内存的大小。该方法在编译期就进行求值，而不是在运行时，所以`Sizeof()`的返回值可以赋值给常量。数组总是在编译期就指明自己的容量，意味着可以获得数组所占的内存大小。对于结构体类型，不是简单的将各字段的size加起来，因为会有对齐
-    1. 对应字符串，string标头值类型内部是由两部分组成，一部分是指向字符串起始地址的指针，另一部分是字符串的长度，两部分各是8字节，所以一共16字节
+3. `Sizeof(anyType) uintptr`：获取变量占用的空间大小（单位：字节），受内存对齐影响。
+    1. 细节
+        1. 变量本身占用的空间：对于hdr类型的变量，获取是变量本身占用的空间大小，不包括内部指针指向的内存的大小。
+        2. 返回值常量：变量大小在编译期就可以确定，而不是在运行时，所以`Sizeof()`的返回值可以赋值给常量。
+    1. 对于字符串：参考字符串部分笔记
         
         ```golang
         // uintptr + int = 16
@@ -6928,12 +7155,49 @@ golang 提供了下面几种时间相关结构体：
             c int64
         }
 
-    var w W
-    fmt.Println(unsafe.Sizeof(w)) //16，因为发生了对齐
-    ```
+        var w W
+        fmt.Println(unsafe.Sizeof(w)) //16，因为发生了对齐
+        ```
     
-4. `Alignof()`：返回变量对齐字节数量。反射包也有某些方法可用于计算对齐值：`unsafe.Alignof(w)`等价于`reflect.TypeOf(w).Align`，`unsafe.Alignof(w.i)`等价于`reflect.Typeof(w.i).FieldAlign()`
+4. `Alignof()`：返回变量对齐字节数量。反射包也提供了方法用于计算对齐值：`unsafe.Alignof(w)`等价于`reflect.TypeOf(w).Align`，`unsafe.Alignof(w.i)`等价于`reflect.Typeof(w.i).FieldAlign()`
 5. `Offsetof()`：返回变量指定属性的偏移量，这个函数虽然接收的是任何类型的变量，但是有一个前提，就是变量要是一个struct类型，且还不能直接将这个struct类型的变量当作参数，只能将这个struct类型变量的属性当作参数
+
+修改对齐数的几种方法（go没有C的`#pragma pack`）：
+1. 编译指令
+    1. `//go:packed`编译指令：取消所有自然对齐，字段紧密挨在一起，1字节对齐，无自动padding，等价C的`#pragma pack(1)`
+    2. `//go:align=N`编译指令：强制该结构体N字节起始对齐
+
+        ```go
+        //go:align 64 // 强制该结构体实例内存起始地址必须64字节对齐
+        type CachePad struct {
+            val uint64
+        }
+        ```
+2. 手动padding：通过`_ [N]byte`字段手动添加padding，人为控制字段偏移
+
+    ```go
+    type CCompat struct {
+        a byte
+        _ [3]byte // 手动填充，强制b落在offset=4
+        b int32
+    }
+    ```
+3. [N]byte二进制手动序列化:整块`[]byte`用`unsafe`手动读写，完全自定义任意对齐
+
+    ```go
+    // 紧凑13字节结构：byte+int64+int32
+    buf := make([]byte,13)
+    // a byte
+    buf[0] = 0x01
+    // b int64: offset1
+    *(*uint64)(unsafe.Pointer(&buf[1])) = 123
+    // c int32: offset9
+    *(*uint32)(unsafe.Pointer(&buf[9])) = 456
+    ```
+
+
+1. 空结构体`struct{}`本身占0字节，但当它放在结构体最后一个字段时，Go会强制给它补1字节，目的是：不让它的地址和结构体外面的内存重叠，防止指针越界踩内存。
+    1. 但是放其他位置不会被补1字节，所以一般不放末尾。
 
 ### utf8
 与 rune 相关的函数

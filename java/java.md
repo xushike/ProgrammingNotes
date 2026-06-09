@@ -641,10 +641,43 @@ java是一门强类型语言，它的强类型的有两个含义：
 
 ### 变量
 
-### 基本数据类型
+### 基本数据类型（一共八个，1布1字2浮4整）
 jdk7引入了新功能，可以在数值中使用下划线，可以更直观地分辨数值，不影响数值。(待补充)
 
 初始化规则:0(int), 0.0(float), false(boolean)
+
+#### 布尔型boolean
+概述
+1. 特点
+    1. todo
+2. 占用内存
+3. 命名规范：分两种情况
+
+
+`false`和`Boolean.FALSE`区别:
+1. 前者是原始值，后者是对象。
+2. `if else`打断点的时候，前者不会停留，后者会
+
+    ```java
+    // false
+    if (false) { // 此处打断点不会停留
+        ...
+    } 
+    
+    // 
+     if (Boolean.FALSE) { // 此处打断点会停留
+        ...
+    } 
+    ```
+3. 唯一只能使用Boolean而不能用boolean就是从列表或者哈希表获取值的时候(待验证)
+    
+    ```java
+    boolean b = false;
+    Map map = new HashMap();
+    map.put("b", b);
+    // 取的时候只能用Boolean
+    Boolean b1 = (Boolean) map.get("t");
+    ```
 
 #### 整型，位运算和移位运算
 参考:https://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2
@@ -719,9 +752,16 @@ System.out.println(Byte.toUnsignedInt(a)); // 252
 1. float:32位，单精度
 2. double:64位，双精度
 
-java默认的浮点数类型是`double`，如果要用`float`，应该在尾部加上`F`或者`f`。虽然double比float更精确，但两者都可能不能精确表示一个浮点数，如果需要精确保存一个浮点数，可以用`BigDecimal`类。
-java表示浮点数的两种形式：
+java默认的浮点数类型是`double`，如果要用`float`，必须在字面量尾部加上`F`或者`f`。虽然double比float更精确，但两者都可能不能精确表示一个浮点数，如果需要精确保存一个浮点数，可以用`BigDecimal`类。
+
+java表示浮点数的两种形式
 1. 十进制
+
+    ```java
+    float num = 3.14; // 默认double类型
+    float num = 3.14f;
+    float num = 100f; // 也是 float 类型
+    ```
 2. 科学计数法形式：如5.12e2（即5.12*10^2^）（而且只有java中只有浮点数才可以用科学计数法表示）
 
 java有三个特殊的浮点数值用来表示溢出和出错：
@@ -732,32 +772,6 @@ java有三个特殊的浮点数值用来表示溢出和出错：
 关于正负无穷大的细节：
 1. 所有的正无穷大都是相等的，负无穷也是，而NaN不和任何数相等，包括自身
 2. 只有浮点数除以0才可以得到正负无穷大，因为java会自动把浮点数运算的0当作0.0处理，而整数值除以0会抛出ArithmeticException：/by zero异常
-
-#### 布尔型
-`false`和`Boolean.FALSE`区别:
-1. 前者是原始值，后者是对象。
-2. `if else`打断点的时候，前者不会停留，后者会
-
-    ```java
-    // false
-    if (false) { // 此处打断点不会停留
-        ...
-    } 
-    
-    // 
-     if (Boolean.FALSE) { // 此处打断点会停留
-        ...
-    } 
-    ```
-3. 唯一只能使用Boolean而不能用boolean就是从列表或者哈希表获取值的时候(待验证)
-    
-    ```java
-    boolean b = false;
-    Map map = new HashMap();
-    map.put("b", b);
-    // 取的时候只能用Boolean
-    Boolean b1 = (Boolean) map.get("t");
-    ```
 
 #### 类型转换
 有两种:自动类型转换和强制类型转换.
@@ -798,16 +812,39 @@ String a = "45";
 int iValue = Integer.parseInt(a);
 ```
 
-### 2.2 引用数据类型
-引用数据类型:包括类、接口和数组。还有一个null类型，可以被忽略，实际开发的时候可以看做是所有引用类型的实例。
+### 引用数据类型
+引用数据类型:包括类、接口、数组和null类型。null可以被忽略，实际开发的时候可以看做是所有引用类型的实例。
 
 初始化规则:都是null.注意String, Integer这种基础类型的包装类,因为也是引用,所以初始化也是null.
-#### 2.2.1 数组
+#### 数组
 是在内存中划分一串连续的固定长度的区域存放一组相同的基本数据类型的值。这里面涉及到了几个重要的概念：
 1. 连续：连续空间是数组的特点，区分于链表类型的数据结构，这使得它的空间可以只用来存放值，而不需要像链表一样划分空间来存储指针。随机遍历的速度快。
 2. 固定长度
 3. 相同类型
 4. 基本数据类型
+
+##### 字符串
+概述
+1. 字符串类(String类)、字符串对象和字符串内容
+1. 字符串的实现
+    1. 旧版：`char[]`
+    2. 新版：`byte[]` + 编码标记
+3. 空间占用（不考虑内存对齐）TODO
+    1. 变量名：编译时占用临时空间，编译后消失，运行时不占用空间
+    2. 变量和指针变量
+        1. 变量：变量是字符串头，在32位系统里指针str4字节，长度len4字节，字符串头一共8字节；64位系统里指针str8字节，长度len8字节，字符串头一共16字节。可通过`unsafe.Sizeof()`查看字符串头占用的字节
+        2. 指针变量：1个指针，32位系统4字节，64位系统8字节
+    3. 变量值：字符串头里指针str指向的字符串内容。占用空间和编码有关系，可通过`len()`查看字符串内容占用的字节
+        1. 可通过`utf8.RuneCountInString()`查看字符个数，字符个数和编码无关，因为查看的是Unicode字符数。
+    4. 传参：传的不是字符串内容，传的是字符串头的复制。
+3. 使用
+    1. 创建字符串
+
+#### null
+判空灾难（）：null reference
+1. 解决方案
+    1. Java8引入的`Optional<T>`类:旨在从设计层面鼓励开发者显式地处理可能为空的值，而不是直接返回null。
+    2. 空对象模式（Null Object Pattern）：这是一种设计模式，通过创建一个具有“无操作”或默认行为的对象来替代null，使得客户端代码无需进行空值判断即可统一调用。
 
 ### 2.3 进制
 java中整型有四种表示方式：二、八、十、十六进制
@@ -1094,7 +1131,7 @@ String类是不可变类，而StringBuffer和StringBuilder则代表字符序列�
 ### 6.6 格式化
 
 ## 7 集合
-集合类主要负责保存、盛装其他数据，因此集合类也被称为容器类。所有集合类都位于java.util包下，jdk1.5在java.util.concurrent包下还提供了多线程支持的集合类。通常可以用Collections工具类的synchronizedXxx方法来保证集合的同步,如下(待补充)
+集合类主要负责保存、盛装其他对象，因此集合类也被称为容器类。所有集合类都位于java.util包下，jdk1.5在java.util.concurrent包下还提供了多线程支持的集合类。通常可以用Collections工具类的synchronizedXxx方法来保证集合的同步,如下(待补充)
 
 java集合有个缺点：对象进入集合后，集合就会忘记对象的数据类型，再次取出来就变成了Object类型。
 
@@ -1361,7 +1398,7 @@ java将异常分为两种:
 
 ### 13.2 常见的异常
 - ArithmeticException除0异常：用0做了除数就会出现，比如`System.out.println(100/0)`
-- NullPointerException：空指针异常，有人简称为NPE
+- NullPointerException：空指针异常，常简称为NPE
 - ClassCastException：类型强制转换异常
 - SQLException：操作数据库异常
 - FileNotFoundException：文件未找到

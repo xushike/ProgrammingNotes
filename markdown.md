@@ -52,20 +52,28 @@ _You **can** combine ~~them~~_
 
     [变量a]:https://github.com "github官网"
 
-锚定：几种使用方法
-1. headers自带的锚定
-    1. vscode快捷键`Ctrl+Shift+O`支持浏览所有headers，还支持outline
-    2. 支持当前文件和其他文件的headers跳转: 比如`[link text](#pre...)`、`[link text](../example_file/#prev)`
-2. [TOC] Table Of Contents (index file)，内容列表、索引，一般放在文首
-3. html的锚点语法
+锚定：自动锚定和自定义锚定
+1. 自动锚定：大多数编辑器（Typora、VS Code、GitHub等）会自动给`#...`标题生成锚点ID
+    1. outline: vscode快捷键`Ctrl+Shift+O`支持浏览所有自动生成的锚点ID，自动形成outline
+    2. 手动使用：支持当前文件和其他文件的headers跳转
+        1. 语法：链接的前半部分是文件路径，后面部分是header路径，header路径是一个`#`加上header名称(名称前面的空格忽略，名称中的空格转成`-`，名称中的标点符号删除，,名称中的英文转成小写)
+        2. 示例
+            1. [点击跳转到本篇数学方程式部分笔记](#2-数学方程式)
+            2. [点击跳转到SUMMARY.md](SUMMARY.md)
+            3. [点击跳转到cs.md中流（stream）部分的笔记](cs/cs.md/#流stream的概念)
+2. 自定义锚定
 
-    跳转到[第三个段落](#para3)
-    
-    跳转到[第四个段落](#para4)
+    1. [TOC] Table Of Contents (index file)，内容列表、索引，一般放在文首
+    2. html的锚点语法
 
-    <p id="para3">段落三</p>
+        跳转到[第三个段落](#para3)
+        
+        跳转到[第四个段落](#para4)
 
-    <a id="para4">段落四</a>
+        <p id="para3">段落三</p>
+
+        <a id="para4">段落四</a>
+3. 自动锚定和自定义锚定优缺点对比：自带的锚定方便但依赖header，如果header变了手动填的路径也必须跟着变才行。自定义的锚定定义的时候麻烦点但不依赖header。
 
 ### 图片
 三种使用方式：
