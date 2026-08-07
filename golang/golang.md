@@ -102,7 +102,7 @@ https://tip.golang.org/doc/go1.17
 1. 语言类型转换规则的扩展：允许从切片到数组指针的转换
 2. unsafe包增加了两个函数：Add与Slice
 3. go module的变化
-    1. pruned module graph（修剪的module依赖图）：Go 1.17之前的版本某个module的依赖图由该module的直接依赖以及所有间接依赖组成，无论某个间接依赖是否真正为原module的构建做出贡献，这样go命令在解决依赖时会读取每个依赖的go.mod，包括那些没有被真正使用到的module，这样形成的module依赖图被称为完整module依赖图（complete module graph)。go1.17开始不再使用complete module graph,而是使用pruned module graph,副作用是go.mod size变大了。go mod tidy对main module的依赖做一次深度扫描(deepening scan)，并将main module的所有直接和间接依赖都记录在go.mod中（之前版本只记录直接依赖）。考虑到内容较多，go 1.17将直接依赖和间接依赖分别放在两个不同的require块儿中。
+    1. pruned module graph（修剪的module依赖图）：Go 1.17之前的版本某个module的依赖图由该module的直接依赖以及所有间接依赖组成，无论某个间接依赖是否真正为原module的构建做出贡献，这样go命令在解决依赖时会读取每个依赖的go.mod，包括那些没有被真正使用到的module，这样形成的module依赖图被称为完整module依赖图（complete module graph）。go1.17开始不再使用complete module graph,而是使用pruned module graph,副作用是go.mod size变大了。go mod tidy对main module的依赖做一次深度扫描(deepening scan)，并将main module的所有直接和间接依赖都记录在go.mod中（之前版本只记录直接依赖）。考虑到内容较多，go 1.17将直接依赖和间接依赖分别放在两个不同的require块儿中。
 4. 编译器
     1. 引入了`//go:build`形式的构建约束指示符，以替代原先易错的`// +build`
 5. go test
@@ -117,6 +117,7 @@ https://tip.golang.org/doc/go1.17
     // go1.17 
     time.Date(2021, time.October, 14, 16, 34, 32, 333240500, time.Local):
     ```
+7. `go install`开始支持`@latest`这种模块版本后缀，需要使用传统的。todo
 
 ### go1.19
 1. `//go:packed`
@@ -323,10 +324,43 @@ fmt.Println(a1,a2,a3,a1==a1) // &[] &[] [] true
     1. 如果值包含`gocacheverify=1`将会导致 go 命令绕过任何的缓存数据，而真正地执行操作并重新生成所有结果，然后再去检查新的结果与现有的缓存数据是否一致。
 3. `GOOS`程序构建环境的目标操作系统
 4. `GOARCH`表示程序构建环境的目标计算架构
-5. `GOCACHE`:`go build`命令现在(go1.10+)总是会把最近的构建结果缓存起来，以便在将来的构建中重用。我们可以通过运行`go env GOCACHE`命令来查看缓存目录的路径。缓存的数据总是能够正确地反映出当时的源码文件、构建环境和编译器选项等的真实情况。一旦有任何变动，缓存数据就会失效，`go build`命令就会再次真正地执行构建。因此，我们并不用担心缓存数据体现的不是实时的结果。实际上，这正是上述改进能够有效的主要原因。`go build`命令会定期地删除最近未使用的缓存数据，但如果你想手动删除所有的缓存数据，运行一下`go clean -cache`命令就好了。而且对于测试成功的结果，go 命令也是会缓存的。运行`go clean -testcache`命令将会删除掉所有的测试结果缓存。
-    1. compiler决定是否重新编译包是content based的，而不是依照时间戳比对来决策。也就是说对文件的某一行，如果先删除，再恢复这行，是不会重新编译的。
-    2. 缓存目录：Linux上，GOCACHE=`~/.cache/go-build`; 在Mac OS X上，GOCACHE=`~/Library/Caches/go-build`
-6. `GOMODCACHE`:go1.15+开始，设置模块缓存的位置，默认是`$GOPATH/pkg/mod`
+5. 缓存相关：`GOMODCACHE`和`GOCACHE`。`GOMODCACHE`是模块源代码缓存目录，`GOCACHE`是构建缓存目录。
+    1. `GOMODCACHE`（go1.15+）：模块源代码缓存的位置。避免重复拉取依赖，保证版本一致性。默认值是`$GOPATH/pkg/mod`
+    2. `GOCACHE`:`go build`命令(go1.10+)会把编译中间产物缓存起来，以便在将来的构建中重用。我们可以通过运行`go env GOCACHE`命令来查看缓存目录的路径。缓存的数据总是能够正确地反映出当时的源码文件、构建环境和编译器选项等的真实情况。一旦有任何变动，缓存数据就会失效，`go build`命令就会再次真正地执行构建。因此，我们并不用担心缓存数据体现的不是实时的结果。实际上，这正是上述改进能够有效的主要原因。`go build`命令会定期地删除最近未使用的缓存数据，但如果你想手动删除所有的缓存数据，运行一下`go clean -cache`命令就好了。而且对于测试成功的结果，go 命令也是会缓存的。运行`go clean -testcache`命令将会删除掉所有的测试结果缓存。
+        1. 编译中间产物：有以下这些
+            1. 每个Go包（包括标准库、第三方依赖、本地包）编译后的目标文件（.a 归档文件）
+        1. 基于内容哈希复用编译结果：compiler不依照时间戳比对来决策。也就是说对文件的某一行，如果先删除，再恢复这行，是不会重新编译的。
+        2. 默认值：Windows 是`%LocalAppData%\go-build`，Linux 是 `~/.cache/go-build`; Mac OSX 是`~/Library/Caches/go-build`
+6. `$GOROOT`:表示Go的安装路径。如果是通过官方安装程序安装了Go，则不需要再手动设置 `$GOROOT`，且会自动将`$GOROOT/bin`加入系统PATH。.目录说明如下(仅了解就行):
+    1. `/bin`：包含可执行文件，如：编译器，Go 工具
+    1. `/doc`：包含示例程序，代码工具，本地文档等
+    1. `/lib`：包含文档模版
+    1. `/misc`：包含与支持 Go 编辑器有关的配置文件以及 cgo 的示例
+    1. `/os_arch`：包含标准库的包的对象文件（.a）
+    1. `/src`：包含源代码构建脚本和标准库的包的完整源代码。比如存放fmt包的源代码目录是`$GOROOT/src/fmt`
+    1. `/src/cmd`：包含 Go 和 C 的编译器和命令行脚本
+7. `$GOPATH`:工作区目录。我们可以分两个时间段来看待`$GOPATH`的作用，没有module的旧时代`$GOPATH`和开启module的新时代下的`$GOPATH`
+    1. 没有module的旧时代`$GOPATH`：此时的`$GOPATH`是「项目工作区」
+        1. 作用
+            1. 所有项目源代码都必须放在`$GOPATH/src`下：Go 编译器通过 import 语句查找包时，先去标准库`$GOROOT/src`查找，然后去`$GOPATH/src`下的对应路径查找，项目不放在这里面的话编译器根本不知道去哪里找第三方包。
+            2. 依赖管理：没有版本管理，这样所有的一切都只能基于最新的源代码。
+        2. 子目录
+            1. `bin`:可执行文件的存放路径，包含golang编译可执行文件、编译器、Go 工具、`go install`生成的二进制可执行文件等
+            2. `src`:所有项目的源码和依赖都放在这里面。
+            3. `pkg`:Go包归档文件目录。比如`$GOPATH/pkg/linux_amd64/github.com/foo/bar.a`
+    2. 开启module的新时代下的`$GOPATH`:GOPATH 开发模式已被官方标记为 deprecated，`$GOPATH`不再用于解析 import，你的项目可以放在任意目录，依赖由 go.mod和go.sum 管理。此时的`$GOPATH`只有以下三个作用。它从「项目工作区」变成了「依赖仓库 + 工具仓库 + sumdb仓库」，如果显式地把`$GOMODCACHE`和`$GOBIN`设置其他目录，那么`$GOPATH`目录不会再被写入任何新的数据，此时几乎等同于没用了。
+        1. 依赖缓存目录：`go get`下载的依赖默认落在`$GOPATH/pkg/mod`，但优先受`$GOMODCACHE`控制
+        2. 工具二进制目录：`go install`装的工具默认放在`$GOPATH/bin`，但优先受`$GOBIN`控制
+        3. 校验库缓存目录：`$GOPATH/pkg/mod/cache/download/sumdb`，但优先受`$GOMODCACHE`控制
+
+8. `$GOARCH`:表示目标机器的处理器架构，它的值可以是 386、amd64 或 arm。
+9. `$GOBIN`:表示编译器和链接器的安装位置（执行`go install`安装命令源码文件的路径），默认是空字符串，为空时则遵循“约定优于配置”原则，可执行文件会放在`$GOPATH/bin`。
+10. go.mod相关环境变量：`GO111MODULE`、`GOPROXY`等，见[点击跳转到go modules和go mod部分](#65-go-modules和go-mod)
+
+除了设置上面的几个环境变量，还需要将`$GOPATH/bin`路径添加到系统PATH里，这样在任意目录都可以直接执行路径里的可执行文件。
+
+go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
+
 ### 3.19 文件名
 以下划线`_`开头的文件不会被go编译，对golang而言类似于没有该文件
 
@@ -465,33 +499,11 @@ Golang不保证任何单独的操作是原子性的，除非：
 9. [awesome-go](https://github.com/avelino/awesome-go):golang项目的搬运工项目，需要什么第三方库就从这里找，懂的都懂
 
 # 二 安装配置
-go的环境变量说明:
-1. `$GOROOT`:表示Go的安装路径。如果是通过官方安装程序安装了Go，则不需要再手动设置 `$GOROOT`，且会自动将`$GOROOT/bin`加入系统PATH?。go自带的工具命令都在`$GOROOT/bin`里面,`fmt`等基础包也在GOROOT中，所以可以直接`import`.自带的标准库包的位于`GOROOT/src`下,比如存放fmt包的源代码对应目录为`$GOROOT/src/fmt`.目录说明如下(仅了解就行):
-    1. `/bin`：包含可执行文件，如：编译器，Go 工具
-    1. `/doc`：包含示例程序，代码工具，本地文档等
-    1. `/lib`：包含文档模版
-    1. `/misc`：包含与支持 Go 编辑器有关的配置文件以及 cgo 的示例
-    1. `/os_arch`：包含标准库的包的对象文件（.a）
-    1. `/src`：包含源代码构建脚本和标准库的包的完整源代码（Go 是一门开源语言）
-    1. `/src/cmd`：包含 Go 和 C 的编译器和命令行脚本
-
-2. `$GOPATH`:即工作区目录,安装后默认是`~/go`,包含`./bin`,`./src`和`./pkg`三个子目录，对应构建输出、源代码和依赖库。项目一般都是放在src下.注意最好不要将`$GOROOT`和`$GOPATH`设置在同一目录下.当安装了gocode和gopkgs等工具时，还会算上安装工具的目录；但是如果`import`的目录不在这两者当中，那么就会报错找不到，所以要把自己go代码的目录加入到GOPATH中,设置了GOPATH之后，`import`时就会去GOROOT和GOPATH中找；添加多个目录的时候Windows是分号，Linux系统是冒号，当有多个GOPATH时，大部分情况下会是第一个路径优先，比如：查找包、go get的内容默认放在第一个目录下.
-    1. `bin`:可执行文件的存放路径，包含golang编译可执行文件、编译器、Go 工具等
-    2. `src`:源码文件。go run，go install等命令后跟的路径默认基于当前工作路径
-    3. `pkg`:包文件路径，包含golang将可执行文件所依赖的各种package编译后的.a(or ?)中间文件
-
-3. `$GOARCH`:表示目标机器的处理器架构，它的值可以是 386、amd64 或 arm。
-4. `$GOBIN`:表示编译器和链接器的安装位置（执行`go install`安装的路径），默认是空字符串，为空时则遵循“约定优于配置”原则，可执行文件会放在各自GOPATH目录的bin文件夹--`$GOPATH/bin`。
-
-除了设置上面的几个环境变量，还需要将`$GOPATH/bin`路径添加到系统PATH里，这样在任意目录都可以直接执行路径里的可执行文件。
-
-go环境变量的设置：参考https://github.com/golang/go/wiki/SettingGOPATH
-
 ## 1 windows
 ### .msi文件安装
 .msi的好处是安装后可以方便的修复和卸载
 
-3. 配置GOROOT(实测go1.15是`C:\Go`目录，go1.17是`C:\Program Files\Go`目录)并将%GOROOT%\bin)加入PATH中，如果go语言安装工具帮我们加了就不用手动加了。这样就可以在任意地方运行go开头的命令了
+3. 配置GOROOT（实测go1.15是`C:\Go`目录，go1.17是`C:\Program Files\Go`目录）并将`%GOROOT%\bin`加入PATH中，如果go语言安装工具帮我们加了就不用手动加了。这样就可以在任意地方运行go开头的命令了
 4. 配置GOPATH.默认是`~/go`,想修改的话在系统变量新增一个GOPATH就行.
 5. 配置gobin(需不需要看情况)
 
@@ -576,15 +588,46 @@ sudo tar -zxvf xxx.tar.gz -C /usr/local
     ```
 ### 文件类型
 go里的文件大致分为以下几类：
-1. 源码文件：以`.go`结尾的文件
-    1. 命令源码文件
-    2. 库源码文件
-    3. 测试源码文件:以`_test.go`为后缀的
-2. 目标库文件/静态库文件/静态文件/代码包归档文件:以`.a`结尾的文件,`.a`文件是编译过程中生成的，每个package都会生成对应的`.a`文件，Go在编译的时候先判断package的源码是否有改动，如果没有的话，就不再重新编译`.a`文件，这样可以加快速度。同时，有静态库文件的时候，不需要
-    1. 如何生成`.a`文件：参考`go install`
-2. todo:以`.out`结尾的文件
-2. todo:以`.h`结尾的文件
-2. 目标文件:以`.o`结尾的文件
+1. 源代码文件：以`.go`结尾的文件
+    1. 命令源代码文件
+    2. 库源代码文件
+    3. 单元测试源代码文件:以`_test.go`为后缀的
+2. 最终可执行文件：无扩展名（Linux/macOS）或 `.exe`（Windows）
+2. `.a`文件：有两种，一种是只能给 Go 调用的「包归档文件」（Package Archive），另外一种是给 C/C++ 调用的静态库
+    1. Go包归档文件：也称为Go静态库文件、编译后的包对象，包含机器码、类型元数据、调试符号及源信息。执行`go build`或`go install 时`，Go 会把每个非 main 包编译成包归档文件。
+        1. 作用
+            1. 编译加速：Go在后续每次编译的时候先判断这些包的源码是否变化，有则重新编译，没有就不重新编译
+            2. 跨项目复用
+            3. 支撑IDE调试分析
+        2. 基于传统 GOPATH 模式和现代 module 模式（Go 1.11+）的两种不同表现
+            1. 传统 GOPATH 模式
+                1. 文件名通常为「包名.a」，比如`fmt.a`、`http.a`
+                2. 存储位置：`$GOPATH/pkg/`
+            2. 现代 module 模式
+                1. 文件以内容哈希命名，不带`.a`扩展名，但内容格式与之前的`.a`文件内容格式完全一致
+                2. 存储位置：`$GOCACHE`
+        4. 能直接执行：不能，需要和编译后的含main函数的文件一起链接才能生成可执行文件。
+        5. 是否跨平台：不跨平台。不同操作系统/架构下编译出的包归档文件不兼容。
+    2. 静态库：`-buildmode=c-archive`
+        1. 比如执行`go build -buildmode=c-archive -o mylib.a main.go`，执行后会生成两个文件，C/C++静态库文件`mylib.a`和 C 头文件`mylib.h`
+3. `.so`文件：有两种，两种后缀都是`.so`但作用范围不同，一种是只能给 Go 调用的插件包，另外一种是给支持C FFI的语言调用的动态库
+    1. Go 插件包：`-buildmode=plugin`。限制很多，很少会用到。
+        1. 比如`go build -buildmode=plugin -o myplugin.so plugin.go`
+    2. 动态库：`-buildmode=c-shared`
+4. 模块相关
+    1. `.mod`：Go 模块定义文件，记录模块路径、依赖声明和 Go 版本。
+    2. `.sum`：模块依赖的校验和文件，用于确保依赖完整性。
+6. `.work`：Go workspace 文件（Go 1.18+），用于同时开发多个本地模块。
+    1. `go.work.sum`：workspace 模式下对应的校验和文件。
+7. `.coverprofile`：覆盖率测试输出的结果文件（go test -coverprofile=xxx.coverprofile）。
+8. `.prof`/`.pprof`：CPU、内存、阻塞等性能剖析文件（go test -cpuprofile 等）。
+9. `.trace`：执行追踪文件（go test -trace 或 runtime/trace）。
+10. `.o`：目标文件。是编译器将源代码编译成机器码后生成的中间产物。通常由汇编器或链接器使用，不直接面向开发者。
+10. `.out`：某些情况下 go tool compile 或 go tool asm 的临时输出
+11. C/C++ 相关文件
+    1. C/C++ 头文件（Header）`.h`
+    2. C/C++ 静态库（Static Library）`.a`：略
+    3. C/C++ 动态库 / 共享对象（Shared Object）`.so`：略
 
 命令源码文件说明：
 1. 它是独立程序的入口，属于`main`包
@@ -599,7 +642,11 @@ go里的文件大致分为以下几类：
 1. 每个程序都带一份独立完整的runtime，程序是否会很大：不会。核心runtime大约500KB ~ 1MB，加上标准库总共大概2~3MB
 
 ### Go程序的执行（程序启动）顺序
-编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，然后对最后的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。但是每个包只会被导入一次。
+1. 导入包：编译时按顺序依次导入所有被 main 包引用的其它包，如果其他包中的某个包又导入了另外的包，那么会先将另外的包导入进来，这样一直递归下去，直到所有包导入完毕。每个包只会被导入一次。
+2. 初始化：先对最后导入的包的变量和常量进行初始化，然后执行`init()`，然后返回上层执行初始化，以此类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的`init()`函数（如果存在的话）
+    1. 初始化变量和常量
+    2. 执行`init()`
+3. 执行：最后执行main函数。
 
 ### 类型
 新声明的类型提供了一个方法(我还不知道什么方法,底层的一些东西?)，用来分隔不同概念的类型，这样即使它们底层类型相同也是不兼容的,例子如下,
@@ -723,8 +770,7 @@ go的作用域和生命周期是不同的概念
 ## 1 工具生态
 ### 版本管理
 实现版本管理的几种方式
-1. G：todo
-1. GVM：不支持Windous系统
+1. GVM：把各版本 Go 隔离装在`~/.gvm/gos/`下，切换时只需要改环境变量`GOROOT/PATH`就能做全局切换，不污染系统。不支持Windous系统。
     1. 项目地址：https://github.com/moovweb/gvm
     2. 安装配置
         1. 修改源：默认的源应该都是`https://go.googlesource.com/go`，但国内访问不了，所以需要修改相应命令里的源地址。比如`gvm install`命令，地址是`vim ~/.gvm/scripts/install`，修改`GO_SOURCE_URL=https://github.com/golang/go`，然后再执行就可以了。另外一种方法是执行命令的时候直接带上参数`--source=https://github.com/golang/go`
@@ -741,7 +787,18 @@ go的作用域和生命周期是不同的概念
         go version
         ```
 3. 手动版本管理：安装多个版本，手动创建软链接 todo
-4. go官方的版本管理 todo
+4. go官方的版本管理`golang.org/dl`：官方维护的轻量下载器和版本前缀命令的集合，每个版本都是一个独立二进制。
+    1. 历史：从 go1.11 开始提供，到今天依然是官方推荐的多版本并存方案
+    1. 使用：通过`go install`把指定版本的"下载器"装到`$GOBIN`，再通过"下载器"把对应版本的 Go 工具链拉取到本地
+        1. 安装指定版本的最新"下载器"到`$GOBIN`，可以拉取最新版本也可以拉取精确版本（CI环境推荐），
+            1. 拉取指定版本下载器的最新版`go install golang.org/dl/go<version>@latest`：比如`go install golang.org/dl/go1.21.0@latest`
+            2. 拉取指定版本下载器的特定版本：略
+            3. 版本变化
+                1. go1.21之前：`go<version>`可以省略最后的"P"版本号，比如`go1.20`
+                2. go1.21开始：`go<version>`不能省略最后的"P"版本号，比如`go1.21.0`
+        2. 用"下载器"把真正的 go sdk 拉到本地：`go<version> download`，比如`go1.21.0 download`，go sdk会被下载到`~/sdk/`
+        3. 用带版本号的方式调用go sdk：`go<version> ...`，比如`go1.21.0 version`
+    3. 使用场景：是CI、容器场景里最干净的做法
 
 ### go toolchain
 toolchain是什么：在软件开发中，工具链（toolchain）指的是一组用于构建、测试和维护代码的工具集合。通常，这些工具包括编译器、构建工具、调试器和其他辅助工具。go语言的工具链主要由编译器、构建工具（如`go build`）、测试工具（如`go test`）等组成。
@@ -785,8 +842,8 @@ go toolchain本身的版本管理：go1.21开始新增的特性
 
 通用参数(适用于大多数命令)：
 1. `-a`：强制编译，不管编译结果是不是最新的
-2. `-n`：打印编译过程中所需运行的命令，但不真正执行
-2. `-x`：打印编译过程中所需运行的命令，且真正执行
+2. `-n`：打印本应执行的命令，但不真正执行
+2. `-x`：打印本应执行的命令，且真正执行
 3. `-v`：列出被编译的代码包的名称。从go1.4开始，不会列出标准库的包
 4. `-work`:显示编译时临时工作目录的路径，并且结束后不删除它(默认编译结束会删除它)
 5. `-ldflags`：传递给链接器（`link`）的参数。更多参数`go tool link -h`
@@ -912,99 +969,97 @@ go run *.go # not work in windows
     5. `-work`
 
 #### go install
-用于编译并安装代码包或源码文件。
-1. 安装代码包或者库，会在`$GOPATH/pkg`生成`.a`文件
-2. 安装命令源码文件会在`$GOBIN`目录生成可执行文件。
+用于安装库源码文件和命令源码文件，不会修改go.mod。安装库源码文件会生成包归档文件，安装命令源码文件会生成可执行文件。
 
-有如下几种执行情况：
-1. 执行`go install`且不加任何参数时，默认会把当前目录作为代码包并安装。
-2. 执行`go install`且后面跟命令源码文件及相关库源码文件时，只有这些文件会被编译并安装。实测这种方式执行必需设置`GOBIN`，否则会报错：`go install: no install location for .go files listed on command line (GOBIN not set)`，但是其他执行方式似乎不需要设置`GOBIN`
-3. 执行`go install`且后面跟代码包路径时，代码包及其依赖会被安装。
+分未开启module和开启module两种场景
+1. 未开启module：此时是GOPATH模式
+    1. 存储位置：源代码和依赖都必须放在`$GOPATH/src`下，安装库源码文件生成的包归档文件会放在`$GOPATH/pkg/<os_arch>`，安装命令源码文件生成的可执行文件会放在`$GOPATH/bin`。
+    2. 语法
+        1. 只接受项目路径：`go install`只接受项目路径，不接受文件名。不能直接`go install main.go`，需要写成形如`go install github.com/yourname/hello`或者跳转到main.go所在目录直接执行`go install`
+        2. 不能指定版本，且不能下载
+2. 开启module
+    1. 存储位置：源代码可放在任意位置，源代码和依赖还会被缓存在`$GOMODCACHE`（`$GOMODCACHE`未设置的话则默认放在`$GOPATH/pkg/mod`），安装库源码文件生成的包归档文件会放在`$GOCACHE`，安装命令源码文件生成的可执行文件会放在`$GOBIN`（`$GOBIN`未设置的话则默认放在`$GOPATH/bin`）。
+    2. 语法
+        1. 支持项目路径和相对路径：相对路径是基于当前模块下的go.mod来解析，比如`go install .`或`go install ./cmd/...`
+        2. 是否能指定版本和是否能下载:
+            1. go1.16之前：无法指定，且不能下载
+            1. go1.16开始：可以指定，且可以下载，`go install <pkg>@<version>`
+                1. 在模块内可以不显式指定版本，它会遵循go.mod中的版本去安装goimports@latest`
+                2. 在模块外（当前目录及递归父目录没有go.mod）或CI中，必须显式指定版本，否则报错「version is required」。此时
 
-参数: 它不支持`-o`参数
+内部实现
+1. 下载依赖
+2. 编译：调用编译器`go tool compile`把源码编译为机器码，生成目标文件（`.o`或者包归档文件）
+3. 如果源码文件有命令源码文件，还有接下来两步
+    1. 链接：调用链接器`go tool link`把目标文件与标准库、第三方依赖链接成可执行文件
+    2. 安装：把可执行文件放到`$GOBIN`
 
-使用：
-1. 静态库的编译和使用例子如下：（待补充）
-    1. 假设代码目录如下
-        
-        ```
-        studyGo/go_cloud
-        ├── cmd
-        │   └── main.go
-        └── lovego_demo
-            ├── err.go
-            └── init.go
-        ```
+参数：大部分参数和`go build`相同。不支持`-o`参数
 
-    2. 进入studyGo目录
-        1. 编译静态库文件：`go install ./go_cloud/lovego_demo`，会在`$GOPATH/pkg/$GOOS_$GOARCH`目录下生成`studyGo/go_cloud/lovego_demo.a`静态库文件
-        2. 使用静态库文件编译main.go：`go tool compile -I $GOPATH/pkg/$GOOS_$GOARCH main.go`，会在当前目录生`main.o`文件。根据stack overflow的回答，`tool compile`默认是去`$GOROOT`下寻找，而不会去`$GOPATH`下寻找所以这里要带上`$GOPATH`路径。而且这里我是go1.13，开始用的`$GOPATH/pkg/$GOOS_$GOARCH`，结果提示我`can't find import`，然后我打印这三个环境变量，只有`$GOPATH`有值，于是把命令改成这样就执行成功了。
-        3. 链接main.o: `go tool link -o main.exe -L $GOPATH/pkg/$GOOS_$GOARCH main.o`,链接成功后会生成相应的可执行文件main.exe
-2. 安装可执行文件
+使用场景：现在基本都是用于安装命令源码文件，除了GOPATH模式的老项目，几乎不会用它去安装非命令源码文件。
+1. 安装命令源码文件生成可执行文件
 
     ```bash
-    # 例子1 安装croc
+    # 安装croc
     go install github.com/schollz/croc/v9@latest # 执行完后会在$GOBIN目录下生成可执行文件croc
     ```
+2. 安装非命令源码文件：略
 
-#### go get(待整理)
-通过源码控制工具(比如git)递归获取代码包及其依赖,下载到`$GOPATH`中第一个工作区的`src`目录中，并进行编译和安装,已存在则默认不会再去获取。也就是说该命令做三件事：获取，编译，安装。所以该命令接受所有可用于`go build`命令和`go install`命令的标记。`go get`可以下载一个单一的包或者整个子目录里面的每个包
+#### go get
+功能变化历史
+1. go1.11之前：下载依赖，编译，安装。
+2. go1.11 ~ go1.12：在module模式在，`go get`可以指定版本，且会将依赖写入go.mod
+3. go1.15：在go1.16之前，`go get`和`go install`唯二的区别是`go get`会下载而`go install`不会下载，以及`go get`会影响go.mod。不考虑go.mod的话，`go get` = `go get -d` + `go install`
+2. go1.16：`go get`的编译和安装功能被标记会弃用（虽然还能用），`go build`和`go test`不再自动修改go.mod
+3. go1.17：`go get`安装可执行文件的功能被`go install`替代，此时`go get`的安装功能仍在但是会有警告。
+4. go1.18：`go get`在模块模式下彻底不再构建和安装包，专用于下载依赖和管理go.mod 依赖（等价于`-d`永远开启），`go get`在模块外使用会报错（因为没有 go.mod 可改）。`go install`成为安装 CLI 工具的唯一标准方式
+    1. `go get`VS`go mod edit`：`go mod edit`是底层的、幂等的文件编辑原语，执行后不会自动格式化或验证，不会触发模块的依赖解析，`go get`是更高层的命令，包含了依赖解析。
+        1. `go get <module_path>@none`和`go mod edit --droprequire=<module_path>`对比
+            1. `go mod edit --droprequire=<module_path>`只是对go.mod文本的改动，不会触发模块的依赖解析。假如我删除了A包，但go.mod里B包依赖着A包，B包是不会被改动的。
+            2. `go get <module_path>@none`「把模块降级到'不存在'的版本」，且会触发模块的依赖解析，如果它是被其他依赖间接需要的，Go 会相应地降级或移除那些依赖。是官方推荐的「卸载一个依赖」的标准姿势。
+            3. 这两个命令都不会影响源码里的import，所以先要把源码里的import删掉再执行这两个命令，最后执行`go mod tidy`
 
-注意在Go modules 启用和未启用两种状态下的 go get 的行为是不同的，可用`go help module-get`和`go help gopath-get`分别查看对应的行为。
+分未开启module和开启module两种场景：可用`go help module-get`和`go help gopath-get`分别查看对应的行为
+1. 未开启module
+    1. 参考:`$GOROOT/src/cmd/go/internal/get/get.go`
+    2. 参数说明:
+        - `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
+        - `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
+        - `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包同时Go不会去对下载的依赖包做安全校验。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。使用它可能存在安全隐患，所以请在确定安全的情况下使用它。
+        - `...`：在后面加上三个点表示。。。
+        - `-d`：只下载，不执行编译安装动作。
+        - `-fix`：下载后执行修正动作再执行安装动作。
+2. 开启module：`go get`会下载并安装module，然后更新到go.mod中
+    1. 参考：`$GOROOT/src/cmd/go/internal/modget/get.go`
+    2. 使用
+        1. 不指定版本时:有个默认查找规则，参考[https://golang.org/cmd/go/#hdr-Add_dependencies_to_current_module_and_install_them]()
+        2. `go get <module_path>@latest`：拉取最新的tag
+        3. `go get <module_path>@<tag>`：按指定tag拉取，比如`go get <module_path>@v1.2.3`拉取tag为v1.2.3的commit
+        4. `go get <module_path>@<hash>`：按指定hash拉取，比如`go get <module_path>@123e45`拉取hash为123e45的commit，最终会被转换为某个tag
+            1. 比如v1.2.3;如果没有tag则会变成时间更早的tag+时间+commitid，比如v1.2.4-0.20210630095736-6f6cdd；如果更早的时间里没有tag，则是v0.0.0+时间+commitid，比如v0.0.0-20210630090322-fce34d227d94
+        5. `go get <module_path>@none`：略
+    3. 版本选择:最小版本选择算法”(The minimal version selection algorithm: https://github.com/golang/go/wiki/Modules#version-selection ),算法名字叫“最小版本选择算法”，然而内容却是“最高版本选择算法”。
+        1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
+        2. 如果您的模块依赖于具有require D v1.0.0的模块A，并且您的模块还依赖于具有require D v1.1.1的模块B，则最小版本选择将会选择D的v1.1.1版本用以构建（使用最高版本）  
+        3. 可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本，比如`go get foo@'<v1.6.2'`
+        4. 除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
+    4. 参数
+        1. `-u`：升级所有依赖，更新所有直接或间接依赖
+            1. `-u=patch`将只更新小版本，例如从v1.2.4到v1.2.5   
+            2. `-u ./...`：递归更新所有子目录的所有模块，忽略单元测试
+            3. `-u -t`：更新主要模块，包括单元测试
+            4. `-u -t ./...`：递归更新所有子目录的所有模块，包括单元测试
+            5. `-u all`：更新所有模块（推荐）
 
 如何判断当前Go modules是否启用:
 1. 根据环境变量和当前的路径
 2. 一个更简单的方法，使用`go get -f`，根据错误信息来判断。`-f`参数在go modules未启用才有效，且要和`-u`一起使用；而在go modules启用时，没有`-f`这个参数。
 
-##### Go modules未启用
-简单使用:比如git的地址是`https://github.com/xushike/studyGo.git`,使用git获取代码是`git clone https://github.com/xushike/studyGo.git`,如果用go get命令就是`go get github.com/xushike/studyGo`,然后代码目录就是`GOPATH/src/github.com/studyGO`
-
-具体实现代码参考：`$GOROOT/src/cmd/go/internal/get/get.go`，会将包下载到`$GOPATH/src`，且会对其repo下的submodule进行循环拉取
-
-参数说明:
-- `-u`:强制更新已有的代码包及其依赖,更新到`latest`版本
-- `-v`:打印出所有被构建的代码包的名字。建议加上该命令，可以大概了解进度。
-- `-insecure`：允许命令程序使用非安全的scheme（如HTTP）去下载指定的代码包同时Go不会去对下载的依赖包做安全校验。如果你用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。使用它可能存在安全隐患，所以请在确定安全的情况下使用它。
-- `...`：在后面加上三个点表示。。。
-- `-d`：只下载，不执行安装动作。
-- `-fix`：下载后执行修正动作再执行安装动作。
-
-注意:
-1. 导入路径含有的网站域名和本地Git仓库对应远程服务地址并不相同,是Go语言工具的一个特性，可以让包用一个自定义的导入路径，但是真实的代码却是由更通用的服务提供。（是不是意味着可以有重定向一样的功能？）
-
-如果不能编译和安装，还会获取吗？
-
-##### Go modules 启用
-具体实现代码参考：`$GOROOT/src/cmd/go/internal/modget/get.go`,会将包下载到`$GOPATH/pkg/mod`，不会对其repo下的submodule进行循环拉取
-
-`go get`会自动下载并安装package，然后更新到go.mod中，不指定版本时默认查找规则参考:[https://golang.org/cmd/go/#hdr-Add_dependencies_to_current_module_and_install_them]()，除此之外有以下几种用法：
-1. `go get xxx@latest`：拉取最新的tag
-    1. 如果没有tag，可能会拉取失败or按分支表现不同(todo)
-2. `go get xxx@v1.2.3`：拉取tag为v1.2.3的commit
-3. `go get xxx@123e45`：拉取hash为123e45的commit，最终会被转换为某个tag，比如v1.2.3;如果没有tag则会变成时间更早的tag+时间+commitid，比如v1.2.4-0.20210630095736-6f6cdd；如果更早的时间里没有tag，则是v0.0.0+时间+commitid，比如v0.0.0-20210630090322-fce34d227d94
-
-版本选择:最小版本选择算法”(The minimal version selection algorithm: https://github.com/golang/go/wiki/Modules#version-selection ),算法名字叫“最小版本选择算法”，然而内容却是“最高版本选择算法”。
-1. 如果有v1.9和v1.9.1，那么当你指定v1.9时（`go get github.com/jinzhu/gorm@v1.9`）会自动选取小版本号最高的版本，除非除了v1.9之外没有其他的v1.9.z的tag存在，在这里就是v1.9.1   
-2. 如果您的模块依赖于具有require D v1.0.0的模块A，并且您的模块还依赖于具有require D v1.1.1的模块B，则最小版本选择将会选择D的v1.1.1版本用以构建（使用最高版本）  
-
-可以在version前使用`>，>=，<，<=`，表示选取的版本不得超过/低于version，在这个范围内的符合latest条件的版本，比如`go get foo@'<v1.6.2'`
-
-参数：
-1. `-u=patch`将只更新小版本，例如从v1.2.4到v1.2.5   
-2. `go get -u`：更新次级或补丁版本号，忽略单元测试
-2. `go get -u ./...`：递归更新所有子目录的所有模块，忽略单元测试
-2. `go get -u -t`：更新主要模块，包括单元测试
-2. `go get -u -t ./...`：递归更新所有子目录的所有模块，包括单元测试
-6. `go get -u all`：更新所有模块（推荐）
-
-除了`v0`和`v1`外主版本号必须显式地出现在模块路径的尾部，`go get -u`不会更新主版本号
-
-```bash
-# 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢。这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
-
-# 在GO111MODULE=on的情况下想按非go mod的方式拉取包怎么办呢
-GO111MODULE=off go get xxx -v
-```
+问题
+1. 为什么 “拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2” 呢？
+    1. 这是因为虽然我们设置了拉取 @342b2e commit，但是因为 Go modules 会与 tag 进行对比，若发现对应的 commit 与 tag 有关联，则进行转换。
+2. 在GO111MODULE=on的情况下想按非go mod的方式拉取包怎么办呢
+    1. `GO111MODULE=off go get xxx -v`
 
 #### go help
 #### 1.5 go clean
@@ -1039,7 +1094,7 @@ GO111MODULE=off go get xxx -v
 作用是检查Go语言源代码并且报告可疑的代码编写问题,可以捕获一些常见的错误，如格式化字符串等。
 
 #### go mod 依赖管理
-见[go modules(go mod)](#6.5go modules(go mod))
+见[点击跳转到go modules和go mod部分](#65-go-modules和go-mod)
 
 #### 1.8 go fmt、gofmt和goimports
 代码格式化.开发工具中一般都集成了保存的时候自动格式化.以法令方式规定标准的代码格式可以避免无尽的无意义的琐碎争执,更重要的是，这样可以做多种自动源码转换，如果放任Go语言代码格式，这些转换就不大可能了。
@@ -1154,7 +1209,7 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 
 
 #### go tool
-`go tool xxx`命令调用，部分命令也可以通过`go xxx`命令调用，`go xxx`是对`go tool xxx`的简单封装，调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
+`go tool`是 Go 工具链的底层入口命令，用来直接调用 Go 内置的各种编译、链接、分析工具。日常开发用到的`go xxx`命令（比如`go build`、`go test`等）属于「高级包装命令」，是对`go tool`命令的包装。使用`go tool`则可以绕过包装、直接操作底层工具。调用后只有在错误的时候才会输出，这点跟unix的哲学一样。工具的目录是`$GOROOT/pkg/tool/$GOOS_$GOARCH`,比如我的mac上该位置是`$GOROOT/pkg/tool/darwin_amd64`。
 
 查看帮助：`go help xxx`，比如`go help generate`
 
@@ -1162,7 +1217,9 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
 
 写法：参数和值之间可以用等号，也可以用可空格。多个参数用单或双引号包裹，比如`-gcflags "-N -l"`、`-gcflags='-N -l'`
 
-#### go tool compile 编译
+`go build` = `go tool compile` + `go tool pack` + `go tool link` 
+
+##### go tool compile 编译
 
 参数：
 1. `-I`：使用额外的导入路径
@@ -1172,7 +1229,7 @@ go env是查看和设置go环境变量。go1.13开始，建议所有go相关的�
     go tool compile -I C:\Users\99212\go\pkg\windows_amd64 main.go
     ```
 
-#### go tool link 链接
+##### go tool link 链接
 
 参数：
 1. `-L`：使用额外的库文件路径
@@ -1473,7 +1530,7 @@ Go主要有四种类型的声明语句：`var`、`const`、`type`和`func`，分
                 b := []int{}    // 空值 = 空切片
                 ```
 3. 特殊的变量
-    1. 零尺寸类型(Zero-Sized Type, ZST)：指不占用任何内存空间的类型。比如空结构体`struct{}`和长度为0的数组`[0]int`
+    1. 零尺寸类型(Zero-Sized Type, ZST)：如果一个结构体或数组不包含任何大小大于零的字段（或元素），那么他们。最常见的空结构体`struct{}`和长度为0的数组`[0]int`。两个不同的ZST变量在内存中可能具有相同的地址。
         1. 特性
             1. ‌内存占用为0‌：`unsafe.Sizeof(struct{}{}) == 0`
             2. 
@@ -2514,9 +2571,34 @@ go的三个流程控制语句后都可以紧跟一个简短的变量声明，一
 
 go的三个流程控制语句后的条件都不需要加`()`
 
-### 3.1 for(go中唯一的循环)
-go的for循环主要有两种：
+### 3.1 for
+go的for循环有两种：普通for循环和`for range`
 1. 普通for循环：用法如下,其中initalization可选,如果有,则必须为简单语句;condition也是可选的,是一个布尔表达式，其值在每次循环迭代开始时计算,如果为true则执行循环体语句;post语句也是可选的,在循环体执行结束后执行,之后再次对conditon求值,condition值为false时，循环结束.
+    1. 变动历史
+        1. go1.22之前：for循环声明的变量只初始化一次，后面每次迭代只是更新它的值。如果把这个变量交给闭包，所有闭包捕获的是同一个变量，拿到的是循环结束时的最终值。
+
+            ```go
+            var funcs []func()
+            for i := 0; i < 3; i++ {
+                // 捕获的是同一个i
+                funcs = append(funcs, func() { fmt.Println(i) })
+            }
+            for _, f := range funcs {
+                f() // 3 3 3
+            }
+            ```
+        2. go1.22开始：for循环声明的变量每次迭代都重新创建
+            
+            ```go
+            var funcs []func()
+            for i := 0; i < 3; i++ {
+                // 每个i都不同
+                funcs = append(funcs, func() { fmt.Println(i) })
+            }
+            for _, f := range funcs {
+                f() // 0 1 2
+            }
+            ```
     
     ```go
     // 基本用法
@@ -2524,6 +2606,11 @@ go的for循环主要有两种：
         // zero or more statements
     }
     
+    // 传统的while循环
+    for condition {
+        // zero or more statements
+    }
+
     // 实现do while
     i:=0
     for {
@@ -2535,7 +2622,59 @@ go的for循环主要有两种：
     }
     ```
     
-2. for range：主要是遍历数组,切片,字符串等，注意其中的ele是**元素的副本而不是指针**，如下
+2. `for range`：可以遍历字符串、数组、切片、map、channel、整数（go1.22开始）、function / iterator（go1.23开始）。
+    1. 变动历史
+        1. go1.22之前：`for range`循环声明的变量只初始化一次，后面每次迭代只是更新它的值。
+
+            ```go
+            var (
+                a, b, c int64 = 1, 2, 3
+            )
+            s := []int64{a, b, c}
+            res := make([]*int64, 0)
+            for _, v := range s {
+                res = append(res, &v) // &v每次获取到的是同一个地址
+            }
+            for _, v := range res {
+                fmt.Println(*v) // 3 3 3
+            }
+
+            
+            var (
+                a, b, c int64 = 1, 2, 3
+            )
+            s := []*int64{&a, &b, &c}
+            res := make([]*int64, 0)
+            for _, v := range s {
+                res = append(res, v) 
+            }
+            for _, v := range res {
+                fmt.Println(*v) // 1 2 3
+            }
+            ```
+
+        1. go1.22开始：`for range`循环声明的变量每次迭代都重新创建。`for range`可以直接遍历整数。
+
+            ```go
+            var (
+                a, b, c int64 = 1, 2, 3
+            )
+            s := []int64{a, b, c}
+            res := make([]*int64, 0)
+            for _, v := range s {
+                res = append(res, &v) // &v每次获取到的是不同的变量的地址
+            }
+            for _, v := range res {
+                fmt.Println(*v) // 1 2 3
+            }
+            ```
+            
+            ```go
+            // 直接for range整数
+            for i := range 10 {
+                fmt.Println(10 - i)  // 输出 10,9,8,...,1
+            }
+            ```
 
     ```go
     for index,ele := range xxx {
@@ -2543,10 +2682,12 @@ go的for循环主要有两种：
     }
     ```
 
+
+
 for循环中的`break`和`continue`关键字用法：
 1. `break`：两种用法
     1. 直接使用，后面不带label：结束其所在的循环
-    2. 后面带label:结束标签所在的外层循环
+    2. 后面带label:结束label紧贴的循环
 
         ```go
         OUTER:
@@ -2611,77 +2752,59 @@ for循环中的`break`和`continue`关键字用法：
 1. for后面的三个语句(initialization; condition; post)都可以省略，此时可以看做go的`while`
 2. 和其它语言在for循环中的`break`以及`continue`一样，go的`break`会中断当前的循环，并开始执行循环之后的内容，而`continue`会跳过当前循环，并开始执行下一次循环。
 3. 实测，对于本身就是引用类型的变量，比如slice、map等，这是的xxx不能是这些变量的指针，比如&slice、&map。
-4. for range中，index后面的ele是**元素的副本而不是指针**，元素很大的话开销会比较大，有两种优化思路。
+4. for range中，元素很大的话开销会比较大，有两种优化思路。
     1. 声明成这样`xxx := make([]*ele,0)`，这样的话传递的虽然还是值，但是是指针的值了，开销更小。
     2. 直接用下标更新：`xxx[index]`
+5. `for range`遍历数组和切片：在遍历之前都会保存副本，对于数组是数组的副本，对于切片是切片头的副本。
+    1. 遍历数组时会对数组进行一次拷贝再遍历，如果在遍历过程中对原数组进行了修改，不会影响到拷贝的数组。
+    2. 遍历切片的话所有修改都是实时的，但切片头的信息不会实时更新。
     
     ```go
-    // 例子1
-    var (
-		a, b, c int64 = 1, 2, 3
+    //  遍历数组：非实时
+	var (
+		arr = [5]int{1, 2, 3, 4, 5}
+		r   [5]int
 	)
-	s := []int64{a, b, c}
-	res := make([]*int64, 0)
-	for _, v := range s {
-		res = append(res, &v) // &v每次获取到的是同一个地址
-	}
 
-	for _, v := range res {
-		fmt.Println(*v) // 3 3 3
-	}
-    
-    // 例子2
-    var (
-		a, b, c int64 = 1, 2, 3
-	)
-	s := []*int64{&a, &b, &c}
-	res := make([]*int64, 0)
-	for _, v := range s {
-		res = append(res, v) // 这里的v每次指向的是不同的地址
-	}
-
-	for _, v := range res {
-		fmt.Println(*v)
-	}
-    ```
-5. for range中，**xxx是原变量的一个副本**，例子如下
-    
-    ```go
-    //  例子1 xxx是数组
-    var arr = [5]int{1, 2, 3, 4, 5}
-	var r [5]int
-	fmt.Println(arr, r) // [1 2 3 4 5] [0 0 0 0 0]
 	for i, v := range arr {
 		if i == 0 {
+            // 原数组被修改了，但正在被遍历的拷贝数组并未受到影响
 			arr[1], arr[2] = 10, 20
 		}
 		r[i] = v
     }
-    // 如果for range的arr不是副本，那么下面应该输出[1 10 20 4 5] [10 20 3 4 5]，但并没有这样输出
+
     fmt.Println(arr, r) // [1 10 20 4 5] [1 2 3 4 5]
+
+    // 遍历数组指针：实时
+	var (
+		arr = [5]int{1, 2, 3, 4, 5}
+		r   [5]int
+	)
+
+	for i, v := range &arr {
+		if i == 0 {
+			arr[1], arr[2] = 10, 20 // 修改原数组
+		}
+		r[i] = v
+	}
+
+	fmt.Println(arr, r) // [1 10 20 4 5] [1 10 20 4 5]
     
-    // 例子2 xxx是切片，循环时改变元素的值
-    // 获取到的是新的值，因为切片的副本指向的还是
-    s := []int64{1, 2, 3, 4, 5}
-    for _, v := range s {
-        if v == 2 {
-            s[3] = 30
-        }
-        fmt.Printf("%d", v) // 123305
-    }
-    fmt.Println()
-    fmt.Println(s) // [1 2 3 30 5]
-    
+    // 遍历切片：实时，但切片头信息还是旧的
+
     // 例子3 xxx是切片，循环时改变切片的内容
-    s := []int64{1, 2, 3, 4, 5}
+    var s = []int64{1, 2, 3, 4, 5}
+
     for i, v := range s {
         if i == 1 {
             s = append(s[:i], s[i+1:]...)
             // 此时s1的长度变成了4，容量还是5
         }
-        // s[4]会index out of range
+        // 访问s[4]会index out of range
         fmt.Printf("i:%d, v:%d, len:%d, cap:%d\n", i, v, len(s), cap(s))
     }
+
     fmt.Println(s)
     // i:0, v:1, len:5, cap:5
     // i:1, v:2, len:4, cap:5
@@ -2690,7 +2813,7 @@ for循环中的`break`和`continue`关键字用法：
     // i:4, v:5, len:4, cap:5
     // [1 3 4 5]
     ```
-6. range会隐式的unicode解码:例子见遍历字符串部分
+6. range遍历字符串：会隐式的unicode解码
 
 ### 3.2 if else
 
@@ -2698,7 +2821,7 @@ for循环中的`break`和`continue`关键字用法：
 简单总结就是：显式fallthrough，隐式break，case支持逗号语法。（其他语言一般是隐式fallthrough，显式break）
 
 语法
-1. 从上到下匹配，成功时停止;不需要显式写上`break`,因为匹配某个`case`并执行完成后会自动退出`switch`;
+1. 从上到下匹配，成功时停止。隐式`break`（不需要显式写上`break`）,因为匹配某个`case`并执行完成后会自动退出`switch`;
 2. 没有条件的switch等于`switch true`，这种形式叫做无tag switch(tagless switch),可以更清晰的用来编写长的 if-then-else 链：
 
         ```go
@@ -2752,6 +2875,7 @@ for循环中的`break`和`continue`关键字用法：
         }
     }
     ```
+5. `default`：通常是写在最后，但它其实写在任意位置，不影响判断顺序。
 
 ### 3.4 goto
 
@@ -4004,7 +4128,7 @@ Go 最初采用的是标记清扫算法，到了 1.5 开始引入三色标记和
 局部变量分配到堆或者栈上并不是由用var还是new声明变量的方式决定的,编译器会做逃逸分析(escape analysis),当发现变量的作用域没有跑出函数范围，就可以在栈上，反之则必须分配在堆上.比如某个局部变量x在函数退出后依然可以通过包一级的global变量找到，那么x必须在堆上分配内存，用Go语言的术语说，这个x局部变量从函数f中逃逸了.所以不用担心会不会导致内存泄漏(memory leak),go语言声称这样可以释放程序员关于内存的使用限制，更多的让程序员关注于程序功能逻辑本身。
 
 ## 15 注释
-go的注释写法只有两种：`//`和`/**/`，但是用法有好几种：
+go的注释写法只有两种：`//`和`/**/`，两种注释不能嵌套。注释用法有以下几种：
 1. 普通注释
 2. 文档注释
 2. 编译标签(build tag)
@@ -5104,12 +5228,20 @@ writer.Write(buf)
             // 0 EOF
             ```
         3. `(*Reader).ReadString(delim byte) (string, error)`、`(*Reader).ReadBytes(delim byte) ([]byte, error)`、`(*Reader) ReadSlice(delim byte) (line []byte, err error)`：这几个方法都是基于`ReadSlice()`实现的，大同小异。
-2. `Scanner`:带缓冲的Scanner，比`bufio.Reader`后出来，使用起来更加方便合理。它的缓冲区默认size是4096
-    1. 设置缓冲区大小`(*Scanner) Buffer(buf []byte, max int)`:设置初始buffer和buffer最大size
+2. `Scanner`:带缓冲的Scanner，它可以读取输人，以行或者单词为单位分割。它的缓冲区默认size是4096字节
+    1. 设置缓冲区大小`(*Scanner) Buffer(buf []byte, max int)`:设置初始buffer和buffer最大size（单位字节）。
+        
+        ```go
+        // 设置初始缓冲区为 64KB，最大 token 长度为 1MB
+        scanner.Buffer(make([]byte, 64 * 1024), 1024 * 1024)
+        ```
+
     2. 设置分割函数:分割函数大概有三种方式被调用，具体由函数内容决定
         1. Request more data：传递的数据不足以获得 token时，它返回`0，nil，nil`，然后扫描器会尝试读取更多数据。 如果缓冲区已满，则在读取之前将其加倍。
         2. found token：匹配具体的模式才读取
         3. error：返回错误会让scanner停止。特别的，`io.EOF` 和 `ErrFinalToken`会让scanner停止但scanner.Err()不会获取到错误，也就是说这两个err会被认为正常的结束。
+    3. 读取
+        1. `(*Scanner) Scan() bool`：按行读取，并将结尾的换行符丢弃，成功读取到新行的时候返回true，否则返回false。通过``(*Scanner) Text()`获取读取到的内容。
 
     ```go
     // 例子1 读取字符串
@@ -5773,11 +5905,19 @@ func main() {
 1. builtin包里有`print()`和`println()`，和`fmt.Print()`和`fmt.Println()`：内置的`print()`和`println()`无需导包，运行在runtime，直接把字节写入到stderr，格式化能力非常弱。是runtime用的打印工具，不是给业务用的，所以只有在编译器、底层调试时才使用，正常开发不推荐使用。
 
 ### http
-1. `ListenAndServe()`:负责监听并处理连接。内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
-2. `ListenAndServeTLS(addr, certFile, keyFile string, handler Handler)`:启动https web server，certFile是证书文件，keyFile是私钥文件
-3. `FileServer`:提供文件服务的handle，一般需要结合`StripPrefix()`和`Dir()`来使用。里面的核心是`serverFile()`方法，如果是目录则列出里面的内容，如果是文件则使用`serveContent()`输出文件里面的内容，对于二进制类型的文件，浏览器访问默认是下载
+1. 启动服务
+    1. `ListenAndServe(addr string, handler Handler) error `:负责监听并处理连接。
+        1. 内部处理方式是对于每个connection起一个goroutine来处理。不过并不是最好的处理方式，进程或者线程切换的代价是巨大的，虽然goroutine是用户级的轻量级线程，切换并不会导致用户态和内核态的切换，但是当goroutine数量巨大的时候切换的代价不容小觑，更好的一种方式是使用goroutine pool。
+    2. `ListenAndServeTLS(addr, certFile, keyFile string, handler Handler)`:启动https web server，certFile是证书文件，keyFile是私钥文件
+    3. `FileServer`:提供文件服务的handle，一般需要结合`StripPrefix()`和`Dir()`来使用。里面的核心是`serverFile()`方法，如果是目录则列出里面的内容，如果是文件则使用`serveContent()`输出文件里面的内容，对于二进制类型的文件，浏览器访问默认是下载
+2. 注册路由
+    1. `HandleFunc(pattern string, handler func(ResponseWriter, *Request))`
+        1. pattern
+            1. 可以是固定路径（如`/hello`）或以`/`结尾的前缀模式（如`/api/`），如果同时有精确匹配和前缀匹配，精确匹配优先。当请求的 URL 匹配该模式时，对应的处理函数会被调用
+            2. 如果注册了`/`，它会匹配所有未被其他模式匹配的路径，通常用作“catch-all”处理器
+    2. `Handle(pattern string, handler Handler)`：入参`handler`是实现了`http.Handler`接口的对象，而不是一个函数。
 
-`http.Server`结构体相关操作:
+`http.Server`结构体:
 1. `Shutdown(ctx context.Context)`:golang1.8+的方法，可以优雅退出(待整理)
     
     ```go
@@ -5809,7 +5949,7 @@ func main() {
 	}
 	fmt.Println(string(bodyBytes))
     ```
-2. 保持长连接:一定要close body
+2. 保持长连接：HTTP1.1开始默认就是长连接
 
     ```go
     res, _ := client.Do(req)
@@ -5911,7 +6051,10 @@ func writeFile(path string, b []byte) {
 }
 ```
 
-#### io/ioutil
+#### io/ioutil [Deprecated]
+变动历史
+1. go.16开始：该包已被Deprecated，其内容迁移到了`io`包
+
 使用：
 1. `ReadAll()`
     1. ErrTooLarge(todo)
@@ -5928,9 +6071,14 @@ func writeFile(path string, b []byte) {
 6. `NopCloser(r io.Reader) io.ReadCloser`:NopCloser用一个无操作的Close方法包装Reader，返回一个ReadCloser接口，它的`Close()`方法是一个空实现，什么都没做
 
 变量：
-1. `Discard`：Discard 是一个 io.Writer 接口，调用它的 Write 方法将不做任何事情并且始终成功返回
+1. `Discard`：Discard 是一个 io.Writer 接口，调用它的`(*Discard) Write(p []byte) (int, error)`方法将不做任何事情并且始终成功返回
+    1. 使用场景
+        1. 忽略不要的内容
 
-其他的功能很多似乎都比较鸡肋。
+            ```go
+            // 读取内容但丢弃
+            written, _ := io.Copy(io.Discard, response.Body)
+            ```
 
 ### log
 log相比fmt的优点：
@@ -7232,8 +7380,9 @@ golang 提供了下面几种时间相关结构体：
 交叉编译不是任何情况下都有效：
 1. golang的API并非完全跨平台，比如`syscall.Stat_t`在windows下就没有
 
-## 6 依赖管理解决方案
-Go 的包管理方式是逐渐演进的， 最初是 monorepo 模式，所有的包都放在 GOPATH 里面，使用类似命名 空间的包路径区分包，不过这种包管理显然是有问题，由于包依赖可能会引入破坏性更新，生产环境和测试环 境会出现运行不一致的问题。
+## 6 依赖管理方案
+### 6.0 go modules出现之前
+Go 的包管理方式是逐渐演进的， 最初是 monorepo（单一仓库） 模式，所有项目源码都必须放在`$GOPATH/src`里面，使用类似命名空间的包路径区分包。
 
 ### 6.1 dep
 和go mod比较：
@@ -7243,7 +7392,7 @@ Go 的包管理方式是逐渐演进的， 最初是 monorepo 模式，所有的
 ### 6.2 vendor
 go在1.5版本引入了vendor包模式,增加了vendor属性(默认关闭，需要设置go环境变量GO15VENDOREXPERIMENT=1)，并在1.6版本中默认开启了vendor属性.
 
-简单来说，vendor属性就是让go编译时，优先从项目源码树根目录下的vendor目录查找代码(可以理解为切了一次GOPATH)，如果vendor中有，则不再去GOPATH中去查找。
+简单来说，vendor属性就是让go编译时，优先从项目源码根目录下的vendor目录查找代码(可以理解为切了一次GOPATH)，如果vendor中有，则不再去GOPATH中去查找。
 
 为什么用vendor目录：假如多个应用使用一个依赖包的不同版本？这个问题不只是Go应用，其他语言也会有这个问题。vendor目录允许不同的代码库拥有它自己的依赖包，并且不同于其他代码库的版本，这就很好的做到了工程的隔离。
 
@@ -7253,17 +7402,17 @@ golang查找依赖包路径的顺序如下：
 3. 在GOPATH下面查找依赖包。
 4. 在GOROOT目录下查找
 
-
 vendor存在的问题：
-1. vendor目录中依赖包没有版本信息。这样依赖包脱离了版本管理，对于升级、问题追溯，会有点困难。
-2. 如何方便的得到本项目依赖了哪些包，并方便的将其拷贝到vendor目录下？依靠人工实在不现实。
+1. vendor目录中依赖包没有版本信息。这样依赖包脱离了版本管理，完全手动管理，对于升级、问题追溯，会有点困难。
+2. 没法方便的得到本项目依赖了哪些包，并方便的将其拷贝到vendor目录下
+3. vendor 目录体积很大
 
 ### 6.3 glide
 
 ### 6.4 vgo
 vgo是go modules的前身(最初的 Go Module 提案的名称叫做 vgo)
 
-### 6.5 go modules(go mod)
+### 6.5 go modules和go mod
 参考：https://github.com/developer-learning/reading-go/issues/468
 
 Go1.11推出了模块（Modules），随着模块一起推出的还有模块代理协议（Module proxy protocol），通过这个协议我们可以实现 Go 模块代理（Go module proxy），aka 依赖镜像。Go 1.11 和 Go 1.12 模块不太完善，那么 Go 1.13 更加完善。Go 1.13 中的 GOPROXY 环境变量拥有了一个在中国大陆无法访问到的默认值 `proxy.golang.org`,最终 Go 核心团队仍然无法为中国开发者提供一个可在中国大陆访问的官方模块代理，可以使用七牛云的`goproxy.cn`。现在，go mod在go1.13中默认开启
@@ -7272,17 +7421,20 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
 1. 相当于是抛弃了GOPATH：Go modules 出现的目的之一就是为了解决 GOPATH 的问题，也就相当于是抛弃 GOPATH 了。
 2. 支持代理，意味着可以使用私有镜像源
 2. global caching: 允许同一个package多个版本并存，且多个项目可以共享缓存的 module不同项目的相同模块版本只会在电脑上缓存一份儿.
-    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在`$GOPATH/pkg/mod`和`​$GOPATH/pkg/sum`下，未来或将移至$GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
+    1. 使用go mod下载的依赖包是所有项目共享的,目前所有模块版本数据均缓存在`$GOPATH/pkg/mod`和`​$GOPATH/pkg/sum`下
+        1. 未来或将移至$GOCACHE/mod 和$GOCACHE/sum 下( 可能会在当 $GOPATH 被淘汰后)
 
 环境变量:
 1. `GO111MODULE`:控制go modules的开关，有三个参数，默认是未设置（等同于`auto`）
-    1. `auto`：go会根据当前目录启用或禁用模块支持，仅当当前目录位于`$GOPATH/src`之外并且其本身包含`go.mod`文件或位于包含`go.mod`文件的目录下时，才启用模块支持。
-    2. `on`：会忽略$GOPATH和vendor文件夹，只根据go.mod下载依赖
-    3. `off`：不会使用go modules。它查找vendor目录和GOPATH
+    1. `auto`
+        1. Go 1.11 ~ 1.12：有`go.mod`且当前目录不在`$GOPATH/src`内，才启用模块。
+        2. Go 1.13开始：只要有`go.mod`，不管当前目录在哪儿，都启用模块
+    2. `on`：启用模块
+    3. `off`：不启用模块，它查找vendor和GOPATH
 2. `GOPROXY`和`GONOPROXY`:
-    1. `GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号`,`分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
+    1. `GOPROXY`用于设置 Go 模块代理，它的值是一个以英文逗号`,`分割的 Go module proxy 列表，用于使 Go 在后续拉取模块版本时能够脱离传统的 VCS 方式从镜像站点快速拉取，当然它无权访问到任何人的私有模块。它拥有一个默认值`proxy.golang.org`，可惜在中国无法访问，故而建议使用七牛云的`goproxy.cn`(速度最快且goproxy.cn支持代理GOSUMDB的sum.golang.org)作为替代`go env -w GOPROXY=https://goproxy.cn,direct`，也可以设置多个代理，比如`https://goproxy.cn,https://goproxy.io,direct`
         1. `off`：禁止 Go 在后续操作中使用任 何 Go module proxy。
-        2. `direct`的作用：**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
+        2. `direct`的作用：表示代理上没有的包再回源到原始地址。**代理是无权访问私有库的**，当前一个代理获取不到模块时，go会回源到模块版本的源地址去抓取(比如GitHub和**私有库**)。当GOPROXY值列表中上一个 Go module proxy 返回 404 或 410 错误时，Go 自动尝试列表中的下一个，遇见 “direct” 时回源，遇见 EOF 时终止并抛出类似 “invalid version: unknown revision...” 的错误。需要加上该标识才能成功拉取私有库。
         3. 从go1.15开始，多个代理URL间可以用逗号`,`或竖线字符`|`分隔。如果代理URL后面带有逗号，则该go命令将仅在404或410 HTTP响应后尝试列表中的下一个代理。如果代理URL后面带有竖线字符，该go命令将在出现任何错误后尝试列表中的下一个代理。
     2. `GONOPROXY`用于设置不走代理的模块
         
@@ -7371,17 +7523,24 @@ Go1.11推出了模块（Modules），随着模块一起推出的还有模块代�
     example.com/apple v0.1.2 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ= 
     example.com/apple v0.1.2/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
     ```
-go mod命令:
+go mod命令：
 1. `go mod init <project_name>`:比如`go mod init checkin`
-2. `go mod download`: 下载所有模块到本地，路径是`$GOPATH/pkg/mod`。正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。和`go get`不同的是`go mod download`只会下载，不会编译安装。
-2. `go mod tidy`：整理依赖，整理项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
+2. `go mod download`: 下载所有模块源码到但不编译，路径是`$GOMODCACHE`。
+    1. 正常的时候不会输出到stdout，可以加上`-x`(The -x flag causes download to print the commands download executes)。
+3. `go mod tidy`：根据实际 import 重新同步依赖。它整理项目里的所有依赖，增加缺少的，去掉没用到的。加上`-v`会将移除的pkg打印到stderr
     1. 只是整理，并不会更新依赖版本
-4. `go mod edit`：编辑go.mod
+4. `go mod why`：列出从主模块（main module）到目标模块的最短依赖链
+    1. 可用于模块也可以用于包：用于模块`go mod why -m <module_path>`，用于包`go mod why <package_path/import_path>`
+        1. 比如`go mod why github.com/shirou/gopsutil/v4/process`
+    2. 如果没用到，输出是"(main module does not need module/package xxx)"
+4. `go mod edit`：编辑go.mod，这个命令只是纯文本编辑，执行后不会触发模块的依赖解析，假如我删除了A包，但go.mod里B包依赖着A包，B包是不会改动的。
     
     ```golang
     // 增加包:好像没有直接增加包的命令，可以修改go.mod然后执行go mod tidy
     // 修改当前module的版本：比如显式声明当前库为v2（具体参考发布部分笔记）
     go mod edit --module=private.com/pkg/v2 // go.mod里第一行就变成了：module private.com/pkg/v2，然后其他包引用该包的写法就变成了:private.com/pkg/v2/subPkgA
+    // 修改go指令版本
+    go mod edit -go="1.21.0"
     // 添加依赖或修改依赖版本，版本号规则和go get一样：比如我想将360 excelize的版本改成1.3.1，可以写成下面这样，但最好用go get命令
     // go mod edit -require=path@version
     go mod edit -require=github.com/360EntSecGroup-Skylar/excelize@v1.3.1

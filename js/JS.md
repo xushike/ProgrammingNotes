@@ -56,7 +56,7 @@ console.log(obj); // { x: 3, y: 2 }
 ```
 
 ### 3.2 深复制和浅复制(shallow copy)
-为什么会有深浅复制:因为栈中的数据要求大小固定,所以js的基本类型是放在栈中的,而引用类型(对象和数组等)因为大小不固定所以放在堆中,但是我们可以把引用类型的地址写在栈中供我们访问.这样当我们操作基本类型的时候,操作的是值,而操作引用类型的时候,操作的是它的地址.所以有如下例子,
+为什么会有深浅复制:因为栈中的数据要求大小固定,所以js的基本类型是放在栈中的,而引用类型(对象和数组等)因为大小不固定所以放在堆中,但是我们可以把引用类型的地址写在栈中供我们访问.这样当我们操作基本类型的时候,操作的是值,而操作引用类型的时候,操作的是它的地址.有如下例子,
 
 例子1:
 ```JavaScript
@@ -72,6 +72,17 @@ var color2 = color1;//复制
 console.log(color2)//['red','green'];
 color1.push('black') ;//改变color1的值
 console.log(color2)//['red','green','black'] 因为操作的是地址,也就是说操作的是同一个数组
+```
+
+例子3:
+```js
+var obj = { x: 1, y: 2 };
+function foo(o) {
+    o.x = 3;
+    o = {};
+}
+foo(obj);
+console.log(obj); // { x: 3, y: 2 }
 ```
 
 也就是说简单的赋值没有办法复制引用类型,所以需要深复制和浅复制.
@@ -1097,13 +1108,108 @@ console.log(gen_obj.next());// 执行完毕，value 为 undefined，done 为 tru
     ```
 
 # 四 高级
-## 1 闭包(closure)
-闭包，指的是词法表示包括不被计算的变量的函数，也就是说，嵌套的函数可以访问在其外部声明的变量,同时也意味着函数内的引用的外部变量,是在运行时才计算的.JS的闭包很有用,它主要有以下几个作用:
-1. 嵌套的函数可以访问在其外部声明的变量,意味着变量被引用着所以不会被回收，因此可以用来封装私有变量和方法,带来了许多与面向对象编程相关的好处,比如我可以保存一个变量,函数运行完后该变量会被保存,待需要的时候调用.但这是优点也是缺点，不必要的闭包只会徒增内存消耗.
+## 1 词法作用域和闭包（Lexical Scoping & Closure）
+词法作用域（也叫静态作用域）指的是：变量的作用域是在代码定义时就确定的，而不是在运行时动态决定。
+1. 规则：
+    1. 内层作用域可以访问外层作用域的变量。
+    2. 外层作用域不能访问内层作用域的变量。
+    3. 一个函数能访问哪些变量，取决于它在源码中的定义位置，而不是它在哪里被调用。
+2. 意义
+    1. 代码可读性与可预测性：只需看源码就能确定变量绑定，无需追踪运行时调用链。这在大型项目中至关重要。
+    2. 编译优化：编译器可以在编译期确定变量存储位置（栈或堆），进行寄存器分配等优化。
+    3. 闭包：词法作用域是闭包的基础，有了词法作用域才有可能形成闭包。
+3. 语言：现代主流编程语言普遍都采用此变量作用域规则，比如Go, Java, Python, JavaScript, C, Rust。
 
+
+```js
+function outer() {
+    let a = 10;
+    function inner() {
+        // inner 的词法作用域在这里就确定了：它能访问外层函数 outer 里的 a
+        console.log(a); 
+    }
+    inner();
+}
+outer(); // 输出 10
+// 在这个例子中，inner 函数定义在 outer 内部，所以它的词法作用域包含了 outer 的作用域，因此它可以访问变量 a
+```
+
+```js
+var x = "global";
+
+function foo() {
+    // foo 的词法作用域在这里就确定了：它能访问全局变量 x
+    console.log(x); // 这里的 x 指向全局变量
+}
+
+function bar() {
+    var x = "bar local";
+    foo(); // 调用 foo，但 foo 的作用域链在定义时已固定，不会因为 bar 里有 x 就去找 bar 的 x
+}
+
+bar(); // 输出 "global"，而不是 "bar local"
+```
+
+闭包：闭包并不是一种特殊语法，而是“函数 + 它所引用的词法环境”的结果。从ECMAScript规范看，函数对象会记住它定义时所在的词法环境，因此广义上可以把「所有函数都看作闭包」。但在日常开发中，通常说的「闭包」是更常见的狭义情况。
 参考:
-1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
-2. 1分钟理解js闭包:[http://www.jb51.net/article/83524.htm](http://www.jb51.net/article/83524.htm)
+1. [https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures)
+2. 1分钟理解js闭包:[https://www.cnblogs.com/qieguo/p/5457040.html](https://www.cnblogs.com/qieguo/p/5457040.html)
+
+狭义闭包：
+1. 规则
+    1. 内层函数引用（也称捕获）了外层函数的局部变量
+    2. 并且这个内层函数在外层函数返回之后仍然可以被调用
+2. 生命周期：被闭包引用的变量不会因为外层函数执行完就立刻被回收。
+3. 变量绑定：闭包捕获的是外部变量的引用，而不是某一次执行时的瞬时值。通过闭包修改外部变量会影响到原始变量
+1. 意义
+    1. 面向对象：函数在其词法作用域之外仍然能访问到变量。因此可以用来封装私有变量和方法,带来了许多与面向对象编程相关的好处,比如我可以保存一个变量,函数运行完后该变量会被保存,待需要的时候调用.但这是优点也是缺点，不必要的闭包只会徒增内存消耗.
+    2. 数据隐藏、工厂函数、回调、延迟执行等
+5. 特殊情况
+    1. `this`关键字不是词法作用域：`this`是动态绑定的，与词法作用域无关
+
+```js
+var x = "bar local";
+function bar() {
+    function foo() {
+        console.log(x); // 访问的全局变量 bar 的 x
+    }
+    return foo;
+}
+
+var fn = bar();
+fn(); // 输出 "bar local" 
+// foo访问的是全局变量 x，没有引用外层函数的局部变量，所以狭义上它不是闭包
+```
+
+```js
+function createCounter() {
+    let count = 0; // 这是 createCounter 的局部变量
+
+    // 返回一个匿名函数（不用匿名函数也可以，只是匿名函数写起来更方便），这个函数记住/捕获了 count 变量，后续如果这个函数在作用域之外执行，就会形成闭包
+    return function() {
+        count++; // 它记住/捕获了 count 变量
+        return count;
+    };
+}
+
+const counter = createCounter();
+console.log(counter()); // 输出 1 (count 没有被销毁)
+console.log(counter()); // 输出 2
+```
+
+```js
+var funcs = [];
+for (var i = 0; i < 3; i++) {
+    funcs.push(function() { console.log(i); });
+}
+funcs.forEach(f => f()); // 输出 3, 3, 3 （var声明的i是函数级作用域，所有闭包共享同一个 i）
+
+var funcs = [];
+for (let i = 0; i < 3; i++) {
+    funcs.push(function() { console.log(i); });
+}
+funcs.forEach(f => f()); // 输出 0, 1, 2 （let声明的i是块级作用域）
+```
 
 ## 双向绑定
 实现双向绑定的几种方法
