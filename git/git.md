@@ -204,29 +204,36 @@ reference from StackOverflow：https://stackoverflow.com/questions/13790592/how-
 2. linux下启动命令是:eval `ssh-agent`?
 
 ## 4 配置
-### 4.1 Git仓库的配置文件
-Git共有三个级别的config文件，分别是system、global和local:
-1. `.git/config`：指定仓库配置（特定于某个仓库），获取或设置时使用`--local`参数（或者省去）。
-2. `~/.gitconfig`：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用`--global`参数。
-    1. 当然该配置不是一定有的，比如公司的mac air上就没有改配置文件
-3. `/etc/gitconfig`：系统级别仓库配置（适用于所有仓库），获取或设置时使用`--system`参数。
+配置文件
+1. 配置文件的级别：Git共有三个级别的config文件，按作用范围由大到小分别是system、global和local，小范围优先级高于大范围。
+    1. `.git/config`：指定仓库配置（特定于某个仓库），获取或设置时使用`--local`参数（或者省去）。
+    2. `~/.gitconfig`：用户级别仓库配置（适用用于特定用户下的所有仓库），获取或设置时使用`--global`参数。
+        1. 当然该配置不是一定有的，比如公司的mac air上就没有改配置文件
+    3. `/etc/gitconfig`：系统级别仓库配置（适用于所有仓库），获取或设置时使用`--system`参数。
+2. 配置文件实例
 
-覆写关系为：自上到下，作用范围越大;小范围优先级高于大范围。
+    ```
+    # 配置文件，大概长这样
+    [user] 
+    name = John Smith
+    email = john@example.com
+    [alias]
+    st = status
+    co = checkout
+    br = branch
+    up = rebase
+    ci = commit
+    [core]
+    editor = vim
+    ```
+2. 乱码相关的设置
 
-打开一个配置文件,大概长这个样子:
-```
-[user] 
-name = John Smith
-email = john@example.com
-[alias]
-st = status
-co = checkout
-br = branch
-up = rebase
-ci = commit
-[core]
-editor = vim
-```
+    ```bash
+    git config --global gui.encoding utf-8 # git自带图形界面工具的显示编码
+    git config --global i18n.commitEncoding utf-8 # git commit等写入命令的编码
+    git config --global i18n.logOutputEncoding  utf-8 # git log等输出命令的编码
+    git config --global core.quotepath false # 输出命令支持中文路径
+    ```
 
 ### 4.2 设置 git config itemA valueA
 不带级别的话默认是`--local`,比如`git config color.ui true`，默认是设置到当前git仓库的config文件中，如果没有该文件，会提示出来且不会自动创建该文件。如果在设置时加上了`--global`和`--system`，会在没有对应config文件的情况下自动创建对应的config文件。
@@ -314,31 +321,12 @@ Plumbing则是Git的底层部分，它处理Git对象和Git仓库的内部结构
 草稿不想要了怎么操作(退出该状态最优雅的处理方法):切换回原来的分支`git checkout -`
 
 ## 1 工具生态
-### git bash
+### git 自带的图形界面工具
+包含 git gui 和 gitk：git gui 偏向于写操作（提交、合并等），gitk 偏向于读操作（查看历史、浏览提交记录）
 
-使用：
-1. 配置：老版本配置起来比较麻烦，推荐先升级到最新的git版本，然后再配置
-
-    ```bash
-    # 解决windows下使用git bash中文乱码的配置(待整理)
-    git config --global gui.encoding utf-8 # 代码库编码
-    git config --global i18n.commitencoding utf-8 # log编码
-    git config --global core.quotepath false # 支持中文路径
-
-    git config --global i18n.logoutputencoding utf-8
-    export LESSCHARSET=utf-8
-    ```
-
-### git gui
+#### git gui
 #### gitk
 参考：https://git-scm.com/docs/gitk
-
-安装：
-1. mac：参考git的安装部分
-
-实测在windows的powershell中运行gitk会直接退出，其他shell则没有问题。
-
-如果出现中文乱码,可以修改设置`git config --global gui.encoding utf-8`
 
 以图形化的界面显示文件修改记录:`gitk --follow <文件名>`
 
@@ -362,8 +350,12 @@ Plumbing则是Git的底层部分，它处理Git对象和Git仓库的内部结构
 1. mac打开gitk一片空白，报错如下：Error in startup script: window "." was deleted before its visibility changed while executing "tkwait visibility ." (file "/usr/local/bin/gitk" line 12629)
     1. 更新gitk版本`git upgrade git-gui`：实测从2.27.0 -> 2.33.0就好了
 
+### git bash
+略
+
 ### git mergetool
 主要用于解决冲突,似乎只有存在冲突文件时才会出现(待测试)
+
 ## 2 仓库操作
 ### 2.1 git init 初始化仓库
 官网说的初始化命令默认会创建master分支,但实践发现,在第一次commit之前很多命令都报错(比如`git branch`,`git checkout`,远程仓库的命令等),所以最佳实践是第一次commit之后再去操作分支和远程仓库。
@@ -1370,9 +1362,6 @@ i/lf    w/crlf  attr/text=auto eol=lf   fileA.txt
 - w：工作树中的行尾
 - attr：适用于此文件的 .gitattributes 规则
 - 文件名
-### 1.21 windows下git log中文乱码
-方法1：在系统环境变量里增加`LESSCHARSET=utf-8`，然后重启相关的IDE就行了。
-方法2：更新git版本
 
 ### 1.22 拉取gitlab远程仓库的时候出现:warning: redirecting to https://projectA.git/
 参考：https://stackoverflow.com/questions/53012504/what-does-the-warning-redirecting-to-actually-mean
@@ -1382,9 +1371,6 @@ i/lf    w/crlf  attr/text=auto eol=lf   fileA.txt
 
 ### 1.23 Git :fatal: refusing to merge unrelated histories
 原因是两个分支是两个不同的版本，具有不同的提交历史，解决方法是加上`--allow-unrelated-histories`允许不相关历史强制合并
-
-### 1.24 git vim中文乱码的问题
-windows上`git log`、`git diff`等命令显示的中文是正确的，但是`git commit --amend`、`git rebase -i head~1`等命令显示的中文是乱码。发现使用后面两个命令的时候是是用的vim编辑器打开，而windows的vim是我安装git的时候附带的，git的安装目录是`C:\Program Files\Git`，vim目录在`C:\Program Files\Git\usr\bin`。不过使用git附带的which命令查看`which which`、`which vim`的时候，显示的是`/usr/bin/which`和`/usr/bin/vim`这里which以`C:\Program Files\Git`为根目录，搞不懂(猜测可能是git默认设置的吧)。要修改vim的配置文件，就要去修改`C:\Program Files\Git\etc\vimrc`文件，具体参考vim笔记部分
 
 ### 1.25 git rebase upstream/master vs git pull --rebase upstream master
 参考：https://stackoverflow.com/questions/15602037/git-rebase-upstream-master-vs-git-pull-rebase-upstream-master
